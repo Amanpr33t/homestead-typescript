@@ -1,11 +1,13 @@
 import validator from 'validator'
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import ReviewPropertyDealerAddForm from './ReviewPropertyDealerAddForm'
 //This component is the navigation bar
 function PropertyDealerAddForm() {
-
+    const residentialRef = useRef()
+    const commercialRef = useRef()
+    const agriculturalRef = useRef()
     const navigate = useNavigate()
     const [firmName, setFirmName] = useState('')
     const [firmNameError, setFirmNameError] = useState(false)
@@ -31,20 +33,32 @@ function PropertyDealerAddForm() {
     const [addressArray, setAddressArray] = useState([])
     const [addressError, setAddressError] = useState(false)
 
-    const [gstNumber, setGstNumber] = useState('')
-    const [gstNumberError, setGstNumberError] = useState(false)
     const [about, setAbout] = useState('')
     const [aboutMoreThanOneFiftyCharacters, setAboutMoreThanOneFiftyCharacters] = useState(false)
+
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [emailErrorMessage, setEmailErrorMessage] = useState(false)
+    const [emailVerified, setEmailVerified] = useState(false)
+
     const [contactNumber, setContactNumber] = useState('')
     const [contactNumberError, setContactNumberError] = useState(false)
+    const [contactNumberErrorMessage, setContactNumberErrorMessage] = useState(false)
+    const [contactNumberVerified, setContactNumberVerified] = useState(false)
+
+    const [gstNumber, setGstNumber] = useState('')
+    const [gstNumberError, setGstNumberError] = useState(false)
+    const [gstNumberErrorMessage, setGstNumberErrorMessage] = useState(false)
+    const [gstNumberVerified, setGstNumberVerified] = useState(false)
 
     const [imageUpload, setImageUpload] = useState()
     const [file, setFile] = useState()
     const [imageFileError, setImageFileError] = useState(false)
     //const [imageSRC, setImageSRC] = useState(image)
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [])
 
     const [alert, setAlert] = useState({
         isAlertModal: false,
@@ -52,9 +66,8 @@ function PropertyDealerAddForm() {
         alertMessage: ''
     }) //This state is used to show or hide alert modal
     //const [isSpinner, setIsSpinner] = useState(false) //This state is used to show or hide spinner
-    const [reviewForm, setReviewForm] = useState(false)
+    const [showReviewForm, setShowReviewForm] = useState(false)
 
-    console.log(imageUpload)
     useEffect(() => {
         if (!fieldAgentAuthToken) {
             navigate('/field-agent/signIn')
@@ -109,12 +122,77 @@ function PropertyDealerAddForm() {
         setState('')
     }
 
+    const checkIfEmailExists = async (e) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerEmailExists?email=${email}`)
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            console.log(data)
+            if (data.status === 'emailExists') {
+                setEmailError(true)
+                setEmailErrorMessage('This email already exists')
+                setEmailVerified(false)
+            } else if (data.status === 'ok') {
+                setEmailVerified(true)
+            } else {
+                setEmailVerified(false)
+            }
+        } catch (error) {
+            setEmailVerified(false)
+        }
+    }
+
+    const checkIfContactNumberExists = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerContactNumberExists?contactNumber=${contactNumber}`)
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            console.log(data)
+            if (data.status === 'contactNumberExists') {
+                setContactNumberError(true)
+                setContactNumberErrorMessage('This contact number already exists')
+                setContactNumberVerified(false)
+            } else if (data.status === 'ok') {
+                setContactNumberVerified(true)
+            } else {
+                setContactNumberVerified(false)
+            }
+        } catch (error) {
+            setContactNumberVerified(false)
+        }
+    }
+
+
+    const checkIfGstNumberExists = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerGstNumberExists?gstNumber=${gstNumber}`)
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            if (data.status === 'gstNumberExists') {
+                setGstNumberError(true)
+                setGstNumberErrorMessage('This gst number already exists')
+                setGstNumberVerified(false)
+            } else if (data.status === 'ok') {
+                setGstNumberVerified(true)
+            } else {
+                setContactNumberVerified(false)
+            }
+        } catch (error) {
+            setGstNumberVerified(false)
+        }
+    }
+
+
 
     const formSubmit = e => {
         e.preventDefault()
-        console.log('here')
         if (!firmName.trim() || !propertyDealerName.trim() || propertyType.length === 0 || !addressArray.length || !gstNumber.trim() || !contactNumber.trim() || !email.trim() || !validator.isEmail(email.trim())) {
-            console.log('1')
             if (!firmName.trim()) {
                 setFirmNameError(true)
             }
@@ -134,6 +212,7 @@ function PropertyDealerAddForm() {
             }
             if (!gstNumber.trim()) {
                 setGstNumberError(true)
+                setGstNumberErrorMessage('provide a GST number')
             }
             if (!file) {
                 setImageFileError(true)
@@ -143,12 +222,12 @@ function PropertyDealerAddForm() {
                 setEmailErrorMessage('Provide an email')
             }
             if (email.trim() && !validator.isEmail(email.trim())) {
-                console.log('2')
                 setEmailError(true)
                 setEmailErrorMessage('Email not in correct format')
             }
             if (!contactNumber.trim()) {
                 setContactNumberError(true)
+                setContactNumberErrorMessage('Provide a contact number')
             }
             setAlert({
                 isAlertModal: true,
@@ -157,12 +236,25 @@ function PropertyDealerAddForm() {
             })
             return
         }
-        setReviewForm(true)
+        if (emailError || contactNumberError || gstNumberError) {
+            return
+        }
+        if (!emailVerified || !contactNumberVerified || !gstNumberVerified) {
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured'
+            })
+            return
+        }
+        setShowReviewForm(true)
     }
 
-    const blurResetForReviewForm = () => {
-        setReviewForm(false)
-    }
+
+
+
+    const arrayOfFiftyNumbers = Array.apply(null, Array(51))
+        .map(function (y, i) { return i })
 
     return (
         <Fragment>
@@ -173,14 +265,37 @@ function PropertyDealerAddForm() {
                 alertMessage: ''
             })} />}
 
-            {reviewForm && <ReviewPropertyDealerAddForm firmName={firmName.trim()} propertyDealerName={propertyDealerName.trim()} experience={experience} propertyType={propertyType} addressArray={addressArray} gstNumber={gstNumber.trim()} about={about.trim()} imageFile={file} email={email.trim()} contactNumber={contactNumber.trim()} blurReset={blurResetForReviewForm} reviewFormHide={() => {
-                setReviewForm(false)
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-            }} />}
 
-            {!reviewForm && <div className={`p-1 mb-10 sm:p-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur-sm' : null}`}>
-                <p className="fixed w-full text-center  top-16 pt-4 pb-4 bg-white  text-xl font-bold">Add a property dealer by filling the form</p>
-                <form className="w-full mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+            {showReviewForm && <ReviewPropertyDealerAddForm
+                firmName={firmName.trim()}
+                propertyDealerName={propertyDealerName.trim()}
+                experience={experience}
+                propertyType={propertyType}
+                addressArray={addressArray}
+                gstNumber={gstNumber.trim()}
+                about={about.trim()}
+                imageUpload={imageUpload}
+                imageFile={file}
+                email={email.trim()}
+                contactNumber={contactNumber.trim()}
+                hideReviewForm={() => {
+                    setShowReviewForm(false)
+                    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                }} />}
+
+
+            <div className={`p-1 mb-10 sm:p-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur-sm' : ''} ${showReviewForm ? 'fixed right-full' : ''}`} >
+
+                {!showReviewForm && <>
+                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
+                        <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
+                    </div>
+
+                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold">Add a property dealer by filling the form</p>
+                </>}
+
+
+                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit} >
 
                     <div className="flex flex-col mb-1.5 ">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="firmName">Name of the firm</label>
@@ -193,7 +308,7 @@ function PropertyDealerAddForm() {
 
                     <div className="flex flex-col mb-1.5">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
-                        <input type="text" id="dealerName" name="dealerName" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="Passord should be of 6 digits" autoComplete="off" value={propertyDealerName} onChange={e => {
+                        <input type="text" id="dealerName" name="dealerName" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
                             setPropertyDealerName(e.target.value.toUpperCase())
                             setPropertyDealerNameError(false)
                         }} />
@@ -201,10 +316,12 @@ function PropertyDealerAddForm() {
                     </div>
 
                     <div className="flex flex-row gap-4 mt-3 mb-1.5">
-                        <label className="text-lg font-semibold" htmlFor="experience">Experience (years)</label>
-                        <input type="number" id="experience" name="experience" className="w-20 border-2 border-gray-400 p-1 rounded-lg text-center font-semibold" autoComplete="off" min="0" max="100" value={experience} onChange={e => {
+                        <label className="text-lg font-semibold" htmlFor="state">Experience (years)</label>
+                        <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="experience" id="experience" value={experience} onChange={e => {
                             setExperience(e.target.value)
-                        }} />
+                        }}>
+                            {arrayOfFiftyNumbers.map(number => <option key={number} value={number}>{number}</option>)}
+                        </select>
                     </div>
 
                     <div className="mt-3 mb-1.5">
@@ -212,7 +329,7 @@ function PropertyDealerAddForm() {
                             <p className="text-lg font-semibold">Deals in:</p>
                             <div className="flex flex-col sm:flex-row gap-3 mt-1">
                                 <div>
-                                    <input className="mr-0.5" type="checkbox" id="residential" name="residential" value="residential" onChange={e => {
+                                    <input className="mr-0.5 cursor-pointer" type="checkbox" id="residential" name="residential" value="residential" ref={residentialRef} onChange={e => {
                                         setPropertyTypeError(false)
                                         if (e.target.checked) {
                                             setPropertyType(propertyType => [...propertyType, 'residential'])
@@ -225,7 +342,7 @@ function PropertyDealerAddForm() {
                                 </div>
 
                                 <div>
-                                    <input className="mr-0.5" type="checkbox" id="commercial" name="commercial" value="commercial" onChange={e => {
+                                    <input className="mr-0.5 cursor-pointer" type="checkbox" id="commercial" name="commercial" value="commercial" ref={commercialRef} onChange={e => {
                                         setPropertyTypeError(false)
                                         if (e.target.checked) {
                                             setPropertyType(propertyType => [...propertyType, 'commercial'])
@@ -238,7 +355,7 @@ function PropertyDealerAddForm() {
                                 </div>
 
                                 <div>
-                                    <input className="mr-0.5" type="checkbox" id="agricultural" name="agricultural" value="agricultural" onChange={e => {
+                                    <input className="mr-0.5 cursor-pointer" type="checkbox" id="agricultural" name="agricultural" value="agricultural" ref={agriculturalRef} onChange={e => {
                                         setPropertyTypeError(false)
                                         if (e.target.checked) {
                                             setPropertyType(propertyType => [...propertyType, 'agricultural'])
@@ -260,7 +377,7 @@ function PropertyDealerAddForm() {
                         <div className="flex flex-col pl-6 pr-6 gap-2">
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="number">Flat, House no., Building, Company</label>
-                                <input type="text" id="number" name="number" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={flatPlotHouseNumber} onChange={e => {
+                                <input type="text" id="number" name="number" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" value={flatPlotHouseNumber} onChange={e => {
                                     setFlatPlotHouseNumber(e.target.value.toUpperCase())
                                     setFlatPlotHouseNumberError(false)
                                     setAddressError(false)
@@ -269,7 +386,7 @@ function PropertyDealerAddForm() {
                             </div>
                             <div className="flex flex-col">
                                 <label className="font-semibold" htmlFor="area">Area,Street, Sector, Village</label>
-                                <input type="text" id="area" name="area" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={areaSectorVillage} onChange={e => {
+                                <input type="text" id="area" name="area" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" value={areaSectorVillage} onChange={e => {
                                     setAreaSectorVillage(e.target.value.toUpperCase())
                                     setAreaSectorVillageError(false)
                                     setAddressError(false)
@@ -278,14 +395,14 @@ function PropertyDealerAddForm() {
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="landmark">Landmark</label>
-                                <input type="text" id="landmark" name="landmark" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
+                                <input type="text" id="landmark" name="landmark" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
                                     setLandmark(e.target.value.toUpperCase())
                                     setAddressError(false)
                                 }} />
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="pincode">Pincode</label>
-                                <input type="number" id="pincode" name="pincode" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
+                                <input type="number" id="pincode" name="pincode" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
                                     setPostalCode(e.target.value)
                                     setPostalCodeError(false)
                                     setAddressError(false)
@@ -294,7 +411,7 @@ function PropertyDealerAddForm() {
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="town">Town/City</label>
-                                <input type="text" id="town" name="town" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={city} onChange={e => {
+                                <input type="text" id="town" name="town" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" value={city} onChange={e => {
                                     setCity(e.target.value.toUpperCase())
                                     setCityError(false)
                                     setAddressError(false)
@@ -370,11 +487,11 @@ function PropertyDealerAddForm() {
 
                         <div className="flex flex-col mb-1.5 mt-3 ">
                             <label className="text-lg font-semibold mb-0.5" htmlFor="gst">GST number</label>
-                            <input type="text" id="gst" name="gst" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={gstNumber} onChange={e => {
+                            <input type="text" id="gst" name="gst" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" value={gstNumber} onChange={e => {
                                 setGstNumber(e.target.value.toUpperCase().trimEnd())
                                 setGstNumberError(false)
-                            }} />
-                            {gstNumberError && <p className="text-red-500">Provide a firm name</p>}
+                            }} onBlur={checkIfGstNumberExists} />
+                            {gstNumberError && <p className="text-red-500">{gstNumberErrorMessage}</p>}
                         </div>
 
                         <div className="flex flex-col mb-1.5 ">
@@ -382,7 +499,7 @@ function PropertyDealerAddForm() {
                             <input type="email" id="email" name="email" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="new-password" value={email} onChange={e => {
                                 setEmail(e.target.value.trimEnd().toLowerCase())
                                 setEmailError(false)
-                            }} />
+                            }} onBlur={checkIfEmailExists} />
                             {emailError && <p className="text-red-500">{emailErrorMessage}</p>}
                         </div>
 
@@ -391,14 +508,14 @@ function PropertyDealerAddForm() {
                             <input type="tel" className="border-2 border-gray-400 p-1 rounded-lg" id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
                                 setContactNumber(e.target.value.trimEnd())
                                 setContactNumberError(false)
-                            }} />
-                            {contactNumberError && <p className="text-red-500">Provide a contact number</p>}
+                            }} onBlur={checkIfContactNumberExists} />
+                            {contactNumberError && <p className="text-red-500">{contactNumberErrorMessage}</p>}
                         </div>
 
 
                         <div className="flex flex-col mb-1.5 ">
                             <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
-                            <textarea className="border-2 border-gray-400 resize-none w-full h-28 p-0.5" id="story" name="story" value={about} onChange={e => {
+                            <textarea className="border-2 border-gray-400 rounded-lg resize-none w-full h-40 p-0.5" id="story" name="story" value={about} onChange={e => {
                                 setAboutMoreThanOneFiftyCharacters(false)
                                 setAbout(e.target.value)
                                 const numberOfWordsInAbout = e.target.value.trim().split(/\s+/);
@@ -409,13 +526,11 @@ function PropertyDealerAddForm() {
                             {aboutMoreThanOneFiftyCharacters && <p className="text-red-500">About should be less than 150  words</p>}
                         </div>
 
-                        <div className="flex flex-col  mb-1.5 mt-3">
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <label className="text-lg font-semibold mb-0.5" htmlFor="image">Dealers' image:</label>
-                                <input className="-mt-4 sm:mt-0" type="file" placeholder="image" accept="image/png, image/jpeg" name='image' onChange={imageChangeHandler} />
-                                {file && <img style={{ width: '100px' }} src={file} alt="" />}
-                            </div>
-                            {imageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2">Select an image</p>}
+                        <div className="flex flex-row gap-2 mt-2">
+                            <label className="text-lg font-semibold" htmlFor="image">Image:</label>
+                            <input type="file" placeholder="image" accept="image/png, image/jpeg" name='image' onChange={imageChangeHandler} />
+                            {file && <img className='w-28 h-auto' src={file} alt="" />}
+                            {imageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         </div>
 
                     </div>
@@ -424,7 +539,7 @@ function PropertyDealerAddForm() {
                         <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 h-8">Save details</button>
                     </div>
                 </form>
-            </div>}
+            </div>
         </Fragment>
     )
 }

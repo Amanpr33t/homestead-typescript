@@ -3,10 +3,11 @@ import NavbarFieldAgent from "./components/field-agent/NavbarFieldAgent";
 import PropertiesAdded from "./components/field-agent/PropertiesAdded";
 import PropertyDealerAddForm from "./components/field-agent/PropertyDealerAddForm";
 import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
-import { Route, Routes, Navigate } from 'react-router-dom'
+import { Route, Routes, Navigate} from 'react-router-dom'
 
 
 function App() {
+
   return (
     <div className="box-border w-full min-h-screen">
       <NavbarFieldAgent />
