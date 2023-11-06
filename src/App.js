@@ -13,7 +13,8 @@ function App() {
       <div className="fixed top-40">Hello</div>
       <NavbarFieldAgent />
       <Routes>
-        <Route path='/demo' element={<div className="top-40">Hello</div>}></Route>
+        <Route path='/' element={<div className="fixed top-40">hello</div>}></Route>
+        <Route path='/demo' element={<div className="fixed top-40">Hello</div>}></Route>
         <Route path='/field-agent/*'>
           <Route path='' element={<HomeFieldAgent />}></Route>
           <Route path='signIn' element={<FieldAgentSignIn />}></Route>
