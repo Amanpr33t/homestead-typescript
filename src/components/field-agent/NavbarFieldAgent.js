@@ -28,7 +28,7 @@ function NavbarFieldAgent() {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
-            if (data.status === 'ok' || data.status === 'session_expired') {
+            if (data.status === 'ok' || data.status === 'invalid_authentication') {
                 setIsSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn')

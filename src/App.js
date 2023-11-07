@@ -3,25 +3,36 @@ import NavbarFieldAgent from "./components/field-agent/NavbarFieldAgent";
 import PropertiesAdded from "./components/field-agent/PropertiesAdded";
 import PropertyDealerAddForm from "./components/field-agent/PropertyDealerAddForm";
 import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
-import { Route, Routes, Navigate } from 'react-router-dom'
+import { Route, Routes, useNavigate,Navigate } from 'react-router-dom'
+import { Fragment, useEffect } from "react";
 
 
 function App() {
+  const navigate = useNavigate()
+  const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+  useEffect(() => {
+    if (!authToken) {
+      navigate('/field-agent/signIn')
+    }
+  }, [authToken,navigate])
 
   return (
-    <div className="box-border w-full min-h-screen">
-      <NavbarFieldAgent />
-      <Routes>
-        <Route path='/demo' element={<div className="fixed top-40">Hello</div>}></Route>
-        <Route path='/field-agent/*'>
-          <Route path='' element={<HomeFieldAgent />}></Route>
-          <Route path='signIn' element={<FieldAgentSignIn />}></Route>
-          <Route path='properties-added' element={<PropertiesAdded />}></Route>
-          <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
-        </Route>
-        <Route path='*' element={<Navigate replace to='/' />}></Route>
-      </Routes>
-    </div>
+    <Fragment>
+      <div className="box-border w-full min-h-screen">
+        <NavbarFieldAgent />
+        <Routes>
+          <Route path='/demo' element={<div className="fixed top-40">Hello</div>}></Route>
+          <Route path='/field-agent/*'>
+            <Route path='' element={<HomeFieldAgent />}></Route>
+            <Route path='signIn' element={<FieldAgentSignIn />}></Route>
+            <Route path='properties-added' element={<PropertiesAdded />}></Route>
+            <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
+          </Route>
+          <Route path='*' element={<Navigate replace to='/' />}></Route>
+        </Routes>
+      </div>
+    </Fragment>
   );
 }
 

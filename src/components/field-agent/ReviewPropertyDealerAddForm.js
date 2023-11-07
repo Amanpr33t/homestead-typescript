@@ -1,12 +1,10 @@
 import { Fragment, useEffect, useState } from "react"
 //import Spinner from "../Spinner"
 //This component is tde navigation bar
-import { useNavigate } from "react-router-dom";
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 
 function ReviewPropertyDealerAddForm(props) {
-    const navigate = useNavigate()
     const {
         firmName,
         propertyDealerName,
@@ -26,8 +24,8 @@ function ReviewPropertyDealerAddForm(props) {
         isAlertModal: false,
         alertType: '',
         alertMessage: ''
-    }) //This state is used to show or hide alert modal
-    const [onSuccessAlert, setOnSuccessAlert] = useState(false)
+    })
+    const [routeTo, setRouteTo] = useState('')
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -43,7 +41,6 @@ function ReviewPropertyDealerAddForm(props) {
             const formData = new FormData()
             formData.append('file', imageUpload)
             formData.append('upload_preset', 'homestead')
-            console.log(process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
             formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
             const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                 method: 'post',
@@ -55,7 +52,6 @@ function ReviewPropertyDealerAddForm(props) {
             }
 
             if (cloudinaryData && cloudinaryData.secure_url) {
-                const cloudinaryImageURL = cloudinaryData.secure_url
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -66,7 +62,7 @@ function ReviewPropertyDealerAddForm(props) {
                         addressArray,
                         gstNumber,
                         about,
-                        cloudinaryImageURL,
+                        cloudinaryImageURL: cloudinaryData.secure_url,
                         email,
                         contactNumber
                     }),
@@ -79,24 +75,22 @@ function ReviewPropertyDealerAddForm(props) {
                     throw new Error('Some error occured')
                 }
                 const data = await response.json()
-                if (data.status === 'session_expired') {
+                if (data.status === 'ok') {
+                    setSpinner(false)
+                    setRouteTo('/field-agent')
+                    setAlert({
+                        isAlertModal: true,
+                        alertType: 'success',
+                        alertMessage: 'Property dealer added successfully'
+                    })
+                } else if (data.status === 'invalid_authentication') {
                     setSpinner(false)
                     localStorage.removeItem("homestead-field-agent-authToken")
+                    setRouteTo('/field-agent/signIn')
                     setAlert({
                         isAlertModal: true,
                         alertType: 'warning',
                         alertMessage: 'Session expired. Please login again'
-                    })
-                } else if (data.status === 'ok') {
-                    setSpinner(false)
-                    setOnSuccessAlert(true)
-                } else if (data.status === 'invalid_authentication') {
-                    setSpinner(false)
-                    localStorage.removeItem("homestead-field-agent-authToken")
-                    setAlert({
-                        isAlertModal: true,
-                        alertType: 'warning',
-                        alertMessage: 'Invalid user. Please sign in again.'
                     })
                 } else {
                     throw new Error('Some error occured')
@@ -105,8 +99,8 @@ function ReviewPropertyDealerAddForm(props) {
                 throw new Error('Some error occured')
             }
         } catch (error) {
-            console.log(error)
             setSpinner(false)
+            setRouteTo('')
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -116,16 +110,12 @@ function ReviewPropertyDealerAddForm(props) {
         }
     }
 
-    const routeToHomePage = () => {
-        navigate('/field-agent')
-    }
-
     return (
         <Fragment>
             {spinner && <Spinner />}
 
             {/*The code bolow is used to show an alert modal to the user */}
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} alertModalRemover={() => {
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={routeTo} alertModalRemover={() => {
                 setAlert({
                     isAlertModal: false,
                     alertType: '',
@@ -133,20 +123,7 @@ function ReviewPropertyDealerAddForm(props) {
                 })
             }} />}
 
-
-            {onSuccessAlert && <div className="fixed z-50 top-16 pt-12 bg-transparent h-screen w-full flex justify-center" onClick={routeToHomePage}>
-                <div className="relative w-11/12 sm:w-96 h-fit rounded-lg shadow bg-white" onClick={e => e.stopPropagation()}>
-                    <div className="p-6 text-center"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="mx-auto mb-4 text-green-700 w-12 h-12" viewBox="0 0 16 16">
-                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                    </svg>
-                        <h3 className="mb-5 text-lg font-normal text-gray-700 ">Property dealer added successfully</h3>
-                        <button data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" onClick={routeToHomePage}>Ok</button>
-                    </div>
-                </div>
-            </div>}
-
-
-            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center ${spinner || alert.isAlertModal || onSuccessAlert ? 'blur' : ''}`} >
+            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center ${spinner || alert.isAlertModal ? 'blur' : ''}`} >
                 <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 pt-0.5 h-8 z-20 " onClick={hideReviewForm}>Back</button>
 
                 <div className="w-full flex justify-center pb-4">
