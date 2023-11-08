@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
+import Spinner from "../Spinner"
 
 
 //This component is the navigation bar
@@ -11,16 +12,20 @@ function HomeFieldAgent() {
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
-        alertMessage: ''
+        alertMessage: '',
+        routeTo: null
     })
-    const [routeTo, setRouteTo] = useState('')
     const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState(0)
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState(0)
     const [requestsDropdown, setRequestsDropdown] = useState(false)
+    const [error, setError] = useState(false)
+    const [spinner, setSpinner] = useState(true)
 
     const fetchPropertiesAndPropertyDealersAddedByFieldAgent = useCallback(async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertiesAndPropertyDealersAddedByFieldAgent`, {
+            setError(false)
+            setSpinner(true)
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPropertyDealersAndPropertiesAddedByFieldAgent`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,20 +37,22 @@ function HomeFieldAgent() {
             }
             const data = await response.json()
             if (data.status === 'ok') {
-                setRouteTo('')
-                setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent.length)
-                setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent.length)
+                setSpinner(false)
+                setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent)
+                setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent)
             } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                setRouteTo('/field-agent/signIn')
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
-                    alertMessage: 'Session expired. Please login again'
+                    alertMessage: 'Session expired. Please login again',
+                    routeTo: '/field-agent/signIn'
                 })
             }
         } catch (error) {
-            console.log(error)
+            setError(true)
+            setSpinner(false)
         }
     }, [authToken])
 
@@ -55,16 +62,24 @@ function HomeFieldAgent() {
 
     return (
         <Fragment>
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={routeTo} alertModalRemover={() => {
+            {spinner && !error && <Spinner />}
+            {error && !spinner && <div className="fixed top-32 w-full flex flex-col place-items-center">
+                <p>Some error occured</p>
+                <p className="text-red-500 cursor-pointer" onClick={fetchPropertiesAndPropertyDealersAddedByFieldAgent}>Try again</p>
+            </div>}
+
+
+            {alert.isAlertModal && !error && !spinner && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
                     isAlertModal: false,
                     alertType: '',
-                    alertMessage: ''
+                    alertMessage: '',
+                    routeTo: null
                 })
             }} />}
 
 
-            <div className='relative flex flex-col md:flex-row pt-20 pb-4 pl-2 sm:pl-6 md:pl-8 lg:pl-28 pr-2 sm:pr-6 md:pr-8 lg:pr-28 gap-4 bg-slate-100 min-h-screen ' onClick={() => setRequestsDropdown(false)}>
+            {!error && !spinner && !alert.isAlertModal && <div className='relative flex flex-col md:flex-row pt-20 pb-4 pl-2 sm:pl-6 md:pl-8 lg:pl-28 pr-2 sm:pr-6 md:pr-8 lg:pr-28 gap-4 bg-slate-100 min-h-screen ' onClick={() => setRequestsDropdown(false)}>
 
                 <div className="hidden md:flex flex-col w-96 h-fit bg-white gap-2 p-3 rounded-lg">
                     <p className="text-2xl font-bold text-center mb-2">Pending Requests</p>
@@ -106,7 +121,7 @@ function HomeFieldAgent() {
                 </div>
 
 
-                <div className={`w-full bg-white rounded-lg pt-6 pb-6 ${requestsDropdown?'blur':''}`} >
+                <div className={`w-full bg-white rounded-lg pt-6 pb-6 ${requestsDropdown || alert.isAlertModal ? 'blur' : ''}`} >
                     <div className="flex flex-row gap-3 w-full place-content-center">
                         <Link to='' className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit " >Add Property</Link>
                         <Link to='/field-agent/add-property-dealer' className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit" >Add Property Dealer</Link>
@@ -116,14 +131,14 @@ function HomeFieldAgent() {
                             <p className="text-5xl text-green-800">{numberOfPropertiesAdded}</p>
                             <p className="w-36">properties have been added by you</p>
                         </div>
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded-lg h-fit hover:bg-sky-100">
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded-lg h-fit hover:bg-sky-100" onClick={() => numberOfPropertyDealersAdded ? navigate('/field-agent/list-of-property-dealers-added-by-field-agent') : null}>
                             <p className="text-5xl text-green-800">{numberOfPropertyDealersAdded}</p>
                             <p className="w-40">property dealers have been added by you</p>
                         </div>
                     </div>
                 </div>
 
-            </div>
+            </div>}
 
         </Fragment>
     )

@@ -2,71 +2,74 @@ import validator from 'validator'
 import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
-import ReviewPropertyDealerAddForm from './ReviewPropertyDealerAddForm'
+import ReviewPropertyDealerAfterSubmission from './ReviewPropertyDealerAfterSubmission'
 
+//This component is a form used by a field agent to add a property dealer
 function PropertyDealerAddForm() {
     const navigate = useNavigate()
-    const fieldAgentAuthToken = localStorage.getItem('homestead-field-agent-authToken')
 
-    const [firmName, setFirmName] = useState('')
-    const [firmNameError, setFirmNameError] = useState(false)
+    const fieldAgentAuthToken = localStorage.getItem('homestead-field-agent-authToken') //This variable is the authentication token stored in local storage
 
-    const [propertyDealerName, setPropertyDealerName] = useState('')
-    const [propertyDealerNameError, setPropertyDealerNameError] = useState(false)
+    const [firmName, setFirmName] = useState('') //Name of the firm
+    const [firmNameError, setFirmNameError] = useState(false) //Used to set error in case no firm name is provided
 
-    const [experience, setExperience] = useState(0)
+    const [propertyDealerName, setPropertyDealerName] = useState('') //Name of the property dealer
+    const [propertyDealerNameError, setPropertyDealerNameError] = useState(false) //Used to set the error in case property dealer name is not provided
 
-    const [propertyType, setPropertyType] = useState([])
-    const [propertyTypeError, setPropertyTypeError] = useState(false)
+    const [experience, setExperience] = useState(0) //Used to set experience
 
-    const [flatPlotHouseNumber, setFlatPlotHouseNumber] = useState('')
-    const [flatPlotHouseNumberError, setFlatPlotHouseNumberError] = useState(false)
+    const [propertyType, setPropertyType] = useState([]) //Used to set property types. They are stored in an array
+    const [propertyTypeError, setPropertyTypeError] = useState(false) //In case the propertyType array is empty, this state is set to ttrue to show an error
 
-    const [areaSectorVillage, setAreaSectorVillage] = useState('')
-    const [areaSectorVillageError, setAreaSectorVillageError] = useState(false)
+    const [flatPlotHouseNumber, setFlatPlotHouseNumber] = useState('') //Used td store flat or house number
+    const [flatPlotHouseNumberError, setFlatPlotHouseNumberError] = useState(false) //used to show error when flat or house number is not provided
 
-    const [landmark, setLandmark] = useState('')
+    const [areaSectorVillage, setAreaSectorVillage] = useState('') //Used to store name of area or village
+    const [areaSectorVillageError, setAreaSectorVillageError] = useState(false) // Used to show error when area is not provided
 
-    const [postalCode, setPostalCode] = useState('')
-    const [postalCodeError, setPostalCodeError] = useState(false)
-    const [postalCodeErrorMessage, setPostalCodeErrorMessage] = useState('')
+    const [landmark, setLandmark] = useState('') //Used to set landmark
 
-    const [city, setCity] = useState('')
-    const [cityError, setCityError] = useState(false)
+    const [postalCode, setPostalCode] = useState('') //Used to set postal code
+    const [postalCodeError, setPostalCodeError] = useState(false) //Used to show error when no postal code is provided or postal code is more than 6 characters
+    const [postalCodeErrorMessage, setPostalCodeErrorMessage] = useState('') //Used to set message to be be shown when a postal code error occurs
 
-    const [district, setDistrict] = useState('')
-    const [districtError, setDistrictError] = useState(false)
+    const [city, setCity] = useState('') //Used to set city
+    const [cityError, setCityError] = useState(false) //Used to show error when no city is provided 
 
-    const [state, setState] = useState('')
-    const [stateError, setStateError] = useState(false)
+    const [district, setDistrict] = useState('') //Used to set district
+    const [districtError, setDistrictError] = useState(false) //Used to show error when no district is provided
 
-    const [addressArray, setAddressArray] = useState([])
-    const [addressError, setAddressError] = useState(false)
+    const [state, setState] = useState('') //Used to set state
+    const [stateError, setStateError] = useState(false) //Used to set error when no state is provided
 
-    const [about, setAbout] = useState('')
-    const [aboutMoreThanOneFiftyCharacters, setAboutMoreThanOneFiftyCharacters] = useState(false)
+    const [addressArray, setAddressArray] = useState([]) //stores all the addresses added. Addresses are stored in an array
+    const [addressError, setAddressError] = useState(false) //Used to show error when no address is provided, i.e. addressArray is empty
 
-    const [email, setEmail] = useState('')
-    const [emailError, setEmailError] = useState(false)
-    const [emailErrorMessage, setEmailErrorMessage] = useState(false)
-    const [emailVerified, setEmailVerified] = useState(false)
+    const [about, setAbout] = useState('') //Used to set about
+    const [aboutMoreThanOneFiftyBody, setAboutMoreThanOneFiftyBody] = useState(false) //used to show an error when about is more than 150 words
 
-    const [contactNumber, setContactNumber] = useState('')
-    const [contactNumberError, setContactNumberError] = useState(false)
-    const [contactNumberErrorMessage, setContactNumberErrorMessage] = useState(false)
-    const [contactNumberVerified, setContactNumberVerified] = useState(false)
+    const [email, setEmail] = useState('') //Used to set email
+    const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided ot the format of email is not correct
+    const [emailErrorMessage, setEmailErrorMessage] = useState(false) //Used to set error message to be shown when an error regarding email occurs
+    const [emailVerified, setEmailVerified] = useState(false) //used to check if an email already exists in the database
 
-    const [gstNumber, setGstNumber] = useState('')
-    const [gstNumberError, setGstNumberError] = useState(false)
-    const [gstNumberErrorMessage, setGstNumberErrorMessage] = useState(false)
-    const [gstNumberVerified, setGstNumberVerified] = useState(false)
+    const [contactNumber, setContactNumber] = useState('') //used to set contact number
+    const [contactNumberError, setContactNumberError] = useState(false) //used to set error when no contact number is provided or a similar contact number already exists in database
+    const [contactNumberErrorMessage, setContactNumberErrorMessage] = useState(false) //used to set error message for contact number errors
+    const [contactNumberVerified, setContactNumberVerified] = useState(false) //used to check if the contact number is already present in the database
 
-    const [imageUpload, setImageUpload] = useState()
-    const [file, setFile] = useState()
-    const [imageFileError, setImageFileError] = useState(false)
+    const [gstNumber, setGstNumber] = useState('') //used to set GST number
+    const [gstNumberError, setGstNumberError] = useState(false) //used to show error when no gst number is provided or the gst number is already present in the database
+    const [gstNumberErrorMessage, setGstNumberErrorMessage] = useState(false) //used to set gst number error message
+    const [gstNumberVerified, setGstNumberVerified] = useState(false)  //used to check if the gst number is already present in the database
 
-    const [showReviewForm, setShowReviewForm] = useState(false)
+    const [firmLogoImageUpload, setFirmLogoImageUpload] = useState() //used to store the entire image object to be set to the database
+    const [firmLogoImageFile, setFirmLogoImageFile] = useState() //Used to store image file string
+    const [firmLogoImageFileError, setFirmLogoImageFileError] = useState(false) //used to show error when no image is provided
 
+    const [showReviewForm, setShowReviewForm] = useState(false) //used to show a review form when the user saves the data
+
+    //This code in useEffect hook is used to scroll the page to top 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
@@ -75,22 +78,25 @@ function PropertyDealerAddForm() {
         isAlertModal: false,
         alertType: '',
         alertMessage: ''
-    })
+    }) //This state is used to manage alerts
 
+    //this useEffect hook is used to navigate to signIn page when there is no authToken on local storage
     useEffect(() => {
         if (!fieldAgentAuthToken) {
             navigate('/field-agent/signIn')
         }
     }, [fieldAgentAuthToken, navigate])
 
+    //This fuction is used to manage the image selected by the user
     const imageChangeHandler = (event) => {
-        setImageFileError(false)
-        setFile(URL.createObjectURL(event.target.files[0]))
-        setImageUpload(event.target.files[0])
+        setFirmLogoImageFileError(false)
+        setFirmLogoImageFile(URL.createObjectURL(event.target.files[0]))
+        setFirmLogoImageUpload(event.target.files[0])
     }
 
+    //This fuction is used to store the address
     const addAddress = () => {
-        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || !postalCode.toString().trim() || postalCode.toString().trim().length !== 6 || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyCharacters) {
+        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || !postalCode.toString().trim() || postalCode.toString().trim().length !== 6 || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyBody) {
             if (!flatPlotHouseNumber.trim()) {
                 setFlatPlotHouseNumberError(true)
             }
@@ -133,6 +139,7 @@ function PropertyDealerAddForm() {
         setState('')
     }
 
+    //This function is used to check if the email provided by the user is already present in the database
     const checkIfEmailExists = async (e) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerEmailExists?email=${email}`)
@@ -154,6 +161,7 @@ function PropertyDealerAddForm() {
         }
     }
 
+    //This function is used to check if the contact number provided by the user is already present in the database
     const checkIfContactNumberExists = async () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerContactNumberExists?contactNumber=${contactNumber}`)
@@ -175,7 +183,7 @@ function PropertyDealerAddForm() {
         }
     }
 
-
+    //This function is used to check if the gst number provided by the user is already present in the database
     const checkIfGstNumberExists = async () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerGstNumberExists?gstNumber=${gstNumber}`)
@@ -197,6 +205,7 @@ function PropertyDealerAddForm() {
         }
     }
 
+    //This function is used to submit the form once the save button is clicked
     const formSubmit = e => {
         e.preventDefault()
         if (!firmName.trim() || !propertyDealerName.trim() || propertyType.length === 0 || !addressArray.length || !gstNumber.trim() || !contactNumber.trim() || !email.trim() || !validator.isEmail(email.trim())) {
@@ -221,8 +230,8 @@ function PropertyDealerAddForm() {
                 setGstNumberError(true)
                 setGstNumberErrorMessage('provide a GST number')
             }
-            if (!file) {
-                setImageFileError(true)
+            if (!firmLogoImageFile) {
+                setFirmLogoImageFileError(true)
             }
             if (!email.trim()) {
                 setEmailError(true)
@@ -262,6 +271,7 @@ function PropertyDealerAddForm() {
         setShowReviewForm(true)
     }
 
+    //This function is used to create an array of 51 numbers from 0-50
     const arrayOfFiftyNumbers = Array.apply(null, Array(51))
         .map(function (y, i) { return i })
 
@@ -275,7 +285,7 @@ function PropertyDealerAddForm() {
                 alertMessage: ''
             })} />}
 
-            {showReviewForm && <ReviewPropertyDealerAddForm
+            {showReviewForm && <ReviewPropertyDealerAfterSubmission
                 firmName={firmName.trim()}
                 propertyDealerName={propertyDealerName.trim()}
                 experience={experience}
@@ -283,8 +293,8 @@ function PropertyDealerAddForm() {
                 addressArray={addressArray}
                 gstNumber={gstNumber.trim()}
                 about={about.trim()}
-                imageUpload={imageUpload}
-                imageFile={file}
+                firmLogoImageUpload={firmLogoImageUpload}
+                firmLogoImageFile={firmLogoImageFile}
                 email={email.trim()}
                 contactNumber={contactNumber.trim()}
                 hideReviewForm={() => {
@@ -315,7 +325,7 @@ function PropertyDealerAddForm() {
 
                     <div className="flex flex-col mb-1.5">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
-                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`}placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
+                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
                             setPropertyDealerName(e.target.value.toUpperCase())
                             setPropertyDealerNameError(false)
                         }} />
@@ -384,17 +394,17 @@ function PropertyDealerAddForm() {
                         <div className="flex flex-col pl-6 pr-6 gap-2">
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="number">Flat, House no., Building, Company</label>
-                                <input type="text" id="number" name="number" 
-                                className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={flatPlotHouseNumber} onChange={e => {
-                                    setFlatPlotHouseNumber(e.target.value.toUpperCase())
-                                    setFlatPlotHouseNumberError(false)
-                                    setAddressError(false)
-                                }} />
+                                <input type="text" id="number" name="number"
+                                    className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={flatPlotHouseNumber} onChange={e => {
+                                        setFlatPlotHouseNumber(e.target.value.toUpperCase())
+                                        setFlatPlotHouseNumberError(false)
+                                        setAddressError(false)
+                                    }} />
                                 {flatPlotHouseNumberError && <p className="text-red-500">Provide a house or plot number</p>}
                             </div>
                             <div className="flex flex-col">
                                 <label className="font-semibold" htmlFor="area">Area,Street, Sector, Village</label>
-                                <input type="text" id="area" name="area" className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`}autoComplete="new-password" value={areaSectorVillage} onChange={e => {
+                                <input type="text" id="area" name="area" className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={areaSectorVillage} onChange={e => {
                                     setAreaSectorVillage(e.target.value.toUpperCase())
                                     setAreaSectorVillageError(false)
                                     setAddressError(false)
@@ -403,14 +413,14 @@ function PropertyDealerAddForm() {
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="landmark">Landmark</label>
-                                <input type="text" id="landmark" name="landmark" className='border-2 border-gray-400 p-1 rounded-lg'autoComplete="new-password" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
+                                <input type="text" id="landmark" name="landmark" className='border-2 border-gray-400 p-1 rounded-lg' autoComplete="new-password" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
                                     setLandmark(e.target.value.toUpperCase())
                                     setAddressError(false)
                                 }} />
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="pincode">Pincode</label>
-                                <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`}autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
+                                <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
                                     setPostalCode(e.target.value)
                                     setPostalCodeError(false)
                                     setAddressError(false)
@@ -419,7 +429,7 @@ function PropertyDealerAddForm() {
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="town">Town/City</label>
-                                <input type="text" id="town" name="town" className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`}autoComplete="new-password" value={city} onChange={e => {
+                                <input type="text" id="town" name="town" className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={city} onChange={e => {
                                     setCity(e.target.value.toUpperCase())
                                     setCityError(false)
                                     setAddressError(false)
@@ -608,22 +618,22 @@ function PropertyDealerAddForm() {
 
                         <div className="flex flex-col mb-1.5 ">
                             <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
-                            <textarea className={`border-2 ${aboutMoreThanOneFiftyCharacters ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} id="story" name="story" value={about} onChange={e => {
-                                setAboutMoreThanOneFiftyCharacters(false)
+                            <textarea className={`border-2 ${aboutMoreThanOneFiftyBody ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} id="story" name="story" value={about} onChange={e => {
+                                setAboutMoreThanOneFiftyBody(false)
                                 setAbout(e.target.value)
                                 const numberOfWordsInAbout = e.target.value.trim().split(/\s+/);
                                 if (numberOfWordsInAbout.length > 150) {
-                                    setAboutMoreThanOneFiftyCharacters(true)
+                                    setAboutMoreThanOneFiftyBody(true)
                                 }
                             }} />
-                            {aboutMoreThanOneFiftyCharacters && <p className="text-red-500">About should be less than 150  words</p>}
+                            {aboutMoreThanOneFiftyBody && <p className="text-red-500">About should be less than 150  words</p>}
                         </div>
 
                         <div className="flex flex-row gap-2 mt-2">
-                            <label className="text-lg font-semibold" htmlFor="image">Image:</label>
+                            <label className="text-lg font-semibold" htmlFor="image">Add firm logo</label>
                             <input type="file" placeholder="image" accept="image/png, image/jpeg" name='image' onChange={imageChangeHandler} />
-                            {file && <img className='w-28 h-auto' src={file} alt="" />}
-                            {imageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+                            {firmLogoImageFile && <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />}
+                            {firmLogoImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         </div>
 
                     </div>

@@ -1,10 +1,9 @@
 import { Fragment, useEffect, useState } from "react"
-//import Spinner from "../Spinner"
-//This component is tde navigation bar
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 
-function ReviewPropertyDealerAddForm(props) {
+//This component is used to review the property dealer data submitted
+function ReviewPropertyDealerAfterSubmission(props) {
     const {
         firmName,
         propertyDealerName,
@@ -13,35 +12,37 @@ function ReviewPropertyDealerAddForm(props) {
         addressArray,
         gstNumber,
         about,
-        imageFile,
-        imageUpload,
+        firmLogoImageUpload,
+        firmLogoImageFile,
         email,
         contactNumber,
         hideReviewForm
     } = props
-    const [spinner, setSpinner] = useState(false)
+
+    const [spinner, setSpinner] = useState(false) //used to set spinner
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
         alertMessage: ''
-    })
-    const [routeTo, setRouteTo] = useState('')
+    }) //used to set the alert modal
+    const [routeTo, setRouteTo] = useState('') //This state stores a string which is the url to be fed to useNavigate
 
+    //The code in useEffect hook is used to scroll to the top of the page
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
 
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
-    const formData = new FormData()
-    formData.append('file', imageUpload)
+    const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
+    //This function is used to send details to backend API
     const saveDetailsToDatabase = async () => {
         setSpinner(true)
         try {
             const formData = new FormData()
-            formData.append('file', imageUpload)
+            formData.append('file', firmLogoImageUpload)
             formData.append('upload_preset', 'homestead')
             formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
+            //The fetch promise code is used to store image in cloudinary database
             const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                 method: 'post',
                 body: formData
@@ -186,14 +187,14 @@ function ReviewPropertyDealerAddForm(props) {
                             <td className="pt-2 pb-2 text-center">{contactNumber}</td>
                         </tr>
                         <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Dealers Image</td>
+                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm logo</td>
                             <td className="pt-2 pb-2 flex justify-center">
-                                <img className='w-28 h-auto' src={imageFile} alt="" />
+                                <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <div className="w-full flex gap-4 flex-row place-content-center pt-4">
+                 <div className="w-full flex gap-4 flex-row place-content-center pt-4">
                     <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={saveDetailsToDatabase}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         hideReviewForm()
@@ -204,4 +205,4 @@ function ReviewPropertyDealerAddForm(props) {
         </Fragment >
     )
 }
-export default ReviewPropertyDealerAddForm
+export default ReviewPropertyDealerAfterSubmission
