@@ -90,22 +90,21 @@ function HomeFieldAgent() {
                         }
                         }>Pending Requests {requestsDropdown ? "▲" : "▼"}
                             {requestsDropdown && <div className="absolute top-8 -left-0.5 bg-white" onClick={e => e.stopPropagation()}>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100 ">
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={e => e.stopPropagation()}>
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100">
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={e => e.stopPropagation()}>
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property dealer</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100">
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={e => e.stopPropagation()}>
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending requests to reconsider details of a property</p>
                                 </div>
                             </div>}
                         </div>
                     </div>
-{/* flex-col sm: place-items-center sm:*/}
                     <div className="flex flex-row mt-6 gap-3 w-full place-content-center">
                         <Link to='' className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit " >Add Property</Link>
                         <Link to='/field-agent/add-property-dealer' className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit" >Add Property Dealer</Link>
