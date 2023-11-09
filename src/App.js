@@ -4,6 +4,7 @@ import PropertiesAdded from "./components/field-agent/PropertiesAdded";
 import PropertyDealerAddForm from "./components/field-agent/PropertyDealerAddForm";
 import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
 import ListOfAllPropertyDealersAddedByFieldAgent from "./components/field-agent/ListOfAllPropertyDealersAddedByFieldAgent";
+import AgriculturalPropertyAddForm from "./components/field-agent/AgriculturalPropertyAddForm";
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom'
 import { Fragment, useEffect } from "react";
 
@@ -31,6 +32,7 @@ function App() {
             <Route path='properties-added' element={<PropertiesAdded />}></Route>
             <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
             <Route path='list-of-property-dealers-added-by-field-agent' element={<ListOfAllPropertyDealersAddedByFieldAgent />}></Route>
+            <Route path='add-agricultural-property' element={<AgriculturalPropertyAddForm />}></Route>
           </Route>
 
           <Route path='*' element={<Navigate replace to='/' />}></Route>
