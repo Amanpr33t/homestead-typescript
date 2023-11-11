@@ -53,13 +53,14 @@ function AgriculturalPropertyAddForm() {
             {/*!isPropertyDealerAvailable && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />*/}
 
             <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center `} >
-                <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
+
+                <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
                 </div>
 
                 <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold z-10">Add an agricultural property by filling the form</p>
 
-                <form className="w-full min-h-screen mt-40 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl">
+                <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl">
 
                     <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
                         <p className="text-3xl font-bold text-gray-500 w-fit text-center">ABCD private limited d</p>
