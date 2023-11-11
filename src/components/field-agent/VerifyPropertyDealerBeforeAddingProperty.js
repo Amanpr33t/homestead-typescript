@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react"
+import { Fragment, useState } from "react"
 import * as EmailValidator from 'email-validator';
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";

@@ -53,6 +53,7 @@ function HomeFieldAgent() {
                 })
             }
         } catch (error) {
+            console.log(error)
             setError(true)
             setSpinner(false)
         }

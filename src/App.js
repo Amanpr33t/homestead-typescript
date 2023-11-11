@@ -34,7 +34,6 @@ function App() {
             <Route path='list-of-property-dealers-added-by-field-agent' element={<ListOfAllPropertyDealersAddedByFieldAgent />}></Route>
             <Route path='add-agricultural-property' element={<AgriculturalPropertyAddForm />}></Route>
           </Route>
-
           <Route path='*' element={<Navigate replace to='/' />}></Route>
         </Routes>
 
