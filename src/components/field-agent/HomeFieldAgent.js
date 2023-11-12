@@ -42,7 +42,9 @@ function HomeFieldAgent() {
                 setSpinner(false)
                 setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent)
                 setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent)
-            } else if (data.status === 'invalid_authentication') {
+                return
+            }
+            if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 setAlert({
