@@ -80,7 +80,7 @@ function ReviewPropertyDealer(props) {
                         <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm logo</td>
                             <td className="pt-2 pb-2 flex justify-center">
-                                <img className='w-28 h-auto' src={dealer.cloudinaryImageURL} alt="" />
+                                <img className='w-28 h-auto' src={dealer.firmLogoUrl} alt="" />
                             </td>
                         </tr>
                     </tbody>

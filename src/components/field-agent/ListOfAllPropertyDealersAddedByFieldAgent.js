@@ -100,7 +100,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
                                     <p className="text-gray-500 text-lg font-semibold">{index})</p>
                                     <p className="flex justify-center text-lg font-semibold">{dealer.firmName}</p>
                                 </div>
-                                <img className='h-16 w-auto bg-red-400' src={dealer.cloudinaryImageURL
+                                <img className='h-16 w-auto bg-red-400' src={dealer.firmLogoUrl
                                 } alt="logo" />
                             </div>
                             <div className="flex flex-row gap-4">

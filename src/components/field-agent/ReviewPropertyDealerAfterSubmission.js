@@ -51,7 +51,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
             if (cloudinaryData && cloudinaryData.error) {
                 throw new Error('Some error occured')
             }
-
+            
             if (cloudinaryData && cloudinaryData.secure_url) {
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
                     method: 'POST',
@@ -63,7 +63,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
                         addressArray,
                         gstNumber,
                         about,
-                        cloudinaryImageURL: cloudinaryData.secure_url,
+                        firmLogoUrl: cloudinaryData.secure_url,
                         email,
                         contactNumber
                     }),
