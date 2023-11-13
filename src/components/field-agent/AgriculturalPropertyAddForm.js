@@ -21,6 +21,8 @@ function AgriculturalPropertyAddForm() {
     const [landSizeUnit, setLandSizeUnit] = useState('')
     const [landSizeDetails, setLandSizeDetails] = useState('')
     const [landSizeError, setLandSizeError] = useState(false)
+    const [landSizeUnitError, setLandSizeUnitError] = useState(false)
+    const [landSizeFormatError, setLandSizeFormatError] = useState(false)
 
     const [state, setState] = useState('')
     const [stateError, setStateError] = useState(false)
@@ -60,7 +62,11 @@ function AgriculturalPropertyAddForm() {
     const [typeOfReservoirError, setTypeOfReservoirError] = useState(false)
     const [capacityAndUnitOfReservoirError, setCapacityAndUnitOfReservoirError] = useState(false)
 
-    console.log(typeof landSize)
+    const [priceDemandedNumber, setPriceDemandedNumber] = useState('')
+    const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('')
+    const [priceDemandedWords, setPriceDemandedWords] = useState('')
+    const [priceDemandedWordsError, setPriceDemandedWordsError] = useState(false)
+    const [priceDemandedError, setPriceDemandedError] = useState(false)
 
     const states = ['Chandigarh', 'Punjab', 'Haryana']
 
@@ -82,17 +88,36 @@ function AgriculturalPropertyAddForm() {
     const arrayOfNumbersFromOneToTen = Array.apply(null, Array(10))
         .map(function (y, i) { return i + 1 })
 
+    // program to check the number of occurrence of a character
+
     const formSubmit = (e) => {
         e.preventDefault()
-        if (!district.trim()) {
+        if (!district.trim() && !state.trim()) {
             setDistrictError(true)
-        }
-        if (!state.trim()) {
+            setStateError(true)
+        } else if (!district.trim() && state.trim()) {
+            setDistrictError(true)
+            setStateError(false)
+        } else if (district.trim() && !state.trim()) {
+            setDistrictError(false)
             setStateError(true)
         }
-        if (!landSize || +landSize === 0 || !landSizeUnit) {
-            setLandSizeError(true)
+
+        if (!landSize.trim() || +landSize.trim() === 0 || !landSizeUnit) {
+            if ((!landSize.trim() || +landSize.trim() === 0) && !landSizeUnit) {
+                setLandSizeError(true)
+                setLandSizeUnitError(true)
+            } else if ((!landSize.trim() || +landSize.trim() === 0) && landSizeUnit) {
+                setLandSizeError(true)
+                setLandSizeUnitError(false)
+            } else if ((landSize.trim() && +landSize.trim() !== 0) && !landSizeUnit) {
+                setLandSizeError(false)
+                setLandSizeUnitError(true)
+            }
+        } else if ((landSize.trim().startsWith('0') && landSize.trim().slice(0, 2) !== '0.') || landSize.trim().startsWith('.')) {
+            setLandSizeFormatError(true)
         }
+
         if (!isCanal && !isRiver && !isTubeWell) {
             setWaterSourceError(true)
         }
@@ -133,7 +158,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* contract*/}
-                    <div className="flex flex-col p-2 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
                         <div className="flex flex-row gap-5">
                             <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
@@ -153,15 +178,22 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*location */}
-                    <div className="flex flex-col p-2">
-                        <p className="text-xl font-semibold text-gray-500" htmlFor="location">Property location</p>
-                        <div className="flex flex-col place-self-center w-11/12 gap-2">
+                    <div className="flex flex-col p-2 pb-5 pt-5">
+                        {districtError && !stateError && <p className="text-red-500">Select a state</p>}
+                        {stateError && !districtError && <p className="text-red-500">Select a district</p>}
+                        {stateError && districtError && <p className="text-red-500">Select district and state</p>}
 
+
+                        <div className="flex flex-row gap-0.5">
+                            <p className="h-4 text-2xl text-red-500">*</p>
+                            <p className="text-xl font-semibold text-gray-500" htmlFor="location">Property location</p>
+                        </div>
+                        <div className="flex flex-col place-self-center w-11/12 gap-2">
                             <div className="flex flex-col w-full">
                                 <label className="text-gray-500 font-semibold" htmlFor="village">Village</label>
                                 <input type="text" id="village" name="village"
                                     className='border-2 border-gray-500  p-1 rounded-lg' autoComplete="new-password" value={village} onChange={e => {
-                                        setVillage(e.target.value.toUpperCase())
+                                        setVillage(e.target.value)
                                     }} />
                             </div>
 
@@ -169,15 +201,19 @@ function AgriculturalPropertyAddForm() {
                                 <label className="text-gray-500 font-semibold" htmlFor="city">City/Town</label>
                                 <input type="text" id="city" name="city"
                                     className='border-2 border-gray-500 p-1 rounded-lg' autoComplete="new-password" value={city} onChange={e => {
-                                        setCity(e.target.value.toUpperCase())
+                                        setCity(e.target.value)
                                     }} />
                             </div>
 
                             <div className="flex flex-col w-full">
-                                <label className="text-gray-500 font-semibold" htmlFor="state">State:</label>
-                                <select className='border-2 border-gray-500 p-1 rounded-lg' name="state" id="state" value={state} onChange={e => {
+                                <div className="flex flex-row gap-0.5">
+                                    <p className="h-4 text-2xl text-red-500">*</p>
+                                    <label className="text-gray-500 font-semibold" htmlFor="state">State</label>
+                                </div>
+
+                                <select className={`border-2 ${stateError ? 'border-red-500' : 'border-gray-500'}  p-1 rounded`} name="state" id="state" value={state} onChange={e => {
                                     setStateError(false)
-                                    setState(e.target.value.toUpperCase())
+                                    setState(e.target.value)
                                     setDistrict('')
                                     setTehsil('')
                                 }}>
@@ -190,10 +226,13 @@ function AgriculturalPropertyAddForm() {
                             </div>
 
                             <div className="flex flex-col w-full">
-                                <label className="text-gray-500 font-semibold" htmlFor="district">District:</label>
-                                <select className={`border-2 border-gray-500 p-1 rounded-lg`} name="district" id="district" value={district} disabled={state ? false : true} onChange={e => {
+                                <div className="flex flex-row gap-0.5">
+                                    <p className="h-4 text-2xl text-red-500">*</p>
+                                    <label className="text-gray-500 font-semibold" htmlFor="district">District</label>
+                                </div>
+                                <select className={`border-2 ${districtError ? 'border-red-500' : 'border-gray-500'}  p-1 rounded`} name="district" id="district" value={district} disabled={state ? false : true} onChange={e => {
                                     setDistrictError(false)
-                                    setDistrict(e.target.value.toUpperCase())
+                                    setDistrict(e.target.value)
                                     setTehsil('')
                                 }}>
                                     <option className="font-semibold" value="" disabled>Select a district</option>
@@ -209,7 +248,7 @@ function AgriculturalPropertyAddForm() {
                             <div className="flex flex-col w-full">
                                 <label className="text-gray-500 font-semibold" htmlFor="state">Tehsil</label>
                                 <select className='border-2 border-gray-500 p-1 rounded-lg' name="state" id="state" disabled={state && district ? false : true} value={tehsil} onChange={e => {
-                                    setTehsil(e.target.value.toUpperCase())
+                                    setTehsil(e.target.value)
                                 }}>
                                     <option className="font-semibold" value="" disabled>Select a tehsil</option>
                                     {state === 'Chandigarh' && district === 'Chandigarh' &&
@@ -223,7 +262,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* Number of owners*/}
-                    <div className="flex flex-col p-2 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
                         {numberOfOwnersError && <p className="text-red-500">Select a value</p>}
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
@@ -236,19 +275,26 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*land size*/}
-                    <div className="flex flex-col p-2 ">
-                        {landSizeError && <p className="text-red-500 -mt-1">Provide land size</p>}
+                    <div className="flex flex-col p-2 pb-5 pt-5">
+                        {landSizeError && !landSizeUnitError && <p className="text-red-500 -mt-1">Provide land size</p>}
+                        {landSizeError && landSizeUnitError && <p className="text-red-500 -mt-1">Provide land size and unit</p>}
+                        {!landSizeError && landSizeUnitError && <p className="text-red-500 -mt-1">Provide a unit</p>}
+                        {landSizeFormatError && <p className="text-red-500 -mt-1">Land size not in correct format</p>}
                         <div className="flex flex-row gap-5 sm:gap-16">
-                            <label className="text-lg font-bold text-gray-500 whitespace-nowrap" htmlFor="size">Land size</label>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="size">Land size</label>
+                            </div>
 
                             <div className="flex flex-col gap-5">
                                 <div className="flex flex-row gap-1">
-                                    <input id="land-size" type="number" name='land-size' className="border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-24" placeholder="Size" value={landSize} onChange={e => {
+                                    <input id="land-size" type="number" name='land-size' className={`border-2 ${landSizeError || landSizeFormatError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={landSize} onChange={e => {
+                                        setLandSizeFormatError(false)
                                         setLandSizeError(false)
                                         setLandSize(e.target.value)
                                     }} />
-                                    <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center h-fit " name="unit-dropdown" id="unit-dropdown" value={landSizeUnit} onChange={e => {
-                                        setLandSizeError(false)
+                                    <select className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit`} name="unit-dropdown" id="unit-dropdown" value={landSizeUnit} onChange={e => {
+                                        setLandSizeUnitError(false)
                                         setLandSizeUnit(e.target.value)
                                     }}>
                                         <option value='' disabled>Select unit</option>
@@ -256,15 +302,34 @@ function AgriculturalPropertyAddForm() {
                                         <option value='acre' >Acre</option>
                                     </select>
                                 </div>
-                                <textarea className="border-2 border-gray-400 rounded-lg h-20 sm:w-80 p-1 resize-none" id="size" name="size" autoCorrect="on" autoComplete="new-password" placeholder="Add details regarding land size" value={landSizeDetails} onChange={e => {
+                                <textarea className="border-2 border-gray-400 rounded h-20 sm:w-80 p-1 resize-none" id="size" name="size" autoCorrect="on" autoComplete="new-password" placeholder="Add details regarding land size (optional)" value={landSizeDetails} onChange={e => {
                                     setLandSizeDetails(e.target.value)
                                 }} />
                             </div>
                         </div>
                     </div>
 
+                    {/*price*/}
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                        {(priceDemandedNumberError || priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide a price</p>}
+                        <div className="flex flex-row gap-5 sm:gap-16">
+                            <label className="text-lg font-bold text-gray-500 whitespace-nowrap" htmlFor="size">Price (Rs)</label>
+
+                            <div className="flex flex-col gap-5">
+                                <input id="price-number" type="number" name='price-number' className={`border-2 ${priceDemandedNumberError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`} placeholder="Number" value={priceDemandedNumber} onChange={e => {
+                                    setPriceDemandedNumberError(false)
+                                    setPriceDemandedNumber(e.target.value)
+                                }} />
+                                <textarea className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`} id="price-words" rows={3} name="price-words" autoCorrect="on" autoComplete="new-password" placeholder="Words" value={priceDemandedWords} onChange={e => {
+                                    setPriceDemandedWordsError(false)
+                                    setPriceDemandedWords(e.target.value)
+                                }} />
+                            </div>
+                        </div>
+                    </div>
+
                     {/*water source */}
-                    <div className="p-2 bg-gray-100">
+                    <div className="p-2 pb-5 pt-5">
                         {waterSourceError && <p className="text-red-500">Provide atleast one water source</p>}
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
                             <p className="text-xl font-semibold text-gray-500">Water source</p>
@@ -394,7 +459,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* reservoir*/}
-                    <div className="p-2">
+                    <div className="p-2 pb-5 pt-5 bg-gray-200">
                         {reservoirError && <p className="text-red-500 -mt-1">Select an option</p>}
                         <div className="flex flex-col sm:flex-row  sm:gap-10 lg:gap-16 mb-2">
                             <p className="text-xl font-semibold text-gray-500">Does the land have access to a reservoir</p>
@@ -493,7 +558,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* irrigation system*/}
-                    <div className="p-2 bg-gray-100">
+                    <div className="p-2 pb-5 pt-5">
                         <p className="text-red-500">Select atleast one option</p>
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
                             <p className="text-xl font-semibold text-gray-500">Irrigation system</p>
@@ -523,7 +588,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*crop */}
-                    <div className="p-2 ">
+                    <div className="p-2 pb-5 pt-5 bg-gray-200">
                         <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
                             <p className="text-xl font-semibold text-gray-500">Suitable for crops</p>
@@ -561,7 +626,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*road type */}
-                    <div className="flex flex-col p-2 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5">
                         <p className="text-red-500 -mt-1">Select atleast one road type</p>
                         <div className="flex flex-col gap-5 sm:flex-row">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
@@ -605,7 +670,7 @@ function AgriculturalPropertyAddForm() {
 
 
                     {/*laws */}
-                    <div className="p-2  flex flex-col">
+                    <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-200">
                         <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
                             <p className="text-xl font-semibold text-gray-500 mb-2">Is the land under any restrictions under any laws</p>
@@ -627,7 +692,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*elctricity connecitiosn */}
-                    <div className="flex flex-col p-2 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5">
                         <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500 w-64 sm:w-fit" htmlFor="tubewell-connections">Number of tubewell electricity connections</label>
@@ -640,7 +705,7 @@ function AgriculturalPropertyAddForm() {
 
 
                     {/* tubewells*/}
-                    <div className="flex flex-col p-2 ">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
                         <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="tubewell">Number of tubewells</label>
@@ -652,7 +717,7 @@ function AgriculturalPropertyAddForm() {
 
 
                     {/*nearby town */}
-                    <div className="flex flex-col p-2 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5">
                         <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500 pb-1" htmlFor="nearby-town">Nearby town</label>
@@ -662,7 +727,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*images */}
-                    <div className="flex flex-col p-2">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
                         <div className="flex flex-row gap-5">
                             <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Add property image</label>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={agriculturalLandImageHandler} onClick={e => e.target.value = null} />
