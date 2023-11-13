@@ -38,7 +38,6 @@ function AgriculturalPropertyAddForm() {
 
     const [contractImageUpload, setContractImageUpload] = useState([])
     const [contractImageFile, setContractImageFile] = useState([])
-    const [contractImageFileError, setContractImageFileError] = useState(false)
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
     const [numberOfOwnersError, setNumberOfOwnersError] = useState(false)
@@ -46,12 +45,15 @@ function AgriculturalPropertyAddForm() {
     const [isCanal, setIsCanal] = useState(false)
     const [canalNameArray, setCanalNameArray] = useState([])
     const [newCanal, setNewCanal] = useState('')
+    const [canalNameError, setCanalNameError] = useState(false)
     const [isRiver, setIsRiver] = useState(false)
     const [riverNameArray, setRiverNameArray] = useState([])
     const [newRiver, setNewRiver] = useState('')
+    const [riverNameError, setRiverNameError] = useState(false)
     const [isTubeWell, setIsTubewell] = useState(false)
     const [tubewellDepthArray, setTubewellDepthArray] = useState([])
     const [newTubewell, setNewTubewell] = useState('')
+    const [tubewellDepthError, setTubewellDepthError] = useState(false)
     const [waterSourceError, setWaterSourceError] = useState(false)
 
     const [isReservoir, setIsReservoir] = useState()
@@ -60,13 +62,38 @@ function AgriculturalPropertyAddForm() {
     const [capacityOfPrivateReservoir, setCapacityOfPrivateReservoir] = useState('')
     const [reservoirError, setReservoirError] = useState(false)
     const [typeOfReservoirError, setTypeOfReservoirError] = useState(false)
-    const [capacityAndUnitOfReservoirError, setCapacityAndUnitOfReservoirError] = useState(false)
+    const [capacityOfReservoirError, setCapacityOfReservoirError] = useState(false)
+    const [unitOfCapacityReservoirError, setUnitOfCapacityReservoirError] = useState(false)
+
+
+    const irrigationSystemOptions = ['sprinkler', 'drip', 'underground pipeline']
+    const [irrigationSystemArray, setIrrigationSystemArray] = useState([])
 
     const [priceDemandedNumber, setPriceDemandedNumber] = useState('')
     const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('')
+    const [priceDemandedFormatError, setPriceDemandedFormatError] = useState(false)
     const [priceDemandedWords, setPriceDemandedWords] = useState('')
     const [priceDemandedWordsError, setPriceDemandedWordsError] = useState(false)
-    const [priceDemandedError, setPriceDemandedError] = useState(false)
+
+    const cropOptions = ['rice', 'wheat', 'maize', 'cotton']
+    const [cropArray, setCropArray] = useState([])
+    const [cropError, setCropError] = useState(false)
+
+    const [roadType, setRoadType] = useState('')
+    const [roadDetails, setRoadDetails] = useState('')
+    const [roadError, setRoadError] = useState(false)
+    const roadOptions = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
+
+    const [isLegalResetrictions, setIsLegalRestrictions] = useState(false)
+    const [selectedLegalRestriction, setSelectedLegalRestriction] = useState()
+    const [legalRestrictionError, setLegalRestrictionError] = useState(false)
+    const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
+    const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
+
+    const [numberOfTubewells, setNumberOfTubewells] = useState(0)
+    const [numberOfTubewellsError, setNumberOfTubewellsError] = useState(false)
+
+    const [nearbyTown, setNearbyTown] = useState('')
 
     const states = ['Chandigarh', 'Punjab', 'Haryana']
 
@@ -77,12 +104,11 @@ function AgriculturalPropertyAddForm() {
     }
 
     const contractImageHandler = (event) => {
-        setContractImageFileError(false)
         setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
         setContractImageUpload(array => [...array, event.target.files[0]])
     }
 
-    const arrayOfTenNumbers = Array.apply(null, Array(11))
+    const arrayOfNumbersFromZeroToTen = Array.apply(null, Array(11))
         .map(function (y, i) { return i })
 
     const arrayOfNumbersFromOneToTen = Array.apply(null, Array(10))
@@ -90,8 +116,12 @@ function AgriculturalPropertyAddForm() {
 
     // program to check the number of occurrence of a character
 
-    const formSubmit = (e) => {
-        e.preventDefault()
+    const errorCheckingBeforeSubmit = () => {
+
+        if (!agriculturalLandImageFile.length) {
+            setAgriculturalLandImageFileError(true)
+        }
+
         if (!district.trim() && !state.trim()) {
             setDistrictError(true)
             setStateError(true)
@@ -118,25 +148,79 @@ function AgriculturalPropertyAddForm() {
             setLandSizeFormatError(true)
         }
 
+        if (!priceDemandedNumber.trim() || +priceDemandedNumber.trim() === 0 || !priceDemandedWords.trim()) {
+            if ((!priceDemandedNumber.trim() || +priceDemandedNumber.trim() === 0) && !priceDemandedWords.trim()) {
+                setPriceDemandedNumberError(true)
+                setPriceDemandedWordsError(true)
+            } else if ((!priceDemandedNumber.trim() || +priceDemandedNumber.trim() === 0) && priceDemandedWords.trim()) {
+                setPriceDemandedNumberError(true)
+                setPriceDemandedWordsError(false)
+            } else if ((priceDemandedNumber.trim() && +landSize.trim() !== 0) && !priceDemandedWords.trim()) {
+                setPriceDemandedNumberError(false)
+                setPriceDemandedWordsError(true)
+            }
+        } else if ((priceDemandedNumber.trim().startsWith('0') && priceDemandedNumber.trim().slice(0, 2) !== '0.') || priceDemandedNumber.trim().startsWith('.')) {
+            setPriceDemandedFormatError(true)
+        }
+
         if (!isCanal && !isRiver && !isTubeWell) {
             setWaterSourceError(true)
+        } else {
+            if (isCanal && canalNameArray.length === 0) {
+                setCanalNameError(true)
+                setWaterSourceError(true)
+            }
+            if (isRiver && riverNameArray.length === 0) {
+                setRiverNameError(true)
+                setWaterSourceError(true)
+            }
+            if (isTubeWell && tubewellDepthArray.length === 0) {
+                setTubewellDepthError(true)
+                setWaterSourceError(true)
+            }
         }
-        if (!canalNameArray.length || !riverNameArray.length || !tubewellDepthArray.length) {
-            setWaterSourceError(true)
-        }
+
         if (isReservoir === undefined) {
             setReservoirError(true)
-        }
-        if (isReservoir) {
+        } else {
             if (!typeOfReservoir.length) {
                 setTypeOfReservoirError(true)
-            } else if (typeOfReservoir.includes('private')) {
-                if (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir || +capacityOfPrivateReservoir === 0) {
-                    setCapacityAndUnitOfReservoirError(true)
+            } else {
+                if (typeOfReservoir.includes('private')) {
+                    if ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) {
+                        setCapacityOfReservoirError(true)
+                        setUnitOfCapacityReservoirError(true)
+                    } else if ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) {
+                        setCapacityOfReservoirError(true)
+                    } else if ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir) {
+                        setUnitOfCapacityReservoirError(true)
+                    }
                 }
             }
         }
+
+        if (!cropArray.length) {
+            setCropError(true)
+        }
+
+        if (!roadType) {
+            setRoadError(true)
+        }
+
+        if (!isLegalResetrictions) {
+            setLegalRestrictionError(true)
+        } else if (selectedLegalRestriction) {
+            if (!legalRestrictionDetails.trim()) {
+                setLegalRestrictionDetailsError(true)
+            }
+        }
     }
+
+    const formSubmit = (e) => {
+        e.preventDefault()
+        errorCheckingBeforeSubmit()
+    }
+
 
     return (
         <Fragment>
@@ -174,7 +258,6 @@ function AgriculturalPropertyAddForm() {
                                 </div>
                             })}
                         </div>}
-                        {contractImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                     </div>
 
                     {/*location */}
@@ -263,7 +346,6 @@ function AgriculturalPropertyAddForm() {
 
                     {/* Number of owners*/}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
-                        {numberOfOwnersError && <p className="text-red-500">Select a value</p>}
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
                             <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
@@ -312,12 +394,17 @@ function AgriculturalPropertyAddForm() {
                     {/*price*/}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
                         {(priceDemandedNumberError || priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide a price</p>}
+                        {priceDemandedFormatError && <p className="text-red-500 -mt-1">Provide price in correct format</p>}
                         <div className="flex flex-row gap-5 sm:gap-16">
-                            <label className="text-lg font-bold text-gray-500 whitespace-nowrap" htmlFor="size">Price (Rs)</label>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="size">Price (Rs)</label>
+                            </div>
 
                             <div className="flex flex-col gap-5">
-                                <input id="price-number" type="number" name='price-number' className={`border-2 ${priceDemandedNumberError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`} placeholder="Number" value={priceDemandedNumber} onChange={e => {
+                                <input id="price-number" type="number" name='price-number' className={`border-2 ${priceDemandedNumberError || priceDemandedFormatError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`} placeholder="Number" value={priceDemandedNumber} onChange={e => {
                                     setPriceDemandedNumberError(false)
+                                    setPriceDemandedFormatError(false)
                                     setPriceDemandedNumber(e.target.value)
                                 }} />
                                 <textarea className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`} id="price-words" rows={3} name="price-words" autoCorrect="on" autoComplete="new-password" placeholder="Words" value={priceDemandedWords} onChange={e => {
@@ -330,14 +417,23 @@ function AgriculturalPropertyAddForm() {
 
                     {/*water source */}
                     <div className="p-2 pb-5 pt-5">
-                        {waterSourceError && <p className="text-red-500">Provide atleast one water source</p>}
+                        {waterSourceError && !canalNameError && !riverNameError && !tubewellDepthError && <p className="text-red-500">Select atleast one water source</p>}
+                        {waterSourceError && (canalNameError || riverNameError || tubewellDepthError) && <p className="text-red-500">Provide information regarding water sources</p>}
+
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
-                            <p className="text-xl font-semibold text-gray-500">Water source</p>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <p className="text-xl font-semibold text-gray-500">Water source</p>
+                            </div>
+
                             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-1">
                                 <div className="flex flex-col">
                                     <div>
                                         <input className="mr-1 cursor-pointer" type="checkbox" id="canal" name="canal" onChange={e => {
-                                            setWaterSourceError(false)
+                                            if (!riverNameError && !tubewellDepthError) {
+                                                setWaterSourceError(false)
+                                            }
+                                            setCanalNameError(false)
                                             if (e.target.checked) {
                                                 setIsCanal(true)
                                             } else {
@@ -356,17 +452,29 @@ function AgriculturalPropertyAddForm() {
                                         </thead>
                                         <tbody className="border border-gray-300 text-center ">
                                             {canalNameArray.length > 0 && canalNameArray.map((canal) => {
-                                                return <tr className="border border-gray-300">
+                                                return <tr key={Math.random()} className="border border-gray-300">
                                                     <td className="pt-1 pb-">{canal}</td>
                                                 </tr>
                                             })}
                                             <tr className="border border-gray-300">
                                                 <td className="flex flex-row place-content-center p-1">
                                                     <input type="text" id="depth" name="depth"
-                                                        className='w-28 border border-gray-500 pl-1 pr-1' autoComplete="new-password" value={newCanal} onChange={e => setNewCanal(e.target.value)} />
-                                                    <button className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
-                                                        setCanalNameArray(canalNameArray => [...canalNameArray, newCanal])
-                                                        setNewCanal('')
+                                                        className={`w-28 border ${canalNameError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newCanal} onChange={e => {
+                                                            setNewCanal(e.target.value)
+                                                            setCanalNameError(false)
+                                                            if (!riverNameError && !tubewellDepthError) {
+                                                                setWaterSourceError(false)
+                                                            }
+                                                        }} />
+                                                    <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={e => {
+                                                        e.stopPropagation()
+                                                        if (newCanal.trim()) {
+                                                            setCanalNameError(false)
+                                                        }
+                                                        if (newCanal.trim()) {
+                                                            setCanalNameArray(canalNameArray => [...canalNameArray, newCanal])
+                                                            setNewCanal('')
+                                                        }
                                                     }}>+</button>
                                                 </td>
                                             </tr>
@@ -377,7 +485,10 @@ function AgriculturalPropertyAddForm() {
                                 <div className="flex flex-col">
                                     <div>
                                         <input className="mr-1 cursor-pointer" type="checkbox" id="river" name="river" onChange={e => {
-                                            setWaterSourceError(false)
+                                            if (!canalNameError && !tubewellDepthError) {
+                                                setWaterSourceError(false)
+                                            }
+                                            setRiverNameError(false)
                                             if (e.target.checked) {
                                                 setIsRiver(true)
                                             } else {
@@ -396,17 +507,25 @@ function AgriculturalPropertyAddForm() {
                                         </thead>
                                         <tbody className="border border-gray-300 text-center ">
                                             {riverNameArray.length > 0 && riverNameArray.map((river) => {
-                                                return <tr className="border border-gray-300">
+                                                return <tr key={Math.random()} className="border border-gray-300">
                                                     <td className="pt-1 pb-">{river}</td>
                                                 </tr>
                                             })}
                                             <tr className="border border-gray-300">
                                                 <td className="flex flex-row place-content-center p-1">
                                                     <input type="text" id="depth" name="depth"
-                                                        className='w-24 border border-gray-500 pl-1 pr-1' autoComplete="new-password" value={newRiver} onChange={e => setNewRiver(e.target.value)} />
-                                                    <button className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
-                                                        setRiverNameArray(riverNameArray => [...riverNameArray, newRiver])
-                                                        setNewRiver('')
+                                                        className={`w-28 border ${riverNameError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newRiver} onChange={e => {
+                                                            setNewRiver(e.target.value)
+                                                            setRiverNameError(false)
+                                                            if (!canalNameError && !tubewellDepthError) {
+                                                                setWaterSourceError(false)
+                                                            }
+                                                        }} />
+                                                    <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
+                                                        if (newRiver.trim() !== '') {
+                                                            setRiverNameArray(riverNameArray => [...riverNameArray, newRiver])
+                                                            setNewRiver('')
+                                                        }
                                                     }}>+</button>
                                                 </td>
                                             </tr>
@@ -416,7 +535,10 @@ function AgriculturalPropertyAddForm() {
 
                                 <div className="">
                                     <input className="mr-1 cursor-pointer" type="checkbox" id="tubewell" name="tubewell" value="tubewell" onChange={e => {
-                                        setWaterSourceError(false)
+                                        if (!canalNameError && !riverNameError) {
+                                            setWaterSourceError(false)
+                                        }
+                                        setTubewellDepthError(false)
                                         if (e.target.checked) {
                                             setIsTubewell(true)
                                         } else {
@@ -435,17 +557,25 @@ function AgriculturalPropertyAddForm() {
                                             </thead>
                                             <tbody className="border border-gray-300 text-center ">
                                                 {tubewellDepthArray.length > 0 && tubewellDepthArray.map((tubewell) => {
-                                                    return <tr className="border border-gray-300">
+                                                    return <tr key={Math.random()} className="border border-gray-300">
                                                         <td className="pt-1 pb-">{tubewell}</td>
                                                     </tr>
                                                 })}
                                                 <tr className="border border-gray-300">
                                                     <td className="flex flex-row place-content-center pt-1 pb-1">
                                                         <input type="number" id="depth" name="depth"
-                                                            className='w-12 border border-gray-500 text-center pl-1 pr-1' autoComplete="new-password" value={newTubewell} onChange={e => setNewTubewell(e.target.value)} />
+                                                            className={`w-28 border ${tubewellDepthError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newTubewell} onChange={e => {
+                                                                setNewTubewell(e.target.value)
+                                                                setTubewellDepthError(false)
+                                                                if (!canalNameError && !riverNameError) {
+                                                                    setWaterSourceError(false)
+                                                                }
+                                                            }} />
                                                         <button className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
-                                                            setTubewellDepthArray(tubewellDepthArray => [...tubewellDepthArray, newTubewell])
-                                                            setNewTubewell('')
+                                                            if (newTubewell.trim() || +newTubewell.trim() !== 0) {
+                                                                setTubewellDepthArray(tubewellDepthArray => [...tubewellDepthArray, newTubewell])
+                                                                setNewTubewell('')
+                                                            }
                                                         }}>+</button>
                                                     </td>
                                                 </tr>
@@ -462,15 +592,19 @@ function AgriculturalPropertyAddForm() {
                     <div className="p-2 pb-5 pt-5 bg-gray-200">
                         {reservoirError && <p className="text-red-500 -mt-1">Select an option</p>}
                         <div className="flex flex-col sm:flex-row  sm:gap-10 lg:gap-16 mb-2">
-                            <p className="text-xl font-semibold text-gray-500">Does the land have access to a reservoir</p>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <p className="text-xl font-semibold text-gray-500">Does the land have access to a reservoir</p>
+                            </div>
                             <div className="flex flex-row place-content-center gap-4 pt-1">
                                 <div className="flex flex-row h-fit">
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-2">
                                         <div className="flex flex-row">
                                             <input className="mr-1 cursor-pointer" type="radio" id="yes-reservoir" name="reservoir" onChange={e => {
                                                 setReservoirError(false)
                                                 setTypeOfReservoirError(false)
-                                                setCapacityAndUnitOfReservoirError(false)
+                                                setCapacityOfReservoirError(false)
+                                                setUnitOfCapacityReservoirError(false)
                                                 setTypeOfReservoir([])
                                                 if (e.target.checked) {
                                                     setIsReservoir(true)
@@ -482,7 +616,7 @@ function AgriculturalPropertyAddForm() {
                                         </div>
 
                                         {isReservoir && <>
-                                            <div className="bg-gray-200 p-2 rounded w-fit">
+                                            <div className="bg-gray-100 p-2 rounded w-fit">
                                                 <p className="font-semibold mb-1">Type of reservoir</p>
                                                 <div className="flex flex-row h-fit">
                                                     <input className="mr-1 cursor-pointer" type="checkbox" id="public-reservoir" name="public-reservoir" onChange={e => {
@@ -520,15 +654,15 @@ function AgriculturalPropertyAddForm() {
                                             {typeOfReservoirError && <p className="text-red-500 -mt-1">Select atleast one type</p>}
 
                                             {typeOfReservoir.length > 0 && typeOfReservoir.includes('private') &&
-                                                <><div className="bg-gray-200 p-2 rounded flex flex-col">
+                                                <><div className="bg-gray-100 p-2 rounded flex flex-col">
                                                     <p className="font-semibold mb-1">Capacity of private reservoir</p>
                                                     <div className="flex flex-row gap-1">
                                                         <input id="resercoir-capacity" type="number" name='reservoir-capacity' className="border-2 border-gray-400 rounded bg-white w-24 p-1" min="0" placeholder="Capacity" value={capacityOfPrivateReservoir} onChange={e => {
-                                                            setCapacityAndUnitOfReservoirError(false)
+                                                            setCapacityOfReservoirError(false)
                                                             setCapacityOfPrivateReservoir(e.target.value)
                                                         }} />
                                                         <select className="border-2 border-gray-400  rounded cursor-pointer bg-white text-center h-fit p-1 pb-1.5" name="reservoir-capacity-dropdown" id="reservoir-capacity-dropdown" value={unitOfCapacityForPrivateReservoir} onChange={e => {
-                                                            setCapacityAndUnitOfReservoirError(false)
+                                                            setUnitOfCapacityReservoirError(false)
                                                             setUnitOfCapacityForPrivateReservoir(e.target.value)
                                                         }}>
                                                             <option value='' disabled>Select a unit</option>
@@ -537,7 +671,9 @@ function AgriculturalPropertyAddForm() {
                                                         </select>
                                                     </div>
                                                 </div>
-                                                    {capacityAndUnitOfReservoirError && <p className="text-red-500 -mt-1">Provide capacity and select a unit</p>}
+                                                    {capacityOfReservoirError && unitOfCapacityReservoirError && <p className="text-red-500 -mt-1">Provide capacity and select a unit</p>}
+                                                    {!unitOfCapacityReservoirError && capacityOfReservoirError && <p className="text-red-500 -mt-1">Provide capacity</p>}
+                                                    {unitOfCapacityReservoirError && !capacityOfReservoirError && <p className="text-red-500 -mt-1">Select a unit</p>}
                                                 </>}</>}
                                     </div>
                                 </div>
@@ -559,60 +695,53 @@ function AgriculturalPropertyAddForm() {
 
                     {/* irrigation system*/}
                     <div className="p-2 pb-5 pt-5">
-                        <p className="text-red-500">Select atleast one option</p>
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
                             <p className="text-xl font-semibold text-gray-500">Irrigation system</p>
                             <div className="flex flex-col gap-1.5 mt-1">
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="sprinkler" name="sprinkler" value="sprinkler" />
-                                    <label htmlFor="sprinkler">Sprinkler</label>
-                                </div>
-
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="drip" name="drip" value="drip" />
-                                    <label htmlFor="drip">Drip</label>
-                                </div>
-
-                                <div className="flex content-start">
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="underground-pipeline" name="underground-pipeline" value="underground-pipeline" />
-                                    <label htmlFor="underground-pipeline">Underground pipelines</label>
-                                </div>
-
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="none" name="none" value="none" />
-                                    <label htmlFor="none">None of the above</label>
-                                </div>
+                                {irrigationSystemOptions.map(system => {
+                                    return <div key={system}>
+                                        <input className="mr-1 cursor-pointer" type="checkbox" id={system} name={system} value={system} onChange={e => {
+                                            if (e.target.checked) {
+                                                setIrrigationSystemArray(array => [...array, e.target.value])
+                                            } else {
+                                                const filteredArray = irrigationSystemArray.filter(type => type != e.target.value)
+                                                setIrrigationSystemArray(filteredArray)
+                                            }
+                                        }} />
+                                        <label htmlFor={system}>{system[0].toUpperCase() +
+                                            system.slice(1)}</label>
+                                    </div>
+                                })}
                             </div>
                         </div>
-
                     </div>
 
                     {/*crop */}
                     <div className="p-2 pb-5 pt-5 bg-gray-200">
-                        <p className="text-red-500">Select atleast one property type</p>
+                        {cropError && <p className="text-red-500">Select atleast one crop</p>}
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
-                            <p className="text-xl font-semibold text-gray-500">Suitable for crops</p>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <p className="text-xl font-semibold text-gray-500">Suitable for crops</p>
+                            </div>
                             <div className="flex flex-col gap-1.5 mt-1">
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="rice" name="rice" value="rice" />
-                                    <label htmlFor="rice">Rice</label>
-                                </div>
+                                {cropOptions.map(crop => {
+                                    return <div key={crop}>
+                                        <input className="mr-1 cursor-pointer" type="checkbox" id={crop} name={crop} value={crop} onChange={e => {
+                                            setCropError(false)
+                                            if (e.target.checked) {
+                                                setCropArray(array => [...array, e.target.value])
+                                            } else {
+                                                const filteredArray = cropArray.filter(type => type != e.target.value)
+                                                setCropArray(filteredArray)
+                                            }
+                                        }} />
+                                        <label htmlFor={crop}>{crop[0].toUpperCase() +
+                                            crop.slice(1)}</label>
+                                    </div>
+                                })}
 
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="wheat" name="wheat" value="wheat" />
-                                    <label htmlFor="wheat">Wheat</label>
-                                </div>
-
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="maize" name="maize" value="maize" />
-                                    <label htmlFor="maize">Maize</label>
-                                </div>
-
-                                <div >
-                                    <input className="mr-1 cursor-pointer" type="checkbox" id="cotton" name="cotton" value="cotton" />
-                                    <label htmlFor="cotton">Cotton</label>
-                                </div>
-                                <div className="flex flex-row gap-1">
+                                {/*<div className="flex flex-row gap-1">
                                     <p className='w-28 border-2 border-gray-500  p-1 rounded'  >Bajra</p>
                                     <button className="pl-2 pr-2 rounded bg-red-400 text-white text-xl font-semibold">X</button>
                                 </div>
@@ -620,116 +749,119 @@ function AgriculturalPropertyAddForm() {
                                     <input type="text" id="other-1" name="other-1"
                                         className='w-28 border-2 border-gray-500  p-1 rounded' autoComplete="new-password" placeholder="crop" />
                                     <button className="pl-2 pr-2 rounded bg-gray-800 text-white text-xl font-semibold">+</button>
-                                </div>
+                                </div>*/}
                             </div>
                         </div>
                     </div>
 
                     {/*road type */}
                     <div className="flex flex-col p-2 pb-5 pt-5">
-                        <p className="text-red-500 -mt-1">Select atleast one road type</p>
+                        {roadError && <p className="text-red-500 -mt-1">Select atleast one road type</p>}
                         <div className="flex flex-col gap-5 sm:flex-row">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
-                                <p className="text-xl font-semibold text-gray-500">Road connectivity</p>
+                                <div className="flex flex-row gap-0.5">
+                                    <p className="h-4 text-2xl text-red-500">*</p>
+                                    <p className="text-xl font-semibold text-gray-500">Road connectivity</p>
+                                </div>
                                 <div className="flex flex-col gap-1.5 mt-1">
-                                    <div >
-                                        <input className="mr-1 cursor-pointer" type="radio" id="kutcha-road" name="road" value="kutcha-road" />
-                                        <label htmlFor="road">Kutcha road</label>
-                                    </div>
-
-                                    <div>
-                                        <input className="mr-1 cursor-pointer" type="radio" id="village-road" name="road" value="village road" />
-                                        <label htmlFor="road">Village road</label>
-                                    </div>
-
-                                    <div>
-                                        <input className="mr-1 cursor-pointer" type="radio" id="district-road" name="road" value="district road" />
-                                        <label htmlFor="road">District road</label>
-                                    </div>
-
-                                    <div>
-                                        <input className="mr-1 cursor-pointer" type="radio" id="state-highway" name="road" value="state highway" />
-                                        <label htmlFor="road">State highway</label>
-                                    </div>
-
-                                    <div>
-                                        <input className="mr-1 cursor-pointer" type="radio" id="national-highway" name="road" value="national highway" />
-                                        <label htmlFor="road">National highway</label>
-                                    </div>
-
+                                    {roadOptions.map(road => {
+                                        return <div key={road}>
+                                            <input className="mr-1 cursor-pointer" type="radio" id={road} name="road" value={road} onChange={e => {
+                                                setRoadError(false)
+                                                if (e.target.checked) {
+                                                    setRoadType(e.target.value)
+                                                } else {
+                                                    setRoadType('')
+                                                }
+                                            }} />
+                                            <label htmlFor={road}>{road[0].toUpperCase() +
+                                                road.slice(1)}</label>
+                                        </div>
+                                    })}
                                 </div>
                             </div>
                             <div className="text-center">
-                                <textarea className="border-2 border-gray-400 p-1 rounded-lg h-20 sm:h-28  w-60 md:w-68 lg:w-80 resize-none" id="road-remark" name="road-remark" autoCorrect="on" autoComplete="new-password" placeholder="Add details about road here" />
+                                <textarea className="border-2 border-gray-400 p-1 rounded-lg h-20 sm:h-28  w-60 md:w-68 lg:w-80 resize-none" id="road-remark" name="road-remark" autoCorrect="on" autoComplete="new-password" placeholder="Add details about road here (optional)" onChange={e => setRoadDetails(e.target.value)} />
                             </div>
                         </div>
                     </div>
-
-
-
-
 
                     {/*laws */}
                     <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-200">
-                        <p className="text-red-500">Select atleast one property type</p>
+                        {legalRestrictionError && <p className="text-red-500">Select an option</p>}
                         <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                            <p className="text-xl font-semibold text-gray-500 mb-2">Is the land under any restrictions under any laws</p>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <p className="text-xl font-semibold text-gray-500 mb-2">Is the land under any restrictions under any laws</p>
+                            </div>
                             <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                                 <div className="flex flex-row h-fit">
-                                    <input className="mr-1 cursor-pointer" type="radio" id="yes-restrictions" name="restrictions" value="yes-restrictions" />
-                                    <label htmlFor="yes-restrictions">Yes</label>
+                                    <input className="mr-1 cursor-pointer" type="radio" id="yes" name="restrictions" value="yes" onChange={e => {
+                                        setLegalRestrictionDetails('')
+                                        setLegalRestrictionDetailsError(false)
+                                        setIsLegalRestrictions(true)
+                                        setLegalRestrictionError(false)
+                                        if (e.target.checked) {
+                                            setSelectedLegalRestriction(true)
+                                        } else {
+                                            setSelectedLegalRestriction(null)
+                                        }
+                                    }} />
+                                    <label htmlFor="yes">Yes</label>
                                 </div>
 
                                 <div className="flex flex-row h-fit">
-                                    <input className=" mr-1 cursor-pointer" type="radio" id="no-restrictions" name="restrictions" value="no-restrictions" />
-                                    <label htmlFor="no-restrictions">No</label>
+                                    <input className=" mr-1 cursor-pointer" type="radio" id="no" name="restrictions" value="no" onChange={e => {
+                                        setIsLegalRestrictions(true)
+                                        setLegalRestrictionError(false)
+                                        if (e.target.checked) {
+                                            setSelectedLegalRestriction(false)
+                                        } else {
+                                            setSelectedLegalRestriction(null)
+                                        }
+                                    }} />
+                                    <label htmlFor="nos">No</label>
                                 </div>
                             </div>
                         </div>
-                        <div className="text-center">
-                            <textarea className="border-2 border-gray-400 rounded-lg h-20 w-80 p-1 resize-none" id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" />
-                        </div>
+                        {selectedLegalRestriction && <div className="text-center">
+                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded-lg h-20 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
+                                setLegalRestrictionDetailsError(false)
+                                setLegalRestrictionDetails(e.target.value)
+                            }} />
+                            {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
+                        </div>}
                     </div>
-
-                    {/*elctricity connecitiosn */}
-                    <div className="flex flex-col p-2 pb-5 pt-5">
-                        <p className="text-red-500">Select atleast one property type</p>
-                        <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                            <label className="text-xl font-semibold text-gray-500 w-64 sm:w-fit" htmlFor="tubewell-connections">Number of tubewell electricity connections</label>
-                            <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center h-fit mt-2 sm:mt-0 -ml-12 sm:ml-0" name="tubewell-connections" id="tubewell-connections" >
-                                {arrayOfTenNumbers.map(number => <option key={number} value={number}>{number}</option>)}
-                            </select>
-                        </div>
-                    </div>
-
-
 
                     {/* tubewells*/}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
-                        <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="tubewell">Number of tubewells</label>
-                            <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="tubewell" id="tubewell" >
-                                {arrayOfTenNumbers.map(number => <option key={number} value={number}>{number}</option>)}
+                            <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="tubewell" id="tubewell" value={numberOfTubewells} onChange={e => {
+                                setNumberOfTubewells(e.target.value)
+                            }}>
+                                {arrayOfNumbersFromZeroToTen.map(number => <option key={number} value={number}>{number}</option>)}
                             </select>
                         </div>
                     </div>
 
-
                     {/*nearby town */}
                     <div className="flex flex-col p-2 pb-5 pt-5">
-                        <p className="text-red-500">Select atleast one property type</p>
                         <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16">
-                            <label className="text-xl font-semibold text-gray-500 pb-1" htmlFor="nearby-town">Nearby town</label>
+                            <label className="text-xl font-semibold text-gray-500 pb-1" htmlFor="nearby-town">Nearby town (optional)</label>
                             <input type="text" id="nearby-town" name="nearby-town"
-                                className='sm:w-72 border-2 border-gray-500  p-1 rounded-lg' autoComplete="new-password" />
+                                className='sm:w-72 border-2 border-gray-500  p-1 rounded-lg' autoComplete="new-password" value={nearbyTown} onChange={e => setNearbyTown(e.target.value)} />
                         </div>
                     </div>
 
                     {/*images */}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                        {agriculturalLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         <div className="flex flex-row gap-5">
-                            <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Add property image</label>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Add property image</label>
+                            </div>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={agriculturalLandImageHandler} onClick={e => e.target.value = null} />
                         </div>
                         {agriculturalLandImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
@@ -743,14 +875,7 @@ function AgriculturalPropertyAddForm() {
                                 </div>
                             })}
                         </div>}
-                        {agriculturalLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                     </div>
-
-
-
-
-
-
 
                     <div className="flex justify-center mt-4 p-2">
                         <button type='submit' className="w-full bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Save</button>
