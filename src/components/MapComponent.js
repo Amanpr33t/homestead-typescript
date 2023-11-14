@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   GoogleMap,
   LoadScript,
@@ -7,40 +7,53 @@ import {
 } from '@react-google-maps/api';
 
 const MapComponent = () => {
-  const [selectedArea, setSelectedArea] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
+
+  useEffect(() => {
+    // Get current location using the browser's geolocation API
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error('Error getting current location:', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  }, []);
 
   const mapStyles = {
     height: '50vh',
     width: '100%',
   };
 
-  const defaultCenter = {
-    lat: 40.748817,
-    lng: -73.985428,
-  };
-
-  const handleOverlayComplete = (e) => {
-    const polygonBounds = e.overlay.getPath().getArray();
-    // You can use polygonBounds to get the selected area coordinates
-    setSelectedArea(polygonBounds);
+  const defaultCenter = currentLocation || {
+    lat: 30.7333,
+    lng: 76.7794,
   };
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyB-VNPvCcODoQdyoh0VwaBr-sRNdpraenw" libraries={['drawing']}>
+    <LoadScript googleMapsApiKey="AIzaSyB-VNPvCcODoQdyoh0VwaBr-sRNdpraenw"  libraries={['drawing']}>
       <GoogleMap
         mapContainerStyle={mapStyles}
-        zoom={13}
+        zoom={8}
         center={defaultCenter}
       >
-        {selectedArea && (
-          <Marker position={selectedArea[0].toJSON()} />
+        {currentLocation && (
+          <Marker position={currentLocation} />
         )}
 
         <DrawingManager
           drawingMode="polygon"
-          onPolygonComplete={handleOverlayComplete}
+          onPolygonComplete={(e) => {
+            // Handle the completed polygon as needed
+            console.log('Polygon coordinates:', e.overlay.getPath().getArray());
+          }}
         />
-
       </GoogleMap>
     </LoadScript>
   );
