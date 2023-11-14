@@ -5,7 +5,7 @@ import AlertModal from '../AlertModal'
 import VerifyPropertyDealerBeforeAddingProperty from './VerifyPropertyDealerBeforeAddingProperty'
 import { punjabDistricts, haryanaDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api"
+import { GoogleMap, LoadScript, Rectangle, DrawingManager } from '@react-google-maps/api';
 
 //This component is a form used by a field agent to add a property dealer
 function AgriculturalPropertyAddForm() {
@@ -222,17 +222,12 @@ function AgriculturalPropertyAddForm() {
         errorCheckingBeforeSubmit()
     }
 
-    const mapStyles = {
-        height: '400px',
-        width: '100%',
-    };
-
     const defaultCenter = {
         lat: 30.7333,
         lng: 76.768066,
     };
 
-    const [currentLocation, setCurrentLocation] = useState(null);
+    /*const [currentLocation, setCurrentLocation] = useState(null);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -248,7 +243,36 @@ function AgriculturalPropertyAddForm() {
         } else {
             console.error('Geolocation is not supported by this browser.');
         }
-    }, []);
+    }, []);*/
+
+    const googleMapsApiKey = "AIzaSyB-VNPvCcODoQdyoh0VwaBr-sRNdpraenw";
+
+    // Specify the initial map center and options
+    const mapOptions = {
+        center: defaultCenter, // Example: San Francisco
+        zoom: 10,
+    };
+
+    const [drawingManager, setDrawingManager] = useState(null);
+
+    const onMapLoad = (map) => {
+        // Set up DrawingManager after the map has loaded
+        setDrawingManager(map);
+    };
+
+    const onOverlayComplete = (e) => {
+        // Access the rectangle bounds when drawing is complete
+        const rectangleBounds = e.overlay.getBounds();
+        console.log("Selected area bounds:", rectangleBounds);
+    };
+
+    const mapStyles = {
+        height: '400px',
+        width: '100%',
+    }
+
+
+
 
     return (
         <Fragment>
@@ -269,18 +293,47 @@ function AgriculturalPropertyAddForm() {
                         <img className="w-20 h-auto " src={''} alt='' />
                     </div>
 
-                    <div className="p-2 pb-5 pt-5 bg-red-400">
-                        <LoadScript
+                    <div className="p-2 pb-5 pt-5">
+                        {/*<LoadScript
                             googleMapsApiKey="AIzaSyB-VNPvCcODoQdyoh0VwaBr-sRNdpraenw"
+                            libraries={["drawing"]}
                         >
                             <GoogleMap
                                 mapContainerStyle={mapStyles}
-                                zoom={currentLocation ? 12 : 1}
-                                center={currentLocation || { lat: 30.7333, lng: 76.768066 }}
+                                zoom={currentLocation ? 12 : 6}
+                                center={currentLocation || defaultCenter}
                             >
+                                <DrawingManager />
                                 {currentLocation && <Marker position={currentLocation} />}
                             </GoogleMap>
+    </LoadScript>*/}
+                        <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['drawing']}>
+                            <GoogleMap
+                                mapContainerStyle={{ width: "100%", height: "400px" }}
+                                center={mapOptions.center}
+                                zoom={mapOptions.zoom}
+                                onLoad={onMapLoad}
+                            >
+                                {drawingManager && (
+                                    <DrawingManager
+                                        drawingMode="rectangle"
+                                        options={{
+                                            drawingControl: true,
+                                            drawingControlOptions: {
+                                                position: window.google.maps.ControlPosition.TOP_CENTER,
+                                                drawingModes: ["rectangle"],
+                                            },
+                                            rectangleOptions: {
+                                                clickable: true,
+                                                draggable: true,
+                                            },
+                                        }}
+                                        onOverlayComplete={onOverlayComplete}
+                                    />
+                                )}
+                            </GoogleMap>
                         </LoadScript>
+
                     </div>
 
                     {/* contract*/}
