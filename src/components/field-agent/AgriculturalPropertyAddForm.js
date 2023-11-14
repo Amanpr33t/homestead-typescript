@@ -1,9 +1,9 @@
 
-import { Fragment, useState, useMemo, useEffect } from "react"
+import { Fragment, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import VerifyPropertyDealerBeforeAddingProperty from './VerifyPropertyDealerBeforeAddingProperty'
-import { punjabDistricts, haryanaDistricts } from '../../utils/tehsilsAndDistricts/districts'
+import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
 import MapComponent from "../MapComponent"
 
@@ -17,6 +17,12 @@ function AgriculturalPropertyAddForm() {
         setIsPropertyDealerAvailable(true)
         setPropertyDealer(dealer)
     }
+
+    const [alert, setAlert] = useState({
+        isAlertModal: false,
+        alertType: '',
+        alertMessage: ''
+    })
 
     const [landSize, setLandSize] = useState('')
     const [landSizeUnit, setLandSizeUnit] = useState('')
@@ -41,7 +47,6 @@ function AgriculturalPropertyAddForm() {
     const [contractImageFile, setContractImageFile] = useState([])
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
-    const [numberOfOwnersError, setNumberOfOwnersError] = useState(false)
 
     const [isCanal, setIsCanal] = useState(false)
     const [canalNameArray, setCanalNameArray] = useState([])
@@ -65,7 +70,6 @@ function AgriculturalPropertyAddForm() {
     const [typeOfReservoirError, setTypeOfReservoirError] = useState(false)
     const [capacityOfReservoirError, setCapacityOfReservoirError] = useState(false)
     const [unitOfCapacityReservoirError, setUnitOfCapacityReservoirError] = useState(false)
-
 
     const irrigationSystemOptions = ['sprinkler', 'drip', 'underground pipeline']
     const [irrigationSystemArray, setIrrigationSystemArray] = useState([])
@@ -92,7 +96,6 @@ function AgriculturalPropertyAddForm() {
     const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
 
     const [numberOfTubewells, setNumberOfTubewells] = useState(0)
-    const [numberOfTubewellsError, setNumberOfTubewellsError] = useState(false)
 
     const [nearbyTown, setNearbyTown] = useState('')
 
@@ -117,6 +120,13 @@ function AgriculturalPropertyAddForm() {
 
     // program to check the number of occurrence of a character
 
+    const capitaliseFirstAlphabetsOfAllWordsOfASentence = (str) => {
+        let words = str.split(' ')
+        let capitalizedWords = words.map(word => word.trim().charAt(0).toUpperCase() + word.slice(1))
+        let result = capitalizedWords.join(' ')
+        return result;
+    }
+
     const errorCheckingBeforeSubmit = () => {
 
         if (!agriculturalLandImageFile.length) {
@@ -126,12 +136,15 @@ function AgriculturalPropertyAddForm() {
         if (!district.trim() && !state.trim()) {
             setDistrictError(true)
             setStateError(true)
+
         } else if (!district.trim() && state.trim()) {
             setDistrictError(true)
             setStateError(false)
+
         } else if (district.trim() && !state.trim()) {
             setDistrictError(false)
             setStateError(true)
+
         }
 
         if (!landSize.trim() || +landSize.trim() === 0 || !landSizeUnit) {
@@ -162,10 +175,12 @@ function AgriculturalPropertyAddForm() {
             }
         } else if ((priceDemandedNumber.trim().startsWith('0') && priceDemandedNumber.trim().slice(0, 2) !== '0.') || priceDemandedNumber.trim().startsWith('.')) {
             setPriceDemandedFormatError(true)
+
         }
 
         if (!isCanal && !isRiver && !isTubeWell) {
             setWaterSourceError(true)
+
         } else {
             if (isCanal && canalNameArray.length === 0) {
                 setCanalNameError(true)
@@ -179,10 +194,12 @@ function AgriculturalPropertyAddForm() {
                 setTubewellDepthError(true)
                 setWaterSourceError(true)
             }
+
         }
 
         if (isReservoir === undefined) {
             setReservoirError(true)
+
         } else {
             if (!typeOfReservoir.length) {
                 setTypeOfReservoirError(true)
@@ -202,36 +219,239 @@ function AgriculturalPropertyAddForm() {
 
         if (!cropArray.length) {
             setCropError(true)
+
         }
 
         if (!roadType) {
             setRoadError(true)
+
         }
 
         if (!isLegalResetrictions) {
             setLegalRestrictionError(true)
-        } else if (selectedLegalRestriction) {
-            if (!legalRestrictionDetails.trim()) {
-                setLegalRestrictionDetailsError(true)
-            }
+
+        } else if (selectedLegalRestriction && !legalRestrictionDetails.trim()) {
+            setLegalRestrictionDetailsError(true)
         }
     }
 
-    const formSubmit = (e) => {
+    const formSubmit = async (e) => {
         e.preventDefault()
-        errorCheckingBeforeSubmit()
+        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize.trim() || +landSize.trim() === 0 || !landSizeUnit || (landSize.trim().startsWith('0') && landSize.trim().slice(0, 2) !== '0.') || landSize.trim().startsWith('.') || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || !isLegalResetrictions || (selectedLegalRestriction && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) || ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) || ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir)))) {
+            errorCheckingBeforeSubmit()
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Provide all fields'
+            })
+            return
+        }
+        const propertyData = {
+            //propertyDealerId: propertyDealer._id,
+            landSize: {
+                size: +landSize,
+                unit: landSizeUnit,
+                details: landSizeDetails.trim()[0].toUpperCase() + landSizeDetails.trim().slice(1),
+            },
+            location: {
+                name: {
+                    village: village.trim()[0].toUpperCase() + village.trim().slice(1),
+                    city: city.trim()[0].toUpperCase() + city.trim().slice(1),
+                    tehsil: tehsil,
+                    district,
+                    state
+                }
+            },
+            agriculturalLandImageUrl: agricultureLandImageUpload,
+            contractImageUrl: contractImageUpload,
+            numberOfOwners,
+            waterSource: {
+                canal: canalNameArray,
+                river: riverNameArray,
+                tubewells: {
+                    numberOfTubewells: tubewellDepthArray.length,
+                    depth: tubewellDepthArray
+                }
+            },
+            reservoir: {
+                type: typeOfReservoir,
+                capacityOfPrivateReservoir: +capacityOfPrivateReservoir.trim(),
+                unitOfCapacityForPrivateReservoir
+            },
+            irrigationSystem: irrigationSystemArray,
+            priceDemanded: {
+                number: +priceDemandedNumber.trim(),
+                words: capitaliseFirstAlphabetsOfAllWordsOfASentence(priceDemandedWords.trim())
+            },
+            crops: [cropArray],
+            road: {
+                type: roadType,
+                details: roadDetails.trim()[0].toUpperCase() + roadDetails.trim().slice(1),
+            },
+            legalRestrictions: {
+                isLegalResetrictions,
+                details: legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1),
+            },
+            nearbyTown: nearbyTown.trim()[0].toUpperCase() + nearbyTown.trim().slice(1),
+        }
+        try {
+            let agriculturalLandImagesUrl = []
+            agricultureLandImageUpload.length && agricultureLandImageUpload.forEach(async (image) => {
+                const formData = new FormData()
+                formData.append('file', image)
+                formData.append('upload_preset', 'homestead')
+                formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
+                //The fetch promise code is used to store image in cloudinary database
+                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'post',
+                    body: formData
+                })
+                const cloudinaryData = await cloudinaryResponse.json()
+                if (cloudinaryData && cloudinaryData.error) {
+                    agriculturalLandImagesUrl = []
+                    throw new Error('Some error occured')
+                }
+                agriculturalLandImagesUrl.push(cloudinaryData.secure_url)
+            })
+
+            let contractImagesUrl = []
+            contractImageUpload.length && contractImageUpload.forEach(async (image) => {
+                const formData = new FormData()
+                formData.append('file', image)
+                formData.append('upload_preset', 'homestead')
+                formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
+                //The fetch promise code is used to store image in cloudinary database
+                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'post',
+                    body: formData
+                })
+                const cloudinaryData = await cloudinaryResponse.json()
+                if (cloudinaryData && cloudinaryData.error) {
+                    contractImagesUrl = []
+                    throw new Error('Some error occured')
+                }
+                contractImagesUrl.push(cloudinaryData.secure_url)
+            })
+
+            const propertyData = {
+                // addedByPropertyDealer: propertyDealer._id,
+                landSize: {
+                    size: +landSize,
+                    unit: landSizeUnit,
+                    details: landSizeDetails.trim()[0].toUpperCase() + landSizeDetails.trim().slice(1),
+                },
+                location: {
+                    name: {
+                        village: village.trim()[0].toUpperCase() + village.trim().slice(1),
+                        city: city.trim()[0].toUpperCase() + city.trim().slice(1),
+                        tehsil: tehsil,
+                        district,
+                        state
+                    }
+                },
+                agriculturalLandImagesUrl,
+                contractImagesUrl,
+                numberOfOwners,
+                waterSource: {
+                    canal: canalNameArray,
+                    river: riverNameArray,
+                    tubewells: {
+                        numberOfTubewells: tubewellDepthArray.length,
+                        depth: tubewellDepthArray
+                    }
+                },
+                reservoir: {
+                    isReservoir,
+                    type: typeOfReservoir,
+                    capacityOfPrivateReservoir: +capacityOfPrivateReservoir.trim(),
+                    unitOfCapacityForPrivateReservoir
+                },
+                irrigationSystem: irrigationSystemArray,
+                priceDemanded: {
+                    number: +priceDemandedNumber.trim(),
+                    words: capitaliseFirstAlphabetsOfAllWordsOfASentence(priceDemandedWords.trim())
+                },
+                crops: [cropArray],
+                road: {
+                    type: roadType,
+                    details: roadDetails.trim()[0].toUpperCase() + roadDetails.trim().slice(1),
+                },
+                legalRestrictions: {
+                    isLegalResetrictions,
+                    details: legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1),
+                },
+                nearbyTown: nearbyTown.trim()[0].toUpperCase() + nearbyTown.trim().slice(1),
+            }
+            console.log(propertyData)
+
+            /*const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    firmName,
+                    propertyDealerName,
+                    experience,
+                    propertyType,
+                    addressArray,
+                    gstNumber,
+                    about,
+                    firmLogoUrl: cloudinaryData.secure_url,
+                    email,
+                    contactNumber
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            if (data.status === 'ok') {
+                setSpinner(false)
+                setRouteTo('/field-agent')
+                setAlert({
+                    isAlertModal: true,
+                    alertType: 'success',
+                    alertMessage: 'Property dealer added successfully'
+                })
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-field-agent-authToken")
+                setRouteTo('/field-agent/signIn')
+                setAlert({
+                    isAlertModal: true,
+                    alertType: 'warning',
+                    alertMessage: 'Session expired. Please login again'
+                })
+            } else {
+                throw new Error('Some error occured')
+            }*/
+        } catch (error) {
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured'
+            })
+            return
+        }
     }
 
-    const defaultCenter = {
-        lat: 30.7333,
-        lng: 76.768066,
-    };
 
     return (
         <Fragment>
+
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} alertModalRemover={() => {
+                setAlert({
+                    isAlertModal: false,
+                    alertType: '',
+                    alertMessage: ''
+                })
+            }} />}
+
             {/*!isPropertyDealerAvailable && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />*/}
 
-            {<div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center`} >
+            {<div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''}`} >
 
                 <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
@@ -246,9 +466,9 @@ function AgriculturalPropertyAddForm() {
                         <img className="w-20 h-auto " src={''} alt='' />
                     </div>
 
-                    <div className="p-2 pb-5 pt-5">
+                    {/*<div className="p-2 pb-5 pt-5">
                         <MapComponent />
-                    </div>
+    </div>*/}
 
                     {/* contract*/}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
@@ -462,7 +682,14 @@ function AgriculturalPropertyAddForm() {
                                         <tbody className="border border-gray-300 text-center ">
                                             {canalNameArray.length > 0 && canalNameArray.map((canal) => {
                                                 return <tr key={Math.random()} className="border border-gray-300">
-                                                    <td className="pt-1 pb-">{canal}</td>
+                                                    <td className="pt-1 pb-1 flex flex-row">
+                                                        <p className="w-full">{canal}</p>
+                                                        <button type='button' className="pl-1.5 pr-1.5 bg-red-400 text-white text-xl font-semibold" onClick={e => {
+                                                            e.stopPropagation()
+                                                            const updatedArray = canalNameArray.filter(item => item !== canal)
+                                                            setCanalNameArray(updatedArray)
+                                                        }}>X</button>
+                                                    </td>
                                                 </tr>
                                             })}
                                             <tr className="border border-gray-300">
@@ -517,10 +744,18 @@ function AgriculturalPropertyAddForm() {
                                         <tbody className="border border-gray-300 text-center ">
                                             {riverNameArray.length > 0 && riverNameArray.map((river) => {
                                                 return <tr key={Math.random()} className="border border-gray-300">
-                                                    <td className="pt-1 pb-">{river}</td>
+                                                    <td className="pt-1 pb-1 flex flex-row">
+                                                        <p className="w-full">{river}</p>
+                                                        <button type='button' className="pl-1.5 pr-1.5 bg-red-400 text-white text-xl font-semibold" onClick={e => {
+                                                            e.stopPropagation()
+                                                            const updatedArray = riverNameArray.filter(item => item !== river)
+                                                            setRiverNameArray(updatedArray)
+                                                        }}>X</button>
+                                                    </td>
                                                 </tr>
                                             })}
                                             <tr className="border border-gray-300">
+
                                                 <td className="flex flex-row place-content-center p-1">
                                                     <input type="text" id="depth" name="depth"
                                                         className={`w-28 border ${riverNameError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newRiver} onChange={e => {
@@ -567,7 +802,14 @@ function AgriculturalPropertyAddForm() {
                                             <tbody className="border border-gray-300 text-center ">
                                                 {tubewellDepthArray.length > 0 && tubewellDepthArray.map((tubewell) => {
                                                     return <tr key={Math.random()} className="border border-gray-300">
-                                                        <td className="pt-1 pb-">{tubewell}</td>
+                                                        <td className="pt-1 pb-1 flex flex-row">
+                                                            <p className="w-full">{tubewell}</p>
+                                                            <button type='button' className="pl-1.5 pr-1.5 bg-red-400 text-white text-xl font-semibold" onClick={e => {
+                                                                e.stopPropagation()
+                                                                const updatedArray = tubewellDepthArray.filter(item => item !== tubewell)
+                                                                setTubewellDepthArray(updatedArray)
+                                                            }}>X</button>
+                                                        </td>
                                                     </tr>
                                                 })}
                                                 <tr className="border border-gray-300">
@@ -580,9 +822,9 @@ function AgriculturalPropertyAddForm() {
                                                                     setWaterSourceError(false)
                                                                 }
                                                             }} />
-                                                        <button className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
+                                                        <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
                                                             if (newTubewell.trim() || +newTubewell.trim() !== 0) {
-                                                                setTubewellDepthArray(tubewellDepthArray => [...tubewellDepthArray, newTubewell])
+                                                                setTubewellDepthArray(tubewellDepthArray => [...tubewellDepthArray, +newTubewell.trim()])
                                                                 setNewTubewell('')
                                                             }
                                                         }}>+</button>
@@ -713,7 +955,7 @@ function AgriculturalPropertyAddForm() {
                                             if (e.target.checked) {
                                                 setIrrigationSystemArray(array => [...array, e.target.value])
                                             } else {
-                                                const filteredArray = irrigationSystemArray.filter(type => type != e.target.value)
+                                                const filteredArray = irrigationSystemArray.filter(type => type !== e.target.value)
                                                 setIrrigationSystemArray(filteredArray)
                                             }
                                         }} />
@@ -741,7 +983,7 @@ function AgriculturalPropertyAddForm() {
                                             if (e.target.checked) {
                                                 setCropArray(array => [...array, e.target.value])
                                             } else {
-                                                const filteredArray = cropArray.filter(type => type != e.target.value)
+                                                const filteredArray = cropArray.filter(type => type !== e.target.value)
                                                 setCropArray(filteredArray)
                                             }
                                         }} />
@@ -843,7 +1085,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* tubewells*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5">
+                    {/*<div className="flex flex-col p-2 pb-5 pt-5">
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="tubewell">Number of tubewells</label>
                             <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="tubewell" id="tubewell" value={numberOfTubewells} onChange={e => {
@@ -852,7 +1094,7 @@ function AgriculturalPropertyAddForm() {
                                 {arrayOfNumbersFromZeroToTen.map(number => <option key={number} value={number}>{number}</option>)}
                             </select>
                         </div>
-                    </div>
+                        </div>*/}
 
                     {/*nearby town */}
                     <div className="flex flex-col p-2 pb-5 pt-5  bg-gray-100">
