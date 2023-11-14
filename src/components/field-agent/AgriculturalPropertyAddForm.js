@@ -1,10 +1,11 @@
 
-import { Fragment, useState, useMemo } from "react"
+import { Fragment, useState, useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import VerifyPropertyDealerBeforeAddingProperty from './VerifyPropertyDealerBeforeAddingProperty'
 import { punjabDistricts, haryanaDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api"
 
 //This component is a form used by a field agent to add a property dealer
 function AgriculturalPropertyAddForm() {
@@ -221,6 +222,33 @@ function AgriculturalPropertyAddForm() {
         errorCheckingBeforeSubmit()
     }
 
+    const mapStyles = {
+        height: '400px',
+        width: '100%',
+    };
+
+    const defaultCenter = {
+        lat: 30.7333,
+        lng: 76.768066,
+    };
+
+    const [currentLocation, setCurrentLocation] = useState(null);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setCurrentLocation({ lat: latitude, lng: longitude });
+                },
+                (error) => {
+                    console.error('Error getting the current location:', error);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+        }
+    }, []);
 
     return (
         <Fragment>
@@ -241,8 +269,22 @@ function AgriculturalPropertyAddForm() {
                         <img className="w-20 h-auto " src={''} alt='' />
                     </div>
 
+                    <div className="p-2 pb-5 pt-5 bg-red-400">
+                        <LoadScript
+                            googleMapsApiKey="AIzaSyB-VNPvCcODoQdyoh0VwaBr-sRNdpraenw"
+                        >
+                            <GoogleMap
+                                mapContainerStyle={mapStyles}
+                                zoom={currentLocation ? 12 : 1}
+                                center={currentLocation || { lat: 30.7333, lng: 76.768066 }}
+                            >
+                                {currentLocation && <Marker position={currentLocation} />}
+                            </GoogleMap>
+                        </LoadScript>
+                    </div>
+
                     {/* contract*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         <div className="flex flex-row gap-5">
                             <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
@@ -345,7 +387,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* Number of owners*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
                             <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
@@ -392,7 +434,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*price*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         {(priceDemandedNumberError || priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide a price</p>}
                         {priceDemandedFormatError && <p className="text-red-500 -mt-1">Provide price in correct format</p>}
                         <div className="flex flex-row gap-5 sm:gap-16">
@@ -589,7 +631,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* reservoir*/}
-                    <div className="p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="p-2 pb-5 pt-5 bg-gray-100">
                         {reservoirError && <p className="text-red-500 -mt-1">Select an option</p>}
                         <div className="flex flex-col sm:flex-row  sm:gap-10 lg:gap-16 mb-2">
                             <div className="flex flex-row gap-0.5">
@@ -616,7 +658,7 @@ function AgriculturalPropertyAddForm() {
                                         </div>
 
                                         {isReservoir && <>
-                                            <div className="bg-gray-100 p-2 rounded w-fit">
+                                            <div className="bg-gray-100 p-2 rounded w-fit bg-white">
                                                 <p className="font-semibold mb-1">Type of reservoir</p>
                                                 <div className="flex flex-row h-fit">
                                                     <input className="mr-1 cursor-pointer" type="checkbox" id="public-reservoir" name="public-reservoir" onChange={e => {
@@ -654,7 +696,7 @@ function AgriculturalPropertyAddForm() {
                                             {typeOfReservoirError && <p className="text-red-500 -mt-1">Select atleast one type</p>}
 
                                             {typeOfReservoir.length > 0 && typeOfReservoir.includes('private') &&
-                                                <><div className="bg-gray-100 p-2 rounded flex flex-col">
+                                                <><div className="bg-gray-100 p-2 rounded flex flex-col bg-white">
                                                     <p className="font-semibold mb-1">Capacity of private reservoir</p>
                                                     <div className="flex flex-row gap-1">
                                                         <input id="resercoir-capacity" type="number" name='reservoir-capacity' className="border-2 border-gray-400 rounded bg-white w-24 p-1" min="0" placeholder="Capacity" value={capacityOfPrivateReservoir} onChange={e => {
@@ -717,7 +759,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*crop */}
-                    <div className="p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="p-2 pb-5 pt-5 bg-gray-100">
                         {cropError && <p className="text-red-500">Select atleast one crop</p>}
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
                             <div className="flex flex-row gap-0.5">
@@ -787,7 +829,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*laws */}
-                    <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-200">
+                    <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
                         {legalRestrictionError && <p className="text-red-500">Select an option</p>}
                         <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
                             <div className="flex flex-row gap-0.5">
@@ -834,7 +876,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/* tubewells*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="flex flex-col p-2 pb-5 pt-5">
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="tubewell">Number of tubewells</label>
                             <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="tubewell" id="tubewell" value={numberOfTubewells} onChange={e => {
@@ -846,7 +888,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*nearby town */}
-                    <div className="flex flex-col p-2 pb-5 pt-5">
+                    <div className="flex flex-col p-2 pb-5 pt-5  bg-gray-100">
                         <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500 pb-1" htmlFor="nearby-town">Nearby town (optional)</label>
                             <input type="text" id="nearby-town" name="nearby-town"
@@ -855,7 +897,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*images */}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-200">
+                    <div className="flex flex-col p-2 pb-5 pt-5">
                         {agriculturalLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         <div className="flex flex-row gap-5">
                             <div className="flex flex-row gap-0.5">
