@@ -20,9 +20,7 @@ function HomeFieldAgent() {
     const [requestsDropdown, setRequestsDropdown] = useState(false)
     const [error, setError] = useState(false)
     const [spinner, setSpinner] = useState(true)
-    const [propertyTypeSelector, setPropertyTypeSelector] = useState(false)
-    const [selectedPropertyType, setSelectedPropertyType] = useState()
-
+   
     const fetchPropertiesAndPropertyDealersAddedByFieldAgent = useCallback(async () => {
         try {
             setError(false)
@@ -84,56 +82,9 @@ function HomeFieldAgent() {
                 })
             }} />}
 
-            {propertyTypeSelector &&
-                <div className="top-20 fixed w-full h-screen flex justify-center z-20" onClick={() => setPropertyTypeSelector(false)}>
-                    <div className="rounded-lg border-2 shadow-2xl bg-white p-2 h-fit" onClick={e => e.stopPropagation()}>
-                        <p className="font-semibold mb-2">Select a property type</p>
-                        <div className="mb-1">
-                            <input className="mr-1" type="radio" id="agricultural" name="property" value="agricultural" onChange={e => {
-                                if (e.target.checked) {
-                                    setSelectedPropertyType(e.target.value)
-                                } else {
-                                    setSelectedPropertyType(null)
-                                }
-                            }} />
-                            <label htmlFor="property">Agricultural</label>
-                        </div>
-
-                        <div className="mb-1">
-                            <input className="mr-1" type="radio" id="commercial" name="property" value="commercial" onChange={e => {
-                                if (e.target.checked) {
-                                    setSelectedPropertyType(e.target.value)
-                                } else {
-                                    setSelectedPropertyType(null)
-                                }
-                            }} />
-                            <label htmlFor="property">Commercial</label>
-                        </div>
-
-                        <div className="mb-2">
-                            <input className="mr-1" type="radio" id="residential" name="property" value="residential" onChange={e => {
-                                if (e.target.checked) {
-                                    setSelectedPropertyType(e.target.value)
-                                } else {
-                                    setSelectedPropertyType(null)
-                                }
-                            }} />
-                            <label htmlFor="property">Residential</label>
-                        </div>
-                        <div className=" w-full flex justify-center">
-                            <button type='button' className="bg-blue-500 text-white font-medium rounded p-1 w-fit" onClick={() => {
-                                if (selectedPropertyType === 'agricultural') {
-                                    navigate('/field-agent/add-agricultural-property')
-                                }
-                            }}>Select</button>
-                        </div>
-                    </div>
-                </div>
-            }
-
 
             {!error && !spinner && !alert.isAlertModal &&
-                <div className={`relative flex flex-col md:flex-row pt-32 md:pt-20 pb-4 pl-2 sm:pl-6 md:pl-8 lg:pl-28 pr-2 sm:pr-6 md:pr-8 lg:pr-28 gap-4 bg-slate-100 min-h-screen ${propertyTypeSelector ? 'blur' : ''}`} onClick={() => {
+                <div className='relative flex flex-col md:flex-row pt-32 md:pt-20 pb-4 pl-2 sm:pl-6 md:pl-8 lg:pl-28 pr-2 sm:pr-6 md:pr-8 lg:pr-28 gap-4 bg-slate-100 min-h-screen ' onClick={() => {
                     setRequestsDropdown(false)
                 }}>
 
@@ -181,7 +132,7 @@ function HomeFieldAgent() {
                         <div className="flex flex-row gap-3 w-full place-content-center">
                             <button className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit" onClick={e => {
                                 e.stopPropagation()
-                                setPropertyTypeSelector(true)
+                                navigate('/field-agent/add-property')
                             }}>Add Property</button>
                             <Link to='/field-agent/add-property-dealer' className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit" >Add Property Dealer</Link>
                         </div>

@@ -5,6 +5,7 @@ function AlertModal(props) {
     const navigate = useNavigate()
     const { message, type, alertModalRemover, routeTo } = props
     const routeToPage = () => {
+        console.log('here')
         navigate(routeTo)
     }
     return (

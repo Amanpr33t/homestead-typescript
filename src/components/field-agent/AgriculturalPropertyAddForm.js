@@ -1,28 +1,24 @@
 
 import { Fragment, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import AlertModal from '../AlertModal'
-import VerifyPropertyDealerBeforeAddingProperty from './VerifyPropertyDealerBeforeAddingProperty'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
 import MapComponent from "../MapComponent"
+import Spinner from "../Spinner"
+import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPropertyAfterSubmission"
 
 //This component is a form used by a field agent to add a property dealer
 function AgriculturalPropertyAddForm() {
     const navigate = useNavigate()
-    const [propertyDealer, setPropertyDealer] = useState()
-    const [isPropertyDealerAvailable, setIsPropertyDealerAvailable] = useState(false)
+    const params = useParams()
     const fieldAgentAuthToken = localStorage.getItem('homestead-field-agent-authToken') //This variable is the authentication token stored in local storage
-    const propertyDealerSetterFunction = (dealer) => {
-        setIsPropertyDealerAvailable(true)
-        setPropertyDealer(dealer)
-    }
-
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
         alertMessage: ''
     })
+    const [spinner, setSpinner] = useState(false)
 
     const [landSize, setLandSize] = useState('')
     const [landSizeUnit, setLandSizeUnit] = useState('')
@@ -89,17 +85,18 @@ function AgriculturalPropertyAddForm() {
     const [roadError, setRoadError] = useState(false)
     const roadOptions = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
 
-    const [isLegalResetrictions, setIsLegalRestrictions] = useState(false)
+    const [isLegalRestrictions, setIsLegalRestrictions] = useState(false)
     const [selectedLegalRestriction, setSelectedLegalRestriction] = useState()
     const [legalRestrictionError, setLegalRestrictionError] = useState(false)
     const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
     const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
 
-    const [numberOfTubewells, setNumberOfTubewells] = useState(0)
 
     const [nearbyTown, setNearbyTown] = useState('')
 
     const states = ['Chandigarh', 'Punjab', 'Haryana']
+
+    const [propertyData, setPropertyData] = useState()
 
     const agriculturalLandImageHandler = (event) => {
         setAgriculturalLandImageFileError(false)
@@ -227,7 +224,7 @@ function AgriculturalPropertyAddForm() {
 
         }
 
-        if (!isLegalResetrictions) {
+        if (!isLegalRestrictions) {
             setLegalRestrictionError(true)
 
         } else if (selectedLegalRestriction && !legalRestrictionDetails.trim()) {
@@ -237,7 +234,7 @@ function AgriculturalPropertyAddForm() {
 
     const formSubmit = async (e) => {
         e.preventDefault()
-        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize.trim() || +landSize.trim() === 0 || !landSizeUnit || (landSize.trim().startsWith('0') && landSize.trim().slice(0, 2) !== '0.') || landSize.trim().startsWith('.') || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || !isLegalResetrictions || (selectedLegalRestriction && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) || ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) || ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir)))) {
+        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize.trim() || +landSize.trim() === 0 || !landSizeUnit || (landSize.trim().startsWith('0') && landSize.trim().slice(0, 2) !== '0.') || landSize.trim().startsWith('.') || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || !isLegalRestrictions || (selectedLegalRestriction && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) || ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) || ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir)))) {
             errorCheckingBeforeSubmit()
             setAlert({
                 isAlertModal: true,
@@ -246,24 +243,24 @@ function AgriculturalPropertyAddForm() {
             })
             return
         }
-        const propertyData = {
-            //propertyDealerId: propertyDealer._id,
+        const finalPropertyData = {
+            addedByPropertyDealer: params.dealerId,
             landSize: {
                 size: +landSize,
                 unit: landSizeUnit,
-                details: landSizeDetails.trim()[0].toUpperCase() + landSizeDetails.trim().slice(1),
+                details: landSizeDetails.trim() && (landSizeDetails.trim()[0].toUpperCase() + landSizeDetails.trim().slice(1)),
             },
             location: {
                 name: {
-                    village: village.trim()[0].toUpperCase() + village.trim().slice(1),
-                    city: city.trim()[0].toUpperCase() + city.trim().slice(1),
+                    village: village.trim() && (village.trim()[0].toUpperCase() + village.trim().slice(1)),
+                    city: city.trim() && (city.trim()[0].toUpperCase() + city.trim().slice(1)),
                     tehsil: tehsil,
                     district,
                     state
                 }
             },
-            agriculturalLandImageUrl: agricultureLandImageUpload,
-            contractImageUrl: contractImageUpload,
+            //agriculturalLandImagesUrl,
+            //contractImagesUrl,
             numberOfOwners,
             waterSource: {
                 canal: canalNameArray,
@@ -274,8 +271,9 @@ function AgriculturalPropertyAddForm() {
                 }
             },
             reservoir: {
+                isReservoir,
                 type: typeOfReservoir,
-                capacityOfPrivateReservoir: +capacityOfPrivateReservoir.trim(),
+                capacityOfPrivateReservoir: capacityOfPrivateReservoir.trim() && +capacityOfPrivateReservoir.trim(),
                 unitOfCapacityForPrivateReservoir
             },
             irrigationSystem: irrigationSystemArray,
@@ -286,172 +284,40 @@ function AgriculturalPropertyAddForm() {
             crops: [cropArray],
             road: {
                 type: roadType,
-                details: roadDetails.trim()[0].toUpperCase() + roadDetails.trim().slice(1),
+                details: roadDetails.trim() && (roadDetails.trim()[0].toUpperCase() + roadDetails.trim().slice(1)),
             },
             legalRestrictions: {
-                isLegalResetrictions,
-                details: legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1),
+                isLegalRestrictions,
+                details: legalRestrictionDetails.trim() && (legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1)),
             },
-            nearbyTown: nearbyTown.trim()[0].toUpperCase() + nearbyTown.trim().slice(1),
+            nearbyTown: nearbyTown.trim() && nearbyTown.trim()[0].toUpperCase() + nearbyTown.trim().slice(1),
         }
-        try {
-            let agriculturalLandImagesUrl = []
-            agricultureLandImageUpload.length && agricultureLandImageUpload.forEach(async (image) => {
-                const formData = new FormData()
-                formData.append('file', image)
-                formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
-                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                    method: 'post',
-                    body: formData
-                })
-                const cloudinaryData = await cloudinaryResponse.json()
-                if (cloudinaryData && cloudinaryData.error) {
-                    agriculturalLandImagesUrl = []
-                    throw new Error('Some error occured')
-                }
-                agriculturalLandImagesUrl.push(cloudinaryData.secure_url)
-            })
-
-            let contractImagesUrl = []
-            contractImageUpload.length && contractImageUpload.forEach(async (image) => {
-                const formData = new FormData()
-                formData.append('file', image)
-                formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
-                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                    method: 'post',
-                    body: formData
-                })
-                const cloudinaryData = await cloudinaryResponse.json()
-                if (cloudinaryData && cloudinaryData.error) {
-                    contractImagesUrl = []
-                    throw new Error('Some error occured')
-                }
-                contractImagesUrl.push(cloudinaryData.secure_url)
-            })
-
-            const propertyData = {
-                // addedByPropertyDealer: propertyDealer._id,
-                landSize: {
-                    size: +landSize,
-                    unit: landSizeUnit,
-                    details: landSizeDetails.trim()[0].toUpperCase() + landSizeDetails.trim().slice(1),
-                },
-                location: {
-                    name: {
-                        village: village.trim()[0].toUpperCase() + village.trim().slice(1),
-                        city: city.trim()[0].toUpperCase() + city.trim().slice(1),
-                        tehsil: tehsil,
-                        district,
-                        state
-                    }
-                },
-                agriculturalLandImagesUrl,
-                contractImagesUrl,
-                numberOfOwners,
-                waterSource: {
-                    canal: canalNameArray,
-                    river: riverNameArray,
-                    tubewells: {
-                        numberOfTubewells: tubewellDepthArray.length,
-                        depth: tubewellDepthArray
-                    }
-                },
-                reservoir: {
-                    isReservoir,
-                    type: typeOfReservoir,
-                    capacityOfPrivateReservoir: +capacityOfPrivateReservoir.trim(),
-                    unitOfCapacityForPrivateReservoir
-                },
-                irrigationSystem: irrigationSystemArray,
-                priceDemanded: {
-                    number: +priceDemandedNumber.trim(),
-                    words: capitaliseFirstAlphabetsOfAllWordsOfASentence(priceDemandedWords.trim())
-                },
-                crops: [cropArray],
-                road: {
-                    type: roadType,
-                    details: roadDetails.trim()[0].toUpperCase() + roadDetails.trim().slice(1),
-                },
-                legalRestrictions: {
-                    isLegalResetrictions,
-                    details: legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1),
-                },
-                nearbyTown: nearbyTown.trim()[0].toUpperCase() + nearbyTown.trim().slice(1),
-            }
-            console.log(propertyData)
-
-            /*const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    firmName,
-                    propertyDealerName,
-                    experience,
-                    propertyType,
-                    addressArray,
-                    gstNumber,
-                    about,
-                    firmLogoUrl: cloudinaryData.secure_url,
-                    email,
-                    contactNumber
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'ok') {
-                setSpinner(false)
-                setRouteTo('/field-agent')
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'success',
-                    alertMessage: 'Property dealer added successfully'
-                })
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-field-agent-authToken")
-                setRouteTo('/field-agent/signIn')
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'warning',
-                    alertMessage: 'Session expired. Please login again'
-                })
-            } else {
-                throw new Error('Some error occured')
-            }*/
-        } catch (error) {
-            setAlert({
-                isAlertModal: true,
-                alertType: 'warning',
-                alertMessage: 'Some error occured'
-            })
-            return
-        }
+        setPropertyData(finalPropertyData)
     }
 
 
     return (
         <Fragment>
+            {spinner && <Spinner />}
 
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} alertModalRemover={() => {
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
                     isAlertModal: false,
                     alertType: '',
-                    alertMessage: ''
+                    alertMessage: '',
+                    routeTo: null
                 })
             }} />}
 
-            {/*!isPropertyDealerAvailable && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />*/}
+            {propertyData && <ReviewAgriculturalPropertyAfterSubmission
+                propertyData={propertyData}
+                agriculturalLandImageFile={agriculturalLandImageFile}
+                contractImageFile={contractImageFile}
+                agricultureLandImageUpload={agricultureLandImageUpload}
+                contractImageUpload={contractImageUpload}
+                propertyDataReset={() => setPropertyData(null)} />}
 
-            {<div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''}`} >
+            {!propertyData && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''}`} >
 
                 <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
@@ -468,7 +334,7 @@ function AgriculturalPropertyAddForm() {
 
                     {/*<div className="p-2 pb-5 pt-5">
                         <MapComponent />
-    </div>*/}
+                      </div>*/}
 
                     {/* contract*/}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
@@ -1097,7 +963,7 @@ function AgriculturalPropertyAddForm() {
                         </div>*/}
 
                     {/*nearby town */}
-                    <div className="flex flex-col p-2 pb-5 pt-5  bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5  ">
                         <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500 pb-1" htmlFor="nearby-town">Nearby town (optional)</label>
                             <input type="text" id="nearby-town" name="nearby-town"
@@ -1106,7 +972,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     {/*images */}
-                    <div className="flex flex-col p-2 pb-5 pt-5">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         {agriculturalLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         <div className="flex flex-row gap-5">
                             <div className="flex flex-row gap-0.5">
