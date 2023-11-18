@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react"
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
+import { useNavigate } from "react-router-dom";
 
 //This component is used to review the property dealer data submitted
 function ReviewPropertyDealerAfterSubmission(props) {
@@ -8,7 +9,6 @@ function ReviewPropertyDealerAfterSubmission(props) {
         firmName,
         propertyDealerName,
         experience,
-        propertyType,
         addressArray,
         gstNumber,
         about,
@@ -18,6 +18,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
         contactNumber,
         hideReviewForm
     } = props
+    const navigate = useNavigate()
 
     const [spinner, setSpinner] = useState(false) //used to set spinner
     const [alert, setAlert] = useState({
@@ -25,7 +26,6 @@ function ReviewPropertyDealerAfterSubmission(props) {
         alertType: '',
         alertMessage: ''
     }) //used to set the alert modal
-    const [routeTo, setRouteTo] = useState('') //This state stores a string which is the url to be fed to useNavigate
 
     //The code in useEffect hook is used to scroll to the top of the page
     useEffect(() => {
@@ -34,9 +34,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
 
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
-    //This function is used to send details to backend API
-    const saveDetailsToDatabase = async () => {
-        setSpinner(true)
+    const imageUpload = async () => {
         try {
             const formData = new FormData()
             formData.append('file', firmLogoImageUpload)
@@ -51,57 +49,65 @@ function ReviewPropertyDealerAfterSubmission(props) {
             if (cloudinaryData && cloudinaryData.error) {
                 throw new Error('Some error occured')
             }
-            
-            if (cloudinaryData && cloudinaryData.secure_url) {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        firmName,
-                        propertyDealerName,
-                        experience,
-                        propertyType,
-                        addressArray,
-                        gstNumber,
-                        about,
-                        firmLogoUrl: cloudinaryData.secure_url,
-                        email,
-                        contactNumber
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    }
+            return cloudinaryData
+        } catch (error) {
+            setSpinner(false)
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured'
+            })
+            return
+        }
+    }
+
+    //This function is used to send details to backend API
+    const saveDetailsToDatabase = async () => {
+        setSpinner(true)
+        try {
+            let cloudinaryData = ''
+            if (firmLogoImageUpload) {
+                cloudinaryData = await imageUpload()
+            }
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    firmName,
+                    propertyDealerName,
+                    experience,
+                    addressArray,
+                    gstNumber,
+                    about,
+                    firmLogoUrl: cloudinaryData.secure_url,
+                    email,
+                    contactNumber
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            if (data.status === 'ok') {
+                setSpinner(false)
+                setAlert({
+                    isAlertModal: true,
+                    alertType: 'success',
+                    alertMessage: 'Property dealer added successfully',
+                    routeTo: '/field-agent'
                 })
-                if (!response.ok) {
-                    throw new Error('Some error occured')
-                }
-                const data = await response.json()
-                if (data.status === 'ok') {
-                    setSpinner(false)
-                    setRouteTo('/field-agent')
-                    setAlert({
-                        isAlertModal: true,
-                        alertType: 'success',
-                        alertMessage: 'Property dealer added successfully'
-                    })
-                } else if (data.status === 'invalid_authentication') {
-                    setSpinner(false)
-                    localStorage.removeItem("homestead-field-agent-authToken")
-                    setRouteTo('/field-agent/signIn')
-                    setAlert({
-                        isAlertModal: true,
-                        alertType: 'warning',
-                        alertMessage: 'Session expired. Please login again'
-                    })
-                } else {
-                    throw new Error('Some error occured')
-                }
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-field-agent-authToken")
+                navigate('/field-agent/signIn')
             } else {
                 throw new Error('Some error occured')
             }
         } catch (error) {
             setSpinner(false)
-            setRouteTo('')
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -116,11 +122,12 @@ function ReviewPropertyDealerAfterSubmission(props) {
             {spinner && <Spinner />}
 
             {/*The code bolow is used to show an alert modal to the user */}
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={routeTo} alertModalRemover={() => {
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
                     isAlertModal: false,
                     alertType: '',
-                    alertMessage: ''
+                    alertMessage: '',
+                    routeTo: null
                 })
             }} />}
 
@@ -156,14 +163,6 @@ function ReviewPropertyDealerAfterSubmission(props) {
                             <td className="pt-2 pb-2 text-center" >{gstNumber}</td>
                         </tr>
                         <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">property type</td>
-                            <td className="flex flex-col pt-2 pb-2 text-center">
-                                {propertyType.map(type => {
-                                    return <p key={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</p>
-                                })}
-                            </td>
-                        </tr>
-                        <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
                                 {addressArray.map(address => {
@@ -186,19 +185,17 @@ function ReviewPropertyDealerAfterSubmission(props) {
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contact Number</td>
                             <td className="pt-2 pb-2 text-center">{contactNumber}</td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
+                        {firmLogoImageFile && <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm logo</td>
                             <td className="pt-2 pb-2 flex justify-center">
                                 <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />
                             </td>
-                        </tr>
+                        </tr>}
                     </tbody>
                 </table>
-                 <div className="w-full flex gap-4 flex-row place-content-center pt-4">
+                <div className="w-full flex gap-4 flex-row place-content-center pt-4">
                     <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={saveDetailsToDatabase}>Save</button>
-                    <button type='button' className="bg-orange-400 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
-                        hideReviewForm()
-                    }}>Edit</button>
+                    <button type='button' className="bg-orange-400 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={hideReviewForm}>Edit</button>
                 </div>
             </div>
 

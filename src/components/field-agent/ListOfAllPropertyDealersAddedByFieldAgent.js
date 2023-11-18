@@ -7,10 +7,14 @@ import AlertModal from "../AlertModal"
 
 function ListOfAllPropertyDealersAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
+
     const [propertyDealers, setPropertyDealers] = useState([])
+
     const [selectedPropertyDealer, setSelectedPropertyDealer] = useState(null)
     let index = 0
+
     const [spinner, setSpinner] = useState(true)
+
     const [error, setError] = useState(false)
     const [alert, setAlert] = useState({
         isAlertModal: false,

@@ -14,21 +14,28 @@ function FieldAgentSignIn() {
 
     const [emailForPasswordChange, setEmailForPasswordChange] = useState('') //This state stores the email for which the user wants to change password.
     const [isEmailForPasswordChangeValid, seetEmailForPasswordChangeValid] = useState(true) //This state it true when the format of email, for the password change, is valid.
+
     const [email, setEmail] = useState('') //This state stores the email provided by the user for sign in.
     const [emailValid, setEmailValid] = useState(true) //This state is true when if the email provided by the user for sigin in is valid, and vice-versa
+
     const [password, setPassword] = useState('') //This state stores the password provided by the user for sign in.
     const [passwordValid, setPasswordValid] = useState(true) //This state is true when if the password provided by the user for sign in is valid, and vice-versa
+
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
         alertMessage: ''
     }) //This state is used to show or hide alert modal
+
     const [isSpinner, setIsSpinner] = useState(false) //This state is used to show or hide spinner
+
     const [isForgotPassword, setIsForgotPassword] = useState(false) //This state is set to true when the chooses to change password
     const [confirmOTP, setConfirmOTP] = useState(false) //This state is set to true if the OTP for password change has been successfully sent to the email of the user.
     const [newPasswordEnabler, setNewPasswordEnabler] = useState(false) //This state is set to true when the user provides the correct OTP to our API
     const [oneTimePassword, setOneTimePassword] = useState('') //This state stores the OTP the user receives from the server
+
     const [buttonText, setButtonText] = useState('Sign in') //This state manages the text to be shown inside the submit button in our form
+
     const [newPassword, setNewPassword] = useState('') //This state stores the new password provided by the user
     const [newPasswordValid, setNewPasswordValid] = useState(true) //This state is true if the new password provided by the user for signin is in valid format, and vice-versa
     const [confirmNewPassword, setConfirmNewPassword] = useState('') //This state stores the new confirmed password provided by the user

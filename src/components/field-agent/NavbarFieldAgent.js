@@ -1,4 +1,3 @@
-
 import { Fragment, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { FaHome } from "react-icons/fa"
@@ -8,9 +7,13 @@ import Spinner from "../Spinner"
 //This component is the navigation bar
 function NavbarFieldAgent() {
     const navigate = useNavigate()
-    const [alertMessage, setAlertMesssage] = useState() //This state is used set message in the alert modal
-    const [alertType, setAlertType] = useState() //This state is used set alert type in the alert modal
-    const [alertModal, setAlertModal] = useState(false) //This state is used to show the alert mdoal if an error occurs
+    const [alert, setAlert] = useState({
+        isAlertModal: false,
+        alertType: '',
+        alertMessage: '',
+        routeTo: null
+    })
+
     const [isSpinner, setIsSpinner] = useState(false)
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
@@ -37,15 +40,23 @@ function NavbarFieldAgent() {
             }
         } catch (error) {
             setIsSpinner(false)
-            setAlertModal(true)
-            setAlertType('warning')
-            setAlertMesssage('Some error occured')
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured',
+                routeTo: null
+            })
         }
     }
+
     return (
         <Fragment>
-            {/*The code bolow is used to show an alert modal if an error occurs */}
-            {alertModal && <AlertModal message={alertMessage} type={alertType} alertModalRemover={() => setAlertModal(false)} />}
+             {/*The code bolow is used to show an alert modal to the user */}
+             {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType}  alertModalRemover={() => setAlert({
+                isAlertModal: false,
+                alertType: '',
+                alertMessage: ''
+            })} />}
 
             {isSpinner && <Spinner />}
 
@@ -57,16 +68,9 @@ function NavbarFieldAgent() {
                             <p className='font-semibold text-3xl md:text-4xl italic text-gray-600' >HomeStead </p>
                         </div>
                         {authToken && <div className="flex flex-row  gap-4 pr-2 md:pr-6">
-                            {/*<Link to='/field-agent/property-dealers-added' className='hidden md:block font-semibold text-xl sm:text-xl italic text-gray-500 hover:text-gray-600 pb-1 pt-1' >Property-Dealers</Link>
-                            <Link to='/field-agent/properties-added' className='hidden md:block  font-semibold text-xl sm:text-xl italic text-gray-500 hover:text-gray-600 pb-1 pt-1' >Properties</Link>*/}
                             <button className='font-semibold text-xl sm:text-xl italic text-red-500 hover:text-red-600 pb-1 pt-1' onClick={logoutFunction}>Logout</button>
                         </div>}
                     </div>
-
-                    {/*authToken && <div className="md:hidden flex flex-row place-content-center gap-10 sm:gap-10 border-b shadow pl-4">
-                        <Link to='/field-agent/property-dealers-added' className=' font-semibold text-xl sm:text-xl italic text-gray-500 hover:text-gray-600 pb-1 pt-1' >Property-Dealers</Link>
-                        <Link to='/field-agent/properties-added' className=' font-semibold text-xl sm:text-xl italic text-gray-500 hover:text-gray-600 pb-1 pt-1' >Properties</Link>
-                        </div>*/}
                 </nav>
             </div>
         </Fragment>

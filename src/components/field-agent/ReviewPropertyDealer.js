@@ -1,4 +1,4 @@
-import { Fragment, useEffect} from "react"
+import { Fragment, useEffect } from "react"
 
 //This component is used to review the property dealer data submitted
 function ReviewPropertyDealer(props) {
@@ -47,14 +47,6 @@ function ReviewPropertyDealer(props) {
                             <td className="pt-2 pb-2 text-center" >{dealer.gstNumber}</td>
                         </tr>
                         <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">property type</td>
-                            <td className="flex flex-col pt-2 pb-2 text-center">
-                                {dealer.propertyType.map(type => {
-                                    return <p key={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</p>
-                                })}
-                            </td>
-                        </tr>
-                        <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
                                 {dealer.addressArray.map(address => {
@@ -77,12 +69,12 @@ function ReviewPropertyDealer(props) {
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contact Number</td>
                             <td className="pt-2 pb-2 text-center">{dealer.contactNumber}</td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
+                        {dealer.firmLogoUrl && <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm logo</td>
                             <td className="pt-2 pb-2 flex justify-center">
                                 <img className='w-28 h-auto' src={dealer.firmLogoUrl} alt="" />
                             </td>
-                        </tr>
+                        </tr>}
                     </tbody>
                 </table>
             </div>

@@ -1,16 +1,11 @@
 
 import { Fragment, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { FaHome } from "react-icons/fa"
-import AlertModal from "../AlertModal"
-import Spinner from "../Spinner"
 import VerifyPropertyDealerBeforeAddingProperty from "./VerifyPropertyDealerBeforeAddingProperty"
 
-//This component is the navigation bar
 function AddProperty() {
     const navigate = useNavigate()
-    const [propertyTypeSelector, setPropertyTypeSelector] = useState(false)
-    //const [isPropertyDealerAvailable, setIsPropertyDealerAvailable] = useState(false)
+
     const [propertyDealerId, setPropertyDealerId] = useState()
     const [selectedPropertyType, setSelectedPropertyType] = useState()
 
@@ -24,7 +19,7 @@ function AddProperty() {
                 {!propertyDealerId && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />}
 
                 {propertyDealerId &&
-                    <div className="top-20 fixed w-full h-screen flex justify-center z-20" onClick={() => setPropertyTypeSelector(false)}>
+                    <div className="top-20 fixed w-full h-screen flex justify-center z-20" >
                         <div className="rounded-lg border-2 shadow-2xl bg-white p-2 h-fit" onClick={e => e.stopPropagation()}>
                             <p className="font-semibold mb-2">Select a property type</p>
                             <div className="mb-1">

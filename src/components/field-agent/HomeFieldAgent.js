@@ -4,26 +4,26 @@ import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 
-
-//This component is the navigation bar
 function HomeFieldAgent() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
         alertMessage: '',
         routeTo: null
     })
+
     const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState(0)
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState(0)
+
     const [requestsDropdown, setRequestsDropdown] = useState(false)
-    const [error, setError] = useState(false)
+
     const [spinner, setSpinner] = useState(true)
-   
+
     const fetchPropertiesAndPropertyDealersAddedByFieldAgent = useCallback(async () => {
         try {
-            setError(false)
             setSpinner(true)
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPropertyDealersAndPropertiesAddedByFieldAgent`, {
                 method: 'GET',
@@ -41,8 +41,7 @@ function HomeFieldAgent() {
                 setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent)
                 setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent)
                 return
-            }
-            if (data.status === 'invalid_authentication') {
+            }else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 setAlert({
@@ -53,8 +52,13 @@ function HomeFieldAgent() {
                 })
             }
         } catch (error) {
-            console.log(error)
-            setError(true)
+            localStorage.removeItem("homestead-field-agent-authToken")
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured. Please login again',
+                routeTo: '/field-agent/signIn'
+            })
             setSpinner(false)
         }
     }, [authToken])
@@ -66,14 +70,10 @@ function HomeFieldAgent() {
 
     return (
         <Fragment>
-            {spinner && !error && <Spinner />}
-            {error && !spinner && <div className="fixed top-32 w-full flex flex-col place-items-center">
-                <p>Some error occured</p>
-                <p className="text-red-500 cursor-pointer" onClick={fetchPropertiesAndPropertyDealersAddedByFieldAgent}>Try again</p>
-            </div>}
+            {spinner && <Spinner />}
 
 
-            {alert.isAlertModal && !error && !spinner && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
+            {alert.isAlertModal  && !spinner && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
                     isAlertModal: false,
                     alertType: '',
@@ -83,7 +83,7 @@ function HomeFieldAgent() {
             }} />}
 
 
-            {!error && !spinner && !alert.isAlertModal &&
+            {!spinner && !alert.isAlertModal &&
                 <div className='relative flex flex-col md:flex-row pt-32 md:pt-20 pb-4 pl-2 sm:pl-6 md:pl-8 lg:pl-28 pr-2 sm:pr-6 md:pr-8 lg:pr-28 gap-4 bg-slate-100 min-h-screen ' onClick={() => {
                     setRequestsDropdown(false)
                 }}>

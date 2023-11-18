@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 
@@ -13,17 +13,20 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
+    const [agriculturalLandImagesUrl, setAgriculturalLandImagesUrl] = useState([])
+    const [contractImagesUrl, setContractImagesUrl] = useState([])
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
-
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
-
     //This function is used to send details to backend API
-    const saveDetailsToDatabase = async () => {
+
+
+    const uploadImages = async () => {
         try {
-            let agriculturalLandImagesUrl = []
+            setAgriculturalLandImagesUrl([])
+            setContractImagesUrl([])
             setSpinner(true)
             agricultureLandImageUpload.length && agricultureLandImageUpload.forEach(async (image) => {
                 const formData = new FormData()
@@ -31,43 +34,51 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
                 //The fetch promise code is used to store image in cloudinary database
-                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'post',
                     body: formData
                 })
-                const cloudinaryData = await cloudinaryResponse.json()
-                if (cloudinaryData && cloudinaryData.error) {
-                    agriculturalLandImagesUrl = []
+                const data = await response.json()
+                if (data && data.error) {
+                    setAgriculturalLandImagesUrl([])
                     throw new Error('Some error occured')
+                } else {
+                    setAgriculturalLandImagesUrl(images => [...images, data.secure_url])
                 }
-                agriculturalLandImagesUrl.push(cloudinaryData.secure_url)
             })
 
-            let contractImagesUrl = []
             contractImageUpload.length && contractImageUpload.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
                 //The fetch promise code is used to store image in cloudinary database
-                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'post',
                     body: formData
                 })
-                const cloudinaryData = await cloudinaryResponse.json()
-                if (cloudinaryData && cloudinaryData.error) {
-                    contractImagesUrl = []
+                const data = await response.json()
+                if (data && data.error) {
+                    setContractImagesUrl([])
                     throw new Error('Some error occured')
+                } else {
+                    setContractImagesUrl(images => [...images, data.secure_url])
                 }
-                contractImagesUrl.push(cloudinaryData.secure_url)
             })
+        } catch (error) {
+            setSpinner(false)
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured',
+                routeTo: null
+            })
+            return
+        }
+    }
 
-            const finalPropertyData = {
-                agriculturalLandImagesUrl,
-                contractImagesUrl,
-                ...propertyData
-            }
-
+    const saveDetailsToDatabase = useCallback(async (finalPropertyData) => {
+        try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addAgriculturalProperty`, {
                 method: 'POST',
                 body: JSON.stringify(finalPropertyData),
@@ -86,7 +97,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                     isAlertModal: true,
                     alertType: 'success',
                     alertMessage: 'Property has been added successfully',
-                    routeTo: null
+                    routeTo: '/field-agent'
                 })
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
@@ -105,11 +116,24 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Some error occured'
+                alertMessage: 'Some error occured',
+                routeTo: null
             })
             return
         }
-    }
+
+
+    }, [authToken])
+
+    useEffect(() => {
+        if (agriculturalLandImagesUrl.length === agricultureLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
+            saveDetailsToDatabase({
+                agriculturalLandImagesUrl,
+                contractImagesUrl,
+                ...propertyData
+            })
+        }
+    }, [agriculturalLandImagesUrl.length, agricultureLandImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, agriculturalLandImagesUrl, contractImagesUrl, propertyData])
 
     return (
         <Fragment>
@@ -125,163 +149,189 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 })
             }} />}
 
-            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center ${spinner || alert.isAlertModal ? 'blur' : ''}`} >
-                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 pt-0.5 h-8 z-20 " onClick={propertyDataReset}>Back</button>
+            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${spinner || alert.isAlertModal ? 'blur' : ''}`} >
+                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 pt-0.5 h-8 z-30 " onClick={() => {
+                    propertyDataReset()
+                    //setFinalPropertyData(null)
+                }}>Back</button>
 
                 <div className="w-full flex justify-center pb-4">
-                    <p className="text-2xl font-bold text-center">Review the details</p>
+                    <p className="text-2xl font-semibold text-center">Review the details</p>
                 </div>
 
                 <table className="w-full sm:w-10/12 md:w-9/12 lg:w-7/12 table-auto" onClick={e => e.stopPropagation()}>
                     <thead >
-                        <tr className="bg-gray-200 border-2 border-gray-200">
-                            <th className="w-40 text-xl pt-2 pb-2">Field</th>
+                        <tr className="bg-gray-200 border-2 border-gray-300">
+                            <th className="w-28 text-xl pt-4 pb-4 sm:w-fit">Field</th>
                             <th className="text-xl ">Data</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm name</td>
-                            <td className=" pt-2 pb-2 text-center">ABCD Private limited</td>
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
+                            <td className=" pt-4 pb-4 text-center">ABCD Private limited</td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Size</td>
-                            <td className="pt-2 pb-2 text-center">
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
+                            <td className="pt-4 pb-4 text-center">
                                 <p>{propertyData.landSize.size} {propertyData.landSize.unit}</p>
                                 {propertyData.landSize.details && < p > {propertyData.details}</p>}
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Location</td>
-                            <td className="pt-2 pb-2 text-center">
-                                {propertyData.location.name.village && <p>{propertyData.location.name.village}</p>}
-                                {propertyData.location.name.city && <p>{propertyData.location.name.city}</p>}
-                                {propertyData.location.name.tehsil && <p>{propertyData.location.name.tehsil}</p>}
-                                {<p>{propertyData.location.name.district}</p>}
-                                {<p>{propertyData.location.name.state}</p>}
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Location</td>
+                            <td className="pt-4 pb-4 flex flex-col gap-1 place-items-center">
+                                {propertyData.location.name.village && <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">Village:</p>
+                                    <p>{propertyData.location.name.village}</p>
+                                </div>}
+                                {propertyData.location.name.city && <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">City:</p>
+                                    <p>{propertyData.location.name.city}</p>
+                                </div>}
+                                {propertyData.location.name.tehsil && <div className="flex flex-row gap-2">
+                                    <h2 className="font-semibold">Tehsil:</h2>
+                                    <p>{propertyData.location.name.tehsil}</p>
+                                </div>}
+                                <div className=" flex flex-row gap-2">
+                                    <p className="font-semibold">District:</p>
+                                    <p>{propertyData.location.name.district}</p>
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">State:</p>
+                                    <p>{propertyData.location.name.state}</p>
+                                </div>
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Number of owners</td>
-                            <td className="pt-2 pb-2 text-center" >{propertyData.numberOfOwners}</td>
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Number of owners</td>
+                            <td className="pt-4 pb-4 text-center" >{propertyData.numberOfOwners}</td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Water Source</td>
-                            <td className="flex flex-col pt-2 pb-2 text-center">
-                                {propertyData.waterSource.canal.length > 0 && <div className="flex flex-row">
-                                    <p>Canal</p>
-                                    <div>
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Water Source</td>
+                            <td className="flex flex-col gap-2 place-items-center pt-4 pb-4 text-center">
+                                {propertyData.waterSource.canal.length > 0 && <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">Canal:</p>
+                                    <div className="flex flex-col">
                                         {propertyData.waterSource.canal.map(canal => {
                                             return <p key={Math.random()}>{canal}</p>
                                         })}
                                     </div>
                                 </div>}
-                                {propertyData.waterSource.river.length > 0 && <div className="flex flex-row">
-                                    <p>River</p>
-                                    <div>
+                                {propertyData.waterSource.river.length > 0 && <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">River:</p>
+                                    <div className="flex flex-col">
                                         {propertyData.waterSource.river.map(river => {
                                             return <p key={Math.random()}>{river}</p>
                                         })}
                                     </div>
                                 </div>}
-                                {propertyData.waterSource.tubewells.numberOfTubewells > 0 && <div className="flex flex-row">
-                                    <p>Tubewell</p>
-                                    <div>
+                                {propertyData.waterSource.tubewells.numberOfTubewells > 0 && <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">Tubewell Depth:</p>
+                                    <div className="flex flex-col">
                                         {propertyData.waterSource.tubewells.depth.map(depth => {
-                                            return <p key={Math.random()}>{depth}</p>
+                                            return <p key={Math.random()}>{depth} feet</p>
                                         })}
                                     </div>
                                 </div>}
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Reservoir</td>
-                            <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Reservoir</td>
+                            <td className="flex flex-row place-content-center gap-2 flex-wrap pt-4 pb-4 text-center">
                                 {!propertyData.reservoir.isReservoir &&
                                     <p>No</p>
                                 }
                                 {propertyData.reservoir.isReservoir &&
-                                    <><div>
-                                        <p>Type of Reservoir</p>
-                                        {propertyData.reservoir.type.map(type => {
-                                            return <p key={Math.random()}>{type}</p>
-                                        })}
-                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex flex-row gap-2">
+                                            <p className="font-semibold">Type of Reservoir:</p>
+                                            {propertyData.reservoir.type.map(type => {
+                                                return <p key={Math.random()}>{type}</p>
+                                            })}
+                                        </div>
                                         {propertyData.reservoir.type.includes('private') &&
-                                            <div>
-                                                <p>Capacity</p>
+                                            <div className="flex flex-row gap-2">
+                                                <p className="font-semibold">Capacity:</p>
                                                 <p>{propertyData.reservoir.capacityOfPrivateReservoir} {propertyData.reservoir.unitOfCapacityForPrivateReservoir}</p>
                                             </div>
                                         }
-                                    </>
+                                    </div>
                                 }
                             </td>
                         </tr>
-                        {propertyData.irrigationSystem.length > 0 && <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Irrigation System</td>
-                            <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
+                        {propertyData.irrigationSystem.length > 0 && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Irrigation System</td>
+                            <td className="flex flex-col place-items-center gap-0.5 flex-wrap pt-4 pb-4 text-center">
                                 {propertyData.irrigationSystem.map(system => {
-                                    return <p key={system}>{system}</p>
+                                    return <p key={Math.random()}>{system}</p>
                                 })}
                             </td>
                         </tr>}
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Price</td>
-                            <td className="pt-2 pb-2 text-center">
-                                <p>{propertyData.priceDemanded.number}</p>
-                                <p>{propertyData.priceDemanded.words}</p>
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
+                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                <div className="flex flex-row place-content-center gap-1">
+                                    <p className="font-semibold">Rs.</p>
+                                    <p>{propertyData.priceDemanded.number}</p>
+                                </div>
+                                <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.priceDemanded.words}</p>
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Crops</td>
-                            <td className="pt-2 pb-2 text-center">
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Crops</td>
+                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-0.5">
                                 {propertyData.crops.map(crop => {
-                                    return <p key={crop}>{crop}</p>
+                                    return <p key={Math.random()}>{crop}</p>
                                 })}
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Road type</td>
-                            <td className="pt-2 pb-2 text-center">
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road type</td>
+                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 <p>{propertyData.road.type}</p>
-                                {propertyData.road.details && <p>{propertyData.road.details}</p>}
+                                {propertyData.road.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.road.details}</p>}
                             </td>
                         </tr>
-                        {<tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Legal Restrictions</td>
-                            <td className="pt-2 pb-2 text-center">
-                                <p>{propertyData.legalRestrictions.isLegalRestrictions}</p>
-                                <p>{propertyData.legalRestrictions.details}</p>
+                        {<tr className="border-2 border-gray-300">
+                            <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
+                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
+                                {propertyData.legalRestrictions.isLegalRestrictions && <>
+                                    <p>Yes</p>
+                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
+                                </>}
                             </td>
-                            </tr>}
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Nearby town</td>
-                            <td className="pt-2 pb-2 text-center">
+                        </tr>}
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Nearby town</td>
+                            <td className="pt-4 pb-4 text-center">
                                 <p>{propertyData.nearbyTown}</p>
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land images</td>
-                            <td className="pt-2 pb-2 flex justify-center">
+                        <tr className="border-2 border-gray-300">
+                            <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
+                            <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                 {agriculturalLandImageFile.map(image => {
-                                    return <img key={Math.random()} className='w-28 h-auto' src={image} alt="" />;
+                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
                                 })}
                             </td>
                         </tr>
-                        {contractImageFile.length && <tr className="border-2 border-gray-200">
-                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract images</td>
-                            <td className="pt-2 pb-2 flex justify-center">
+                        {contractImageFile.length > 0 && <tr className="border-2 border-gray-300">
+                            <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
+                            <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                 {contractImageFile.map(image => {
-                                    return <img key={Math.random()} className='w-28 h-auto' src={image} alt="" />
+                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
                                 })}
                             </td>
                         </tr>}
                     </tbody>
                 </table>
                 <div className="w-full flex gap-4 flex-row place-content-center pt-4">
-                    <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={saveDetailsToDatabase}>Save</button>
+                    <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         propertyDataReset()
+                        //setFinalPropertyData(null)
                     }}>Edit</button>
                 </div>
             </div>

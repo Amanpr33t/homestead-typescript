@@ -4,21 +4,21 @@ import { useNavigate, useParams } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
-import MapComponent from "../MapComponent"
-import Spinner from "../Spinner"
+//import MapComponent from "../MapComponent"
 import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPropertyAfterSubmission"
+import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
 
 //This component is a form used by a field agent to add a property dealer
 function AgriculturalPropertyAddForm() {
     const navigate = useNavigate()
     const params = useParams()
-    const fieldAgentAuthToken = localStorage.getItem('homestead-field-agent-authToken') //This variable is the authentication token stored in local storage
+
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
-        alertMessage: ''
+        alertMessage: '',
+        routeTo: null
     })
-    const [spinner, setSpinner] = useState(false)
 
     const [landSize, setLandSize] = useState('')
     const [landSizeUnit, setLandSizeUnit] = useState('')
@@ -86,11 +86,9 @@ function AgriculturalPropertyAddForm() {
     const roadOptions = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
 
     const [isLegalRestrictions, setIsLegalRestrictions] = useState(false)
-    const [selectedLegalRestriction, setSelectedLegalRestriction] = useState()
     const [legalRestrictionError, setLegalRestrictionError] = useState(false)
     const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
     const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
-
 
     const [nearbyTown, setNearbyTown] = useState('')
 
@@ -109,23 +107,10 @@ function AgriculturalPropertyAddForm() {
         setContractImageUpload(array => [...array, event.target.files[0]])
     }
 
-    const arrayOfNumbersFromZeroToTen = Array.apply(null, Array(11))
-        .map(function (y, i) { return i })
-
     const arrayOfNumbersFromOneToTen = Array.apply(null, Array(10))
         .map(function (y, i) { return i + 1 })
 
-    // program to check the number of occurrence of a character
-
-    const capitaliseFirstAlphabetsOfAllWordsOfASentence = (str) => {
-        let words = str.split(' ')
-        let capitalizedWords = words.map(word => word.trim().charAt(0).toUpperCase() + word.slice(1))
-        let result = capitalizedWords.join(' ')
-        return result;
-    }
-
     const errorCheckingBeforeSubmit = () => {
-
         if (!agriculturalLandImageFile.length) {
             setAgriculturalLandImageFileError(true)
         }
@@ -141,7 +126,6 @@ function AgriculturalPropertyAddForm() {
         } else if (district.trim() && !state.trim()) {
             setDistrictError(false)
             setStateError(true)
-
         }
 
         if (!landSize.trim() || +landSize.trim() === 0 || !landSizeUnit) {
@@ -172,7 +156,6 @@ function AgriculturalPropertyAddForm() {
             }
         } else if ((priceDemandedNumber.trim().startsWith('0') && priceDemandedNumber.trim().slice(0, 2) !== '0.') || priceDemandedNumber.trim().startsWith('.')) {
             setPriceDemandedFormatError(true)
-
         }
 
         if (!isCanal && !isRiver && !isTubeWell) {
@@ -191,7 +174,6 @@ function AgriculturalPropertyAddForm() {
                 setTubewellDepthError(true)
                 setWaterSourceError(true)
             }
-
         }
 
         if (isReservoir === undefined) {
@@ -216,33 +198,34 @@ function AgriculturalPropertyAddForm() {
 
         if (!cropArray.length) {
             setCropError(true)
-
         }
 
         if (!roadType) {
             setRoadError(true)
-
         }
 
-        if (!isLegalRestrictions) {
+        if (isLegalRestrictions === undefined) {
             setLegalRestrictionError(true)
-
-        } else if (selectedLegalRestriction && !legalRestrictionDetails.trim()) {
-            setLegalRestrictionDetailsError(true)
+        } else {
+            if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
+                legalRestrictionDetailsError(true)
+            }
         }
     }
 
     const formSubmit = async (e) => {
         e.preventDefault()
-        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize.trim() || +landSize.trim() === 0 || !landSizeUnit || (landSize.trim().startsWith('0') && landSize.trim().slice(0, 2) !== '0.') || landSize.trim().startsWith('.') || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || !isLegalRestrictions || (selectedLegalRestriction && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) || ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) || ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir)))) {
+        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize.trim() || +landSize.trim() === 0 || !landSizeUnit || (landSize.trim().startsWith('0') && landSize.trim().slice(0, 2) !== '0.') || landSize.trim().startsWith('.') || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) || ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) || ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir)))) {
             errorCheckingBeforeSubmit()
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Provide all fields'
+                alertMessage: 'Provide all fields',
+                routeTo: null
             })
             return
         }
+
         const finalPropertyData = {
             addedByPropertyDealer: params.dealerId,
             landSize: {
@@ -259,8 +242,6 @@ function AgriculturalPropertyAddForm() {
                     state
                 }
             },
-            //agriculturalLandImagesUrl,
-            //contractImagesUrl,
             numberOfOwners,
             waterSource: {
                 canal: canalNameArray,
@@ -281,7 +262,7 @@ function AgriculturalPropertyAddForm() {
                 number: +priceDemandedNumber.trim(),
                 words: capitaliseFirstAlphabetsOfAllWordsOfASentence(priceDemandedWords.trim())
             },
-            crops: [cropArray],
+            crops: cropArray,
             road: {
                 type: roadType,
                 details: roadDetails.trim() && (roadDetails.trim()[0].toUpperCase() + roadDetails.trim().slice(1)),
@@ -298,7 +279,6 @@ function AgriculturalPropertyAddForm() {
 
     return (
         <Fragment>
-            {spinner && <Spinner />}
 
             {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
@@ -317,7 +297,7 @@ function AgriculturalPropertyAddForm() {
                 contractImageUpload={contractImageUpload}
                 propertyDataReset={() => setPropertyData(null)} />}
 
-            {!propertyData && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''}`} >
+            <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || propertyData ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                 <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
@@ -360,7 +340,6 @@ function AgriculturalPropertyAddForm() {
                         {districtError && !stateError && <p className="text-red-500">Select a state</p>}
                         {stateError && !districtError && <p className="text-red-500">Select a district</p>}
                         {stateError && districtError && <p className="text-red-500">Select district and state</p>}
-
 
                         <div className="flex flex-row gap-0.5">
                             <p className="h-4 text-2xl text-red-500">*</p>
@@ -479,7 +458,7 @@ function AgriculturalPropertyAddForm() {
                                         <option value='acre' >Acre</option>
                                     </select>
                                 </div>
-                                <textarea className="border-2 border-gray-400 rounded h-20 sm:w-80 p-1 resize-none" id="size" name="size" autoCorrect="on" autoComplete="new-password" placeholder="Add details regarding land size (optional)" value={landSizeDetails} onChange={e => {
+                                <textarea className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none" id="size" name="size" autoCorrect="on" autoComplete="new-password" placeholder="Add details regarding land size (optional)" value={landSizeDetails} onChange={e => {
                                     setLandSizeDetails(e.target.value)
                                 }} />
                             </div>
@@ -564,9 +543,7 @@ function AgriculturalPropertyAddForm() {
                                                         className={`w-28 border ${canalNameError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newCanal} onChange={e => {
                                                             setNewCanal(e.target.value)
                                                             setCanalNameError(false)
-                                                            if (!riverNameError && !tubewellDepthError) {
-                                                                setWaterSourceError(false)
-                                                            }
+                                                            setWaterSourceError(false)
                                                         }} />
                                                     <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={e => {
                                                         e.stopPropagation()
@@ -627,9 +604,7 @@ function AgriculturalPropertyAddForm() {
                                                         className={`w-28 border ${riverNameError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newRiver} onChange={e => {
                                                             setNewRiver(e.target.value)
                                                             setRiverNameError(false)
-                                                            if (!canalNameError && !tubewellDepthError) {
-                                                                setWaterSourceError(false)
-                                                            }
+                                                            setWaterSourceError(false)
                                                         }} />
                                                     <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
                                                         if (newRiver.trim() !== '') {
@@ -684,9 +659,7 @@ function AgriculturalPropertyAddForm() {
                                                             className={`w-28 border ${tubewellDepthError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newTubewell} onChange={e => {
                                                                 setNewTubewell(e.target.value)
                                                                 setTubewellDepthError(false)
-                                                                if (!canalNameError && !riverNameError) {
-                                                                    setWaterSourceError(false)
-                                                                }
+                                                                setWaterSourceError(false)
                                                             }} />
                                                         <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
                                                             if (newTubewell.trim() || +newTubewell.trim() !== 0) {
@@ -700,7 +673,6 @@ function AgriculturalPropertyAddForm() {
                                         </table>}
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -857,16 +829,6 @@ function AgriculturalPropertyAddForm() {
                                             crop.slice(1)}</label>
                                     </div>
                                 })}
-
-                                {/*<div className="flex flex-row gap-1">
-                                    <p className='w-28 border-2 border-gray-500  p-1 rounded'  >Bajra</p>
-                                    <button className="pl-2 pr-2 rounded bg-red-400 text-white text-xl font-semibold">X</button>
-                                </div>
-                                <div className="flex flex-row gap-1">
-                                    <input type="text" id="other-1" name="other-1"
-                                        className='w-28 border-2 border-gray-500  p-1 rounded' autoComplete="new-password" placeholder="crop" />
-                                    <button className="pl-2 pr-2 rounded bg-gray-800 text-white text-xl font-semibold">+</button>
-                                </div>*/}
                             </div>
                         </div>
                     </div>
@@ -898,7 +860,7 @@ function AgriculturalPropertyAddForm() {
                                 </div>
                             </div>
                             <div className="text-center">
-                                <textarea className="border-2 border-gray-400 p-1 rounded-lg h-20 sm:h-28  w-60 md:w-68 lg:w-80 resize-none" id="road-remark" name="road-remark" autoCorrect="on" autoComplete="new-password" placeholder="Add details about road here (optional)" onChange={e => setRoadDetails(e.target.value)} />
+                                <textarea className="border-2 border-gray-400 p-1 rounded-lg h-40  w-60 md:w-68 lg:w-80 resize-none" id="road-remark" name="road-remark" autoCorrect="on" autoComplete="new-password" placeholder="Add details about road here (optional)" onChange={e => setRoadDetails(e.target.value)} />
                             </div>
                         </div>
                     </div>
@@ -916,12 +878,11 @@ function AgriculturalPropertyAddForm() {
                                     <input className="mr-1 cursor-pointer" type="radio" id="yes" name="restrictions" value="yes" onChange={e => {
                                         setLegalRestrictionDetails('')
                                         setLegalRestrictionDetailsError(false)
-                                        setIsLegalRestrictions(true)
                                         setLegalRestrictionError(false)
                                         if (e.target.checked) {
-                                            setSelectedLegalRestriction(true)
+                                            setIsLegalRestrictions(true)
                                         } else {
-                                            setSelectedLegalRestriction(null)
+                                            setIsLegalRestrictions(false)
                                         }
                                     }} />
                                     <label htmlFor="yes">Yes</label>
@@ -929,38 +890,27 @@ function AgriculturalPropertyAddForm() {
 
                                 <div className="flex flex-row h-fit">
                                     <input className=" mr-1 cursor-pointer" type="radio" id="no" name="restrictions" value="no" onChange={e => {
-                                        setIsLegalRestrictions(true)
+                                        setLegalRestrictionDetails('')
+                                        setLegalRestrictionDetailsError(false)
                                         setLegalRestrictionError(false)
                                         if (e.target.checked) {
-                                            setSelectedLegalRestriction(false)
+                                            setIsLegalRestrictions(false)
                                         } else {
-                                            setSelectedLegalRestriction(null)
+                                            setIsLegalRestrictions(true)
                                         }
                                     }} />
                                     <label htmlFor="nos">No</label>
                                 </div>
                             </div>
                         </div>
-                        {selectedLegalRestriction && <div className="text-center">
-                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded-lg h-20 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
+                        {isLegalRestrictions && <div className="text-center">
+                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded-lg h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
                                 setLegalRestrictionDetailsError(false)
                                 setLegalRestrictionDetails(e.target.value)
                             }} />
                             {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                         </div>}
                     </div>
-
-                    {/* tubewells*/}
-                    {/*<div className="flex flex-col p-2 pb-5 pt-5">
-                        <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                            <label className="text-xl font-semibold text-gray-500" htmlFor="tubewell">Number of tubewells</label>
-                            <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="tubewell" id="tubewell" value={numberOfTubewells} onChange={e => {
-                                setNumberOfTubewells(e.target.value)
-                            }}>
-                                {arrayOfNumbersFromZeroToTen.map(number => <option key={number} value={number}>{number}</option>)}
-                            </select>
-                        </div>
-                        </div>*/}
 
                     {/*nearby town */}
                     <div className="flex flex-col p-2 pb-5 pt-5  ">
@@ -999,8 +949,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                 </form>
-
-            </div >}
+            </div >
         </Fragment >
     )
 }
