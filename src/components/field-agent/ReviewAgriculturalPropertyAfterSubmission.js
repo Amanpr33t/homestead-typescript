@@ -121,8 +121,6 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
             })
             return
         }
-
-
     }, [authToken])
 
     useEffect(() => {
@@ -169,7 +167,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                     <tbody>
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                            <td className=" pt-4 pb-4 text-center">ABCD Private limited</td>
+                            <td className=" pt-4 pb-4 text-center">To be added</td>
                         </tr>
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
@@ -293,7 +291,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                                 {propertyData.road.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.road.details}</p>}
                             </td>
                         </tr>
-                        {<tr className="border-2 border-gray-300">
+                        <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
@@ -302,13 +300,13 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                                     <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
                                 </>}
                             </td>
-                        </tr>}
-                        <tr className="border-2 border-gray-300">
+                        </tr>
+                        {propertyData.nearbyTown.trim() && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Nearby town</td>
                             <td className="pt-4 pb-4 text-center">
                                 <p>{propertyData.nearbyTown}</p>
                             </td>
-                        </tr>
+                        </tr>}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">

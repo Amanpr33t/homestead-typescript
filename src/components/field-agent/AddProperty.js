@@ -6,20 +6,25 @@ import VerifyPropertyDealerBeforeAddingProperty from "./VerifyPropertyDealerBefo
 function AddProperty() {
     const navigate = useNavigate()
 
-    const [propertyDealerId, setPropertyDealerId] = useState()
+    const [propertyDealer, setPropertyDealer] = useState()
     const [selectedPropertyType, setSelectedPropertyType] = useState()
 
-    const propertyDealerSetterFunction = (id) => {
-        setPropertyDealerId(id)
+    const propertyDealerSetterFunction = (dealer) => {
+        setPropertyDealer(dealer)
     }
 
     return (
         <Fragment>
             <div className='w-full min-h-screen'>
-                {!propertyDealerId && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />}
 
-                {propertyDealerId &&
-                    <div className="top-20 fixed w-full h-screen flex justify-center z-20" >
+                <div className="w-full fixed top-16 bg-white z-50">
+                    <button type='button' className="bg-green-500 ml-2 mt-2 text-white font-semibold rounded-lg pl-2 pr-2 h-8  " onClick={() => navigate('/field-agent')}>Home</button>
+                </div>
+
+                {!propertyDealer && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />}
+
+                {propertyDealer &&
+                    <div className="top-32 fixed w-full h-screen flex justify-center z-20">
                         <div className="rounded-lg border-2 shadow-2xl bg-white p-2 h-fit" onClick={e => e.stopPropagation()}>
                             <p className="font-semibold mb-2">Select a property type</p>
                             <div className="mb-1">
@@ -57,7 +62,7 @@ function AddProperty() {
                             <div className=" w-full flex justify-center">
                                 <button type='button' className="bg-blue-500 text-white font-medium rounded p-1 w-fit" onClick={() => {
                                     if (selectedPropertyType === 'agricultural') {
-                                        navigate(`/field-agent/add-property/agricultural/${propertyDealerId}`)
+                                        navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`)
                                     }
                                 }}>Select</button>
                             </div>

@@ -41,7 +41,7 @@ function HomeFieldAgent() {
                 setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent)
                 setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent)
                 return
-            }else if (data.status === 'invalid_authentication') {
+            } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 setAlert({
@@ -73,7 +73,7 @@ function HomeFieldAgent() {
             {spinner && <Spinner />}
 
 
-            {alert.isAlertModal  && !spinner && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
+            {alert.isAlertModal && !spinner && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
                     isAlertModal: false,
                     alertType: '',
@@ -130,14 +130,14 @@ function HomeFieldAgent() {
 
                     <div className={`w-full bg-white rounded-lg pt-6 pb-6 ${requestsDropdown || alert.isAlertModal ? 'blur' : ''}`} >
                         <div className="flex flex-row gap-3 w-full place-content-center">
-                            <button className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit" onClick={e => {
+                            <button className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 h-8 w-fit" onClick={e => {
                                 e.stopPropagation()
                                 navigate('/field-agent/add-property')
                             }}>Add Property</button>
                             <Link to='/field-agent/add-property-dealer' className="bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-1 h-8 w-fit" >Add Property Dealer</Link>
                         </div>
                         <div className="flex flex-col sm:flex-row  gap-3 w-full place-items-center sm:place-content-center mt-10">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded-lg h-fit hover:bg-sky-100">
+                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded-lg h-fit hover:bg-sky-100" onClick={() => numberOfPropertiesAdded ? navigate('/field-agent/properties-added') : null}>
                                 <p className="text-5xl text-green-800">{numberOfPropertiesAdded}</p>
                                 <p className="w-36">properties have been added by you</p>
                             </div>
@@ -147,7 +147,6 @@ function HomeFieldAgent() {
                             </div>
                         </div>
                     </div>
-
                 </div>}
 
         </Fragment>

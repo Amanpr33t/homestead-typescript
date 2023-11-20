@@ -125,9 +125,9 @@ function PropertyDealerAddForm() {
             })
             return
         }
-        //id: (addressArray.length + 1).toString(),
+
         const newAddress = {
-            flatPlotHouseNumber, areaSectorVillage, landmark, postalCode: +postalCode, city, state, district
+            id: (addressArray.length + 1).toString(), flatPlotHouseNumber, areaSectorVillage, landmark, postalCode: +postalCode, city, state, district
         }
         setAddressArray(addressArray => [...addressArray, newAddress])
         setFlatPlotHouseNumber('')
@@ -267,6 +267,7 @@ function PropertyDealerAddForm() {
     //This function is used to create an array of 51 numbers from 0-50
     const arrayOfFiftyNumbers = Array.apply(null, Array(51))
         .map(function (y, i) { return i })
+
 
     return (
         <Fragment>
@@ -449,7 +450,6 @@ function PropertyDealerAddForm() {
 
                             <div className="w-full text-center flex flex-row flex-wrap place-content-center gap-2 mt-2">
                                 {addressArray.length > 0 && addressArray.map(address => {
-
                                     return <div key={address.id} className="bg-gray-200 border-gray-400 rounded-lg w-60 p-1">
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>

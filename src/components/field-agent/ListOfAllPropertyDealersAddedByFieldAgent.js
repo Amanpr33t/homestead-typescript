@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import ReviewPropertyDealer from "./ReviewPropertyDealer"
 import Spinner from "../Spinner"
@@ -6,6 +6,7 @@ import AlertModal from "../AlertModal"
 //This component is the navigation bar
 
 function ListOfAllPropertyDealersAddedByFieldAgent() {
+    const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
     const [propertyDealers, setPropertyDealers] = useState([])
@@ -49,13 +50,16 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
                 })
             } else if (data.status === 'ok') {
                 setSpinner(false)
+                if (!data.propertyDealers.length) {
+                    return navigate('/field-agent')
+                }
                 setPropertyDealers(data.propertyDealers)
             }
         } catch (error) {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken])
+    }, [authToken, navigate])
 
     useEffect(() => {
         fetchPropertyDealers()
@@ -88,15 +92,15 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
 
             {!selectedPropertyDealer && !spinner && !error && <>
                 <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${spinner || error ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
-                    <Link to='/field-agent' className="bg-blue-500 text-white font-semibold p-1 rounded-lg" >Home</Link>
+                    <Link to='/field-agent' className="bg-green-500 text-white font-semibold p-1 rounded" >Home</Link>
                     {!spinner && !error && <div className="w-full flex justify-center mt-3">
                         <p className="text-xl font-bold">{propertyDealers.length} dealers have been added by you</p>
                     </div>}
                 </div>
 
-                {!spinner && !error && <div className='pt-40 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
+                <div className='pt-40 pb-10 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
 
-                    {propertyDealers.length && propertyDealers.map(dealer => {
+                    {propertyDealers.length > 0 && propertyDealers.map(dealer => {
                         index++
                         return <div key={dealer._id} className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded-lg shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row  place-content-between">
@@ -116,7 +120,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
                             </div>
                         </div>
                     })}
-                </div>}
+                </div>
             </>}
 
         </Fragment>

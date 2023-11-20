@@ -1,6 +1,6 @@
 
-import { Fragment, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Fragment, useState, useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
@@ -11,7 +11,18 @@ import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/strin
 //This component is a form used by a field agent to add a property dealer
 function AgriculturalPropertyAddForm() {
     const navigate = useNavigate()
-    const params = useParams()
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search)
+    const propertyDealerId = queryParams.get('id')
+    const propertyDealerLogoUrl = queryParams.get('logoUrl')
+    const propertyDealerFirmName = queryParams.get('firmName')
+
+    useEffect(() => {
+        if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName) {
+            navigate('/field-agent')
+        }
+    }, [propertyDealerId, propertyDealerLogoUrl, propertyDealerFirmName, navigate])
 
     const [alert, setAlert] = useState({
         isAlertModal: false,
@@ -227,7 +238,7 @@ function AgriculturalPropertyAddForm() {
         }
 
         const finalPropertyData = {
-            addedByPropertyDealer: params.dealerId,
+            addedByPropertyDealer: propertyDealerId,
             landSize: {
                 size: +landSize,
                 unit: landSizeUnit,
@@ -308,8 +319,8 @@ function AgriculturalPropertyAddForm() {
                 <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                     <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
-                        <p className="text-3xl font-bold text-gray-500 w-fit text-center">ABCD private limited</p>
-                        <img className="w-20 h-auto " src={''} alt='' />
+                        <p className="text-3xl font-bold text-gray-500 w-fit text-center">{propertyDealerFirmName}</p>
+                        {propertyDealerLogoUrl && <img className="w-20 h-auto " src={propertyDealerLogoUrl} alt='' />}
                     </div>
 
                     {/*<div className="p-2 pb-5 pt-5">

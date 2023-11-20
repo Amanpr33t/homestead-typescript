@@ -104,13 +104,14 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
             } else if (data.status === 'token_expired') {
                 setSpinner(false)
                 setShowOtopModal(false)
+                setOtp('')
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
                     alertMessage: 'OTP has expired.'
                 })
             } else if (data.status === 'ok') {
-                propertyDealerSetterFunction(data.dealerId)
+                propertyDealerSetterFunction(data.dealer)
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn')
@@ -138,7 +139,7 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
             {/* The code below is used to show a spinner */}
             {spinner && <Spinner />}
 
-            <div className={`w-full h-screen pt-24 flex  justify-center ${alert.isAlertModal || spinner ? 'blur-sm' : null}`} >
+            <div className={`w-full h-screen pt-32 flex  justify-center ${alert.isAlertModal || spinner ? 'blur-sm' : null}`} >
 
                 {showOtpModal &&
                     <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded-lg border-2 shadow-2xl h-fit" onSubmit={verifyOtp}>

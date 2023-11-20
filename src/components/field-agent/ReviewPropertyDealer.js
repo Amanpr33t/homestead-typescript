@@ -3,7 +3,7 @@ import { Fragment, useEffect } from "react"
 //This component is used to review the property dealer data submitted
 function ReviewPropertyDealer(props) {
     const { dealer, hideReviewPage } = props
-    console.log(dealer)
+
     //The code in useEffect hook is used to scroll to the top of the page
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -50,7 +50,7 @@ function ReviewPropertyDealer(props) {
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
                                 {dealer.addressArray.map(address => {
-                                    return <div key={address.id} className="bg-gray-200 border-gray-200 rounded-lg w-60 p-1">
+                                    return <div key={Math.random()} className="bg-gray-200 border-gray-200 rounded-lg w-60 p-1">
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
                                     </div>
