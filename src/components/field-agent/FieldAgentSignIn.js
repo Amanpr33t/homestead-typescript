@@ -202,7 +202,7 @@ function FieldAgentSignIn() {
                 setAlert({
                     isAlertModal: true,
                     alertType: 'success',
-                    alertMessage: 'OTP  has been successfully confirmed'
+                    alertMessage: 'OTP has been successfully confirmed'
                 })
             } else if (data.status === 'incorrect_token') {
                 setIsSpinner(false)

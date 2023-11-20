@@ -7,6 +7,7 @@ import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
 //import MapComponent from "../MapComponent"
 import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPropertyAfterSubmission"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
+import Spinner from "../Spinner"
 
 //This component is a form used by a field agent to add a property dealer
 function AgriculturalPropertyAddForm() {
@@ -18,9 +19,13 @@ function AgriculturalPropertyAddForm() {
     const propertyDealerLogoUrl = queryParams.get('logoUrl')
     const propertyDealerFirmName = queryParams.get('firmName')
 
+    const [spinner, setSpinner] = useState(true)
+
     useEffect(() => {
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName) {
             navigate('/field-agent')
+        } else {
+            setSpinner(false)
         }
     }, [propertyDealerId, propertyDealerLogoUrl, propertyDealerFirmName, navigate])
 
@@ -290,6 +295,7 @@ function AgriculturalPropertyAddForm() {
 
     return (
         <Fragment>
+            {spinner && !propertyData && <Spinner />}
 
             {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
                 setAlert({
@@ -308,7 +314,7 @@ function AgriculturalPropertyAddForm() {
                 contractImageUpload={contractImageUpload}
                 propertyDataReset={() => setPropertyData(null)} />}
 
-            <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || propertyData ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+            {!spinner && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                 <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
@@ -960,7 +966,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                 </form>
-            </div >
+            </div >}
         </Fragment >
     )
 }

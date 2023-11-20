@@ -5,8 +5,9 @@ import AlertModal from "../AlertModal"
 import ReviewAgriculturalProperty from "./ReviewAgriculturalProperty"
 
 function AgriculturalPropertiesAddedByFieldAgent() {
-    const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
+
     const [selectedProperty, setSelectedProperty] = useState()
     const [agriculturalProperties, setAgriculturalProperties] = useState([])
     const [spinner, setSpinner] = useState(true)
@@ -85,7 +86,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
                 <p className="text-red-500 cursor-pointer" onClick={fetchAgriculturalProperties}>Try again</p>
             </div>}
 
-            {!spinner && !selectedProperty && <div className={`w-full flex flex-row gap-2 z-20 fixed top-16 pt-3 pb-3 pl-3 ${spinner || error ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
+            {!spinner && !selectedProperty && <div className={`w-full flex flex-row gap-2 z-20 fixed top-16 pt-3 pb-3 pl-3 bg-gray-100 ${alert.isAlertModal ? 'blur' : ''}`}>
                 <Link to='/field-agent/properties-added' className="bg-green-500 text-white font-semibold p-1 rounded">Back</Link>
                 <Link to='/field-agent' className="bg-blue-500 text-white font-semibold p-1 rounded">Home</Link>
             </div>}
@@ -95,7 +96,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
             {!selectedProperty && !spinner && !error && <>
                 <div className=' pt-28 w-full min-h-screen flex flex-col place-items-center bg-gray-100 pl-2 pr-2 '>
                     {agriculturalProperties.length > 0 && <p className="w-full text-center text-xl font-bold mb-5 mt-2">{agriculturalProperties.length} agricultural properties have been added</p>}
-                    {agriculturalProperties.length && agriculturalProperties.map(property => {
+                    {agriculturalProperties.length > 0 && agriculturalProperties.map(property => {
                         index++
                         return <div key={property._id} className="h-fit flex flex-col gap-4 mb-10 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded-lg shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row">

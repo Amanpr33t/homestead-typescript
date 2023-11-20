@@ -25,22 +25,31 @@ function App() {
     <Fragment>
       <div className="box-border w-full min-h-screen">
         <NavbarFieldAgent />
-        
+
         <Routes>
+
           <Route path='/field-agent/*'>
             <Route path='' element={<HomeFieldAgent />}></Route>
             <Route path='signIn' element={<FieldAgentSignIn />}></Route>
             <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
             <Route path='list-of-property-dealers-added-by-field-agent' element={<ListOfAllPropertyDealersAddedByFieldAgent />}></Route>
+
             <Route path='add-property/*' >
               <Route path='' element={<AddProperty />}></Route>
               <Route path='agricultural' element={<AgriculturalPropertyAddForm />}></Route>
+              <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
+
             <Route path='properties-added/*' >
               <Route path='' element={<ListOfPropertiesAddedByFieldAgent />}></Route>
               <Route path='agricultual-properties' element={<AgriculturalPropertiesAddedByFieldAgent />}></Route>
+              <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
+            </Route>
+
+            <Route path='*' element={<Navigate replace to='/field-agent' />}>
             </Route>
           </Route>
+
           <Route path='*' element={<Navigate replace to='/' />}></Route>
         </Routes>
 

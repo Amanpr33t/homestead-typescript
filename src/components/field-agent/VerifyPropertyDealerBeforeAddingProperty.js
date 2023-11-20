@@ -139,7 +139,7 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
             {/* The code below is used to show a spinner */}
             {spinner && <Spinner />}
 
-            <div className={`w-full h-screen pt-32 flex  justify-center ${alert.isAlertModal || spinner ? 'blur-sm' : null}`} >
+            <div className={`w-full h-screen pt-32 flex  justify-center ${alert.isAlertModal || spinner ? 'blur-sm' : ''}`} >
 
                 {showOtpModal &&
                     <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded-lg border-2 shadow-2xl h-fit" onSubmit={verifyOtp}>

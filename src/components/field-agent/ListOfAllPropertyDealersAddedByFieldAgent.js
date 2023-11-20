@@ -83,17 +83,17 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
                 })
             }} />}
 
-            {error && !spinner && <div className="fixed top-32 w-full flex flex-col place-items-center">
+            {error && !spinner && <div className="fixed top-36 w-full flex flex-col place-items-center">
                 <p>Some error occured</p>
                 <p className="text-red-500 cursor-pointer" onClick={fetchPropertyDealers}>Try again</p>
             </div>}
 
             {selectedPropertyDealer && !spinner && !error && <ReviewPropertyDealer dealer={selectedPropertyDealer} hideReviewPage={() => setSelectedPropertyDealer(null)} />}
 
-            {!selectedPropertyDealer && !spinner && !error && <>
-                <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${spinner || error ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
+            {!selectedPropertyDealer && !spinner && <>
+                <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${spinner ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
                     <Link to='/field-agent' className="bg-green-500 text-white font-semibold p-1 rounded" >Home</Link>
-                    {!spinner && !error && <div className="w-full flex justify-center mt-3">
+                    {!error && <div className="w-full flex justify-center mt-3">
                         <p className="text-xl font-bold">{propertyDealers.length} dealers have been added by you</p>
                     </div>}
                 </div>
