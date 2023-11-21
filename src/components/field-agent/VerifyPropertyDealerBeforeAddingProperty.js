@@ -63,7 +63,7 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
                 setShowOtopModal(true)
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn')
+                navigate('/field-agent/signIn', { replace: true })
             }
         } catch (error) {
             setSpinner(false)
@@ -114,7 +114,7 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
                 propertyDealerSetterFunction(data.dealer)
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn')
+                navigate('/field-agent/signIn', { replace: true })
             }
         } catch (error) {
             setSpinner(false)
@@ -142,24 +142,24 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
             <div className={`w-full h-screen pt-32 flex  justify-center ${alert.isAlertModal || spinner ? 'blur-sm' : ''}`} >
 
                 {showOtpModal &&
-                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded-lg border-2 shadow-2xl h-fit" onSubmit={verifyOtp}>
+                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={verifyOtp}>
                         <p className="text-lg font-bold text-center mb-3">A one-time-password has been sent to dealer's email. It will be valid for 10 minutes. </p>
-                        <input type="otp" id="otp" name="otp" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="Enter OTP here..." autoComplete="new-password" value={otp}
+                        <input type="otp" id="otp" name="otp" className="border-2 border-gray-400 p-1 rounded" placeholder="Enter OTP here..." autoComplete="new-password" value={otp}
                             onChange={e => {
                                 setOtp(e.target.value)
                             }} />
                         <div className="flex justify-center mt-4">
-                            <button type='submit' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Verify OTP</button>
+                            <button type='submit' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Verify OTP</button>
                         </div>
                     </form>}
 
                 {!showOtpModal &&
-                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded-lg border-2 shadow-2xl h-fit" onSubmit={formSubmit}>
+                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={formSubmit}>
 
                         <p className="text-lg font-bold text-center mb-3">Provide email or contact number of the property dealer</p>
 
                         <label className="text-lg font-semibold mb-1 text-gray-600" htmlFor="email">Email</label>
-                        <input type="email" id="email" name="email" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="dealer@gmail.com" autoComplete="new-password" value={email}
+                        <input type="email" id="email" name="email" className="border-2 border-gray-400 p-1 rounded" placeholder="dealer@gmail.com" autoComplete="new-password" value={email}
                             onChange={e => {
                                 setEmailValid(true)
                                 setContactNumber('')
@@ -170,12 +170,12 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
                         <p className="text-center text-xl font-semibold mb-3 mt-3">Or</p>
 
                         <label className="text-lg font-semibold mb-0.5 text-gray-600" htmlFor="contactNumber">Contact number</label>
-                        <input type="tel" className='border-2  p-1 rounded-lg' id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
+                        <input type="tel" className='border-2  p-1 rounded' id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
                             setEmail('')
                             setContactNumber(e.target.value.trimEnd())
                         }} />
                         <div className="flex justify-center mt-4">
-                            <button type='submit' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Submit</button>
+                            <button type='submit' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Submit</button>
                         </div>
                     </form>}
             </div>

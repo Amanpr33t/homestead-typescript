@@ -48,7 +48,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 if (!data.agriculturalProperties.length) {
-                    navigate('/field-agent')
+                    navigate('/field-agent', { replace: true })
                 } else {
                     setAgriculturalProperties(data.agriculturalProperties)
                 }
@@ -86,7 +86,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
                 <p className="text-red-500 cursor-pointer" onClick={fetchAgriculturalProperties}>Try again</p>
             </div>}
 
-            {!spinner && !selectedProperty && <div className={`w-full flex flex-row gap-2 z-20 fixed top-16 pt-3 pb-3 pl-3 bg-gray-100 ${alert.isAlertModal ? 'blur' : ''}`}>
+            {!spinner && !selectedProperty && <div className={`w-full flex flex-row gap-2 z-20 fixed top-16 pt-3 pb-3 pl-3  ${error?'bg-white':'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
                 <Link to='/field-agent/properties-added' className="bg-green-500 text-white font-semibold p-1 rounded">Back</Link>
                 <Link to='/field-agent' className="bg-blue-500 text-white font-semibold p-1 rounded">Home</Link>
             </div>}
@@ -98,7 +98,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
                     {agriculturalProperties.length > 0 && <p className="w-full text-center text-xl font-bold mb-5 mt-2">{agriculturalProperties.length} agricultural properties have been added</p>}
                     {agriculturalProperties.length > 0 && agriculturalProperties.map(property => {
                         index++
-                        return <div key={property._id} className="h-fit flex flex-col gap-4 mb-10 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded-lg shadow-2xl p-3 sm:p-6">
+                        return <div key={property._id} className="h-fit flex flex-col gap-4 mb-10 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row">
                                 <p className="text-gray-500 text-lg font-semibold">{index})</p>
                                 <div className="flex flex-row gap-5 sm:gap-10">

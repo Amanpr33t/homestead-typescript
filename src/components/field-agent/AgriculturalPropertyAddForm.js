@@ -23,7 +23,7 @@ function AgriculturalPropertyAddForm() {
 
     useEffect(() => {
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName) {
-            navigate('/field-agent')
+            navigate('/field-agent', { replace: true })
         } else {
             setSpinner(false)
         }
@@ -317,12 +317,12 @@ function AgriculturalPropertyAddForm() {
             {!spinner && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                 <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                    <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
+                    <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/field-agent', { replace: true })}>Home</button>
                 </div>
 
                 <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold z-10">Add an agricultural property by filling the form</p>
 
-                <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                     <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
                         <p className="text-3xl font-bold text-gray-500 w-fit text-center">{propertyDealerFirmName}</p>
@@ -366,7 +366,7 @@ function AgriculturalPropertyAddForm() {
                             <div className="flex flex-col w-full">
                                 <label className="text-gray-500 font-semibold" htmlFor="village">Village</label>
                                 <input type="text" id="village" name="village"
-                                    className='border-2 border-gray-500  p-1 rounded-lg' autoComplete="new-password" value={village} onChange={e => {
+                                    className='border-2 border-gray-500  p-1 rounded' autoComplete="new-password" value={village} onChange={e => {
                                         setVillage(e.target.value)
                                     }} />
                             </div>
@@ -374,7 +374,7 @@ function AgriculturalPropertyAddForm() {
                             <div className="flex flex-col w-full">
                                 <label className="text-gray-500 font-semibold" htmlFor="city">City/Town</label>
                                 <input type="text" id="city" name="city"
-                                    className='border-2 border-gray-500 p-1 rounded-lg' autoComplete="new-password" value={city} onChange={e => {
+                                    className='border-2 border-gray-500 p-1 rounded' autoComplete="new-password" value={city} onChange={e => {
                                         setCity(e.target.value)
                                     }} />
                             </div>
@@ -421,7 +421,7 @@ function AgriculturalPropertyAddForm() {
 
                             <div className="flex flex-col w-full">
                                 <label className="text-gray-500 font-semibold" htmlFor="state">Tehsil</label>
-                                <select className='border-2 border-gray-500 p-1 rounded-lg' name="state" id="state" disabled={state && district ? false : true} value={tehsil} onChange={e => {
+                                <select className='border-2 border-gray-500 p-1 rounded' name="state" id="state" disabled={state && district ? false : true} value={tehsil} onChange={e => {
                                     setTehsil(e.target.value)
                                 }}>
                                     <option className="font-semibold" value="" disabled>Select a tehsil</option>
@@ -439,7 +439,7 @@ function AgriculturalPropertyAddForm() {
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
-                            <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
+                            <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
                                 setNumberOfOwners(e.target.value)
                             }}>
                                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
@@ -565,9 +565,8 @@ function AgriculturalPropertyAddForm() {
                                                     <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={e => {
                                                         e.stopPropagation()
                                                         if (newCanal.trim()) {
+                                                            setWaterSourceError(false)
                                                             setCanalNameError(false)
-                                                        }
-                                                        if (newCanal.trim()) {
                                                             setCanalNameArray(canalNameArray => [...canalNameArray, newCanal])
                                                             setNewCanal('')
                                                         }
@@ -624,7 +623,8 @@ function AgriculturalPropertyAddForm() {
                                                             setWaterSourceError(false)
                                                         }} />
                                                     <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
-                                                        if (newRiver.trim() !== '') {
+                                                        if (newRiver.trim()) {
+                                                            setWaterSourceError(false)
                                                             setRiverNameArray(riverNameArray => [...riverNameArray, newRiver])
                                                             setNewRiver('')
                                                         }
@@ -680,6 +680,7 @@ function AgriculturalPropertyAddForm() {
                                                             }} />
                                                         <button type='button' className="pl-1.5 pr-1.5 bg-gray-700 text-white text-xl font-semibold" onClick={() => {
                                                             if (newTubewell.trim() || +newTubewell.trim() !== 0) {
+                                                                setWaterSourceError(false)
                                                                 setTubewellDepthArray(tubewellDepthArray => [...tubewellDepthArray, +newTubewell.trim()])
                                                                 setNewTubewell('')
                                                             }
@@ -877,7 +878,7 @@ function AgriculturalPropertyAddForm() {
                                 </div>
                             </div>
                             <div className="text-center">
-                                <textarea className="border-2 border-gray-400 p-1 rounded-lg h-40  w-60 md:w-68 lg:w-80 resize-none" id="road-remark" name="road-remark" autoCorrect="on" autoComplete="new-password" placeholder="Add details about road here (optional)" onChange={e => setRoadDetails(e.target.value)} />
+                                <textarea className="border-2 border-gray-400 p-1 rounded h-40  w-60 md:w-68 lg:w-80 resize-none" id="road-remark" name="road-remark" autoCorrect="on" autoComplete="new-password" placeholder="Add details about road here (optional)" onChange={e => setRoadDetails(e.target.value)} />
                             </div>
                         </div>
                     </div>
@@ -921,7 +922,7 @@ function AgriculturalPropertyAddForm() {
                             </div>
                         </div>
                         {isLegalRestrictions && <div className="text-center">
-                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded-lg h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
+                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
                                 setLegalRestrictionDetailsError(false)
                                 setLegalRestrictionDetails(e.target.value)
                             }} />
@@ -934,7 +935,7 @@ function AgriculturalPropertyAddForm() {
                         <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500 pb-1" htmlFor="nearby-town">Nearby town (optional)</label>
                             <input type="text" id="nearby-town" name="nearby-town"
-                                className='sm:w-72 border-2 border-gray-500  p-1 rounded-lg' autoComplete="new-password" value={nearbyTown} onChange={e => setNearbyTown(e.target.value)} />
+                                className='sm:w-72 border-2 border-gray-500  p-1 rounded' autoComplete="new-password" value={nearbyTown} onChange={e => setNearbyTown(e.target.value)} />
                         </div>
                     </div>
 
@@ -962,7 +963,7 @@ function AgriculturalPropertyAddForm() {
                     </div>
 
                     <div className="flex justify-center mt-4 p-2">
-                        <button type='submit' className="w-full bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Save</button>
+                        <button type='submit' className="w-full bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Save</button>
                     </div>
 
                 </form>

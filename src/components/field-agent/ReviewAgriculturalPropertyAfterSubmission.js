@@ -148,7 +148,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
             }} />}
 
             <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${spinner || alert.isAlertModal ? 'blur' : ''}`} >
-                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 pt-0.5 h-8 z-30 " onClick={() => {
+                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 " onClick={() => {
                     propertyDataReset()
                     //setFinalPropertyData(null)
                 }}>Back</button>
@@ -326,8 +326,8 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                     </tbody>
                 </table>
                 <div className="w-full flex gap-4 flex-row place-content-center pt-4">
-                    <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
-                    <button type='button' className="bg-orange-400 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
+                    <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
+                    <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         propertyDataReset()
                         //setFinalPropertyData(null)
                     }}>Edit</button>

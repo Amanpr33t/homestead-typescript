@@ -81,7 +81,7 @@ function PropertyDealerAddForm() {
     //this useEffect hook is used to navigate to signIn page when there is no authToken on local storage
     useEffect(() => {
         if (!fieldAgentAuthToken) {
-            navigate('/field-agent/signIn')
+            navigate('/field-agent/signIn', { replace: true })
         }
     }, [fieldAgentAuthToken, navigate])
 
@@ -299,13 +299,13 @@ function PropertyDealerAddForm() {
 
                 {!showReviewForm && <>
                     <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
-                        <button type='button' className="bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 h-8" onClick={() => navigate('/field-agent')}>Home</button>
+                        <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/field-agent', { replace: true })}>Home</button>
                     </div>
 
                     <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold">Add a property dealer by filling the form</p>
                 </>}
 
-                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded-lg border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                     {/*Firm name */}
                     <div className="flex flex-col mb-1.5 ">
@@ -313,7 +313,7 @@ function PropertyDealerAddForm() {
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="firmName">Name of the firm</label>
                         </div>
-                        <input type="text" id="firmName" name="firmName" className={`border-2 border-gray-400 ${firmNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={firmName} onChange={e => {
+                        <input type="text" id="firmName" name="firmName" className={`border-2 border-gray-400 ${firmNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={firmName} onChange={e => {
                             setFirmName(e.target.value.toUpperCase())
                             setFirmNameError(false)
                         }} />
@@ -326,7 +326,7 @@ function PropertyDealerAddForm() {
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
                         </div>
-                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
+                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
                             setPropertyDealerName(e.target.value.toUpperCase())
                             setPropertyDealerNameError(false)
                         }} />
@@ -336,7 +336,7 @@ function PropertyDealerAddForm() {
                     {/*Experience */}
                     <div className="flex flex-row gap-4 mt-3 mb-1.5">
                         <label className="text-lg font-semibold" htmlFor="state">Experience (years)</label>
-                        <select className="border-2 border-gray-400 p-1 rounded-lg cursor-pointer bg-white text-center" name="experience" id="experience" value={experience} onChange={e => {
+                        <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="experience" id="experience" value={experience} onChange={e => {
                             setExperience(e.target.value)
                         }}>
                             {arrayOfFiftyNumbers.map(number => <option key={number} value={number}>{number}</option>)}
@@ -354,7 +354,7 @@ function PropertyDealerAddForm() {
                                     <label className=" font-semibold" htmlFor="number">Flat, House no., Building, Company</label>
                                 </div>
                                 <input type="text" id="number" name="number"
-                                    className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={flatPlotHouseNumber} onChange={e => {
+                                    className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={flatPlotHouseNumber} onChange={e => {
                                         setFlatPlotHouseNumber(e.target.value.toUpperCase())
                                         setFlatPlotHouseNumberError(false)
                                         setAddressError(false)
@@ -366,7 +366,7 @@ function PropertyDealerAddForm() {
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <label className="font-semibold" htmlFor="area">Area,Street, Sector, Village</label>
                                 </div>
-                                <input type="text" id="area" name="area" className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={areaSectorVillage} onChange={e => {
+                                <input type="text" id="area" name="area" className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={areaSectorVillage} onChange={e => {
                                     setAreaSectorVillage(e.target.value.toUpperCase())
                                     setAreaSectorVillageError(false)
                                     setAddressError(false)
@@ -375,7 +375,7 @@ function PropertyDealerAddForm() {
                             </div>
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="landmark">Landmark</label>
-                                <input type="text" id="landmark" name="landmark" className='border-2 border-gray-400 p-1 rounded-lg' autoComplete="new-password" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
+                                <input type="text" id="landmark" name="landmark" className='border-2 border-gray-400 p-1 rounded' autoComplete="new-password" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
                                     setLandmark(e.target.value.toUpperCase())
                                     setAddressError(false)
                                 }} />
@@ -385,7 +385,7 @@ function PropertyDealerAddForm() {
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <label className=" font-semibold" htmlFor="pincode">Pincode</label>
                                 </div>
-                                <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
+                                <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
                                     setPostalCode(e.target.value)
                                     setPostalCodeError(false)
                                     setAddressError(false)
@@ -397,7 +397,7 @@ function PropertyDealerAddForm() {
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <label className=" font-semibold" htmlFor="town">Town/City</label>
                                 </div>
-                                <input type="text" id="town" name="town" className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={city} onChange={e => {
+                                <input type="text" id="town" name="town" className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={city} onChange={e => {
                                     setCity(e.target.value.toUpperCase())
                                     setCityError(false)
                                     setAddressError(false)
@@ -410,7 +410,7 @@ function PropertyDealerAddForm() {
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <label className="font-semibold" htmlFor="state">State</label>
                                 </div>
-                                <select className={`border-2 ${stateError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} name="state" id="state" value={state} onChange={e => {
+                                <select className={`border-2 ${stateError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} name="state" id="state" value={state} onChange={e => {
                                     setState(e.target.value)
                                     setStateError(false)
                                     setAddressError(false)
@@ -430,7 +430,7 @@ function PropertyDealerAddForm() {
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <label className=" font-semibold" htmlFor="district-chandigarh">District</label>
                                 </div>
-                                <select className={`border-2 ${districtError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} name="district-chandigarh" id="district-chandigarh" value={district} onChange={e => {
+                                <select className={`border-2 ${districtError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} name="district-chandigarh" id="district-chandigarh" value={district} onChange={e => {
                                     setDistrict(e.target.value)
                                     setDistrictError(false)
                                     setAddressError(false)
@@ -445,15 +445,15 @@ function PropertyDealerAddForm() {
                             </div>
 
                             <div className="w-full flex justify-center">
-                                <button type="button" className="bg-green-400 text-white font-medium rounded-lg pl-2 pr-2 h-8" onClick={addAddress}>Add Address</button>
+                                <button type="button" className="bg-green-400 text-white font-medium rounded pl-2 pr-2 h-8" onClick={addAddress}>Add Address</button>
                             </div>
 
                             <div className="w-full text-center flex flex-row flex-wrap place-content-center gap-2 mt-2">
                                 {addressArray.length > 0 && addressArray.map(address => {
-                                    return <div key={address.id} className="bg-gray-200 border-gray-400 rounded-lg w-60 p-1">
+                                    return <div key={address.id} className="bg-gray-200 border-gray-400 rounded w-60 p-1">
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
-                                        <button className="bg-red-400 text-white font-medium rounded-lg pl-2 pr-2 mb-2 mt-2" onClick={() => {
+                                        <button className="bg-red-400 text-white font-medium rounded pl-2 pr-2 mb-2 mt-2" onClick={() => {
                                             const updatedAddressArray = addressArray.filter(item => item.id !== address.id)
                                             setAddressArray(updatedAddressArray)
                                         }}>Remove</button>
@@ -469,7 +469,7 @@ function PropertyDealerAddForm() {
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="gst">GST number</label>
                         </div>
-                        <input type="text" id="gst" name="gst" className={`border-2 ${gstNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={gstNumber} onChange={e => {
+                        <input type="text" id="gst" name="gst" className={`border-2 ${gstNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={gstNumber} onChange={e => {
                             setGstNumber(e.target.value.toUpperCase().trimEnd())
                             setGstNumberError(false)
                         }} onBlur={checkIfGstNumberExists} />
@@ -482,7 +482,7 @@ function PropertyDealerAddForm() {
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="email">Email</label>
                         </div>
-                        <input type="email" id="email" name="email" className={`border-2 ${emailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} autoComplete="new-password" value={email} onChange={e => {
+                        <input type="email" id="email" name="email" className={`border-2 ${emailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={email} onChange={e => {
                             setEmail(e.target.value.trimEnd().toLowerCase())
                             setEmailError(false)
                         }} onBlur={checkIfEmailExists} />
@@ -495,7 +495,7 @@ function PropertyDealerAddForm() {
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="contactNumber">Contact number</label>
                         </div>
-                        <input type="tel" className={`border-2 ${contactNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded-lg`} id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
+                        <input type="tel" className={`border-2 ${contactNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
                             setContactNumber(e.target.value.trimEnd())
                             setContactNumberError(false)
                         }} onBlur={checkIfContactNumberExists} />
@@ -524,7 +524,7 @@ function PropertyDealerAddForm() {
                     </div>
 
                     <div type='submit' className="w-full h-10 flex justify-center mt-8">
-                        <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 h-8">Save details</button>
+                        <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8">Save details</button>
                     </div>
                 </form>
             </div>

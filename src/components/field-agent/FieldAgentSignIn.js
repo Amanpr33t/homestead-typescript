@@ -104,7 +104,7 @@ function FieldAgentSignIn() {
             const data = await response.json()
             if (data.status === 'ok') {
                 localStorage.setItem('homestead-field-agent-authToken', data.authToken)
-                navigate('/field-agent')
+                navigate('/field-agent', { replace: true })
                 setIsSpinner(false)
             } else if (data.status === 'not_found') {
                 setIsSpinner(false)
@@ -338,7 +338,7 @@ function FieldAgentSignIn() {
             {isSpinner && <Spinner />}
 
             <div className={`w-full h-screen mt-20 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
-                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded-lg border-2 shadow-2xl h-fit" onSubmit={e => {
+                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
                         e.preventDefault()
                         if (!isForgotPassword) {
                             return signInFunction()
@@ -358,14 +358,14 @@ function FieldAgentSignIn() {
 
                         {!isForgotPassword && <>
                             <label className="text-lg font-semibold mb-1" htmlFor="email-1">Field agent email</label>
-                            <input type="email" id="email-1" name="email-1" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="abcd@gmail.com" autoComplete="off" value={email}
+                            <input type="email" id="email-1" name="email-1" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={email}
                                 onChange={e => {
                                     setEmailValid(true)
                                     setEmail(e.target.value.trimEnd())
                                 }} />
                             {!emailValid && <p className="text-red-500">Email not in correct format</p>}
                             <label className="text-lg font-semibold mb-1 mt-2" htmlFor="password">Field Agent Password</label>
-                            <input type="password" id="password" name="password" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={password}
+                            <input type="password" id="password" name="password" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={password}
                                 onChange={e => {
                                     setPassword(e.target.value.trimEnd())
                                     setPasswordValid(true)
@@ -376,7 +376,7 @@ function FieldAgentSignIn() {
 
                         {isForgotPassword && !confirmOTP && <>
                             <label className="text-lg font-semibold mb-1" htmlFor="email-2">Field agent email</label>
-                            <input type="email" id="email-2" name="email-2" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="abcd@gmail.com" autoComplete="off" value={emailForPasswordChange}
+                            <input type="email" id="email-2" name="email-2" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={emailForPasswordChange}
                                 onChange={e => {
                                     seetEmailForPasswordChangeValid(true)
                                     setEmailForPasswordChange(e.target.value.trimEnd())
@@ -387,13 +387,13 @@ function FieldAgentSignIn() {
 
                         {confirmOTP && !newPasswordEnabler && <>
                             <label className="text-lg font-semibold mb-1" htmlFor="otp">A one-time-password(OTP) has been sent to your email. OTP will be valid for 10 minutes.</label>
-                            <input type="text" id="otp" name="otp" className="border-2 border-gray-400 p-1 rounded-lg" placeholder="Enter OTP here..." autoComplete="off" value={oneTimePassword}
+                            <input type="text" id="otp" name="otp" className="border-2 border-gray-400 p-1 rounded" placeholder="Enter OTP here..." autoComplete="new-password" value={oneTimePassword}
                                 onChange={e => { setOneTimePassword(e.target.value.trimEnd()) }} />
                         </>}
 
                         {newPasswordEnabler && <>
                             <label className="text-lg font-semibold mb-1 mt-2" htmlFor="newPassword">New password</label>
-                            <input type="password" id="newPassword" name="newPassword" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={newPassword}
+                            <input type="password" id="newPassword" name="newPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={newPassword}
                                 onChange={e => {
                                     setNewPassword(e.target.value.trimEnd())
                                     setNewPasswordValid(true)
@@ -401,7 +401,7 @@ function FieldAgentSignIn() {
                             {!newPasswordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
 
                             <label className="text-lg font-semibold mb-1 mt-2" htmlFor="confirmNewPassword">Confirm new password</label>
-                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" className="border-2 border-gray-400 p-1 rounded-lg" autoComplete="off" value={confirmNewPassword}
+                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={confirmNewPassword}
                                 onChange={e => {
                                     setConfirmNewPassword(e.target.value.trimEnd())
                                     setConfirmNewPasswordValid(true)
@@ -410,7 +410,7 @@ function FieldAgentSignIn() {
                         </>}
 
                         <div className="w-full h-12 flex justify-center mt-4 border-b border-gray-400 ">
-                            <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">{buttonText}</button>
+                            <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">{buttonText}</button>
                         </div>
 
                         {!isForgotPassword &&
@@ -427,7 +427,7 @@ function FieldAgentSignIn() {
                             </div>}
                             {isForgotPassword &&
                         <div className="flex justify-center mt-4">
-                            <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={async () => {
+                            <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={async () => {
                                 if (confirmOTP) {
                                     return await resetPasswordVerificationToken()
                                 }

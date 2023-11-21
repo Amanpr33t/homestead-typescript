@@ -13,7 +13,7 @@ function ReviewPropertyDealer(props) {
     return (
         <Fragment>
             <div className="w-full fixed top-16 bg-white z-20">
-                <button type='button' className="bg-green-500 ml-2 mt-2 text-white font-semibold rounded-lg pl-2 pr-2 pt-0.5 h-8  " onClick={hideReviewPage}>Back</button>
+                <button type='button' className="bg-green-500 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8  " onClick={hideReviewPage}>Back</button>
 
                 <div className="w-full flex justify-center pb-4">
                     <p className="text-2xl font-bold text-center">Review the details</p>
@@ -50,7 +50,7 @@ function ReviewPropertyDealer(props) {
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
                                 {dealer.addressArray.map(address => {
-                                    return <div key={Math.random()} className="bg-gray-200 border-gray-200 rounded-lg w-60 p-1">
+                                    return <div key={Math.random()} className="bg-gray-200 border-gray-200 rounded w-60 p-1">
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
                                     </div>

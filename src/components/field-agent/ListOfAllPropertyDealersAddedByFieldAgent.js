@@ -51,7 +51,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 if (!data.propertyDealers.length) {
-                    return navigate('/field-agent')
+                    return navigate('/field-agent', { replace: true })
                 }
                 setPropertyDealers(data.propertyDealers)
             }
@@ -91,18 +91,18 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
             {selectedPropertyDealer && !spinner && !error && <ReviewPropertyDealer dealer={selectedPropertyDealer} hideReviewPage={() => setSelectedPropertyDealer(null)} />}
 
             {!selectedPropertyDealer && !spinner && <>
-                <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${spinner ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
+                <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${error ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
                     <Link to='/field-agent' className="bg-green-500 text-white font-semibold p-1 rounded" >Home</Link>
                     {!error && <div className="w-full flex justify-center mt-3">
                         <p className="text-xl font-bold">{propertyDealers.length} dealers have been added by you</p>
                     </div>}
                 </div>
 
-                <div className='pt-40 pb-10 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
+                {!error && <div className='pt-40 pb-10 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
 
                     {propertyDealers.length > 0 && propertyDealers.map(dealer => {
                         index++
-                        return <div key={dealer._id} className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded-lg shadow-2xl p-3 sm:p-6">
+                        return <div key={dealer._id} className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row  place-content-between">
                                 <div className="flex flex-row gap-2">
                                     <p className="text-gray-500 text-lg font-semibold">{index})</p>
@@ -120,7 +120,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
                             </div>
                         </div>
                     })}
-                </div>
+                </div>}
             </>}
 
         </Fragment>

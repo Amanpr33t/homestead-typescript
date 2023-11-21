@@ -34,7 +34,7 @@ function NavbarFieldAgent() {
             if (data.status === 'ok' || data.status === 'invalid_authentication') {
                 setIsSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn')
+                navigate('/field-agent/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
@@ -63,7 +63,7 @@ function NavbarFieldAgent() {
             <div className='fixed z-40 top-0 w-full'>
                 <nav className=" flex flex-col w-full bg-white" >
                     <div className="flex flex-row justify-between items-center h-16 w-full border-b shadow ">
-                        <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => navigate('/', { replace: true })}>
                             <FaHome role="svg" className="font-semibold text-4xl md:text-5xl text-gray-600" />
                             <p className='font-semibold text-3xl md:text-4xl italic text-gray-600' >HomeStead </p>
                         </div>

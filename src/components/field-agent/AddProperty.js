@@ -18,14 +18,14 @@ function AddProperty() {
             <div className='w-full min-h-screen'>
 
                 <div className="w-full fixed top-16 bg-white z-50">
-                    <button type='button' className="bg-green-500 ml-2 mt-2 text-white font-semibold rounded-lg pl-2 pr-2 h-8  " onClick={() => navigate('/field-agent')}>Home</button>
+                    <button type='button' className="bg-green-500 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 h-8  " onClick={() => navigate('/field-agent', { replace: true })}>Home</button>
                 </div>
 
                 {!propertyDealer && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />}
 
                 {propertyDealer &&
                     <div className="top-32 fixed w-full h-screen flex justify-center z-20">
-                        <div className="rounded-lg border-2 shadow-2xl bg-white p-2 h-fit" onClick={e => e.stopPropagation()}>
+                        <div className="rounded border-2 shadow-2xl bg-white p-2 h-fit" onClick={e => e.stopPropagation()}>
                             <p className="font-semibold mb-2">Select a property type</p>
                             <div className="mb-1">
                                 <input className="mr-1" type="radio" id="agricultural" name="property" value="agricultural" onChange={e => {
@@ -62,7 +62,7 @@ function AddProperty() {
                             <div className=" w-full flex justify-center">
                                 <button type='button' className="bg-blue-500 text-white font-medium rounded p-1 w-fit" onClick={() => {
                                     if (selectedPropertyType === 'agricultural') {
-                                        navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`)
+                                        navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`, { replace: true })
                                     }
                                 }}>Select</button>
                             </div>

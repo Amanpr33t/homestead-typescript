@@ -102,7 +102,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn')
+                navigate('/field-agent/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
@@ -132,7 +132,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
             }} />}
 
             <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center ${spinner || alert.isAlertModal ? 'blur' : ''}`} >
-                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded-lg pl-2 pr-2 pt-0.5 h-8 z-20 " onClick={hideReviewForm}>Back</button>
+                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-20 " onClick={hideReviewForm}>Back</button>
 
                 <div className="w-full flex justify-center pb-4">
                     <p className="text-2xl font-bold text-center">Review the details</p>
@@ -166,7 +166,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
                                 {addressArray.map(address => {
-                                    return <div key={address.id} className="bg-gray-200 border-gray-200 rounded-lg w-60 p-1">
+                                    return <div key={address.id} className="bg-gray-200 border-gray-200 rounded w-60 p-1">
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
                                     </div>
@@ -194,8 +194,8 @@ function ReviewPropertyDealerAfterSubmission(props) {
                     </tbody>
                 </table>
                 <div className="w-full flex gap-4 flex-row place-content-center pt-4">
-                    <button type='button' className="bg-green-500 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={saveDetailsToDatabase}>Save</button>
-                    <button type='button' className="bg-orange-400 text-white font-medium rounded-lg pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={hideReviewForm}>Edit</button>
+                    <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={saveDetailsToDatabase}>Save</button>
+                    <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={hideReviewForm}>Edit</button>
                 </div>
             </div>
 
