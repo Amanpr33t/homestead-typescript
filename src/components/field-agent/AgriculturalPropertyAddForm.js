@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
-//import MapComponent from "../MapComponent"
+import MapComponent from "../MapComponent"
 import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPropertyAfterSubmission"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
 import Spinner from "../Spinner"
@@ -329,10 +329,6 @@ function AgriculturalPropertyAddForm() {
                         {propertyDealerLogoUrl && <img className="w-20 h-auto " src={propertyDealerLogoUrl} alt='' />}
                     </div>
 
-                    {/*<div className="p-2 pb-5 pt-5">
-                        <MapComponent />
-                      </div>*/}
-
                     {/* contract*/}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         <div className="flex flex-row gap-5">
@@ -431,6 +427,12 @@ function AgriculturalPropertyAddForm() {
                                         <PunjabTehsilsDropdown district={district} />
                                     </>}
                                 </select>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label className="text-gray-500 font-semibold" htmlFor="state">Location on Map</label>
+                                <div className="w-full">
+                                    <MapComponent apiKey={process.env.REACT_APP_GOOGLE_API_KEY} />
+                                </div>
                             </div>
                         </div>
                     </div>
