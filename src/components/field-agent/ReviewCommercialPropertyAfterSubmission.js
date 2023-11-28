@@ -3,8 +3,9 @@ import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 
 //This component is used to review the property dealer data submitted
-function ReviewAgriculturalPropertyAfterSubmission(props) {
-    const { propertyData, agriculturalLandImageFile, contractImageFile, propertyDataReset, agricultureLandImageUpload, contractImageUpload } = props
+function ReviewCommercialPropertyAfterSubmission(props) {
+    const { propertyData, commercialPropertyImageFile, contractImageFile, propertyDataReset, commercialPropertyImageUpload, contractImageUpload, firmName } = props
+    console.log(propertyData)
 
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
@@ -13,7 +14,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
-    const [agriculturalLandImagesUrl, setAgriculturalLandImagesUrl] = useState([])
+    const [commercialPropertyImagesUrl, setCommercialPropertyImagesUrl] = useState([])
     const [contractImagesUrl, setContractImagesUrl] = useState([])
 
     useEffect(() => {
@@ -25,10 +26,10 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
 
     const uploadImages = async () => {
         try {
-            setAgriculturalLandImagesUrl([])
+            setCommercialPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
-            agricultureLandImageUpload.length && agricultureLandImageUpload.forEach(async (image) => {
+            commercialPropertyImageUpload.length && commercialPropertyImageUpload.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image)
                 formData.append('upload_preset', 'homestead')
@@ -40,10 +41,10 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setAgriculturalLandImagesUrl([])
+                    setCommercialPropertyImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
-                    setAgriculturalLandImagesUrl(images => [...images, data.secure_url])
+                    setCommercialPropertyImagesUrl(images => [...images, data.secure_url])
                 }
             })
 
@@ -78,7 +79,8 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
     }
 
     const saveDetailsToDatabase = useCallback(async (finalPropertyData) => {
-        try {
+        console.log('save')
+        /*try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addAgriculturalProperty`, {
                 method: 'POST',
                 body: JSON.stringify(finalPropertyData),
@@ -120,18 +122,18 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 routeTo: null
             })
             return
-        }
-    }, [authToken])
+        }*/
+    }, [])
 
     useEffect(() => {
-        if (agriculturalLandImagesUrl.length === agricultureLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
+        if (commercialPropertyImagesUrl.length === commercialPropertyImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
             saveDetailsToDatabase({
-                agriculturalLandImagesUrl,
+                commercialPropertyImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [agriculturalLandImagesUrl.length, agricultureLandImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, agriculturalLandImagesUrl, contractImagesUrl, propertyData])
+    }, [commercialPropertyImagesUrl.length, commercialPropertyImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, commercialPropertyImagesUrl, contractImagesUrl, propertyData])
 
     return (
         <Fragment>
@@ -165,20 +167,74 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                         </tr>
                     </thead>
                     <tbody>
+
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                            <td className=" pt-4 pb-4 text-center">To be added</td>
+                            <td className=" pt-4 pb-4 text-center">{firmName}</td>
                         </tr>
+
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Property type</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.commercialPropertyType === 'industrial' ? 'Industrial/Institutional' : 'Shop/Showroom/Booth'}</td>
+                        </tr>
+
+                        {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Shop type</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.shopPropertyType}</td>
+                        </tr>}
+
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">State of property</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.stateOfProperty.empty ? 'Empty' : `${propertyData.stateOfProperty.builtUpPropertyType === 'other' ? 'Built-up' : `Built-up (${propertyData.stateOfProperty.builtUpPropertyType})`}`}</td>
+                        </tr>
+
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
                             <td className="pt-4 pb-4 text-center">
-                                <p>{propertyData.landSize.size} {propertyData.landSize.unit}</p>
+                                <div className="flex flex-row gap-5">
+                                    <div className="flex flex-col gap-3 bg-gray-300 w-fit p-2 pt-0">
+                                        <p className="w-full text-center font-semibold">Total area</p>
+                                        <p>{propertyData.landSize.totalArea.metreSquare} metre square</p>
+                                        <p>{propertyData.landSize.totalArea.squareFeet} square feet</p>
+                                    </div>
+                                    <div className="flex flex-col gap-3 bg-gray-300 w-fit p-2 pt-0">
+                                        <p className="w-full text-center font-semibold">Covered area</p>
+                                        <p>{propertyData.landSize.coveredArea.metreSquare} metre square</p>
+                                        <p>{propertyData.landSize.coveredArea.squareFeet} square feet</p>
+                                    </div>
+                                </div>
+
                                 {propertyData.landSize.details && < p > {propertyData.landSize.details}</p>}
                             </td>
                         </tr>
+
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Floors (excluding basement)</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.floors.floorsWithoutBasement}</td>
+                        </tr>
+
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Basement floors</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.floors.basementFloors}</td>
+                        </tr>
+
+                        {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.leasePeriod.years ? '' : propertyData.leasePeriod.years} years, {propertyData.leasePeriod.months ? '' : propertyData.leasePeriod.months} months</td>
+                        </tr>}
+
+                        {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.lockInPeriod.years ? '' : propertyData.lockInPeriod.years} years, {propertyData.lockInPeriod.months ? '' : propertyData.lockInPeriod.months} months</td>
+                        </tr>}
+
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Location</td>
                             <td className="pt-4 pb-4 flex flex-col gap-1 place-items-center">
+                                {propertyData.location.name.plotNumber && <div className="flex flex-row gap-2">
+                                    <p className="font-semibold">Plot number:</p>
+                                    <p>{propertyData.location.name.plotNumber}</p>
+                                </div>}
                                 {propertyData.location.name.village && <div className="flex flex-row gap-2">
                                     <p className="font-semibold">Village:</p>
                                     <p>{propertyData.location.name.village}</p>
@@ -201,6 +257,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                                 </div>
                             </td>
                         </tr>
+
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Number of owners</td>
                             <td className="pt-4 pb-4 text-center" >{propertyData.numberOfOwners}</td>
@@ -310,7 +367,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                {agriculturalLandImageFile.map(image => {
+                                {commercialPropertyImageFile.map(image => {
                                     return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
                                 })}
                             </td>
@@ -337,4 +394,4 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         </Fragment >
     )
 }
-export default ReviewAgriculturalPropertyAfterSubmission
+export default ReviewCommercialPropertyAfterSubmission

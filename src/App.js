@@ -9,6 +9,7 @@ import ListOfPropertiesAddedByFieldAgent from "./components/field-agent/ListOfPr
 import AgriculturalPropertiesAddedByFieldAgent from "./components/field-agent/AgriculturalPropertiesAddedByFieldAgent";
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom'
 import { Fragment, useEffect } from "react";
+import CommercialPropertyAddForm from "./components/field-agent/CommercialPropertyAddForm";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path='add-property/*' >
               <Route path='' element={<AddProperty />}></Route>
               <Route path='agricultural' element={<AgriculturalPropertyAddForm />}></Route>
+              <Route path='commercial' element={<CommercialPropertyAddForm />}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
