@@ -62,7 +62,6 @@ function CommercialPropertyAddForm() {
 
     const [priceDemandedNumber, setPriceDemandedNumber] = useState('')
     const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('')
-    const [priceDemandedFormatError, setPriceDemandedFormatError] = useState(false)
     const [priceDemandedWords, setPriceDemandedWords] = useState('')
     const [priceDemandedWordsError, setPriceDemandedWordsError] = useState(false)
 
@@ -93,7 +92,7 @@ function CommercialPropertyAddForm() {
     const [builtUpProperty, setBuiltUpProperty] = useState()
     const [stateOfPropertyError, setStateOfPropertyError] = useState(false)
     const [builtUpSelectedOption, setBuiltupSelectedOption] = useState(null)
-    const builtUpPropertyOptions = ['Hotel/Resort', 'Factory', 'Banquet hall', 'Cold Store', 'Warehouse', 'School', 'Hospital/Clinic','other']
+    const builtUpPropertyOptions = ['Hotel/Resort', 'Factory', 'Banquet hall', 'Cold Store', 'Warehouse', 'School', 'Hospital/Clinic', 'other']
 
     const states = ['Chandigarh', 'Punjab', 'Haryana']
 
@@ -224,7 +223,7 @@ function CommercialPropertyAddForm() {
                 metre: +widthOfRoadFacingMetre
             },
             priceDemanded: {
-                number: +priceDemandedNumber.trim(),
+                number: +priceDemandedNumber,
                 words: capitaliseFirstAlphabetsOfAllWordsOfASentence(priceDemandedWords.trim())
             },
             legalRestrictions: {
@@ -247,7 +246,7 @@ function CommercialPropertyAddForm() {
         }
 
         if (commercialPropertyType === 'shop') {
-            setPropertyData({ ...finalPropertyData, shopSpecificData })
+            setPropertyData({ ...finalPropertyData, ...shopSpecificData })
         } else {
             setPropertyData(finalPropertyData)
         }
@@ -335,7 +334,7 @@ function CommercialPropertyAddForm() {
                                 {commercialPropertyType === 'industrial' && builtUpProperty && <div className="flex flex-col bg-white w-fit p-1 mt-2">
                                     <p className="font-semibold">Select an option</p>
                                     {builtUpPropertyOptions.map(option => {
-                                        return <div className="flex flex-row h-fit ">
+                                        return <div key={option} className="flex flex-row h-fit ">
                                             <input className="mr-1 cursor-pointer" type="radio" id={option} name="built-up-option" value={option} onChange={e => {
                                                 setStateOfPropertyError(false)
                                                 if (e.target.checked) {
@@ -792,7 +791,7 @@ function CommercialPropertyAddForm() {
                     {/*remarks*/}
                     <div className="flex flex-row gap-10 p-2 pb-5 pt-5">
                         <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="remarks">Remarks</label>
-                        <textarea className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none" id="remarks" name="remarks" autoCorrect="on" autoComplete="new-password" placeholder="Add reamrks regarding property" value={remarks} onChange={e => {
+                        <textarea className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none" id="remarks" name="remarks" autoCorrect="on" autoComplete="new-password" placeholder="Add remarks regarding property" value={remarks} onChange={e => {
                             setRemarks(e.target.value)
                         }} />
                     </div>

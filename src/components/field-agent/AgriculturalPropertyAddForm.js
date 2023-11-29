@@ -40,7 +40,6 @@ function AgriculturalPropertyAddForm() {
     const [landSizeDetails, setLandSizeDetails] = useState('')
     const [landSizeError, setLandSizeError] = useState(false)
     const [landSizeUnitError, setLandSizeUnitError] = useState(false)
-    const [landSizeFormatError, setLandSizeFormatError] = useState(false)
 
     const [state, setState] = useState('')
     const [stateError, setStateError] = useState(false)
@@ -82,23 +81,22 @@ function AgriculturalPropertyAddForm() {
     const [capacityOfReservoirError, setCapacityOfReservoirError] = useState(false)
     const [unitOfCapacityReservoirError, setUnitOfCapacityReservoirError] = useState(false)
 
-    const irrigationSystemOptions = ['sprinkler', 'drip', 'underground pipeline']
+    const irrigationSystemOptions = ['Sprinkler', 'Drip', 'Underground pipeline']
     const [irrigationSystemArray, setIrrigationSystemArray] = useState([])
 
     const [priceDemandedNumber, setPriceDemandedNumber] = useState('')
     const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('')
-    const [priceDemandedFormatError, setPriceDemandedFormatError] = useState(false)
     const [priceDemandedWords, setPriceDemandedWords] = useState('')
     const [priceDemandedWordsError, setPriceDemandedWordsError] = useState(false)
 
-    const cropOptions = ['rice', 'wheat', 'maize', 'cotton']
+    const cropOptions = ['Rice', 'Wheat', 'Maize', 'Cotton']
     const [cropArray, setCropArray] = useState([])
     const [cropError, setCropError] = useState(false)
 
     const [roadType, setRoadType] = useState('')
     const [roadDetails, setRoadDetails] = useState('')
     const [roadError, setRoadError] = useState(false)
-    const roadOptions = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
+    const roadOptions = ['Unpaved road', 'Village road', 'District road', 'State highway', 'National highway']
 
     const [isLegalRestrictions, setIsLegalRestrictions] = useState(false)
     const [legalRestrictionError, setLegalRestrictionError] = useState(false)
@@ -133,11 +131,9 @@ function AgriculturalPropertyAddForm() {
         if (!district.trim() && !state.trim()) {
             setDistrictError(true)
             setStateError(true)
-
         } else if (!district.trim() && state.trim()) {
             setDistrictError(true)
             setStateError(false)
-
         } else if (district.trim() && !state.trim()) {
             setDistrictError(false)
             setStateError(true)
@@ -176,16 +172,12 @@ function AgriculturalPropertyAddForm() {
         } else {
             if (!typeOfReservoir.length) {
                 setTypeOfReservoirError(true)
-            } else {
-                if (typeOfReservoir.includes('private')) {
-                    if ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) {
-                        setCapacityOfReservoirError(true)
-                        setUnitOfCapacityReservoirError(true)
-                    } else if ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) {
-                        setCapacityOfReservoirError(true)
-                    } else if ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir) {
-                        setUnitOfCapacityReservoirError(true)
-                    }
+            } else if (typeOfReservoir.includes('private')) {
+                if (!capacityOfPrivateReservoir) {
+                    setCapacityOfReservoirError(true)
+                }
+                if (!unitOfCapacityForPrivateReservoir) {
+                    setUnitOfCapacityReservoirError(true)
                 }
             }
         }
@@ -209,7 +201,7 @@ function AgriculturalPropertyAddForm() {
 
     const formSubmit = async (e) => {
         e.preventDefault()
-        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize || !landSizeUnit || !priceDemandedNumber || !priceDemandedWords.trim() || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && !unitOfCapacityForPrivateReservoir) || ((!capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() === 0) && unitOfCapacityForPrivateReservoir) || ((capacityOfPrivateReservoir.trim() || +capacityOfPrivateReservoir.trim() !== 0) && !unitOfCapacityForPrivateReservoir)))) {
+        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize || !landSizeUnit || !priceDemandedNumber || !priceDemandedWords.trim() || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir))) {
             errorCheckingBeforeSubmit()
             setAlert({
                 isAlertModal: true,
@@ -248,7 +240,7 @@ function AgriculturalPropertyAddForm() {
             reservoir: {
                 isReservoir,
                 type: typeOfReservoir,
-                capacityOfPrivateReservoir: capacityOfPrivateReservoir.trim() && +capacityOfPrivateReservoir.trim(),
+                capacityOfPrivateReservoir: +capacityOfPrivateReservoir,
                 unitOfCapacityForPrivateReservoir
             },
             irrigationSystem: irrigationSystemArray,
@@ -270,7 +262,6 @@ function AgriculturalPropertyAddForm() {
         setPropertyData(finalPropertyData)
     }
 
-    console.log(propertyData)
     return (
         <Fragment>
             {spinner && !propertyData && <Spinner />}
@@ -290,7 +281,8 @@ function AgriculturalPropertyAddForm() {
                 contractImageFile={contractImageFile}
                 agricultureLandImageUpload={agricultureLandImageUpload}
                 contractImageUpload={contractImageUpload}
-                propertyDataReset={() => setPropertyData(null)} />}
+                propertyDataReset={() => setPropertyData(null)}
+                firmName={propertyDealerFirmName} />}
 
             {!spinner && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
@@ -649,10 +641,10 @@ function AgriculturalPropertyAddForm() {
                                                     <td className="flex flex-row place-content-center pt-1 pb-1">
                                                         <input type="number" id="depth" name="depth"
                                                             className={`w-28 border ${tubewellDepthError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password" value={newTubewell} onChange={e => {
-                                                                if(+e.target.value.trim()!==0){
+                                                                if (+e.target.value.trim() !== 0) {
                                                                     setNewTubewell(+e.target.value.trim())
                                                                     setTubewellDepthError(false)
-                                                                }else{
+                                                                } else {
                                                                     setNewTubewell('')
                                                                 }
                                                             }} />
@@ -740,11 +732,15 @@ function AgriculturalPropertyAddForm() {
                                                 <><div className="bg-gray-100 p-2 rounded flex flex-col bg-white">
                                                     <p className="font-semibold mb-1">Capacity of private reservoir</p>
                                                     <div className="flex flex-row gap-1">
-                                                        <input id="resercoir-capacity" type="number" name='reservoir-capacity' className="border-2 border-gray-400 rounded bg-white w-24 p-1" min="0" placeholder="Capacity" value={capacityOfPrivateReservoir} onChange={e => {
-                                                            setCapacityOfReservoirError(false)
-                                                            setCapacityOfPrivateReservoir(e.target.value)
+                                                        <input id="resercoir-capacity" type="number" name='reservoir-capacity' className={`border-2 ${capacityOfReservoirError ? 'border-red-400' : 'border-gray-400'} border-gray-400 rounded bg-white w-24 p-1`} min="0" placeholder="Capacity" value={capacityOfPrivateReservoir} onChange={e => {
+                                                            if (+e.target.value.trim() !== 0) {
+                                                                setCapacityOfReservoirError(false)
+                                                                setCapacityOfPrivateReservoir(+e.target.value.trim())
+                                                            } else {
+                                                                setCapacityOfPrivateReservoir('')
+                                                            }
                                                         }} />
-                                                        <select className="border-2 border-gray-400  rounded cursor-pointer bg-white text-center h-fit p-1 pb-1.5" name="reservoir-capacity-dropdown" id="reservoir-capacity-dropdown" value={unitOfCapacityForPrivateReservoir} onChange={e => {
+                                                        <select className={`border-2 ${unitOfCapacityReservoirError ? 'border-red-400 ' : 'border-gray-400 '} rounded cursor-pointer bg-white text-center h-fit p-1 pb-1.5`} name="reservoir-capacity-dropdown" id="reservoir-capacity-dropdown" value={unitOfCapacityForPrivateReservoir} onChange={e => {
                                                             setUnitOfCapacityReservoirError(false)
                                                             setUnitOfCapacityForPrivateReservoir(e.target.value)
                                                         }}>

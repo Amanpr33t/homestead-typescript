@@ -42,12 +42,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
             if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'warning',
-                    alertMessage: 'Session expired. Please login again',
-                    routeTo: '/field-agent/signIn'
-                })
+                navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 if (!data.propertyDealers.length) {

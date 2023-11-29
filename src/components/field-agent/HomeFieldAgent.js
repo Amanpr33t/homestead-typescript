@@ -46,18 +46,13 @@ function HomeFieldAgent() {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'warning',
-                    alertMessage: 'Session expired. Please login again',
-                    routeTo: '/field-agent/signIn'
-                })
+                navigate('/field-agent/signIn', { replace: true })
             }
         } catch (error) {
             setError(true)
             setSpinner(false)
         }
-    }, [authToken])
+    }, [authToken, navigate])
 
     useEffect(() => {
         fetchPropertiesAndPropertyDealersAddedByFieldAgent()

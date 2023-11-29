@@ -2,14 +2,14 @@ import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
-import ReviewAgriculturalProperty from "./ReviewAgriculturalProperty"
+import ReviewCommercialProperty from "./ReviewCommercialProperty"
 
-function AgriculturalPropertiesAddedByFieldAgent() {
+function CommercialPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
 
     const [selectedProperty, setSelectedProperty] = useState()
-    const [agriculturalProperties, setAgriculturalProperties] = useState([])
+    const [commercialProperties, setCommercialProperties] = useState([])
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
     const [alert, setAlert] = useState({
@@ -21,11 +21,11 @@ function AgriculturalPropertiesAddedByFieldAgent() {
 
     let index = 0
 
-    const fetchAgriculturalProperties = useCallback(async () => {
+    const fetchCommercialProperties = useCallback(async () => {
         try {
             setError(false)
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/agriculturalPropertiesAddedByFieldAgent`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/commercialPropertiesAddedByFieldAgent`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,10 +42,10 @@ function AgriculturalPropertiesAddedByFieldAgent() {
                 navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
-                if (!data.agriculturalProperties.length) {
+                if (!data.commercialProperties.length) {
                     navigate('/field-agent/properties-added', { replace: true })
                 } else {
-                    setAgriculturalProperties(data.agriculturalProperties)
+                    setCommercialProperties(data.commercialProperties)
                 }
             }
         } catch (error) {
@@ -55,8 +55,8 @@ function AgriculturalPropertiesAddedByFieldAgent() {
     }, [authToken, navigate])
 
     useEffect(() => {
-        fetchAgriculturalProperties()
-    }, [fetchAgriculturalProperties])
+        fetchCommercialProperties()
+    }, [fetchCommercialProperties])
 
     const dateCreater = (date) => {
         const dateFormat = new Date(date)
@@ -78,7 +78,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
 
             {error && !spinner && <div className="fixed top-36 w-full flex flex-col place-items-center">
                 <p>Some error occured</p>
-                <p className="text-red-500 cursor-pointer" onClick={fetchAgriculturalProperties}>Try again</p>
+                <p className="text-red-500 cursor-pointer" onClick={fetchCommercialProperties}>Try again</p>
             </div>}
 
             {!spinner && !selectedProperty && <div className={`w-full flex flex-row gap-2 z-20 fixed top-16 pt-3 pb-3 pl-3  ${error ? 'bg-white' : 'bg-gray-100'} ${alert.isAlertModal ? 'blur' : ''}`}>
@@ -86,12 +86,12 @@ function AgriculturalPropertiesAddedByFieldAgent() {
                 <Link to='/field-agent' className="bg-blue-500 text-white font-semibold p-1 rounded">Home</Link>
             </div>}
 
-            {selectedProperty && !spinner && !error && <ReviewAgriculturalProperty property={selectedProperty} hideReviewPage={() => setSelectedProperty(null)} />}
+            {selectedProperty && !spinner && !error && <ReviewCommercialProperty property={selectedProperty} hideReviewPage={() => setSelectedProperty(null)} />}
 
             {!selectedProperty && !spinner && !error && <>
                 <div className=' pt-28 w-full min-h-screen flex flex-col place-items-center bg-gray-100 pl-2 pr-2 '>
-                    {agriculturalProperties.length > 0 && <p className="w-full text-center text-xl font-bold mb-5 mt-2">{agriculturalProperties.length} agricultural properties have been added</p>}
-                    {agriculturalProperties.length > 0 && agriculturalProperties.map(property => {
+                    {commercialProperties.length > 0 && <p className="w-full text-center text-xl font-bold mb-5 mt-2">{commercialProperties.length} commercial properties have been added</p>}
+                    {commercialProperties.length > 0 && commercialProperties.map(property => {
                         index++
                         return <div key={property._id} className="h-fit flex flex-col gap-4 mb-10 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row">
@@ -101,6 +101,10 @@ function AgriculturalPropertiesAddedByFieldAgent() {
 
                                     <table className="table-auto flex flex-col bg-gray-100 p-2">
                                         <tbody>
+                                            {property.location.name.plotNumber && <tr>
+                                                <td className="font-semibold">Plot/house no.</td>
+                                                <td className="pl-2 sm:pl-5">{property.location.name.plotNumber}</td>
+                                            </tr>}
                                             {property.location.name.village && <tr>
                                                 <td className="font-semibold">Village:</td>
                                                 <td className="pl-2 sm:pl-5">{property.location.name.village}</td>
@@ -139,4 +143,4 @@ function AgriculturalPropertiesAddedByFieldAgent() {
         </Fragment>
     )
 }
-export default AgriculturalPropertiesAddedByFieldAgent
+export default CommercialPropertiesAddedByFieldAgent

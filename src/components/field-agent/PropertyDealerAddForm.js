@@ -29,7 +29,6 @@ function PropertyDealerAddForm() {
 
     const [postalCode, setPostalCode] = useState('') //Used to set postal code
     const [postalCodeError, setPostalCodeError] = useState(false) //Used to show error when no postal code is provided or postal code is more than 6 characters
-    const [postalCodeErrorMessage, setPostalCodeErrorMessage] = useState('') //Used to set message to be be shown when a postal code error occurs
 
     const [city, setCity] = useState('') //Used to set city
     const [cityError, setCityError] = useState(false) //Used to show error when no city is provided 
@@ -45,7 +44,7 @@ function PropertyDealerAddForm() {
     const [addressError, setAddressError] = useState(false) //Used to show error when no address is provided, i.e. addressArray is empty
 
     const [about, setAbout] = useState('') //Used to set about
-    const [aboutMoreThanOneFiftyBody, setAboutMoreThanOneFiftyBody] = useState(false) //used to show an error when about is more than 150 words
+    const [aboutMoreThanOneFiftyWords, setAboutMoreThanOneFiftyWords] = useState(false) //used to show an error when about is more than 150 words
 
     const [email, setEmail] = useState('') //Used to set email
     const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided ot the format of email is not correct
@@ -94,7 +93,7 @@ function PropertyDealerAddForm() {
 
     //This fuction is used to store the address
     const addAddress = () => {
-        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || !postalCode.toString().trim() || postalCode.toString().trim().length !== 6 || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyBody) {
+        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || !postalCode || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyWords) {
             if (!flatPlotHouseNumber.trim()) {
                 setFlatPlotHouseNumberError(true)
             }
@@ -103,11 +102,6 @@ function PropertyDealerAddForm() {
             }
             if (!postalCode) {
                 setPostalCodeError(true)
-                setPostalCodeErrorMessage('Provide a postal code')
-            }
-            if (postalCode && postalCode.toString().trim().length !== 6) {
-                setPostalCodeError(true)
-                setPostalCodeErrorMessage('Postal code should be a 6 digit number')
             }
             if (!city.trim()) {
                 setCityError(true)
@@ -386,11 +380,15 @@ function PropertyDealerAddForm() {
                                     <label className=" font-semibold" htmlFor="pincode">Pincode</label>
                                 </div>
                                 <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
-                                    setPostalCode(e.target.value)
-                                    setPostalCodeError(false)
-                                    setAddressError(false)
+                                    if(+e.target.value.trim()){
+                                        setPostalCode(+e.target.value.trim())
+                                        setPostalCodeError(false)
+                                        setAddressError(false)
+                                    }else{
+                                        setPostalCode('')
+                                    }
                                 }} />
-                                {postalCodeError && <p className="text-red-500">{postalCodeErrorMessage}</p>}
+                                {postalCodeError && <p className="text-red-500">Provide a postal code</p>}
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex flex-row gap-0.5">
@@ -505,15 +503,15 @@ function PropertyDealerAddForm() {
                     {/*about*/}
                     <div className="flex flex-col mb-1.5 ">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
-                        <textarea className={`border-2 ${aboutMoreThanOneFiftyBody ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
-                            setAboutMoreThanOneFiftyBody(false)
+                        <textarea className={`border-2 ${aboutMoreThanOneFiftyWords ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
+                            setAboutMoreThanOneFiftyWords(false)
                             setAbout(e.target.value)
                             const numberOfWordsInAbout = e.target.value.trim().split(/\s+/);
                             if (numberOfWordsInAbout.length > 150) {
-                                setAboutMoreThanOneFiftyBody(true)
+                                setAboutMoreThanOneFiftyWords(true)
                             }
                         }} />
-                        {aboutMoreThanOneFiftyBody && <p className="text-red-500">About should be less than 150  words</p>}
+                        {aboutMoreThanOneFiftyWords && <p className="text-red-500">About should be less than 150  words</p>}
                     </div>
 
                     {/*add firm logo*/}

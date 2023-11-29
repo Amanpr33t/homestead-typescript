@@ -216,7 +216,7 @@ function ReviewAgriculturalProperty(props) {
                             </tr>
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
-                                <td className="pt-2 pb-2 flex justify-center">
+                                <td className="pt-2 pb-2 flex justify-center gap-2">
                                     {property.agriculturalLandImagesUrl
                                         .map(image => {
                                             return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
@@ -225,7 +225,7 @@ function ReviewAgriculturalProperty(props) {
                             </tr>
                             {property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract Images</td>
-                                <td className="pt-2 pb-2 flex justify-center">
+                                <td className="pt-2 pb-2 flex justify-center gap-2">
                                     {property.contractImagesUrl.map(image => {
                                         return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
                                     })}

@@ -1,10 +1,12 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
+import { useNavigate } from "react-router-dom";
 
 //This component is used to review the property dealer data submitted
 function ReviewAgriculturalPropertyAfterSubmission(props) {
-    const { propertyData, agriculturalLandImageFile, contractImageFile, propertyDataReset, agricultureLandImageUpload, contractImageUpload } = props
+    const { propertyData, agriculturalLandImageFile, contractImageFile, propertyDataReset, agricultureLandImageUpload, contractImageUpload, firmName } = props
+    const navigate= useNavigate()
 
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
@@ -19,9 +21,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
-    const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
-    //This function is used to send details to backend API
-
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
     const uploadImages = async () => {
         try {
@@ -102,12 +102,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'warning',
-                    alertMessage: 'Session expired. Please login again',
-                    routeTo: '/field-agent/signIn'
-                })
+                navigate('/field-agent/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
@@ -121,7 +116,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
             })
             return
         }
-    }, [authToken])
+    }, [authToken, navigate])
 
     useEffect(() => {
         if (agriculturalLandImagesUrl.length === agricultureLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
@@ -167,7 +162,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                     <tbody>
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                            <td className=" pt-4 pb-4 text-center">To be added</td>
+                            <td className=" pt-4 pb-4 text-center">{firmName}</td>
                         </tr>
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
@@ -323,6 +318,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                                 })}
                             </td>
                         </tr>}
+
                     </tbody>
                 </table>
                 <div className="w-full flex gap-4 flex-row place-content-center pt-4">

@@ -1,11 +1,12 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
+import { useNavigate } from "react-router-dom";
 
 //This component is used to review the property dealer data submitted
 function ReviewCommercialPropertyAfterSubmission(props) {
     const { propertyData, commercialPropertyImageFile, contractImageFile, propertyDataReset, commercialPropertyImageUpload, contractImageUpload, firmName } = props
-    console.log(propertyData)
+    const navigate=useNavigate()
 
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
@@ -14,14 +15,13 @@ function ReviewCommercialPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
-    const [commercialPropertyImagesUrl, setCommercialPropertyImagesUrl] = useState([])
+    const [commercialLandImagesUrl, setCommercialPropertyImagesUrl] = useState([])
     const [contractImagesUrl, setContractImagesUrl] = useState([])
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
-    const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
-    //This function is used to send details to backend API
+    const authToken = localStorage.getItem("homestead-field-agent-authToken") 
 
 
     const uploadImages = async () => {
@@ -79,9 +79,8 @@ function ReviewCommercialPropertyAfterSubmission(props) {
     }
 
     const saveDetailsToDatabase = useCallback(async (finalPropertyData) => {
-        console.log('save')
-        /*try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addAgriculturalProperty`, {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addCommercialProperty`, {
                 method: 'POST',
                 body: JSON.stringify(finalPropertyData),
                 headers: {
@@ -104,12 +103,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'warning',
-                    alertMessage: 'Session expired. Please login again',
-                    routeTo: '/field-agent/signIn'
-                })
+                navigate('/field-agent/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
@@ -122,18 +116,18 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                 routeTo: null
             })
             return
-        }*/
-    }, [])
+        }
+    }, [authToken, navigate])
 
     useEffect(() => {
-        if (commercialPropertyImagesUrl.length === commercialPropertyImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
+        if (commercialLandImagesUrl.length === commercialPropertyImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
             saveDetailsToDatabase({
-                commercialPropertyImagesUrl,
+                commercialLandImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [commercialPropertyImagesUrl.length, commercialPropertyImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, commercialPropertyImagesUrl, contractImagesUrl, propertyData])
+    }, [commercialLandImagesUrl.length, commercialPropertyImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, commercialLandImagesUrl, contractImagesUrl, propertyData])
 
     return (
         <Fragment>
@@ -183,21 +177,24 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             <td className=" pt-4 pb-4 text-center">{propertyData.shopPropertyType}</td>
                         </tr>}
 
-                        <tr className="border-2 border-gray-300">
+                        {propertyData.commercialPropertyType === 'industrial' ? <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">State of property</td>
                             <td className=" pt-4 pb-4 text-center">{propertyData.stateOfProperty.empty ? 'Empty' : `${propertyData.stateOfProperty.builtUpPropertyType === 'other' ? 'Built-up' : `Built-up (${propertyData.stateOfProperty.builtUpPropertyType})`}`}</td>
-                        </tr>
+                        </tr> : <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">State of property</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.stateOfProperty.empty ? 'Empty' : 'Built-up'}</td>
+                        </tr>}
 
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
                             <td className="pt-4 pb-4 text-center">
-                                <div className="flex flex-row gap-5">
-                                    <div className="flex flex-col gap-3 bg-gray-300 w-fit p-2 pt-0">
+                                <div className="flex flex-row place-content-center gap-5 mb-4">
+                                    <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                         <p className="w-full text-center font-semibold">Total area</p>
                                         <p>{propertyData.landSize.totalArea.metreSquare} metre square</p>
                                         <p>{propertyData.landSize.totalArea.squareFeet} square feet</p>
                                     </div>
-                                    <div className="flex flex-col gap-3 bg-gray-300 w-fit p-2 pt-0">
+                                    <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                         <p className="w-full text-center font-semibold">Covered area</p>
                                         <p>{propertyData.landSize.coveredArea.metreSquare} metre square</p>
                                         <p>{propertyData.landSize.coveredArea.squareFeet} square feet</p>
@@ -218,14 +215,24 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             <td className=" pt-4 pb-4 text-center">{propertyData.floors.basementFloors}</td>
                         </tr>
 
-                        {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
+                        {propertyData.commercialPropertyType === 'shop' && (propertyData.leasePeriod.years || propertyData.leasePeriod.months) && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
-                            <td className=" pt-4 pb-4 text-center">{propertyData.leasePeriod.years ? '' : propertyData.leasePeriod.years} years, {propertyData.leasePeriod.months ? '' : propertyData.leasePeriod.months} months</td>
+                            <td className=" pt-4 pb-4 text-center">
+                                <div className="flex flex-col">
+                                    {propertyData.leasePeriod.years !== 0 && <p>{propertyData.leasePeriod.years} years</p>}
+                                    {propertyData.leasePeriod.months !== 0 && <p>{propertyData.leasePeriod.months} months</p>}
+                                </div>
+                            </td>
                         </tr>}
 
-                        {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
-                            <td className=" pt-4 pb-4 text-center">{propertyData.lockInPeriod.years ? '' : propertyData.lockInPeriod.years} years, {propertyData.lockInPeriod.months ? '' : propertyData.lockInPeriod.months} months</td>
+                        {propertyData.commercialPropertyType === 'shop' && (propertyData.lockInPeriod.years || propertyData.lockInPeriod.months) && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
+                            <td className=" pt-4 pb-4 text-center">
+                                <div className="flex flex-col">
+                                    {propertyData.lockInPeriod.years !== 0 && <p>{propertyData.lockInPeriod.years} years</p>}
+                                    {propertyData.lockInPeriod.months !== 0 && <p>{propertyData.lockInPeriod.months} months</p>}
+                                </div>
+                            </td>
                         </tr>}
 
                         <tr className="border-2 border-gray-300">
@@ -258,71 +265,21 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             </td>
                         </tr>
 
+                        {propertyData.widthOfRoadFacing.metre && propertyData.widthOfRoadFacing.feet && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road width</td>
+                            <td className=" pt-4 pb-4 text-center">
+                                <div className="flex flex-col place-items-center">
+                                    <p>{propertyData.widthOfRoadFacing.feet}   feet</p>
+                                    <p>{propertyData.widthOfRoadFacing.metre}  metre</p>
+                                </div>
+                            </td>
+                        </tr>}
+
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Number of owners</td>
                             <td className="pt-4 pb-4 text-center" >{propertyData.numberOfOwners}</td>
                         </tr>
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Water Source</td>
-                            <td className="flex flex-col gap-2 place-items-center pt-4 pb-4 text-center">
-                                {propertyData.waterSource.canal.length > 0 && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">Canal:</p>
-                                    <div className="flex flex-col">
-                                        {propertyData.waterSource.canal.map(canal => {
-                                            return <p key={Math.random()}>{canal}</p>
-                                        })}
-                                    </div>
-                                </div>}
-                                {propertyData.waterSource.river.length > 0 && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">River:</p>
-                                    <div className="flex flex-col">
-                                        {propertyData.waterSource.river.map(river => {
-                                            return <p key={Math.random()}>{river}</p>
-                                        })}
-                                    </div>
-                                </div>}
-                                {propertyData.waterSource.tubewells.numberOfTubewells > 0 && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">Tubewell Depth:</p>
-                                    <div className="flex flex-col">
-                                        {propertyData.waterSource.tubewells.depth.map(depth => {
-                                            return <p key={Math.random()}>{depth} feet</p>
-                                        })}
-                                    </div>
-                                </div>}
-                            </td>
-                        </tr>
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Reservoir</td>
-                            <td className="flex flex-row place-content-center gap-2 flex-wrap pt-4 pb-4 text-center">
-                                {!propertyData.reservoir.isReservoir &&
-                                    <p>No</p>
-                                }
-                                {propertyData.reservoir.isReservoir &&
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex flex-row gap-2">
-                                            <p className="font-semibold">Type of Reservoir:</p>
-                                            {propertyData.reservoir.type.map(type => {
-                                                return <p key={Math.random()}>{type}</p>
-                                            })}
-                                        </div>
-                                        {propertyData.reservoir.type.includes('private') &&
-                                            <div className="flex flex-row gap-2">
-                                                <p className="font-semibold">Capacity:</p>
-                                                <p>{propertyData.reservoir.capacityOfPrivateReservoir} {propertyData.reservoir.unitOfCapacityForPrivateReservoir}</p>
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                        {propertyData.irrigationSystem.length > 0 && <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Irrigation System</td>
-                            <td className="flex flex-col place-items-center gap-0.5 flex-wrap pt-4 pb-4 text-center">
-                                {propertyData.irrigationSystem.map(system => {
-                                    return <p key={Math.random()}>{system}</p>
-                                })}
-                            </td>
-                        </tr>}
+
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
@@ -333,21 +290,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                                 <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.priceDemanded.words}</p>
                             </td>
                         </tr>
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Crops</td>
-                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-0.5">
-                                {propertyData.crops.map(crop => {
-                                    return <p key={Math.random()}>{crop}</p>
-                                })}
-                            </td>
-                        </tr>
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road type</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                <p>{propertyData.road.type}</p>
-                                {propertyData.road.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.road.details}</p>}
-                            </td>
-                        </tr>
+
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
@@ -358,11 +301,10 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                                 </>}
                             </td>
                         </tr>
-                        {propertyData.nearbyTown.trim() && <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Nearby town</td>
-                            <td className="pt-4 pb-4 text-center">
-                                <p>{propertyData.nearbyTown}</p>
-                            </td>
+
+                        {propertyData.remarks && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Remarks</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.remarks}</td>
                         </tr>}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
