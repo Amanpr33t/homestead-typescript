@@ -307,7 +307,7 @@ function CommercialPropertyAddForm() {
                                 <p className="text-xl font-semibold text-gray-500 mb-2">State of property</p>
                             </div>
                             <div className="flex-col">
-                                <div className="flex flex-row gap-8 pt-1">
+                                <div className="flex flex-row gap-4 sm:gap-6 pt-1">
                                     <div className="flex flex-row h-fit">
                                         <input className="mr-1 cursor-pointer" type="radio" id="built-up" name="state" value="built-up" onChange={e => {
                                             setStateOfPropertyError(false)
@@ -352,7 +352,7 @@ function CommercialPropertyAddForm() {
                     </div>
 
                     {/*area*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5">
+                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         {(coveredAreaError || totalAreaError) && <p className="text-red-500 -mt-1">Provide land size</p>}
                         <div className="flex flex-row gap-5 sm:gap-16">
                             <div className="flex flex-row gap-0.5">
@@ -361,7 +361,7 @@ function CommercialPropertyAddForm() {
                             </div>
 
                             <div className="flex flex-col gap-5">
-                                <div className="flex flex-row gap-5">
+                                <div className="flex flex-col md:flex-row gap-5">
                                     <div className="flex flex-col gap-3 bg-gray-300 w-fit p-2 pt-0">
                                         <p className="w-full text-center font-semibold">Total area</p>
                                         <div className="flex flex-row gap-1">
@@ -434,7 +434,7 @@ function CommercialPropertyAddForm() {
                     </div>
 
                     {/*shop property type */}
-                    {commercialPropertyType === 'shop' && <div className="p-2 pb-5 pt-5 bg-gray-100">
+                    {commercialPropertyType === 'shop' && <div className="p-2 pb-5 pt-5 ">
                         {propertyTypeError && <p className="text-red-500">Select atleast one property type</p>}
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
                             <div className="flex flex-row gap-0.5">
@@ -462,7 +462,7 @@ function CommercialPropertyAddForm() {
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="floors">Number of floors (basement excluded)</label>
-                            <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="floors" id="floors" value={numberOfFloorsWithoutBasement} onChange={e => {
+                            <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center h-fit" name="floors" id="floors" value={numberOfFloorsWithoutBasement} onChange={e => {
                                 setNumberOfFloorsWithoutBasement(e.target.value)
                             }}>
                                 {arrayOfNumbers(1, 50).map(number => <option key={number} value={number}>{number}</option>)}
@@ -471,10 +471,10 @@ function CommercialPropertyAddForm() {
                     </div>
 
                     {/* Number of basement floors*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5 ">
                         <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                             <label className="text-xl font-semibold text-gray-500" htmlFor="basement">Number of basement floors</label>
-                            <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="basement" id="basement" value={numberOfBasementFloors} onChange={e => {
+                            <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center h-fit" name="basement" id="basement" value={numberOfBasementFloors} onChange={e => {
                                 setNumberOfBasementFloors(e.target.value)
                             }}>
                                 {arrayOfNumbers(0, 5).map(number => <option key={number} value={number}>{number}</option>)}
@@ -483,7 +483,7 @@ function CommercialPropertyAddForm() {
                     </div>
 
                     {/*lock in period*/}
-                    {commercialPropertyType === 'shop' && <div className="flex flex-row p-2 pb-5 pt-5 gap-5 sm:gap-16">
+                    {commercialPropertyType === 'shop' && <div className="flex flex-row p-2 pb-5 pt-5 gap-5 sm:gap-16 bg-gray-100">
                         <p className="text-xl font-semibold text-gray-500 whitespace-nowrap">Lock-in period</p>
                         <div className="flex flex-col gap-3">
                             <div className="flex flex-row gap-2">
@@ -656,7 +656,7 @@ function CommercialPropertyAddForm() {
                     </div>
 
                     {/*price*/}
-                    <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+                    <div className="flex flex-col p-2 pb-5 pt-5 ">
                         {(priceDemandedNumberError && !priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide price in words</p>}
                         {(!priceDemandedNumberError && priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide price in numbers</p>}
                         {(priceDemandedNumberError && priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide price</p>}
@@ -771,9 +771,9 @@ function CommercialPropertyAddForm() {
                         <div className="flex flex-row gap-5">
                             <div className="flex flex-row gap-0.5">
                                 <p className="h-4 text-2xl text-red-500">*</p>
-                                <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Add property image</label>
+                                <label className="text-gray-500 text-xl font-semibold w-40" htmlFor="image">Add property image</label>
                             </div>
-                            <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={commercialPropertyImageHandler} onClick={e => e.target.value = null} />
+                            <input type="file" className='text-transparent ' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={commercialPropertyImageHandler} onClick={e => e.target.value = null} />
                         </div>
                         {commercialPropertyImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
                             {commercialPropertyImageFile.map(image => {

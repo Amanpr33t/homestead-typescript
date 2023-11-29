@@ -107,8 +107,8 @@ function ReviewCommercialProperty(props) {
 
                             <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
-                                <td className="pt-4 pb-4 text-center">
-                                    <div className="flex flex-row place-content-center gap-5 mb-4">
+                                <td className="pt-4 pb-4 text-center pr-0.5 pl-0.5">
+                                    <div className="flex flex-row place-content-center gap-1 sm:gap-5 mb-4">
                                         <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                             <p className="w-full text-center font-semibold">Total area</p>
                                             <p>{property.landSize.totalArea.metreSquare} metre square</p>
@@ -228,7 +228,7 @@ function ReviewCommercialProperty(props) {
                             </tr>}
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
-                                <td className="pt-2 pb-2 flex justify-center gap-2">
+                                <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.commercialLandImagesUrl.map(image => {
                                             return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
                                         })}
@@ -236,7 +236,7 @@ function ReviewCommercialProperty(props) {
                             </tr>
                             {property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract Images</td>
-                                <td className="pt-2 pb-2 flex justify-center gap-2">
+                                <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {
                                         return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
                                     })}

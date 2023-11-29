@@ -188,7 +188,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
                             <td className="pt-4 pb-4 text-center">
-                                <div className="flex flex-row place-content-center gap-5 mb-4">
+                                <div className="flex flex-row place-content-center gap-1 sm:gap-5 mb-4 pr-0.5 pl-0.5">
                                     <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                         <p className="w-full text-center font-semibold">Total area</p>
                                         <p>{propertyData.landSize.totalArea.metreSquare} metre square</p>

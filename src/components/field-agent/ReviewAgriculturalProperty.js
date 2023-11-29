@@ -158,14 +158,12 @@ function ReviewAgriculturalProperty(props) {
                                     {property.reservoir.isReservoir &&
                                         <div className="flex flex-col gap-1">
                                             <div className="flex flex-row gap-2">
-                                                <p className="font-semibold">Type of Reservoir:</p>
-                                                {property.reservoir.type.map(type => {
-                                                    return <p key={Math.random()}>{type}</p>
-                                                })}
+                                                <p className="font-semibold">Type:</p>
+                                                <p>{property.reservoir.type[0]}, {property.reservoir.type[1]}</p>
                                             </div>
                                             {property.reservoir.type.includes('private') &&
                                                 <div className="flex flex-row gap-2">
-                                                    <p className="font-semibold">Capacity:</p>
+                                                    <p className="font-semibold w-fit">Capacity of private reservoir:</p>
                                                     <p>{property.reservoir.capacityOfPrivateReservoir} {property.reservoir.unitOfCapacityForPrivateReservoir}</p>
                                                 </div>
                                             }
@@ -188,14 +186,14 @@ function ReviewAgriculturalProperty(props) {
                                         <p className="font-semibold">Rs.</p>
                                         <p>{property.priceDemanded.number}</p>
                                     </div>
-                                    <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.priceDemanded.words}</p>
+                                    <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center">{property.priceDemanded.words}</p>
                                 </td>
                             </tr>
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Road Type</td>
                                 <td className="pt-2 pb-2 flex flex-col place-items-center gap-1">
                                     <p>{property.road.type}</p>
-                                    {property.road.details && <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.road.details}</p>}
+                                    {property.road.details && <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center" text-center>{property.road.details}</p>}
                                 </td>
                             </tr>
                             <tr className="border-2 border-gray-200">
@@ -204,7 +202,7 @@ function ReviewAgriculturalProperty(props) {
                                     {!property.legalRestrictions.isLegalRestrictions && <p>No</p>}
                                     {property.legalRestrictions.isLegalRestrictions && <>
                                         <p>Yes</p>
-                                        <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.legalRestrictions.details}</p>
+                                        <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center">{property.legalRestrictions.details}</p>
                                     </>}
                                 </td>
                             </tr>
@@ -216,7 +214,7 @@ function ReviewAgriculturalProperty(props) {
                             </tr>
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
-                                <td className="pt-2 pb-2 flex justify-center gap-2">
+                                <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.agriculturalLandImagesUrl
                                         .map(image => {
                                             return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
@@ -225,7 +223,7 @@ function ReviewAgriculturalProperty(props) {
                             </tr>
                             {property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract Images</td>
-                                <td className="pt-2 pb-2 flex justify-center gap-2">
+                                <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {
                                         return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
                                     })}
