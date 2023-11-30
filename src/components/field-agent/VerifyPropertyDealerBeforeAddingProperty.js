@@ -14,6 +14,8 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
 
     const [contactNumber, setContactNumber] = useState('')
 
+    const [dealerId, setDealerId] = useState('')
+
     const [alert, setAlert] = useState({
         isAlertModal: false,
         alertType: '',
@@ -27,11 +29,11 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
 
     const formSubmit = async (e) => {
         e.preventDefault()
-        if (!email.trim() && !contactNumber.trim()) {
+        if (!email.trim() && !contactNumber.trim() && !dealerId.trim()) {
             return setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Provide email or contact number'
+                alertMessage: 'Provide email or contact number or dealer Id'
             })
         }
         if (email.trim() && !EmailValidator.validate(email.trim())) {
@@ -39,7 +41,16 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
         }
         try {
             setSpinner(true)
-            const query = email.trim() ? `email=${email.trim()}` : `contactNumber=${contactNumber.trim()}`
+            let query
+            if (email.trim()) {
+                query = `email=${email.trim()}`
+            } else if (contactNumber.trim()) {
+                query = `contactNumber=${contactNumber.trim()}`
+            } else if (dealerId.trim()) {
+                query = `dealerId=${dealerId.trim()}`
+            } else {
+                return
+            }
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerOtpGeneration?${query}`, {
                 method: 'GET',
                 headers: {
@@ -82,7 +93,16 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
         }
         try {
             setSpinner(true)
-            const query = email.trim() ? `email=${email.trim()}&otp=${otp.trim()}` : `contactNumber=${contactNumber.trim()}&otp=${otp.trim()}`
+            let query
+            if (email.trim()) {
+                query = `email=${email.trim()}&otp=${otp.trim()}`
+            } else if (contactNumber.trim()) {
+                query = `contactNumber=${contactNumber.trim()}&otp=${otp.trim()}`
+            } else if (dealerId.trim()) {
+                query = `dealerId=${dealerId.trim()}&otp=${otp.trim()}`
+            } else {
+                return
+            }
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerOtpVerification?${query}`, {
                 method: 'GET',
                 headers: {
@@ -156,23 +176,34 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
                 {!showOtpModal &&
                     <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={formSubmit}>
 
-                        <p className="text-lg font-bold text-center mb-3">Provide email or contact number of the property dealer</p>
+                        <p className="text-lg font-bold text-center mb-3">Provide email or contact number or dealer Id of the property dealer</p>
 
                         <label className="text-lg font-semibold mb-1 text-gray-600" htmlFor="email">Email</label>
                         <input type="email" id="email" name="email" className="border-2 border-gray-400 p-1 rounded" placeholder="dealer@gmail.com" autoComplete="new-password" value={email}
                             onChange={e => {
                                 setEmailValid(true)
                                 setContactNumber('')
-                                setEmail(e.target.value.trimEnd())
+                                setEmail(e.target.value.trimEnd().toLowerCase())
+                                setDealerId('')
                             }} />
                         {!emailValid && <p className="text-red-500">Email not in correct format</p>}
 
                         <p className="text-center text-xl font-semibold mb-3 mt-3">Or</p>
 
+                        <label className="text-lg font-semibold mb-0.5 text-gray-600" htmlFor="dealerId">Dealer Id</label>
+                        <input type="text" className='border-2 border-gray-400  p-1 rounded' id="dealerId" name="dealerId" autoComplete="new-password" value={dealerId} onChange={e => {
+                            setEmail('')
+                            setContactNumber('')
+                            setDealerId(e.target.value.trimEnd())
+                        }} />
+
+                        <p className="text-center text-xl font-semibold mb-3 mt-3">Or</p>
+
                         <label className="text-lg font-semibold mb-0.5 text-gray-600" htmlFor="contactNumber">Contact number</label>
-                        <input type="tel" className='border-2  p-1 rounded' id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
+                        <input type="tel" className='border-2 border-gray-400  p-1 rounded' id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
                             setEmail('')
                             setContactNumber(e.target.value.trimEnd())
+                            setDealerId('')
                         }} />
                         <div className="flex justify-center mt-4">
                             <button type='submit' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">Submit</button>

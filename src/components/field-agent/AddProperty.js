@@ -26,6 +26,7 @@ function AddProperty() {
 
                 {propertyDealer &&
                     <div className="top-32 fixed w-full h-screen flex justify-center z-20">
+
                         <div className="rounded border-2 shadow-2xl bg-white p-2 h-fit" onClick={e => e.stopPropagation()}>
                             <p className="w-full text-center font-semibold mb-2">Select a property type</p>
                             <div className="mb-1">

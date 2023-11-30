@@ -2,15 +2,16 @@ import { Fragment, useCallback, useEffect, useState } from "react"
 import Spinner from "../Spinner"
 import { useNavigate } from "react-router-dom"
 
-//This component is used to review the property dealer data submitted
 function ReviewAgriculturalProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
+
     const [spinner, setSpinner] = useState(false)
     const [error, setError] = useState(false)
     const [firmName, setFirmName] = useState()
-    const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
-    //The code in useEffect hook is used to scroll to the top of the page
+    
+    const authToken = localStorage.getItem("homestead-field-agent-authToken") 
+
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
@@ -83,6 +84,10 @@ function ReviewAgriculturalProperty(props) {
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm name</td>
                                 <td className=" pt-2 pb-2 text-center">{firmName}</td>
+                            </tr>
+                            <tr className="border-2 border-gray-300">
+                                <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Property ID</td>
+                                <td className=" pt-4 pb-4 text-center">{property.uniqueId}</td>
                             </tr>
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Size</td>

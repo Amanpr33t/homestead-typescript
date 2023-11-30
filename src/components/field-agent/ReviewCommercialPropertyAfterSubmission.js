@@ -3,7 +3,6 @@ import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
-//This component is used to review the property dealer data submitted
 function ReviewCommercialPropertyAfterSubmission(props) {
     const { propertyData, commercialPropertyImageFile, contractImageFile, propertyDataReset, commercialPropertyImageUpload, contractImageUpload, firmName } = props
     const navigate=useNavigate()
@@ -23,7 +22,6 @@ function ReviewCommercialPropertyAfterSubmission(props) {
     }, [])
     const authToken = localStorage.getItem("homestead-field-agent-authToken") 
 
-
     const uploadImages = async () => {
         try {
             setCommercialPropertyImagesUrl([])
@@ -34,7 +32,6 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                 formData.append('file', image)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -53,7 +50,6 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                 formData.append('file', image)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'post',
                     body: formData

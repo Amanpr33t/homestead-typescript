@@ -361,7 +361,7 @@ function FieldAgentSignIn() {
                             <input type="email" id="email-1" name="email-1" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={email}
                                 onChange={e => {
                                     setEmailValid(true)
-                                    setEmail(e.target.value.trimEnd())
+                                    setEmail(e.target.value.trimEnd().toLowerCase())
                                 }} />
                             {!emailValid && <p className="text-red-500">Email not in correct format</p>}
                             <label className="text-lg font-semibold mb-1 mt-2" htmlFor="password">Field Agent Password</label>

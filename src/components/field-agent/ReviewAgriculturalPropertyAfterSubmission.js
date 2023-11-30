@@ -33,7 +33,6 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 formData.append('file', image)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -52,7 +51,6 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 formData.append('file', image)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -145,7 +143,6 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
             <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${spinner || alert.isAlertModal ? 'blur' : ''}`} >
                 <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 " onClick={() => {
                     propertyDataReset()
-                    //setFinalPropertyData(null)
                 }}>Back</button>
 
                 <div className="w-full flex justify-center pb-4">
@@ -325,7 +322,6 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                     <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         propertyDataReset()
-                        //setFinalPropertyData(null)
                     }}>Edit</button>
                 </div>
             </div>

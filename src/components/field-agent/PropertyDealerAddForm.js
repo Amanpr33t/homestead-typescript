@@ -121,7 +121,7 @@ function PropertyDealerAddForm() {
         }
 
         const newAddress = {
-            id: (addressArray.length + 1).toString(), flatPlotHouseNumber, areaSectorVillage, landmark, postalCode: +postalCode, city, state, district
+            addressId: (addressArray.length + 1).toString(), flatPlotHouseNumber, areaSectorVillage, landmark, postalCode: +postalCode, city, state, district
         }
         setAddressArray(addressArray => [...addressArray, newAddress])
         setFlatPlotHouseNumber('')
@@ -448,11 +448,11 @@ function PropertyDealerAddForm() {
 
                             <div className="w-full text-center flex flex-row flex-wrap place-content-center gap-2 mt-2">
                                 {addressArray.length > 0 && addressArray.map(address => {
-                                    return <div key={address.id} className="bg-gray-200 border-gray-400 rounded w-60 p-1">
+                                    return <div key={address.addressId} className="bg-gray-200 border-gray-400 rounded w-60 p-1">
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
                                         <button className="bg-red-400 text-white font-medium rounded pl-2 pr-2 mb-2 mt-2" onClick={() => {
-                                            const updatedAddressArray = addressArray.filter(item => item.id !== address.id)
+                                            const updatedAddressArray = addressArray.filter(item => item.addressId !== address.addressId) 
                                             setAddressArray(updatedAddressArray)
                                         }}>Remove</button>
                                     </div>

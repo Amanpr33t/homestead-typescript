@@ -166,7 +166,7 @@ function CommercialPropertyAddForm() {
             setLegalRestrictionError(true)
         } else {
             if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
-                legalRestrictionDetailsError(true)
+                setLegalRestrictionDetailsError(true)
             }
         }
     }
