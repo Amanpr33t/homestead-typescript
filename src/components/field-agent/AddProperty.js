@@ -9,6 +9,9 @@ function AddProperty() {
     const [propertyDealer, setPropertyDealer] = useState()
     const [selectedPropertyType, setSelectedPropertyType] = useState()
     const [commericialPropertyType, setCommercialPropertyType] = useState()
+    const [residentialPropertyType, setResidentialPropertyType] = useState()
+
+    console.log(selectedPropertyType, commericialPropertyType, residentialPropertyType)
 
     const propertyDealerSetterFunction = (dealer) => {
         setPropertyDealer(dealer)
@@ -32,9 +35,9 @@ function AddProperty() {
                             <div className="mb-1">
                                 <input className="mr-1" type="radio" id="agricultural" name="property" value="agricultural" onChange={e => {
                                     if (e.target.checked) {
+                                        setCommercialPropertyType(null)
+                                        setResidentialPropertyType(null)
                                         setSelectedPropertyType(e.target.value)
-                                    } else {
-                                        setSelectedPropertyType(null)
                                     }
                                 }} />
                                 <label htmlFor="property">Agricultural</label>
@@ -43,9 +46,8 @@ function AddProperty() {
                             <div className="mb-1">
                                 <input className="mr-1" type="radio" id="commercial" name="property" value="commercial" onChange={e => {
                                     if (e.target.checked) {
+                                        setResidentialPropertyType(null)
                                         setSelectedPropertyType(e.target.value)
-                                    } else {
-                                        setSelectedPropertyType(null)
                                     }
                                 }} />
                                 <label htmlFor="property">Commercial</label>
@@ -55,8 +57,6 @@ function AddProperty() {
                                         <input className="bg-gray-300 mr-1" type="radio" id="shop" name="commercial-type" value="shop" onChange={e => {
                                             if (e.target.checked) {
                                                 setCommercialPropertyType(e.target.value)
-                                            } else {
-                                                setCommercialPropertyType(null)
                                             }
                                         }} />
                                         <label htmlFor="shop">Shop/Showroom/Booth</label>
@@ -65,8 +65,6 @@ function AddProperty() {
                                         <input className=" mr-1" type="radio" id="industrial" name="commercial-type" value="industrial" onChange={e => {
                                             if (e.target.checked) {
                                                 setCommercialPropertyType(e.target.value)
-                                            } else {
-                                                setCommercialPropertyType(null)
                                             }
                                         }} />
                                         <label htmlFor="industrial">Industrial/Institutional</label>
@@ -77,12 +75,37 @@ function AddProperty() {
                             <div className="mb-2">
                                 <input className="mr-1" type="radio" id="residential" name="property" value="residential" onChange={e => {
                                     if (e.target.checked) {
+                                        setCommercialPropertyType(null)
                                         setSelectedPropertyType(e.target.value)
-                                    } else {
-                                        setSelectedPropertyType(null)
                                     }
                                 }} />
                                 <label htmlFor="property">Residential</label>
+                                {selectedPropertyType === 'residential' && <div className="pl-5 flex flex-col">
+                                    <div className="bg-gray-200 pr-1 pl-1 ">
+                                        <input className="bg-gray-300 mr-1" type="radio" id="plot" name="residential-type" value="plot" onChange={e => {
+                                            if (e.target.checked) {
+                                                setResidentialPropertyType(e.target.value)
+                                            }
+                                        }} />
+                                        <label htmlFor="plot">Plot</label>
+                                    </div>
+                                    <div className="bg-gray-200 pr-1 pl-1">
+                                        <input className=" mr-1" type="radio" id="flat" name="residential-type" value="flat" onChange={e => {
+                                            if (e.target.checked) {
+                                                setResidentialPropertyType(e.target.value)
+                                            }
+                                        }} />
+                                        <label htmlFor="flat">Flat</label>
+                                    </div>
+                                    <div className="bg-gray-200 pr-1 pl-1">
+                                        <input className=" mr-1" type="radio" id="house" name="residential-type" value="house" onChange={e => {
+                                            if (e.target.checked) {
+                                                setResidentialPropertyType(e.target.value)
+                                            }
+                                        }} />
+                                        <label htmlFor="house">house</label>
+                                    </div>
+                                </div>}
                             </div>
 
                             <div className=" w-full flex justify-center">
@@ -91,6 +114,8 @@ function AddProperty() {
                                         navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`, { replace: true })
                                     } else if (selectedPropertyType === 'commercial' && commericialPropertyType) {
                                         navigate(`/field-agent/add-property/commercial?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${commericialPropertyType}`, { replace: true })
+                                    } else if (selectedPropertyType === 'residential' && residentialPropertyType) {
+                                        navigate(`/field-agent/add-property/residential?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${residentialPropertyType}`, { replace: true })
                                     }
                                 }}>Select</button>
                             </div>

@@ -11,6 +11,7 @@ import CommercialPropertiesAddedByFieldAgent from "./components/field-agent/Comm
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom'
 import { Fragment, useEffect } from "react";
 import CommercialPropertyAddForm from "./components/field-agent/CommercialPropertyAddForm";
+import ResidentialPropertyAddForm from "./components/field-agent/ResidentialPropertyAddForm";
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path='' element={<AddProperty />}></Route>
               <Route path='agricultural' element={<AgriculturalPropertyAddForm />}></Route>
               <Route path='commercial' element={<CommercialPropertyAddForm />}></Route>
+              <Route path='residential' element={<ResidentialPropertyAddForm />}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
@@ -47,6 +49,7 @@ function App() {
               <Route path='' element={<ListOfPropertiesAddedByFieldAgent />}></Route>
               <Route path='agricultual-properties' element={<AgriculturalPropertiesAddedByFieldAgent />}></Route>
               <Route path='commercial-properties' element={<CommercialPropertiesAddedByFieldAgent />}></Route>
+              <Route path='residential-properties' element={<ResidentialPropertyAddForm />}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
