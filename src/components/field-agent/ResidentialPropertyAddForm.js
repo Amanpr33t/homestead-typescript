@@ -101,10 +101,81 @@ function ResidentialPropertyAddForm() {
   const [numberOfLivingRooms, setNumberOfLivingRooms] = useState(1)
   const [numberOfBedrooms, setNumberOfBedrooms] = useState(1)
   const [numberOfOfficeRooms, setNumberOfOfficeRooms] = useState(0)
-  const [numberOfWashrooms, setNumberOfWashrooms]=useState(1)
-  const [numberOfKitchen, setNumberOfKitchen]=useState(1)
-  const [numberOfCarParkingSpaces, setNumberOfCarParkingSpaces]=useState(0)
-  const [numberOfBalconies, setNumberOfBalconies]=useState(0)
+  const [numberOfWashrooms, setNumberOfWashrooms] = useState(1)
+  const [numberOfKitchen, setNumberOfKitchen] = useState(1)
+  const [numberOfCarParkingSpaces, setNumberOfCarParkingSpaces] = useState(0)
+  const [numberOfBalconies, setNumberOfBalconies] = useState(0)
+
+  const [storeRoom, setStoreRoom] = useState(null)
+  const [storeRoomError, setStoreRoomError] = useState(false)
+
+  const [servantRoom, setServantRoom] = useState(null)
+  const [servantRoomError, setServantRoomError] = useState(false)
+  const [servantWashroom, setServantWashroom] = useState(null)
+  const [servantWashroomError, setServantWashroomError] = useState(false)
+
+  const [furnishing, setFurnishing] = useState(null)
+  const [furnishingError, setFurnishingError] = useState(false)
+  const [furnishingDetails, setFurnishingDetails] = useState('')
+  const [furnishingDetailsError, setFurnishingDetailsError] = useState('')
+
+  const [kitchenFurnishing, setKitchenFurnishing] = useState(null)
+  const [kitchenFurnishingError, setKitchenFurnishingError] = useState(false)
+  const [kitchenFurnishingDetails, setKitchenFurnishingDetails] = useState('')
+  const [kitchenFurnishingDetailsError, setKitchenFurnishingDetailsError] = useState('')
+
+  const [kitchenAppliances, setKitchenAppliances] = useState(null)
+  const [kitchenAppliancesDetails, setKitchenAppliancesDetails] = useState('')
+  const [kitchenAppliancesError, setKitchenAppliancesError] = useState(false)
+  const [kitchenAppliancesDetailsError, setKitchenAppliancesDetailsError] = useState('')
+
+  const [washroomFitting, setWashRoomFitting] = useState(null)
+  const [washroomFittingError, setWashRoomFittingError] = useState(false)
+
+  const [electricalFitting, setElectricalFitting] = useState(null)
+  const [electricalFittingError, setElectricalFittingError] = useState(false)
+
+  const [flooringTypeArray, setFlooringTypeArray] = useState(null)
+  const [flooringTypeError, setFlooringTypeError] = useState(false)
+  const flooringTypeOptions = ['Cemented', 'Marble', 'Luxurious Marble', 'Standard tiles', 'Premium tiles', 'Luxurious tiles']
+
+  const [roofTypeArray, setRoofTypeArray] = useState(null)
+  const [roofTypeError, setRoofTypeError] = useState(false)
+  const roofTypeOptions = ['Standard', 'POP work', 'Down ceiling']
+
+  const [wallTypeArray, setWallTypeArray] = useState(null)
+  const [wallTypeError, setWallTypeError] = useState(false)
+  const wallTypeOptions = ['Plaster', 'Paint', 'Premium paint', 'Wall paper', 'PVC panelling', 'Art work']
+
+  const [windowTypeArray, setWindowTypeArray] = useState(null)
+  const [windowTypeError, setWindowTypeError] = useState(false)
+  const windowTypeOptions = ['Standard', 'Wood', 'Premium material']
+
+  const [safetySystemArray, setSafetySystemArray] = useState([])
+  const safetySystemOptions = ['CCTV', 'Glass break siren', 'Entry sensor', 'Motion sensor', 'Panic button', 'Keypad', 'Keyfob', 'Smoke detector', 'CO detector', 'Water sprinkler', 'Doorbell camera']
+
+  const [garden, setGarden] = useState(null)
+  const [gardenDetails, setGardenDetails] = useState('')
+  const [gardenError, setGardenError] = useState(false)
+  const [gardenDetailsError, setGardenDetailsError] = useState('')
+
+  const [ageOfConstruction, setAgeOfConstruction] = useState('')
+  const [ageOfConstructionError, setAgeOfConstructionError] = useState(false)
+
+  const [conditionOfProperty, setConditionOfProperty] = useState(null)
+  const [conditionOfPropertyError, setConditionOfPropertyError] = useState(false)
+  const conditionOfPropertyOptions = ['Exceptionally new', 'Near to new', 'Some signs of agying', 'Need some renovations', 'Needs complete renovation']
+
+  const [numberOfOwners, setNumberOfOwners] = useState(1)
+
+  const [isLegalRestrictions, setIsLegalRestrictions] = useState(null)
+  const [legalRestrictionError, setLegalRestrictionError] = useState(false)
+  const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
+  const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
+
+  const [propertyTaxes, setPropertyTaxes] = useState('')
+
+  const [homeOwnersAssociationFees, setHomeOwnersAssociationFees] = useState('')
 
 
 
@@ -125,12 +196,9 @@ function ResidentialPropertyAddForm() {
   const [contractImageUpload, setContractImageUpload] = useState([])
   const [contractImageFile, setContractImageFile] = useState([])
 
-  const [numberOfOwners, setNumberOfOwners] = useState(1)
 
-  const [isLegalRestrictions, setIsLegalRestrictions] = useState(false)
-  const [legalRestrictionError, setLegalRestrictionError] = useState(false)
-  const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
-  const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
+
+
 
   const states = ['Chandigarh', 'Punjab', 'Haryana']
 
@@ -151,7 +219,7 @@ function ResidentialPropertyAddForm() {
     .map(function (y, i) { return i + 1 })
 
   const arrayOfNumbersFromZeroToNine = Array.apply(null, Array(10))
-    .map(function (y, i) { return i  })
+    .map(function (y, i) { return i })
 
   function countWords(str) {
     const wordMatches = str.match(/\b\w+\b/g)
@@ -254,6 +322,93 @@ function ResidentialPropertyAddForm() {
       }
     }
 
+    if (residentialPropertyType !== 'flat' && storeRoom === null) {
+      setStoreRoomError(true)
+    }
+
+    if (residentialPropertyType !== 'flat') {
+      if (servantRoom === null) {
+        setServantRoomError(true)
+      } else if (servantRoom && servantWashroom === null) {
+        setServantWashroomError(true)
+      }
+    }
+
+    if (residentialPropertyType !== 'flat') {
+      if (!furnishing) {
+        setFurnishingError(true)
+      } else if (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150) {
+        setFurnishingDetailsError(true)
+      }
+    }
+
+    if (residentialPropertyType !== 'flat') {
+      if (!kitchenFurnishing) {
+        setKitchenFurnishingError(true)
+      } else if (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150) {
+        setKitchenFurnishingDetailsError(true)
+      }
+    }
+
+    if (residentialPropertyType !== 'flat') {
+      if (kitchenAppliances === null) {
+        setKitchenAppliancesError(true)
+      } else if (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50) {
+        setKitchenAppliancesDetailsError(true)
+      }
+    }
+
+    if (residentialPropertyType !== 'flat' && !washroomFitting) {
+      setWashRoomFittingError(true)
+    }
+
+    if (residentialPropertyType !== 'flat' && !electricalFitting) {
+      setElectricalFittingError(true)
+    }
+
+    if (residentialPropertyType !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
+      setFlooringTypeError(true)
+    }
+
+    if (residentialPropertyType !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
+      setRoofTypeError(true)
+    }
+
+    if (residentialPropertyType !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
+      setWallTypeError(true)
+    }
+
+    if (residentialPropertyType !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
+      setWindowTypeError(true)
+    }
+
+    if (residentialPropertyType !== 'flat') {
+      if (garden === null) {
+        setGardenError(true)
+      } else if (garden && countWords(gardenDetails.trim()) > 50) {
+        setGardenDetailsError(true)
+      }
+    }
+
+    if (residentialPropertyType !== 'flat' && !ageOfConstruction) {
+      setAgeOfConstructionError(true)
+    }
+
+    if (residentialPropertyType !== 'flat' && !conditionOfProperty) {
+      setConditionOfPropertyError(true)
+    }
+
+    if (isLegalRestrictions === null) {
+      setLegalRestrictionError(true)
+    } else if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
+      legalRestrictionDetailsError(true)
+    }
+
+
+
+
+
+
 
 
 
@@ -268,13 +423,7 @@ function ResidentialPropertyAddForm() {
       setStateError(true)
     }
 
-    if (isLegalRestrictions === undefined) {
-      setLegalRestrictionError(true)
-    } else {
-      if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
-        legalRestrictionDetailsError(true)
-      }
-    }
+
   }
 
   const formSubmit = async (e) => {
@@ -314,7 +463,40 @@ function ResidentialPropertyAddForm() {
       errorFunction()
     } else if (!totalAreaMetreSquare || !totalAreaGajj || !coveredAreaGajj || !coveredAreaMetreSquare) {
       errorFunction()
+    } else if (residentialPropertyType !== 'flat' && storeRoom === null) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (!furnishing || (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (!kitchenFurnishing || (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' || (kitchenAppliances === null || (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && !washroomFitting) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && !electricalFitting) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' || (garden === null || (garden && countWords(gardenDetails.trim()) > 50))) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && !ageOfConstruction) {
+      errorFunction()
+    } else if (residentialPropertyType !== 'flat' && !conditionOfProperty) {
+      errorFunction()
+    } else if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
+      errorFunction()
     }
+
+
+
 
 
     if (!residentialLandImageFile.length || !district.trim() || !state.trim() || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
@@ -358,11 +540,17 @@ function ResidentialPropertyAddForm() {
           gajj: coveredAreaGajj
         }
       },
+      numberOfOwners,
+      legalRestrictions: {
+        isLegalRestrictions,
+        details: legalRestrictionDetails.trim() && (legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1)),
+      },
+      propertyTaxes: propertyTaxes || null,
+      homeOwnersAssociationFees: homeOwnersAssociationFees || null,
 
 
 
 
-     
       location: {
         name: {
           village: village.trim() && (village.trim()[0].toUpperCase() + village.trim().slice(1)),
@@ -372,38 +560,60 @@ function ResidentialPropertyAddForm() {
           state
         }
       },
-      numberOfOwners,
-      legalRestrictions: {
-        isLegalRestrictions,
-        details: legalRestrictionDetails.trim() && (legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1)),
-      }
-    }
-    const plotSpecificData = {
+
 
     }
+
+    const plotSpecificData = {
+    }
     const flatSpecificData = {
-      numberOfFloors,
-      numberOfLivingRooms,
-      numberOfBedrooms,
-      numberOfOfficeRooms,
-      numberOfWashrooms,
-      numberOfKitchen,
-      numberOfCarParkingSpaces,
-      numberOfBalconies
     }
     const houseSpecificData = {
+      typeOfSale
+    }
+    const fieldsCommonToHouseAndFlat = {
       numberOfFloors,
-      typeOfSale,
       numberOfLivingRooms,
       numberOfBedrooms,
       numberOfOfficeRooms,
       numberOfWashrooms,
       numberOfKitchen,
       numberOfCarParkingSpaces,
-      numberOfBalconies
+      numberOfBalconies,
+      storeRoom,
+      servantRoom: {
+        room: servantRoom,
+        washroom: servantWashroom
+      },
+      furnishing: {
+        type: furnishing,
+        details: furnishingDetails.trim()
+      },
+      kitchenFurnishing: {
+        type: kitchenFurnishing,
+        details: kitchenFurnishingDetails.trim()
+      },
+      kitchenAppliances: {
+        available: kitchenAppliances,
+        details: kitchenAppliancesDetails
+      },
+      washroomFitting,
+      electricalFitting,
+      flooringTypeArray,
+      roofTypeArray,
+      wallTypeArray,
+      windowTypeArray,
+      safetySystemArray,
+      garden: {
+        available: garden,
+        details: gardenDetails
+      },
+      ageOfConstruction,
+      conditionOfProperty
     }
     setPropertyData(finalPropertyData)
   }
+
 
   return (
     <Fragment>
@@ -565,7 +775,7 @@ function ResidentialPropertyAddForm() {
                 {isDeclareFixedPrice &&
                   <div className="ml-10">
                     <input id="fixed-price-number" type="number" name='fixed-price-number' className={`border-2 ${fixedPriceError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`} placeholder="Number" value={fixedPrice} onChange={e => {
-                      if (+e.target.value.trim() !== 0) {
+                      if (+e.target.value.trim() > 0) {
                         setPriceErrorMessage('')
                         setFixedPrice(+e.target.value.trim())
                       } else {
@@ -596,7 +806,7 @@ function ResidentialPropertyAddForm() {
                     <div className="flex flex-row ml-10 gap-2">
                       <label htmlFor="range-of-price-number-1">From</label>
                       <input id="range-of-price-number-1" type="number" name='range-of-price-number-1' className={`border-2 ${rangeOfPriceFromError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`} placeholder="Number" value={rangeOfPriceFrom} onChange={e => {
-                        if (+e.target.value.trim() !== 0) {
+                        if (+e.target.value.trim() > 0) {
                           setPriceErrorMessage('')
                           setRangeOfPriceFromError(false)
                           setRangeOfPriceFrom(+e.target.value.trim())
@@ -608,7 +818,7 @@ function ResidentialPropertyAddForm() {
                     <div className="flex flex-row ml-10 gap-7">
                       <label htmlFor="range-of-price-number-2">To</label>
                       <input id="range-of-price-number-2" type="number" name='range-of-price-number-2' className={`border-2 ${rangeOfPriceToError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`} placeholder="Number" value={rangeOfPriceTo} onChange={e => {
-                        if (+e.target.value.trim() !== 0) {
+                        if (+e.target.value.trim() > 0) {
                           setPriceErrorMessage('')
                           setRangeOfPriceToError(false)
                           setRangeOfPriceTo(+e.target.value.trim())
@@ -831,7 +1041,7 @@ function ResidentialPropertyAddForm() {
                 <label className="text-gray-500 font-semibold" htmlFor="grocery-store">Grocery store (km)</label>
                 <input type="number" id="grocery-store" name="grocery-store"
                   className={`border-2 ${distanceFromGroceryStoreError ? 'border-red-500' : 'border-gray-500'} border-gray-500 w-12 text-center p-1 rounded`} autoComplete="new-password" value={distanceFromGroceryStore} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setDistanceFromGroceryStore(+e.target.value.trim())
                       setDistanceFromGroceryStoreError(false)
                     } else {
@@ -843,7 +1053,7 @@ function ResidentialPropertyAddForm() {
                 <label className="text-gray-500 font-semibold" htmlFor="restaurant-cafe">Restaurant/Cafe (km)</label>
                 <input type="number" id="restaurant-cafe" name="restaurant-cafe"
                   className={`border-2 ${distanceFromRestaurantCafeError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`} autoComplete="new-password" value={distanceFromRestaurantCafe} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setDistanceFromRestaurantCafe(+e.target.value.trim())
                       setDistanceFromRestaurantCafeError(false)
                     } else {
@@ -855,7 +1065,7 @@ function ResidentialPropertyAddForm() {
                 <label className="text-gray-500 font-semibold" htmlFor="exrecise-area">Exercise area (km)</label>
                 <input type="number" id="exrecise-area" name="exrecise-area"
                   className={`border-2 ${distanceFromExerciseAreaError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`} autoComplete="new-password" value={distanceFromExerciseArea} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setDistanceFromExerciseArea(+e.target.value.trim())
                       setDistanceFromExerciseAreaError(false)
                     } else {
@@ -867,7 +1077,7 @@ function ResidentialPropertyAddForm() {
                 <label className="text-gray-500 font-semibold" htmlFor="school">School (km)</label>
                 <input type="number" id="school" name="school"
                   className={`border-2 ${distanceFromSchoolError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`} autoComplete="new-password" value={distanceFromSchool} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setDistanceFromSchool(+e.target.value.trim())
                       setDistanceFromSchoolError(false)
                     } else {
@@ -879,7 +1089,7 @@ function ResidentialPropertyAddForm() {
                 <label className="text-gray-500 font-semibold" htmlFor="hospital">Exercise area (km)</label>
                 <input type="number" id="hospital" name="hospital"
                   className={`border-2 ${distanceFromHospitalError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`} autoComplete="new-password" value={distanceFromHospital} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setDistanceFromHospital(+e.target.value.trim())
                       setDistanceFromHospitalError(false)
                     } else {
@@ -955,7 +1165,7 @@ function ResidentialPropertyAddForm() {
               <div className="flex flex-col gap-3">
                 <div className="flex flex-row gap-1">
                   <input id="total-area-metre" type="number" name='total-area-metre' className={`border-2 ${totalAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={totalAreaMetreSquare} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setTotalAreaErrorMetreSquareError(false)
                       setTotalAreaMetreSquare(+e.target.value.trim())
                     } else {
@@ -966,7 +1176,7 @@ function ResidentialPropertyAddForm() {
                 </div>
                 <div className="flex flex-row gap-1">
                   <input id="total-area-gajj" type="number" name='total-area-gajj' className={`border-2 ${totalAreaGajjError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={totalAreaGajj} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setTotalAreaGajjError(false)
                       setTotalAreaGajj(+e.target.value.trim())
                     } else {
@@ -991,7 +1201,7 @@ function ResidentialPropertyAddForm() {
               <div className="flex flex-col gap-3">
                 <div className="flex flex-row gap-1">
                   <input id="covered-area-metre" type="number" name='covered-area-metre' className={`border-2 ${coveredAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={coveredAreaMetreSquare} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setCoveredAreaErrorMetreSquareError(false)
                       setCoveredAreaMetreSquare(+e.target.value.trim())
                     } else {
@@ -1002,7 +1212,7 @@ function ResidentialPropertyAddForm() {
                 </div>
                 <div className="flex flex-row gap-1">
                   <input id="covered-area-gajj" type="number" name='covered-area-gajj' className={`border-2 ${coveredAreaGajjError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={coveredAreaGajj} onChange={e => {
-                    if (+e.target.value.trim() !== 0) {
+                    if (+e.target.value.trim() > 0) {
                       setCoveredAreaGajjError(false)
                       setCoveredAreaGajj(+e.target.value.trim())
                     } else {
@@ -1050,7 +1260,7 @@ function ResidentialPropertyAddForm() {
               </select>
             </div>
           </div>}
-          
+
           {/* Number of washrooms*/}
           {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
@@ -1098,6 +1308,745 @@ function ResidentialPropertyAddForm() {
               </select>
             </div>
           </div>}
+
+          {/*store room*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {storeRoomError && <p className="text-red-500">Select an option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Store room</p>
+              </div>
+              <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="store-room-yes" name="store-room" onChange={e => {
+                    if (e.target.checked) {
+                      setStoreRoom(true)
+                      setStoreRoomError(false)
+                    }
+                  }} />
+                  <label htmlFor="store-room-yes">Yes</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className=" mr-1 cursor-pointer" type="radio" id="store-room-no" name="store-room" onChange={e => {
+                    if (e.target.checked) {
+                      setStoreRoom(false)
+                      setStoreRoomError(false)
+                    }
+                  }} />
+                  <label htmlFor="store-room-no">No</label>
+                </div>
+              </div>
+            </div>
+          </div>}
+
+          {/*servant room*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') &&
+            <div className="p-2  flex flex-col pb-5 pt-5 ">
+              {(servantRoomError || servantWashroomError) && <p className="text-red-500">Select an option</p>}
+              <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+                <div className="flex flex-row gap-0.5">
+                  <p className="h-4 text-2xl text-red-500">*</p>
+                  <p className="text-xl font-semibold text-gray-500 mb-2">Servant room</p>
+                </div>
+                <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                  <div className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="radio" id="servant-room-yes" name="servant-room" onChange={e => {
+                      if (e.target.checked) {
+                        setServantRoom(true)
+                        setServantRoomError(false)
+                      }
+                    }} />
+                    <label htmlFor="servant-room-yes">Yes</label>
+                  </div>
+
+                  <div className="flex flex-row h-fit">
+                    <input className=" mr-1 cursor-pointer" type="radio" id="servant-room-no" name="servant-room" onChange={e => {
+                      if (e.target.checked) {
+                        setServantRoom(false)
+                        setServantRoomError(false)
+                      }
+                    }} />
+                    <label htmlFor="servant-room-no">No</label>
+                  </div>
+                </div>
+              </div>
+
+              {servantRoom && <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
+                <div className="flex flex-row gap-0.5">
+                  <p className="h-4 text-2xl text-red-500">*</p>
+                  <p className="text-xl font-semibold text-gray-500 mb-2">Servant washroom</p>
+                </div>
+                <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                  <div className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="radio" id="servant-washroom-yes" name="servant-washroom" onChange={e => {
+                      if (e.target.checked) {
+                        setServantWashroom(true)
+                        setServantWashroomError(false)
+                      }
+                    }} />
+                    <label htmlFor="servant-washroom-yes">Yes</label>
+                  </div>
+
+                  <div className="flex flex-row h-fit">
+                    <input className=" mr-1 cursor-pointer" type="radio" id="servant-room-no" name="servant-washroom" onChange={e => {
+                      if (e.target.checked) {
+                        setServantWashroom(false)
+                        setServantWashroomError(false)
+                      }
+                    }} />
+                    <label htmlFor="servant-room-no">No</label>
+                  </div>
+                </div>
+              </div>}
+            </div>}
+
+          {/*Furnishing */}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {furnishingError && <p className="text-red-500">Select an option</p>}
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">House Furnishing</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="fully-furnished" name="furnishing" onClick={() => {
+                    setFurnishingDetails('')
+                    setFurnishingDetailsError(false)
+                    setFurnishingError(false)
+                  }} onChange={e => {
+                    if (e.target.checked) {
+                      setFurnishing({
+                        fullyFurnished: true,
+                        semiFurnished: false,
+                        unfurnished: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="fully-furnished">Fully furnished</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className=" mr-1 cursor-pointer" type="radio" id="semi-furnished" name="furnishing" value="Semi-furnished" onClick={() => {
+                    setFurnishingDetails('')
+                    setFurnishingDetailsError(false)
+                    setFurnishingError(false)
+                  }} onChange={e => {
+                    if (e.target.checked) {
+                      setFurnishing({
+                        fullyFurnished: false,
+                        semiFurnished: true,
+                        unfurnished: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="semi-furnished">Semi-furnished</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className=" mr-1 cursor-pointer" type="radio" id="unfurnished" name="furnishing" value="Unfurnished" onClick={() => {
+                    setFurnishingDetails('')
+                    setFurnishingDetailsError(false)
+                    setFurnishingError(false)
+                  }} onChange={e => {
+                    if (e.target.checked) {
+                      setFurnishing({
+                        fullyFurnished: false,
+                        semiFurnished: false,
+                        unfurnished: true
+                      })
+                    }
+                  }} />
+                  <label htmlFor="unfurnished">Unfurnished</label>
+                </div>
+              </div>
+            </div>
+            {furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && <div className="text-center">
+              <textarea className={`border-2 ${furnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`} id="furnishing-details" name="furnishing-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about furnishing" value={furnishingDetails} onChange={e => {
+                if (countWords(furnishingDetails.trim()) > 150) {
+                  setFurnishingDetailsError(true)
+                  setFurnishingDetails(e.target.value.trim())
+                } else {
+                  setFurnishingDetails(e.target.value)
+                  setFurnishingDetailsError(false)
+                }
+              }} />
+              {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
+            </div>}
+          </div>}
+
+          {/*type of kitchen */}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {kitchenFurnishingError && <p className="text-red-500">Select an option</p>}
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen furnishing</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="modular" name="kitchen-furnishing" value="Modular" onClick={() => {
+                    setKitchenFurnishingDetails('')
+                    setKitchenFurnishingDetailsError(false)
+                    setKitchenFurnishingError(false)
+                  }} onChange={e => {
+                    if (e.target.checked) {
+                      setKitchenFurnishing({
+                        modular: true,
+                        semiFurnished: false,
+                        unFurnished: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="modular">Modular</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className=" mr-1 cursor-pointer" type="radio" id="kitchen-semi-furnished" name="kitchen-furnishing" onClick={() => {
+                    setKitchenFurnishingDetails('')
+                    setKitchenFurnishingDetailsError(false)
+                    setKitchenFurnishingError(false)
+                  }} onChange={e => {
+                    if (e.target.checked) {
+                      setKitchenFurnishing({
+                        modular: false,
+                        semiFurnished: true,
+                        unFurnished: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="kitchen-semi-furnished">Semi-furnished</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className=" mr-1 cursor-pointer" type="radio" id="kitchen-unfurnished" name="kitchen-furnishing" value="Unfurnished" onClick={() => {
+                    setKitchenFurnishingDetails('')
+                    setKitchenFurnishingDetailsError(false)
+                    setKitchenFurnishingError(false)
+                  }} onChange={e => {
+                    if (e.target.checked) {
+                      setKitchenFurnishing({
+                        modular: false,
+                        semiFurnished: false,
+                        unFurnished: true
+                      })
+                    }
+                  }} />
+                  <label htmlFor="kitchen-unfurnished">Unfurnished</label>
+                </div>
+              </div>
+            </div>
+            {kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && <div className="text-center">
+              <textarea className={`border-2 ${kitchenFurnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`} id="type-of-kitchen-details" name="type-of-kitchen-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about furnishing" value={kitchenFurnishingDetails} onChange={e => {
+                if (countWords(kitchenFurnishingDetails.trim()) > 150) {
+                  setKitchenFurnishingDetailsError(true)
+                  setKitchenFurnishingDetails(e.target.value.trim())
+                } else {
+                  setKitchenFurnishingDetails(e.target.value)
+                  setKitchenFurnishingDetailsError(false)
+                }
+              }} />
+              {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
+            </div>}
+          </div>}
+
+          {/*kitchen appliances */}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {kitchenAppliancesError && <p className="text-red-500">Select an option</p>}
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen appliances</p>
+              </div>
+              <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="kitchen-appliances-yes" name="kitchen-appliances" onChange={e => {
+                    setKitchenAppliancesDetails('')
+                    setKitchenAppliancesDetailsError(false)
+                    setKitchenAppliancesError(false)
+                    if (e.target.checked) {
+                      setKitchenAppliances(true)
+                    }
+                  }} />
+                  <label htmlFor="kitchen-appliances-yes">Yes</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="kitchen-appliances-no" name="kitchen-appliances" onChange={e => {
+                    setKitchenAppliancesDetails('')
+                    setKitchenAppliancesDetailsError(false)
+                    setKitchenAppliancesError(false)
+                    if (e.target.checked) {
+                      setKitchenAppliances(false)
+                    }
+                  }} />
+                  <label htmlFor="kitchen-appliances-no">No</label>
+                </div>
+              </div>
+            </div>
+            {kitchenAppliances && <div className="text-center">
+              <textarea className={`border-2 ${kitchenAppliancesDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="kitchen-appliances-details" name="kitchen-appliances-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about kitchen appliances" value={kitchenAppliancesDetails} onChange={e => {
+                if (countWords(kitchenAppliancesDetails.trim()) > 50) {
+                  setKitchenAppliancesDetailsError(true)
+                  setKitchenAppliancesDetails(e.target.value.trim())
+                } else {
+                  setKitchenAppliancesDetails(e.target.value)
+                  setKitchenAppliancesDetailsError(false)
+                }
+              }} />
+              {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
+            </div>}
+          </div>}
+
+          {/*washroom fitting*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {washroomFittingError && <p className="text-red-500">Select an option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Washrooom fitting</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="standard" name="washroom-fitting" onChange={e => {
+                    if (e.target.checked) {
+                      setWashRoomFittingError(false)
+                      setWashRoomFitting({
+                        standard: true,
+                        premium: false,
+                        luxurious: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="standard">Standard</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="premium" name="washroom-fitting" onChange={e => {
+                    if (e.target.checked) {
+                      setWashRoomFittingError(false)
+                      setWashRoomFitting({
+                        standard: false,
+                        premium: true,
+                        luxurious: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="premium">Premium</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="luxurious" name="washroom-fitting" onChange={e => {
+                    if (e.target.checked) {
+                      setWashRoomFittingError(false)
+                      setWashRoomFitting({
+                        standard: false,
+                        premium: false,
+                        luxurious: true
+                      })
+                    }
+                  }} />
+                  <label htmlFor="luxurious">Luxurious</label>
+                </div>
+              </div>
+            </div>
+          </div>}
+
+          {/*electrical fitting*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {electricalFittingError && <p className="text-red-500">Select an option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Electrical fitting</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="standard" name="electrical-fitting" onChange={e => {
+                    if (e.target.checked) {
+                      setElectricalFittingError(false)
+                      setElectricalFitting({
+                        standard: true,
+                        premium: false,
+                        luxurious: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="standard">Standard</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="premium" name="electrical-fitting" onChange={e => {
+                    if (e.target.checked) {
+                      setElectricalFittingError(false)
+                      setElectricalFitting({
+                        standard: false,
+                        premium: true,
+                        luxurious: false
+                      })
+                    }
+                  }} />
+                  <label htmlFor="premium">Premium</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="luxurious" name="electrical-fitting" onChange={e => {
+                    if (e.target.checked) {
+                      setElectricalFittingError(false)
+                      setElectricalFitting({
+                        standard: false,
+                        premium: false,
+                        luxurious: true
+                      })
+                    }
+                  }} />
+                  <label htmlFor="luxurious">Luxurious</label>
+                </div>
+              </div>
+            </div>
+          </div>}
+
+          {/*flooring type*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {flooringTypeError && <p className="text-red-500">Select atleast one option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Flooring type</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                {flooringTypeOptions.map(type =>
+                  <div key={type} className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="checkbox" id={type} onChange={e => {
+                      if (e.target.checked) {
+                        setFlooringTypeError(false)
+                        if (!flooringTypeArray) {
+                          setFlooringTypeArray([type])
+                        } else {
+                          setFlooringTypeArray(flooringTypeArray => [...flooringTypeArray, type])
+                        }
+                      } else {
+                        const updatedFlooringTypeArray = flooringTypeArray.filter(item => item !== type)
+                        setFlooringTypeArray(updatedFlooringTypeArray)
+                      }
+                    }} />
+                    <label htmlFor={type}>{type}</label>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>}
+
+          {/*roof type*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {roofTypeError && <p className="text-red-500">Select atleast one option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Roof type</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                {roofTypeOptions.map(type =>
+                  <div key={type} className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="checkbox" id={type} onChange={e => {
+                      if (e.target.checked) {
+                        setRoofTypeError(false)
+                        if (!roofTypeArray) {
+                          setRoofTypeArray([type])
+                        } else {
+                          setRoofTypeArray(roofTypeArray => [...roofTypeArray, type])
+                        }
+                      } else {
+                        const updatedRoofTypeArray = roofTypeArray.filter(item => item !== type)
+                        setRoofTypeArray(updatedRoofTypeArray)
+                      }
+                    }} />
+                    <label htmlFor={type}>{type}</label>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>}
+
+          {/*wall type*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {wallTypeError && <p className="text-red-500">Select atleast one option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Wall type</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                {wallTypeOptions.map(type =>
+                  <div key={type} className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="checkbox" id={type} onChange={e => {
+                      if (e.target.checked) {
+                        setWallTypeError(false)
+                        if (!wallTypeArray) {
+                          setWallTypeArray([type])
+                        } else {
+                          setWallTypeArray(wallTypeArray => [...wallTypeArray, type])
+                        }
+                      } else {
+                        const updatedWallTypeArray = wallTypeArray.filter(item => item !== type)
+                        setWallTypeArray(updatedWallTypeArray)
+                      }
+                    }} />
+                    <label htmlFor={type}>{type}</label>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>}
+
+          {/*Window type*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {windowTypeError && <p className="text-red-500">Select atleast one option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Window type</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                {windowTypeOptions.map(type =>
+                  <div key={type} className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="checkbox" id={type} onChange={e => {
+                      if (e.target.checked) {
+                        setWindowTypeError(false)
+                        if (!wallTypeArray) {
+                          setWindowTypeArray([type])
+                        } else {
+                          setWindowTypeArray(windowTypeArray => [...windowTypeArray, type])
+                        }
+                      } else {
+                        const updatedWindowTypeArray = windowTypeArray.filter(item => item !== type)
+                        setWindowTypeArray(updatedWindowTypeArray)
+                      }
+                    }} />
+                    <label htmlFor={type}>{type}</label>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>}
+
+          {/*safety system*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') &&
+            <div className="p-2  flex flex-row gap-8 sm:gap-10 lg:gap-16 pb-5 pt-5 bg-gray-100">
+              <p className="text-xl font-semibold text-gray-500 mb-2">Window type</p>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                {safetySystemOptions.map(type =>
+                  <div key={type} className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="checkbox" id={type} onChange={e => {
+                      if (e.target.checked) {
+                        setSafetySystemArray(array => [...array, type])
+                      } else {
+                        const updatedSafetySystemArray = safetySystemArray.filter(item => item !== type)
+                        setSafetySystemArray(updatedSafetySystemArray)
+                      }
+                    }} />
+                    <label htmlFor={type}>{type}</label>
+                  </div>
+                )}
+              </div>
+            </div>}
+
+          {/*garden */}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {gardenError && <p className="text-red-500">Select an option</p>}
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Garden</p>
+              </div>
+              <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="garden-yes" name="garden" onChange={e => {
+                    setGardenDetails('')
+                    setGardenDetailsError(false)
+                    setGardenError(false)
+                    if (e.target.checked) {
+                      setGarden(true)
+                    }
+                  }} />
+                  <label htmlFor="garden-yes">Yes</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="garden-no" name="garden" onChange={e => {
+                    setGardenDetails('')
+                    setGardenDetailsError(false)
+                    setGardenError(false)
+                    if (e.target.checked) {
+                      setGarden(false)
+                    }
+                  }} />
+                  <label htmlFor="garden-no">No</label>
+                </div>
+              </div>
+            </div>
+            {garden && <div className="text-center">
+              <textarea className={`border-2 ${gardenDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="garden-details" name="garden-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about garden (optional)" value={gardenDetails} onChange={e => {
+                if (countWords(gardenDetails.trim()) > 50) {
+                  setGardenDetailsError(true)
+                  setGardenDetails(e.target.value.trim())
+                } else {
+                  setGardenDetails(e.target.value)
+                  setGardenDetailsError(false)
+                }
+              }} />
+              {gardenDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
+            </div>}
+          </div>}
+
+          {/*age of construction*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5">
+            {ageOfConstructionError && <p className="text-red-500 -mt-1">Provide details</p>}
+            <div className="flex flex-row gap-5 sm:gap-16">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Age of construction</p>
+              </div>
+
+              <div className="flex flex-row gap-1">
+                <input id="total-area-metre" type="number" name='total-area-metre' className={`border-2 ${ageOfConstructionError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-16 text-center`} placeholder="Size" value={ageOfConstruction} onChange={e => {
+                  if (+e.target.value.trim() > 0 && +e.target.value.trim() <= 100) {
+                    setAgeOfConstructionError(false)
+                    setAgeOfConstruction(+e.target.value.trim())
+                  } else {
+                    setAgeOfConstruction('')
+                  }
+                }} />
+                <p>years</p>
+              </div>
+            </div>
+          </div>}
+
+          {/*Condition of property*/}
+          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {conditionOfPropertyError && <p className="text-red-500">Select an option</p>}
+
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Condition of property</p>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
+                {conditionOfPropertyOptions.map(option => {
+                  return <div key={option} className="flex flex-row h-fit">
+                    <input className="mr-1 cursor-pointer" type="radio" id={option} name="washroom-fitting" onChange={e => {
+                      if (e.target.checked) {
+                        setConditionOfPropertyError(false)
+                        setConditionOfProperty(option)
+                      }
+                    }} />
+                    <label htmlFor={option}>{option}</label>
+                  </div>
+                })}
+              </div>
+            </div>
+          </div>}
+
+          {/* Number of owners*/}
+          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
+              <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
+              <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
+                setNumberOfOwners(e.target.value)
+              }}>
+                {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/*laws */}
+          <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+            {legalRestrictionError && <p className="text-red-500">Select an option</p>}
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">Is the land under any restrictions under any laws</p>
+              </div>
+              <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                <div className="flex flex-row h-fit">
+                  <input className="mr-1 cursor-pointer" type="radio" id="yes" name="restrictions" value="yes" onChange={e => {
+                    setLegalRestrictionDetails('')
+                    setLegalRestrictionDetailsError(false)
+                    setLegalRestrictionError(false)
+                    if (e.target.checked) {
+                      setIsLegalRestrictions(true)
+                    }
+                  }} />
+                  <label htmlFor="yes">Yes</label>
+                </div>
+
+                <div className="flex flex-row h-fit">
+                  <input className=" mr-1 cursor-pointer" type="radio" id="no" name="restrictions" value="no" onChange={e => {
+                    setLegalRestrictionDetails('')
+                    setLegalRestrictionDetailsError(false)
+                    setLegalRestrictionError(false)
+                    if (e.target.checked) {
+                      setIsLegalRestrictions(false)
+                    }
+                  }} />
+                  <label htmlFor="no">No</label>
+                </div>
+              </div>
+            </div>
+            {isLegalRestrictions && <div className="text-center">
+              <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" value={legalRestrictionDetails} onChange={e => {
+                setLegalRestrictionDetailsError(false)
+                setLegalRestrictionDetails(e.target.value)
+              }} />
+              {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
+            </div>}
+          </div>
+
+          {/*Property taxes*/}
+          <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 p-2 pb-5 pt-5">
+            <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Property taxes per year</p>
+            <div className="flex flex-row gap-1">
+              <p>Rs.</p>
+              <input id="proeprty-taxes" type="number" name='proeprty-taxes' className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-28 `} value={propertyTaxes} onChange={e => {
+                if (+e.target.value.trim() > 0) {
+                  setPropertyTaxes(+e.target.value.trim())
+                } else {
+                  setPropertyTaxes('')
+                }
+              }} />
+            </div>
+          </div>
+
+          {/*home owners association fees*/}
+          <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 p-2 pb-5 pt-5">
+            <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Home owners association fees per year</p>
+            <div className="flex flex-row gap-1">
+              <p>Rs.</p>
+              <input id="home-owners-fees" type="number" name='home-owners-fees' className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-28 `} value={homeOwnersAssociationFees} onChange={e => {
+                if (+e.target.value.trim() > 0) {
+                  setHomeOwnersAssociationFees(+e.target.value.trim())
+                } else {
+                  setHomeOwnersAssociationFees('')
+                }
+              }} />
+            </div>
+          </div>
+
+
+
+
+
+
+
 
 
 
@@ -1210,62 +2159,11 @@ function ResidentialPropertyAddForm() {
             </div>
           </div>
 
-          {/* Number of owners*/}
-          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-              <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
-              <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
-                setNumberOfOwners(e.target.value)
-              }}>
-                {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
-              </select>
-            </div>
-          </div>
 
-          
 
-          {/*laws */}
-          <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
-            {legalRestrictionError && <p className="text-red-500">Select an option</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-              <div className="flex flex-row gap-0.5">
-                <p className="h-4 text-2xl text-red-500">*</p>
-                <p className="text-xl font-semibold text-gray-500 mb-2">Is the land under any restrictions under any laws</p>
-              </div>
-              <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="yes" name="restrictions" value="yes" onChange={e => {
-                    setLegalRestrictionDetails('')
-                    setLegalRestrictionDetailsError(false)
-                    setLegalRestrictionError(false)
-                    if (e.target.checked) {
-                      setIsLegalRestrictions(true)
-                    }
-                  }} />
-                  <label htmlFor="yes">Yes</label>
-                </div>
 
-                <div className="flex flex-row h-fit">
-                  <input className=" mr-1 cursor-pointer" type="radio" id="no" name="restrictions" value="no" onChange={e => {
-                    setLegalRestrictionDetails('')
-                    setLegalRestrictionDetailsError(false)
-                    setLegalRestrictionError(false)
-                    if (e.target.checked) {
-                      setIsLegalRestrictions(false)
-                    }
-                  }} />
-                  <label htmlFor="nos">No</label>
-                </div>
-              </div>
-            </div>
-            {isLegalRestrictions && <div className="text-center">
-              <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
-                setLegalRestrictionDetailsError(false)
-                setLegalRestrictionDetails(e.target.value)
-              }} />
-              {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
-            </div>}
-          </div>
+
+
 
           {/*images */}
           <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">

@@ -722,7 +722,7 @@ function CommercialPropertyAddForm() {
                             </div>
                         </div>
                         {isLegalRestrictions && <div className="text-center">
-                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" onChange={e => {
+                            <textarea className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="restrictions" name="restrictions" autoCorrect="on" autoComplete="new-password" placeholder="Add details about restrictions" value={legalRestrictionDetails} onChange={e => {
                                 setLegalRestrictionDetailsError(false)
                                 setLegalRestrictionDetails(e.target.value)
                             }} />
