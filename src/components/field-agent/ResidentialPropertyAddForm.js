@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
-import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPropertyAfterSubmission"
+import ReviewResidentialPropertyAfterSubmission from "./ReviewResidentialPropertyAfterSubmission"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
 import Spinner from "../Spinner"
 
@@ -22,7 +22,7 @@ function ResidentialPropertyAddForm() {
   const [spinner, setSpinner] = useState(true)
 
   useEffect(() => {
-    if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (residentialPropertyType !== 'plot' && residentialPropertyType !== 'flat' && residentialPropertyType !== 'house')) {
+    if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (residentialPropertyType.toLowerCase() !== 'plot' && residentialPropertyType.toLowerCase() !== 'flat' && residentialPropertyType.toLowerCase() !== 'house')) {
       navigate('/field-agent', { replace: true })
     } else {
       setSpinner(false)
@@ -177,10 +177,6 @@ function ResidentialPropertyAddForm() {
 
   const [homeOwnersAssociationFees, setHomeOwnersAssociationFees] = useState('')
 
-
-
-
-
   const [state, setState] = useState('')
   const [stateError, setStateError] = useState(false)
   const [district, setDistrict] = useState('')
@@ -196,11 +192,7 @@ function ResidentialPropertyAddForm() {
   const [contractImageUpload, setContractImageUpload] = useState([])
   const [contractImageFile, setContractImageFile] = useState([])
 
-
-
-
-
-  const states = ['Chandigarh', 'Punjab', 'Haryana']
+  const states = ['Chandigarh', 'Punjab']
 
   const [propertyData, setPropertyData] = useState()
 
@@ -303,7 +295,7 @@ function ResidentialPropertyAddForm() {
       setResidentialLandImageFileError(true)
     }
 
-    if (residentialPropertyType === 'house' && !typeOfSale) {
+    if (residentialPropertyType.toLowerCase() === 'house' && !typeOfSale) {
       setTypeOfSaleError(true)
     }
 
@@ -322,11 +314,11 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType !== 'flat' && storeRoom === null) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && storeRoom === null) {
       setStoreRoomError(true)
     }
 
-    if (residentialPropertyType !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'flat') {
       if (servantRoom === null) {
         setServantRoomError(true)
       } else if (servantRoom && servantWashroom === null) {
@@ -334,7 +326,7 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'flat') {
       if (!furnishing) {
         setFurnishingError(true)
       } else if (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150) {
@@ -342,7 +334,7 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'flat') {
       if (!kitchenFurnishing) {
         setKitchenFurnishingError(true)
       } else if (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150) {
@@ -350,7 +342,7 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'flat') {
       if (kitchenAppliances === null) {
         setKitchenAppliancesError(true)
       } else if (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50) {
@@ -358,31 +350,31 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType !== 'flat' && !washroomFitting) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && !washroomFitting) {
       setWashRoomFittingError(true)
     }
 
-    if (residentialPropertyType !== 'flat' && !electricalFitting) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && !electricalFitting) {
       setElectricalFittingError(true)
     }
 
-    if (residentialPropertyType !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
       setFlooringTypeError(true)
     }
 
-    if (residentialPropertyType !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
       setRoofTypeError(true)
     }
 
-    if (residentialPropertyType !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
       setWallTypeError(true)
     }
 
-    if (residentialPropertyType !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
       setWindowTypeError(true)
     }
 
-    if (residentialPropertyType !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'flat') {
       if (garden === null) {
         setGardenError(true)
       } else if (garden && countWords(gardenDetails.trim()) > 50) {
@@ -390,11 +382,11 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType !== 'flat' && !ageOfConstruction) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && !ageOfConstruction) {
       setAgeOfConstructionError(true)
     }
 
-    if (residentialPropertyType !== 'flat' && !conditionOfProperty) {
+    if (residentialPropertyType.toLowerCase() !== 'flat' && !conditionOfProperty) {
       setConditionOfPropertyError(true)
     }
 
@@ -403,14 +395,6 @@ function ResidentialPropertyAddForm() {
     } else if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
       legalRestrictionDetailsError(true)
     }
-
-
-
-
-
-
-
-
 
     if (!district.trim() && !state.trim()) {
       setDistrictError(true)
@@ -423,7 +407,9 @@ function ResidentialPropertyAddForm() {
       setStateError(true)
     }
 
-
+    if (!residentialLandImageFile.length) {
+      setResidentialLandImageFileError(true)
+    }
   }
 
   const formSubmit = async (e) => {
@@ -440,71 +426,96 @@ function ResidentialPropertyAddForm() {
     }
 
     if (!propertyTitle.trim() || countWords(propertyTitle.trim()) > 30) {
-      errorFunction()
+      console.log(1)
+      return errorFunction()
     } else if (propertyDetail.trim() && countWords(propertyDetail.trim()) > 150) {
-      errorFunction()
+      console.log(2)
+      return errorFunction()
     } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (rangeOfPriceTo <= rangeOfPriceFrom)) {
-      errorFunction()
+      return errorFunction()
     } else if (isWaterSupply === null || (isWaterSupply && isWaterSupplyTwentyFourHours === null)) {
-      errorFunction()
+      console.log(4)
+      return errorFunction()
     } else if (electricityConnection === null) {
-      errorFunction()
+      console.log(5)
+      return errorFunction()
     } else if (sewageSystem === null) {
-      errorFunction()
+      console.log(6)
+      return errorFunction()
     } else if (cableTV === null) {
-      errorFunction()
+      console.log(7)
+      return errorFunction()
     } else if (highSpeedInternet === null) {
-      errorFunction()
+      console.log(8)
+      return errorFunction()
     } else if (!distanceFromGroceryStore || !distanceFromRestaurantCafe || !distanceFromExerciseArea || !distanceFromSchool || !distanceFromHospital) {
-      errorFunction()
+      console.log(9)
+      return errorFunction()
     } else if (!areaType) {
-      errorFunction()
-    } else if (residentialPropertyType === 'house' && !typeOfSale) {
-      errorFunction()
+      console.log(10)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() === 'house' && !typeOfSale) {
+      console.log(11)
+      return errorFunction()
     } else if (!totalAreaMetreSquare || !totalAreaGajj || !coveredAreaGajj || !coveredAreaMetreSquare) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && storeRoom === null) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (!furnishing || (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (!kitchenFurnishing || (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' || (kitchenAppliances === null || (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && !washroomFitting) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && !electricalFitting) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' || (garden === null || (garden && countWords(gardenDetails.trim()) > 50))) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && !ageOfConstruction) {
-      errorFunction()
-    } else if (residentialPropertyType !== 'flat' && !conditionOfProperty) {
-      errorFunction()
+      console.log(12)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && storeRoom === null) {
+      console.log(13)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
+      console.log(14)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!furnishing || (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150))) {
+      console.log(15)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!kitchenFurnishing || (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150))) {
+      console.log(16)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' || (kitchenAppliances === null || (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50))) {
+      console.log(17)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !washroomFitting) {
+      console.log(18)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !electricalFitting) {
+      console.log(19)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
+      console.log(20)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
+      console.log(21)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
+      console.log(22)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
+      console.log(23)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' || (garden === null || (garden && countWords(gardenDetails.trim()) > 50))) {
+      console.log(24)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !ageOfConstruction) {
+      console.log(25)
+      return errorFunction()
+    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !conditionOfProperty) {
+      console.log(26)
+      return errorFunction()
     } else if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
-      errorFunction()
-    }
-
-
-
-
-
-    if (!residentialLandImageFile.length || !district.trim() || !state.trim() || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
-
+      console.log(27)
+      return errorFunction()
+    } else if (!district.trim() && !state.trim()) {
+      console.log(28)
+      return errorFunction()
+    } else if (!residentialLandImageFile.length) {
+      console.log(29)
+      return errorFunction()
     }
 
     const finalPropertyData = {
       addedByPropertyDealer: propertyDealerId,
+      residentialPropertyType,
       title: propertyTitle,
       details: propertyDetail,
       price: {
@@ -516,7 +527,7 @@ function ResidentialPropertyAddForm() {
       },
       waterSupply: {
         available: isWaterSupply,
-        twentyHours: isWaterSupplyTwentyFourHours
+        twentyFourHours: isWaterSupplyTwentyFourHours
       },
       electricityConnection,
       sewageSystem,
@@ -547,26 +558,15 @@ function ResidentialPropertyAddForm() {
       },
       propertyTaxes: propertyTaxes || null,
       homeOwnersAssociationFees: homeOwnersAssociationFees || null,
-
-
-
-
       location: {
         name: {
-          village: village.trim() && (village.trim()[0].toUpperCase() + village.trim().slice(1)),
-          city: city.trim() && (city.trim()[0].toUpperCase() + city.trim().slice(1)),
+          village: village.trim().toUpperCase(),
+          city: city.trim().toUpperCase(),
           tehsil: tehsil,
           district,
           state
         }
-      },
-
-
-    }
-
-    const plotSpecificData = {
-    }
-    const flatSpecificData = {
+      }
     }
     const houseSpecificData = {
       typeOfSale
@@ -611,7 +611,14 @@ function ResidentialPropertyAddForm() {
       ageOfConstruction,
       conditionOfProperty
     }
-    setPropertyData(finalPropertyData)
+
+    if (residentialPropertyType.toLowerCase() === 'plot') {
+      setPropertyData(finalPropertyData)
+    } else if (residentialPropertyType.toLowerCase() !== 'house') {
+      setPropertyData({ ...houseSpecificData, ...finalPropertyData, ...fieldsCommonToHouseAndFlat })
+    } else if (residentialPropertyType.toLowerCase() !== 'flat') {
+      setPropertyData({ ...finalPropertyData, ...fieldsCommonToHouseAndFlat })
+    }
   }
 
 
@@ -628,24 +635,22 @@ function ResidentialPropertyAddForm() {
         })
       }} />}
 
-      {/*propertyData && <ReviewAgriculturalPropertyAfterSubmission
+      {propertyData && <ReviewResidentialPropertyAfterSubmission
         propertyData={propertyData}
         residentialLandImageFile={residentialLandImageFile}
         contractImageFile={contractImageFile}
         residentialLandImageUpload={residentialLandImageUpload}
         contractImageUpload={contractImageUpload}
         propertyDataReset={() => setPropertyData(null)}
-    firmName={propertyDealerFirmName} />*/}
+        firmName={propertyDealerFirmName} />}
 
-      {/*propertyData ? 'fixed right-full' : ''*/}
-
-      {!spinner && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} $`} >
+      {!spinner && <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
         <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
           <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/field-agent', { replace: true })}>Home</button>
         </div>
 
-        <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold z-10">Add an agricultural property by filling the form</p>
+        <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold z-10">Add an residential property by filling the form</p>
 
         <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
@@ -654,20 +659,11 @@ function ResidentialPropertyAddForm() {
             {propertyDealerLogoUrl && <img className="w-20 h-auto " src={propertyDealerLogoUrl} alt='' />}
           </div>
 
-
-          {/* Property type*/}
-          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-              <p className="text-xl font-semibold text-gray-500" >Property type</p>
-              <p className="text-lg text-gray-500">{residentialPropertyType}</p>
-            </div>
-          </div>
-
           {/*Type of sale */}
-          {residentialPropertyType === 'house' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() === 'house' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {typeOfSaleError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Type of sale</p>
@@ -702,53 +698,57 @@ function ResidentialPropertyAddForm() {
             </div>
           </div>}
 
+          {/* Property type*/}
+          <div className="flex flex-col p-2 pb-5 pt-5 ">
+            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
+              <p className="text-xl font-semibold text-gray-500" >Property type</p>
+              <p className="text-lg text-gray-500">{residentialPropertyType}</p>
+            </div>
+          </div>
+
           {/*property title*/}
           <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             {propertyTitleErrorMessage.trim() && <p className="text-red-500 -mt-1">{propertyTitleErrorMessage.trim()}</p>}
-            <div className="flex flex-row gap-5 sm:gap-16">
+            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
-                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-title">Title</label>
+                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-title">Property title</label>
               </div>
 
-              <div className="flex flex-col gap-5">
-                <textarea className={`border-2 ${propertyTitleErrorMessage.trim() ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`} id="property-title" rows={5} name="property-title" autoCorrect="on" autoComplete="new-password" value={propertyTitle} onChange={e => {
-                  if (countWords(e.target.value.trim()) > 30) {
-                    setPropertyTitle(e.target.value.trim())
-                    setPropertyTitleErrorMessage('Title should be less than 30 words')
-                  } else {
-                    setPropertyTitleErrorMessage('')
-                    setPropertyTitle(e.target.value)
-                  }
-                }} />
-              </div>
+              <textarea className={`border-2 ${propertyTitleErrorMessage.trim() ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`} id="property-title" rows={5} name="property-title" autoCorrect="on" autoComplete="new-password" value={propertyTitle} onChange={e => {
+                if (countWords(e.target.value.trim()) > 30) {
+                  setPropertyTitle(e.target.value.trim())
+                  setPropertyTitleErrorMessage('Title should be less than 30 words')
+                } else {
+                  setPropertyTitleErrorMessage('')
+                  setPropertyTitle(e.target.value)
+                }
+              }} />
             </div>
           </div>
 
           {/*property details*/}
-          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          <div className="flex flex-col p-2 pb-5 pt-5 ">
             {propertyDetailError && <p className="text-red-500 -mt-1">Details should be less than 150 words</p>}
-            <div className="flex flex-row gap-5 sm:gap-16">
-              <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-detail">Details</label>
+            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+              <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-detail">Property details</label>
 
-              <div className="flex flex-col gap-5">
-                <textarea className={`border-2 ${propertyDetailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`} id="property-detail" rows={10} name="property-detail" autoCorrect="on" autoComplete="new-password" value={propertyDetail} onChange={e => {
-                  if (countWords(e.target.value.trim()) > 150) {
-                    setPropertyDetail(e.target.value.trim())
-                    setPropertyDetailError(true)
-                  } else {
-                    setPropertyDetailError(false)
-                    setPropertyDetail(e.target.value)
-                  }
-                }} />
-              </div>
+              <textarea className={`border-2 ${propertyDetailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`} id="property-detail" rows={10} name="property-detail" autoCorrect="on" autoComplete="new-password" value={propertyDetail} onChange={e => {
+                if (countWords(e.target.value.trim()) > 150) {
+                  setPropertyDetail(e.target.value.trim())
+                  setPropertyDetailError(true)
+                } else {
+                  setPropertyDetailError(false)
+                  setPropertyDetail(e.target.value)
+                }
+              }} />
             </div>
           </div>
 
           {/*price */}
           <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {priceErrorMessage && <p className="text-red-500 -mt-1">{priceErrorMessage}</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Price</p>
@@ -834,10 +834,10 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*water supply*/}
-          <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          <div className="p-2  flex flex-col pb-5 pt-5 ">
             {(waterSupplyError || waterSupplyTwentyFourHoursError) && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Is water supply available</p>
@@ -869,7 +869,7 @@ function ResidentialPropertyAddForm() {
               </div>
             </div>
 
-            {isWaterSupply && <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2 ml-3">
+            {isWaterSupply && <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ml-3">
               <p className="text-xl font-semibold text-gray-500 mb-2">24 hours water supply</p>
               <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                 <div className="flex flex-row h-fit">
@@ -899,7 +899,7 @@ function ResidentialPropertyAddForm() {
           <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {electricityConnectionError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Electricity connection</p>
@@ -929,10 +929,10 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*sewage system*/}
-          <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          <div className="p-2  flex flex-col pb-5 pt-5">
             {sewageSystemError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Sewage sysem</p>
@@ -965,7 +965,7 @@ function ResidentialPropertyAddForm() {
           <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {cableTVError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Cable TV</p>
@@ -995,10 +995,10 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*high speed internet*/}
-          <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          <div className="p-2  flex flex-col pb-5 pt-5 ">
             {highSpeedInternetError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">High speed internet</p>
@@ -1027,9 +1027,8 @@ function ResidentialPropertyAddForm() {
             </div>
           </div>
 
-
           {/*distance */}
-          <div className="flex flex-col gap-1 p-2 pb-5 pt-5">
+          <div className="flex flex-col gap-1 p-2 pb-5 pt-5 bg-gray-100">
             {(distanceFromGroceryStoreError || distanceFromRestaurantCafeError || distanceFromExerciseAreaError || distanceFromSchoolError || distanceFromHospitalError) && <p className="text-red-500">Select district and state</p>}
 
             <div className="flex flex-row gap-0.5">
@@ -1085,10 +1084,10 @@ function ResidentialPropertyAddForm() {
                     }
                   }} />
               </div>
-              <div className="flex flex-row gap-9 w-full">
-                <label className="text-gray-500 font-semibold" htmlFor="hospital">Exercise area (km)</label>
+              <div className="flex flex-row gap-16 w-full">
+                <label className="text-gray-500 font-semibold" htmlFor="hospital">Hospital (km)</label>
                 <input type="number" id="hospital" name="hospital"
-                  className={`border-2 ${distanceFromHospitalError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`} autoComplete="new-password" value={distanceFromHospital} onChange={e => {
+                  className={`border-2 ${distanceFromHospitalError ? 'border-red-500' : 'border-gray-500'} w-12 text-center ml-1 p-1 rounded`} autoComplete="new-password" value={distanceFromHospital} onChange={e => {
                     if (+e.target.value.trim() > 0) {
                       setDistanceFromHospital(+e.target.value.trim())
                       setDistanceFromHospitalError(false)
@@ -1101,10 +1100,10 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*area type*/}
-          <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          <div className="p-2  flex flex-col pb-5 pt-5">
             {areaTypeError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Area type</p>
@@ -1142,7 +1141,7 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/* Number of floors*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of floors</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="floors" id="floors" value={numberOfFloors} onChange={e => {
@@ -1154,7 +1153,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*total area*/}
-          <div className="flex flex-col p-2 pb-5 pt-5">
+          <div className="flex flex-col p-2 pb-5 pt-5 ">
             {(totalAreaGajjError || totalAreaMetreSquareError) && <p className="text-red-500 -mt-1">Provide details</p>}
             <div className="flex flex-row gap-5 sm:gap-16">
               <div className="flex flex-row gap-0.5">
@@ -1162,8 +1161,8 @@ function ResidentialPropertyAddForm() {
                 <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Total area</p>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-row gap-1">
+              <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-row gap-1 ">
                   <input id="total-area-metre" type="number" name='total-area-metre' className={`border-2 ${totalAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={totalAreaMetreSquare} onChange={e => {
                     if (+e.target.value.trim() > 0) {
                       setTotalAreaErrorMetreSquareError(false)
@@ -1174,7 +1173,7 @@ function ResidentialPropertyAddForm() {
                   }} />
                   <p>Metre square</p>
                 </div>
-                <div className="flex flex-row gap-1">
+                <div className="flex flex-row gap-1 ">
                   <input id="total-area-gajj" type="number" name='total-area-gajj' className={`border-2 ${totalAreaGajjError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={totalAreaGajj} onChange={e => {
                     if (+e.target.value.trim() > 0) {
                       setTotalAreaGajjError(false)
@@ -1190,15 +1189,15 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*covered area*/}
-          <div className="flex flex-col p-2 pb-5 pt-5">
+          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             {(coveredAreaGajjError || coveredAreaMetreSquareError) && <p className="text-red-500 -mt-1">Provide details</p>}
-            <div className="flex flex-row gap-5 sm:gap-16">
+            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Covered area</p>
               </div>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col place-items-center gap-3">
                 <div className="flex flex-row gap-1">
                   <input id="covered-area-metre" type="number" name='covered-area-metre' className={`border-2 ${coveredAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={coveredAreaMetreSquare} onChange={e => {
                     if (+e.target.value.trim() > 0) {
@@ -1226,7 +1225,7 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/* Number of living rooms*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-rooms">Number of Living Rooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-rooms" id="number-of-rooms" value={numberOfLivingRooms} onChange={e => {
@@ -1238,7 +1237,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of bedrooms*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-bedrooms">Number of Bedrooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-bedrooms" id="number-of-bedrooms" value={numberOfBedrooms} onChange={e => {
@@ -1250,7 +1249,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of office rooms*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-office-rooms">Number of Office rooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-office-rooms" id="number-of-office-rooms" value={numberOfOfficeRooms} onChange={e => {
@@ -1262,7 +1261,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of washrooms*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-washrooms">Number of Washrooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-washrooms" id="number-of-washrooms" value={numberOfWashrooms} onChange={e => {
@@ -1274,7 +1273,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of kitchen*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-kitchen">Number of Kitchens</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-kitchen" id="number-of-kitchen" value={numberOfKitchen} onChange={e => {
@@ -1286,7 +1285,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of car parking spaces*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-car-parkings">Number of car parkings</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-car-parkings" id="number-of-car-parkings" value={numberOfCarParkingSpaces} onChange={e => {
@@ -1298,7 +1297,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of car parking spaces*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-balconies">Number of balconies</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-balconies" id="number-of-balconies" value={numberOfBalconies} onChange={e => {
@@ -1310,10 +1309,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*store room*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {storeRoomError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Store room</p>
@@ -1343,10 +1342,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*servant room*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') &&
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') &&
             <div className="p-2  flex flex-col pb-5 pt-5 ">
               {(servantRoomError || servantWashroomError) && <p className="text-red-500">Select an option</p>}
-              <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+              <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
                 <div className="flex flex-row gap-0.5">
                   <p className="h-4 text-2xl text-red-500">*</p>
                   <p className="text-xl font-semibold text-gray-500 mb-2">Servant room</p>
@@ -1404,9 +1403,9 @@ function ResidentialPropertyAddForm() {
             </div>}
 
           {/*Furnishing */}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {furnishingError && <p className="text-red-500">Select an option</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">House Furnishing</p>
@@ -1443,7 +1442,7 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="semi-furnished">Semi-furnished</label>
+                  <label className="whitespace-nowrap" htmlFor="semi-furnished">Semi-furnished</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
@@ -1479,9 +1478,9 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*type of kitchen */}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5">
             {kitchenFurnishingError && <p className="text-red-500">Select an option</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen furnishing</p>
@@ -1518,7 +1517,7 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="kitchen-semi-furnished">Semi-furnished</label>
+                  <label className="whitespace-nowrap" htmlFor="kitchen-semi-furnished">Semi-furnished</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
@@ -1554,9 +1553,9 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*kitchen appliances */}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {kitchenAppliancesError && <p className="text-red-500">Select an option</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen appliances</p>
@@ -1602,10 +1601,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*washroom fitting*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 ">
             {washroomFittingError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Washrooom fitting</p>
@@ -1657,10 +1656,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*electrical fitting*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {electricalFittingError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Electrical fitting</p>
@@ -1712,10 +1711,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*flooring type*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 ">
             {flooringTypeError && <p className="text-red-500">Select atleast one option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Flooring type</p>
@@ -1744,10 +1743,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*roof type*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {roofTypeError && <p className="text-red-500">Select atleast one option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Roof type</p>
@@ -1776,10 +1775,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*wall type*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5">
             {wallTypeError && <p className="text-red-500">Select atleast one option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Wall type</p>
@@ -1808,10 +1807,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*Window type*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {windowTypeError && <p className="text-red-500">Select atleast one option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Window type</p>
@@ -1822,7 +1821,7 @@ function ResidentialPropertyAddForm() {
                     <input className="mr-1 cursor-pointer" type="checkbox" id={type} onChange={e => {
                       if (e.target.checked) {
                         setWindowTypeError(false)
-                        if (!wallTypeArray) {
+                        if (!windowTypeArray) {
                           setWindowTypeArray([type])
                         } else {
                           setWindowTypeArray(windowTypeArray => [...windowTypeArray, type])
@@ -1840,9 +1839,9 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*safety system*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') &&
-            <div className="p-2  flex flex-row gap-8 sm:gap-10 lg:gap-16 pb-5 pt-5 bg-gray-100">
-              <p className="text-xl font-semibold text-gray-500 mb-2">Window type</p>
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') &&
+            <div className="p-2  flex flex-row gap-8 sm:gap-10 lg:gap-16 pb-5 pt-5 ">
+              <p className="text-xl font-semibold text-gray-500 mb-2">Safety system</p>
               <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                 {safetySystemOptions.map(type =>
                   <div key={type} className="flex flex-row h-fit">
@@ -1861,9 +1860,9 @@ function ResidentialPropertyAddForm() {
             </div>}
 
           {/*garden */}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {gardenError && <p className="text-red-500">Select an option</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Garden</p>
@@ -1909,7 +1908,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*age of construction*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="flex flex-col p-2 pb-5 pt-5">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
             {ageOfConstructionError && <p className="text-red-500 -mt-1">Provide details</p>}
             <div className="flex flex-row gap-5 sm:gap-16">
               <div className="flex flex-row gap-0.5">
@@ -1932,10 +1931,10 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*Condition of property*/}
-          {(residentialPropertyType === 'flat' || residentialPropertyType === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {conditionOfPropertyError && <p className="text-red-500">Select an option</p>}
 
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Condition of property</p>
@@ -1957,7 +1956,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of owners*/}
-          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          <div className="flex flex-col p-2 pb-5 pt-5">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
@@ -1971,7 +1970,7 @@ function ResidentialPropertyAddForm() {
           {/*laws */}
           <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {legalRestrictionError && <p className="text-red-500">Select an option</p>}
-            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
                 <p className="text-xl font-semibold text-gray-500 mb-2">Is the land under any restrictions under any laws</p>
@@ -2012,9 +2011,9 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*Property taxes*/}
-          <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 p-2 pb-5 pt-5">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-10 lg:gap-16  p-2 pb-5 pt-3">
             <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Property taxes per year</p>
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row place-content-center gap-1">
               <p>Rs.</p>
               <input id="proeprty-taxes" type="number" name='proeprty-taxes' className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-28 `} value={propertyTaxes} onChange={e => {
                 if (+e.target.value.trim() > 0) {
@@ -2027,9 +2026,9 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/*home owners association fees*/}
-          <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 p-2 pb-5 pt-5">
-            <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Home owners association fees per year</p>
-            <div className="flex flex-row gap-1">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-10 lg:gap-16 p-2 pb-5 pt-3 bg-gray-100">
+            <p className="text-xl font-semibold text-gray-500 " >Home owners association fees per year</p>
+            <div className="flex flex-row place-content-center gap-1">
               <p>Rs.</p>
               <input id="home-owners-fees" type="number" name='home-owners-fees' className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-28 `} value={homeOwnersAssociationFees} onChange={e => {
                 if (+e.target.value.trim() > 0) {
@@ -2041,37 +2040,8 @@ function ResidentialPropertyAddForm() {
             </div>
           </div>
 
-
-
-
-
-
-
-
-
-
-
-          {/* contract*/}
-          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-            <div className="flex flex-row gap-5">
-              <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
-              <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
-            </div>
-            {contractImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-              {contractImageFile.map(image => {
-                return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                  <img className='relative w-auto h-60' src={image} alt="" />
-                  <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                    const updatedState = contractImageFile.filter(file => file !== image)
-                    setContractImageFile(updatedState)
-                  }}>X</div>
-                </div>
-              })}
-            </div>}
-          </div>
-
           {/*location */}
-          <div className="flex flex-col p-2 pb-5 pt-5">
+          <div className="flex flex-col p-2 pb-5 pt-5 ">
             {districtError && !stateError && <p className="text-red-500">Select a state</p>}
             {stateError && !districtError && <p className="text-red-500">Select a district</p>}
             {stateError && districtError && <p className="text-red-500">Select district and state</p>}
@@ -2160,18 +2130,32 @@ function ResidentialPropertyAddForm() {
           </div>
 
 
-
-
-
-
+          {/* contract*/}
+          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+            <div className="flex flex-row gap-5">
+              <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
+              <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
+            </div>
+            {contractImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+              {contractImageFile.map(image => {
+                return <div key={Math.random()} className='relative w-fit bg-blue-300'>
+                  <img className='relative w-auto h-60' src={image} alt="" />
+                  <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
+                    const updatedState = contractImageFile.filter(file => file !== image)
+                    setContractImageFile(updatedState)
+                  }}>X</div>
+                </div>
+              })}
+            </div>}
+          </div>
 
           {/*images */}
-          <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          <div className="flex flex-col p-2 pb-5 pt-5 ">
             {residentialLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
             <div className="flex flex-row gap-5">
               <div className="flex flex-row gap-0.5">
                 <p className="h-4 text-2xl text-red-500">*</p>
-                <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Add property image</label>
+                <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload property images</label>
               </div>
               <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={residentialLandImageHandler} onClick={e => e.target.value = null} />
             </div>

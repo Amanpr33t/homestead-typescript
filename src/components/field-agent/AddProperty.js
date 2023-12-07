@@ -11,8 +11,6 @@ function AddProperty() {
     const [commericialPropertyType, setCommercialPropertyType] = useState()
     const [residentialPropertyType, setResidentialPropertyType] = useState()
 
-    console.log(selectedPropertyType, commericialPropertyType, residentialPropertyType)
-
     const propertyDealerSetterFunction = (dealer) => {
         setPropertyDealer(dealer)
     }
@@ -82,7 +80,7 @@ function AddProperty() {
                                 <label htmlFor="property">Residential</label>
                                 {selectedPropertyType === 'residential' && <div className="pl-5 flex flex-col">
                                     <div className="bg-gray-200 pr-1 pl-1 ">
-                                        <input className="bg-gray-300 mr-1" type="radio" id="plot" name="residential-type" value="plot" onChange={e => {
+                                        <input className="bg-gray-300 mr-1" type="radio" id="plot" name="residential-type" value="Plot" onChange={e => {
                                             if (e.target.checked) {
                                                 setResidentialPropertyType(e.target.value)
                                             }
@@ -90,7 +88,7 @@ function AddProperty() {
                                         <label htmlFor="plot">Plot</label>
                                     </div>
                                     <div className="bg-gray-200 pr-1 pl-1">
-                                        <input className=" mr-1" type="radio" id="flat" name="residential-type" value="flat" onChange={e => {
+                                        <input className=" mr-1" type="radio" id="flat" name="residential-type" value="Flat" onChange={e => {
                                             if (e.target.checked) {
                                                 setResidentialPropertyType(e.target.value)
                                             }
@@ -98,12 +96,12 @@ function AddProperty() {
                                         <label htmlFor="flat">Flat</label>
                                     </div>
                                     <div className="bg-gray-200 pr-1 pl-1">
-                                        <input className=" mr-1" type="radio" id="house" name="residential-type" value="house" onChange={e => {
+                                        <input className=" mr-1" type="radio" id="house" name="residential-type" value="House" onChange={e => {
                                             if (e.target.checked) {
                                                 setResidentialPropertyType(e.target.value)
                                             }
                                         }} />
-                                        <label htmlFor="house">house</label>
+                                        <label htmlFor="house">House</label>
                                     </div>
                                 </div>}
                             </div>
