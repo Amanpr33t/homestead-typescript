@@ -173,7 +173,7 @@ function CommercialPropertyAddForm() {
 
     const formSubmit = async (e) => {
         e.preventDefault()
-        if (!commercialPropertyImageFile.length || !district.trim() || !state.trim() || !coveredAreaMetreSquare || !coveredAreaSquareFeet || !totalAreaMetreSquare || !totalAreaSquareFeet || !priceDemandedNumber || !priceDemandedWords.trim() || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) || (!builtUpProperty && !isEmptyProperty) || (commercialPropertyType === 'industrial' && (builtUpProperty && !builtUpSelectedOption)) || (commercialPropertyType === 'shop' && !selectedPropertyType)) {
+        const errorFunction = () => {
             errorCheckingBeforeSubmit()
             setAlert({
                 isAlertModal: true,
@@ -182,6 +182,27 @@ function CommercialPropertyAddForm() {
                 routeTo: null
             })
             return
+        }
+        if(!commercialPropertyImageFile.length){
+            return errorFunction()
+        }
+        if(!district.trim() || !state.trim() ){
+            return errorFunction()
+        }
+        if(!coveredAreaMetreSquare || !coveredAreaSquareFeet || !totalAreaMetreSquare || !totalAreaSquareFeet){
+            return errorFunction()
+        }
+        if(!priceDemandedNumber || !priceDemandedWords.trim()){
+            return errorFunction()
+        }
+        if(isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) ){
+            return errorFunction()
+        }
+        if((!builtUpProperty && !isEmptyProperty) || (commercialPropertyType === 'industrial' && (builtUpProperty && !builtUpSelectedOption))){
+            return errorFunction()
+        }
+        if(commercialPropertyType === 'shop' && !selectedPropertyType){
+            return errorFunction()
         }
 
         const finalPropertyData = {

@@ -105,7 +105,7 @@ function AgriculturalPropertyAddForm() {
 
     const [nearbyTown, setNearbyTown] = useState('')
 
-    const states = ['Chandigarh', 'Punjab', 'Haryana']
+    const states = ['Chandigarh', 'Punjab']
 
     const [propertyData, setPropertyData] = useState()
 
@@ -201,7 +201,7 @@ function AgriculturalPropertyAddForm() {
 
     const formSubmit = async (e) => {
         e.preventDefault()
-        if (!agriculturalLandImageFile.length || !district.trim() || !state.trim() || !landSize || !landSizeUnit || !priceDemandedNumber || !priceDemandedWords.trim() || (!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0) || !cropArray.length || !roadType || isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) || isReservoir === undefined || (typeOfReservoir.includes('private') && (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir))) {
+        const errorFunction = () => {
             errorCheckingBeforeSubmit()
             setAlert({
                 isAlertModal: true,
@@ -210,6 +210,31 @@ function AgriculturalPropertyAddForm() {
                 routeTo: null
             })
             return
+        }
+
+        if (!agriculturalLandImageFile.length) {
+            return errorFunction()
+        }
+        if (!district.trim() || !state.trim()) {
+            return errorFunction()
+        }
+        if(!landSize || !landSizeUnit){
+            return errorFunction()
+        }
+        if( !priceDemandedNumber || !priceDemandedWords.trim()){
+            return errorFunction()
+        }
+        if((!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0)){
+            return errorFunction(!cropArray.length )
+        }
+        if(!roadType ){
+            return errorFunction()
+        }
+        if(isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim())){
+            return errorFunction()
+        }
+        if(isReservoir === undefined || (typeOfReservoir.includes('private') && (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir))){
+            return errorFunction()
         }
 
         const finalPropertyData = {

@@ -5,7 +5,6 @@ import AlertModal from '../AlertModal'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
 import ReviewResidentialPropertyAfterSubmission from "./ReviewResidentialPropertyAfterSubmission"
-import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
 import Spinner from "../Spinner"
 
 //This component is a form used by a field agent to add a property dealer
@@ -242,7 +241,7 @@ function ResidentialPropertyAddForm() {
       if (isRangeOfPrice && !rangeOfPriceTo) {
         setRangeOfPriceToError(true)
       }
-    } else if (rangeOfPriceTo < rangeOfPriceFrom) {
+    } else if (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom)) {
       setPriceErrorMessage('Provide a greater price')
       setRangeOfPriceToError(true)
     }
@@ -314,11 +313,11 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && storeRoom === null) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       setStoreRoomError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'plot') {
       if (servantRoom === null) {
         setServantRoomError(true)
       } else if (servantRoom && servantWashroom === null) {
@@ -326,7 +325,7 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'plot') {
       if (!furnishing) {
         setFurnishingError(true)
       } else if (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150) {
@@ -334,7 +333,7 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'plot') {
       if (!kitchenFurnishing) {
         setKitchenFurnishingError(true)
       } else if (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150) {
@@ -342,7 +341,7 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'plot') {
       if (kitchenAppliances === null) {
         setKitchenAppliancesError(true)
       } else if (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50) {
@@ -350,31 +349,31 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && !washroomFitting) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
       setWashRoomFittingError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && !electricalFitting) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && !electricalFitting) {
       setElectricalFittingError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
       setFlooringTypeError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
       setRoofTypeError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
       setWallTypeError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
       setWindowTypeError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat') {
+    if (residentialPropertyType.toLowerCase() !== 'plot') {
       if (garden === null) {
         setGardenError(true)
       } else if (garden && countWords(gardenDetails.trim()) > 50) {
@@ -382,11 +381,11 @@ function ResidentialPropertyAddForm() {
       }
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && !ageOfConstruction) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
       setAgeOfConstructionError(true)
     }
 
-    if (residentialPropertyType.toLowerCase() !== 'flat' && !conditionOfProperty) {
+    if (residentialPropertyType.toLowerCase() !== 'plot' && !conditionOfProperty) {
       setConditionOfPropertyError(true)
     }
 
@@ -411,7 +410,6 @@ function ResidentialPropertyAddForm() {
       setResidentialLandImageFileError(true)
     }
   }
-
   const formSubmit = async (e) => {
     e.preventDefault()
     const errorFunction = () => {
@@ -422,7 +420,6 @@ function ResidentialPropertyAddForm() {
         alertMessage: 'Provide all fields',
         routeTo: null
       })
-      return
     }
 
     if (!propertyTitle.trim() || countWords(propertyTitle.trim()) > 30) {
@@ -431,7 +428,8 @@ function ResidentialPropertyAddForm() {
     } else if (propertyDetail.trim() && countWords(propertyDetail.trim()) > 150) {
       console.log(2)
       return errorFunction()
-    } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (rangeOfPriceTo <= rangeOfPriceFrom)) {
+    } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
+      console.log(3)
       return errorFunction()
     } else if (isWaterSupply === null || (isWaterSupply && isWaterSupplyTwentyFourHours === null)) {
       console.log(4)
@@ -460,46 +458,46 @@ function ResidentialPropertyAddForm() {
     } else if (!totalAreaMetreSquare || !totalAreaGajj || !coveredAreaGajj || !coveredAreaMetreSquare) {
       console.log(12)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && storeRoom === null) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       console.log(13)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
       console.log(14)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!furnishing || (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150))) {
       console.log(15)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!kitchenFurnishing || (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150))) {
       console.log(16)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' || (kitchenAppliances === null || (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50))) {
       console.log(17)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !washroomFitting) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
       console.log(18)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !electricalFitting) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && !electricalFitting) {
       console.log(19)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
       console.log(20)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
       console.log(21)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
       console.log(22)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
       console.log(23)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' || (garden === null || (garden && countWords(gardenDetails.trim()) > 50))) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && countWords(gardenDetails.trim()) > 50))) {
       console.log(24)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !ageOfConstruction) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
       console.log(25)
       return errorFunction()
-    } else if (residentialPropertyType.toLowerCase() !== 'flat' && !conditionOfProperty) {
+    } else if (residentialPropertyType.toLowerCase() !== 'plot' && !conditionOfProperty) {
       console.log(26)
       return errorFunction()
     } else if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
@@ -512,6 +510,7 @@ function ResidentialPropertyAddForm() {
       console.log(29)
       return errorFunction()
     }
+
 
     const finalPropertyData = {
       addedByPropertyDealer: propertyDealerId,
@@ -1141,11 +1140,11 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/* Number of floors*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of floors</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="floors" id="floors" value={numberOfFloors} onChange={e => {
-                setNumberOfFloors(e.target.value)
+                setNumberOfFloors(+e.target.value)
               }}>
                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1197,7 +1196,7 @@ function ResidentialPropertyAddForm() {
                 <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Covered area</p>
               </div>
 
-              <div className="flex flex-col place-items-center gap-3">
+              <div className="flex flex-col  place-items-center sm:place-items-start gap-3">
                 <div className="flex flex-row gap-1">
                   <input id="covered-area-metre" type="number" name='covered-area-metre' className={`border-2 ${coveredAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`} placeholder="Size" value={coveredAreaMetreSquare} onChange={e => {
                     if (+e.target.value.trim() > 0) {
@@ -1225,11 +1224,11 @@ function ResidentialPropertyAddForm() {
           </div>
 
           {/* Number of living rooms*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 ">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-rooms">Number of Living Rooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-rooms" id="number-of-rooms" value={numberOfLivingRooms} onChange={e => {
-                setNumberOfLivingRooms(e.target.value)
+                setNumberOfLivingRooms(+e.target.value)
               }}>
                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1237,11 +1236,11 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of bedrooms*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-bedrooms">Number of Bedrooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-bedrooms" id="number-of-bedrooms" value={numberOfBedrooms} onChange={e => {
-                setNumberOfBedrooms(e.target.value)
+                setNumberOfBedrooms(+e.target.value)
               }}>
                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1249,11 +1248,11 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of office rooms*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 ">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-office-rooms">Number of Office rooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-office-rooms" id="number-of-office-rooms" value={numberOfOfficeRooms} onChange={e => {
-                setNumberOfOfficeRooms(e.target.value)
+                setNumberOfOfficeRooms(+e.target.value)
               }}>
                 {arrayOfNumbersFromZeroToNine.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1261,11 +1260,11 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of washrooms*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-washrooms">Number of Washrooms</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-washrooms" id="number-of-washrooms" value={numberOfWashrooms} onChange={e => {
-                setNumberOfWashrooms(e.target.value)
+                setNumberOfWashrooms(+e.target.value)
               }}>
                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1273,11 +1272,11 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of kitchen*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-kitchen">Number of Kitchens</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-kitchen" id="number-of-kitchen" value={numberOfKitchen} onChange={e => {
-                setNumberOfKitchen(e.target.value)
+                setNumberOfKitchen(+e.target.value)
               }}>
                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1285,23 +1284,23 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/* Number of car parking spaces*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-car-parkings">Number of car parkings</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-car-parkings" id="number-of-car-parkings" value={numberOfCarParkingSpaces} onChange={e => {
-                setNumberOfCarParkingSpaces(e.target.value)
+                setNumberOfCarParkingSpaces(+e.target.value)
               }}>
                 {arrayOfNumbersFromZeroToNine.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
             </div>
           </div>}
 
-          {/* Number of car parking spaces*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
+          {/* Number of balconies*/}
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 ">
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-balconies">Number of balconies</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-balconies" id="number-of-balconies" value={numberOfBalconies} onChange={e => {
-                setNumberOfBalconies(e.target.value)
+                setNumberOfBalconies(+e.target.value)
               }}>
                 {arrayOfNumbersFromZeroToNine.map(number => <option key={number} value={number}>{number}</option>)}
               </select>
@@ -1309,7 +1308,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*store room*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {storeRoomError && <p className="text-red-500">Select an option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1342,7 +1341,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*servant room*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') &&
+          {residentialPropertyType.toLowerCase() !== 'plot' &&
             <div className="p-2  flex flex-col pb-5 pt-5 ">
               {(servantRoomError || servantWashroomError) && <p className="text-red-500">Select an option</p>}
               <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1403,7 +1402,7 @@ function ResidentialPropertyAddForm() {
             </div>}
 
           {/*Furnishing */}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {furnishingError && <p className="text-red-500">Select an option</p>}
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
@@ -1442,7 +1441,7 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label className="whitespace-nowrap" htmlFor="semi-furnished">Semi-furnished</label>
+                  <label classNtrueame="whitespace-nowrap" htmlFor="semi-furnished">Semi-furnished</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
@@ -1478,7 +1477,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*type of kitchen */}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5">
             {kitchenFurnishingError && <p className="text-red-500">Select an option</p>}
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
@@ -1553,7 +1552,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*kitchen appliances */}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {kitchenAppliancesError && <p className="text-red-500">Select an option</p>}
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
               <div className="flex flex-row gap-0.5">
@@ -1601,7 +1600,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*washroom fitting*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 ">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 ">
             {washroomFittingError && <p className="text-red-500">Select an option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1656,7 +1655,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*electrical fitting*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {electricalFittingError && <p className="text-red-500">Select an option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1711,7 +1710,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*flooring type*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 ">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 ">
             {flooringTypeError && <p className="text-red-500">Select atleast one option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1743,7 +1742,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*roof type*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {roofTypeError && <p className="text-red-500">Select atleast one option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1775,7 +1774,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*wall type*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5">
             {wallTypeError && <p className="text-red-500">Select atleast one option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1807,7 +1806,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*Window type*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {windowTypeError && <p className="text-red-500">Select atleast one option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1839,7 +1838,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*safety system*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') &&
+          {residentialPropertyType.toLowerCase() !== 'plot' &&
             <div className="p-2  flex flex-row gap-8 sm:gap-10 lg:gap-16 pb-5 pt-5 ">
               <p className="text-xl font-semibold text-gray-500 mb-2">Safety system</p>
               <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
@@ -1860,7 +1859,7 @@ function ResidentialPropertyAddForm() {
             </div>}
 
           {/*garden */}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {gardenError && <p className="text-red-500">Select an option</p>}
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
               <div className="flex flex-row gap-0.5">
@@ -1908,7 +1907,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*age of construction*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="flex flex-col p-2 pb-5 pt-5 ">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="flex flex-col p-2 pb-5 pt-5 ">
             {ageOfConstructionError && <p className="text-red-500 -mt-1">Provide details</p>}
             <div className="flex flex-row gap-5 sm:gap-16">
               <div className="flex flex-row gap-0.5">
@@ -1931,7 +1930,7 @@ function ResidentialPropertyAddForm() {
           </div>}
 
           {/*Condition of property*/}
-          {(residentialPropertyType.toLowerCase() === 'flat' || residentialPropertyType.toLowerCase() === 'house') && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
+          {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
             {conditionOfPropertyError && <p className="text-red-500">Select an option</p>}
 
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
@@ -1944,8 +1943,8 @@ function ResidentialPropertyAddForm() {
                   return <div key={option} className="flex flex-row h-fit">
                     <input className="mr-1 cursor-pointer" type="radio" id={option} name="washroom-fitting" onChange={e => {
                       if (e.target.checked) {
-                        setConditionOfPropertyError(false)
-                        setConditionOfProperty(option)
+                        setConditionOfPropertyError(false)    
+                        setConditionOfProperty(option)   
                       }
                     }} />
                     <label htmlFor={option}>{option}</label>
@@ -1960,7 +1959,7 @@ function ResidentialPropertyAddForm() {
             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
               <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
               <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="owners" id="owners" value={numberOfOwners} onChange={e => {
-                setNumberOfOwners(e.target.value)
+                setNumberOfOwners(+e.target.value)
               }}>
                 {arrayOfNumbersFromOneToTen.map(number => <option key={number} value={number}>{number}</option>)}
               </select>

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 function ReviewResidentialPropertyAfterSubmission(props) {
     const { propertyData, residentialLandImageFile, contractImageFile, propertyDataReset, residentialLandImageUpload, contractImageUpload, firmName } = props
     const navigate = useNavigate()
+    //console.log(propertyData)
 
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
@@ -125,7 +126,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
         }
     }, [residentialLandImagesUrl.length, residentialLandImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, residentialLandImagesUrl, contractImagesUrl, propertyData])
 
-    console.log(propertyData)
+    console.log(propertyData.residentialPropertyType.toLowerCase())
 
     return (
         <Fragment>
@@ -168,7 +169,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         {/*proeprty type */}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Property type</td>
-                            <td className=" pt-4 pb-4 text-center">{propertyData.residentialPropertyType}</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.residentialPropertyType.toLowerCase()}</td>
                         </tr>
 
                         {/*title */}
@@ -178,13 +179,13 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>
 
                         {/*details */}
-                        <tr className="border-2 border-gray-300">
+                        {propertyData.details && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Details</td>
                             <td className=" pt-4 pb-4 pr-2 pl-2 text-center">{propertyData.details}</td>
-                        </tr>
+                        </tr>}
 
                         {/*type of sale */}
-                        {propertyData.residentialPropertyType === 'house' && <tr className="border-2 border-gray-300">
+                        {propertyData.residentialPropertyType.toLowerCase() === 'house' && propertyData.typeOfSale && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Type of sale</td>
                             <td className=" pt-4 pb-4 text-center">{propertyData.typeOfSale.floorForSale ? 'Floor for sale' : 'House for sale'}</td>
                         </tr>}
@@ -206,8 +207,8 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Water supply</td>
                             <td className=" pt-4 pb-4 flex flex-col place-items-center">
                                 <p>{propertyData.waterSupply.available ? 'Yes' : 'No'}</p>
-                                {propertyData.waterSupply.available && propertyData.waterSupply.twentyFourHours && <p className="w-fit bg-gray-200 pr-1 pl-1">24 hours water supply is available</p>}
-                                {propertyData.waterSupply.available && !propertyData.waterSupply.twentyFourHours && <p className="w-fit bg-gray-200 pr-1 pl-1">24 hours water supply is not available</p>}
+                                {propertyData.waterSupply.available && propertyData.waterSupply.twentyFourHours && <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is available</p>}
+                                {propertyData.waterSupply.available && !propertyData.waterSupply.twentyFourHours && <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is not available</p>}
                             </td>
                         </tr>
 
@@ -302,7 +303,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                                 {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
                                 {propertyData.legalRestrictions.isLegalRestrictions && <>
                                     <p>Yes</p>
-                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
+                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center">{propertyData.legalRestrictions.details}</p>
                                 </>}
                             </td>
                         </tr>
@@ -320,74 +321,74 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*Number of floors */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of floors</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfFloors}</td>
                         </tr>}
 
                         {/*Number of living rooms */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of living rooms</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfLivingRooms}</td>
                         </tr>}
 
                         {/*Number of bedrooms */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of bedrooms</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfBedrooms}</td>
                         </tr>}
 
                         {/*Number of office rooms */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of office rooms</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfOfficeRooms}</td>
                         </tr>}
 
                         {/*Number of washrooms */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of washrooms</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfWashrooms}</td>
                         </tr>}
 
                         {/*Number of kitchens */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of kitchens</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfKitchen}</td>
                         </tr>}
 
                         {/* Number of car parkings*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of car parkings</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfCarParkingSpaces}</td>
                         </tr>}
 
                         {/* Number of balconies*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of balconies</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfBalconies}</td>
                         </tr>}
 
                         {/*Store room */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Store room</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.storeRoom ? 'Yes' : 'No'}</td>
                         </tr>}
 
 
                         {/*Servant room */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant room</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.servantRoom.room ? 'Yes' : 'No'}</td>
                         </tr>}
 
                         {/* Servant washroom*/}
-                        {propertyData.residentialPropertyType !== 'plot' && propertyData.servantRoom.room && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant washroom</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.servantRoom ? 'Yes' : 'No'}</td>
+                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.servantRoom.washroom ? 'Yes' : 'No'}</td>
                         </tr>}
 
                         {/*Furnishing*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Furnishing</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.furnishing.type.fullyFurnished && <p>Fully furnished</p>}
@@ -398,8 +399,8 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/* kitchen furnishing*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
-                            <td className="pt-4 pb-4 text-lg font-semibold text-center">kitchen furnishing</td>
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen furnishing</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.kitchenFurnishing.type.modular && <p>Modular</p>}
                                 {propertyData.kitchenFurnishing.type.semiFurnished && <p>Semi furnished</p>}
@@ -409,7 +410,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*Kitchen appliances */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen appliances</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 <p>{propertyData.kitchenAppliances.available ? 'Yes' : 'No'}</p>
@@ -418,7 +419,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*Washroom fitting */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Washroom fitting</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.washroomFitting.standard && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
@@ -428,7 +429,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*Electrical fitting */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Electrical fitting</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.electricalFitting.standard && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
@@ -438,17 +439,17 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*property type*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Flooring type</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                {propertyData.flooringTypeArray.map(type => {
+                                {propertyData.flooringTypeArray && propertyData.flooringTypeArray.map(type => {
                                     return <p key={type}>{type}</p>
                                 })}
                             </td>
                         </tr>}
 
                         {/*roof type */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Roof type</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.roofTypeArray.map(type => {
@@ -458,7 +459,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*wall type */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Wall type</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.wallTypeArray.map(type => {
@@ -468,7 +469,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/* Window type*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Window type</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 <div className="flex flex-col">
@@ -480,7 +481,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/* safety system*/}
-                        {propertyData.residentialPropertyType !== 'plot' && propertyData.safetySystemArray.length > 0 && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && propertyData.safetySystemArray.length > 0 && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Safety system</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {propertyData.safetySystemArray.map(type => {
@@ -490,7 +491,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/* Garden*/}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Garden</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 <p>{propertyData.garden.available ? 'Yes' : 'No'}</p>
@@ -499,7 +500,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*age of construction */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Age of construction</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 <p>{propertyData.ageOfConstruction} years</p>
@@ -507,7 +508,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         </tr>}
 
                         {/*Condition of property */}
-                        {propertyData.residentialPropertyType !== 'plot' && <tr className="border-2 border-gray-300">
+                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Condition of property</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 <p>{propertyData.conditionOfProperty}</p>
