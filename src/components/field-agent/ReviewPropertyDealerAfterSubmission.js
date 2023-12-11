@@ -11,6 +11,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
         experience,
         addressArray,
         gstNumber,
+        reraNumber,
         about,
         firmLogoImageUpload,
         firmLogoImageFile,
@@ -77,6 +78,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
                     experience,
                     addressArray,
                     gstNumber,
+                    reraNumber,
                     about,
                     firmLogoUrl: cloudinaryData.secure_url,
                     email,
@@ -161,6 +163,10 @@ function ReviewPropertyDealerAfterSubmission(props) {
                         <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">GST Number</td>
                             <td className="pt-2 pb-2 text-center" >{gstNumber}</td>
+                        </tr>
+                        <tr className="border-2 border-gray-200">
+                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">RERA Number</td>
+                            <td className="pt-2 pb-2 text-center" >{reraNumber}</td>
                         </tr>
                         <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>

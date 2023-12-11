@@ -11,7 +11,7 @@ import Spinner from "../Spinner"
 function ResidentialPropertyAddForm() {
   const navigate = useNavigate()
 
-  const location = useLocation();
+  const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const propertyDealerId = queryParams.get('id')
   const propertyDealerLogoUrl = queryParams.get('logoUrl')
@@ -392,7 +392,7 @@ function ResidentialPropertyAddForm() {
     if (isLegalRestrictions === null) {
       setLegalRestrictionError(true)
     } else if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
-      legalRestrictionDetailsError(true)
+      setLegalRestrictionDetailsError(true)
     }
 
     if (!district.trim() && !state.trim()) {
@@ -869,7 +869,10 @@ function ResidentialPropertyAddForm() {
             </div>
 
             {isWaterSupply && <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ml-3">
-              <p className="text-xl font-semibold text-gray-500 mb-2">24 hours water supply</p>
+              <div className="flex flex-row gap-0.5">
+                <p className="h-4 text-2xl text-red-500">*</p>
+                <p className="text-xl font-semibold text-gray-500 mb-2">24 hours water supply</p>
+              </div>
               <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                 <div className="flex flex-row h-fit">
                   <input className="mr-1 cursor-pointer" type="radio" id="twenty-four-hours-yes" name="water-supply-twenty-four-hours" onChange={e => {
@@ -1463,7 +1466,7 @@ function ResidentialPropertyAddForm() {
               </div>
             </div>
             {furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && <div className="text-center">
-              <textarea className={`border-2 ${furnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`} id="furnishing-details" name="furnishing-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about furnishing" value={furnishingDetails} onChange={e => {
+              <textarea className={`border-2 ${furnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`} id="furnishing-details" name="furnishing-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about furnishing (optional)" value={furnishingDetails} onChange={e => {
                 if (countWords(furnishingDetails.trim()) > 150) {
                   setFurnishingDetailsError(true)
                   setFurnishingDetails(e.target.value.trim())
@@ -1476,7 +1479,7 @@ function ResidentialPropertyAddForm() {
             </div>}
           </div>}
 
-          {/*type of kitchen */}
+          {/*Kitchen furnishing */}
           {residentialPropertyType.toLowerCase() !== 'plot' && <div className="p-2  flex flex-col pb-5 pt-5">
             {kitchenFurnishingError && <p className="text-red-500">Select an option</p>}
             <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
@@ -1538,7 +1541,7 @@ function ResidentialPropertyAddForm() {
               </div>
             </div>
             {kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && <div className="text-center">
-              <textarea className={`border-2 ${kitchenFurnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`} id="type-of-kitchen-details" name="type-of-kitchen-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about furnishing" value={kitchenFurnishingDetails} onChange={e => {
+              <textarea className={`border-2 ${kitchenFurnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`} id="type-of-kitchen-details" name="type-of-kitchen-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about furnishing (optional)" value={kitchenFurnishingDetails} onChange={e => {
                 if (countWords(kitchenFurnishingDetails.trim()) > 150) {
                   setKitchenFurnishingDetailsError(true)
                   setKitchenFurnishingDetails(e.target.value.trim())
@@ -1586,7 +1589,7 @@ function ResidentialPropertyAddForm() {
               </div>
             </div>
             {kitchenAppliances && <div className="text-center">
-              <textarea className={`border-2 ${kitchenAppliancesDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="kitchen-appliances-details" name="kitchen-appliances-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about kitchen appliances" value={kitchenAppliancesDetails} onChange={e => {
+              <textarea className={`border-2 ${kitchenAppliancesDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="kitchen-appliances-details" name="kitchen-appliances-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about kitchen appliances (optional)" value={kitchenAppliancesDetails} onChange={e => {
                 if (countWords(kitchenAppliancesDetails.trim()) > 50) {
                   setKitchenAppliancesDetailsError(true)
                   setKitchenAppliancesDetails(e.target.value.trim())
@@ -1943,8 +1946,8 @@ function ResidentialPropertyAddForm() {
                   return <div key={option} className="flex flex-row h-fit">
                     <input className="mr-1 cursor-pointer" type="radio" id={option} name="washroom-fitting" onChange={e => {
                       if (e.target.checked) {
-                        setConditionOfPropertyError(false)    
-                        setConditionOfProperty(option)   
+                        setConditionOfPropertyError(false)
+                        setConditionOfProperty(option)
                       }
                     }} />
                     <label htmlFor={option}>{option}</label>

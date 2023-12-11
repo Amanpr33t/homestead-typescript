@@ -61,6 +61,11 @@ function PropertyDealerAddForm() {
     const [gstNumberErrorMessage, setGstNumberErrorMessage] = useState(false) //used to set gst number error message
     const [gstNumberVerified, setGstNumberVerified] = useState(false)  //used to check if the gst number is already present in the database
 
+    const [reraNumber, setReraNumber] = useState('') //used to set RERA number
+    const [reraNumberError, setReraNumberError] = useState(false) //used to show error when no RERA number is provided or the gst number is already present in the database
+    const [reraNumberErrorMessage, setReraNumberErrorMessage] = useState(false) //used to set RERA number error message
+    const [reraNumberVerified, setReraNumberVerified] = useState(false)  //used to check if the RERA number is already present in the database
+
     const [firmLogoImageUpload, setFirmLogoImageUpload] = useState() //used to store the entire image object to be set to the database
     const [firmLogoImageFile, setFirmLogoImageFile] = useState() //Used to store image file string
 
@@ -191,17 +196,39 @@ function PropertyDealerAddForm() {
             } else if (data.status === 'ok') {
                 setGstNumberVerified(true)
             } else {
-                setContactNumberVerified(false)
+                setGstNumberVerified(false)
             }
         } catch (error) {
             setGstNumberVerified(false)
         }
     }
 
+    //This function is used to check if the gst number provided by the user is already present in the database
+    const checkIfReraNumberExists = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerReraNumberExists?reraNumber=${reraNumber}`)
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            if (data.status === 'reraNumberExists') {
+                setReraNumberError(true)
+                setReraNumberErrorMessage('This RERA number already exists')
+                setReraNumberVerified(false)
+            } else if (data.status === 'ok') {
+                setReraNumberVerified(true)
+            } else {
+                setReraNumberVerified(false)
+            }
+        } catch (error) {
+            setReraNumberVerified(false)
+        }
+    }
+
     //This function is used to submit the form once the save button is clicked
     const formSubmit = e => {
         e.preventDefault()
-        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !contactNumber.trim() || !email.trim() || !validator.isEmail(email.trim())) {
+        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim() || !contactNumber.trim() || !email.trim() || !validator.isEmail(email.trim())) {
             if (!firmName.trim()) {
                 setFirmNameError(true)
             }
@@ -219,6 +246,10 @@ function PropertyDealerAddForm() {
             if (!gstNumber.trim()) {
                 setGstNumberError(true)
                 setGstNumberErrorMessage('provide a GST number')
+            }
+            if (!reraNumber.trim()) {
+                setReraNumberError(true)
+                setReraNumberErrorMessage('provide a RERA number')
             }
             if (!email.trim()) {
                 setEmailError(true)
@@ -239,7 +270,7 @@ function PropertyDealerAddForm() {
             })
             return
         }
-        if (emailError || contactNumberError || gstNumberError) {
+        if (emailError || contactNumberError || gstNumberError || reraNumberError) {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -247,7 +278,7 @@ function PropertyDealerAddForm() {
             })
             return
         }
-        if (!emailVerified || !contactNumberVerified || !gstNumberVerified) {
+        if (!emailVerified || !contactNumberVerified || !gstNumberVerified || !reraNumberVerified) {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -279,6 +310,7 @@ function PropertyDealerAddForm() {
                 experience={experience}
                 addressArray={addressArray}
                 gstNumber={gstNumber.trim()}
+                reraNumber={reraNumber.trim()}
                 about={about.trim()}
                 firmLogoImageUpload={firmLogoImageUpload}
                 firmLogoImageFile={firmLogoImageFile}
@@ -380,11 +412,11 @@ function PropertyDealerAddForm() {
                                     <label className=" font-semibold" htmlFor="pincode">Pincode</label>
                                 </div>
                                 <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
-                                    if(+e.target.value.trim()){
+                                    if (+e.target.value.trim()) {
                                         setPostalCode(+e.target.value.trim())
                                         setPostalCodeError(false)
                                         setAddressError(false)
-                                    }else{
+                                    } else {
                                         setPostalCode('')
                                     }
                                 }} />
@@ -452,7 +484,7 @@ function PropertyDealerAddForm() {
                                         <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
                                         <button className="bg-red-400 text-white font-medium rounded pl-2 pr-2 mb-2 mt-2" onClick={() => {
-                                            const updatedAddressArray = addressArray.filter(item => item.addressId !== address.addressId) 
+                                            const updatedAddressArray = addressArray.filter(item => item.addressId !== address.addressId)
                                             setAddressArray(updatedAddressArray)
                                         }}>Remove</button>
                                     </div>
@@ -472,6 +504,19 @@ function PropertyDealerAddForm() {
                             setGstNumberError(false)
                         }} onBlur={checkIfGstNumberExists} />
                         {gstNumberError && <p className="text-red-500">{gstNumberErrorMessage}</p>}
+                    </div>
+
+                    {/*RERA number*/}
+                    <div className="flex flex-col mb-1.5 mt-3 ">
+                        <div className="flex flex-row gap-0.5">
+                            <p className="h-4 text-2xl text-red-500">*</p>
+                            <label className="text-lg font-semibold mb-0.5" htmlFor="rera">RERA number</label>
+                        </div>
+                        <input type="text" id="rera" name="rera" className={`border-2 ${reraNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={reraNumber} onChange={e => {
+                            setReraNumber(e.target.value.toUpperCase().trimEnd())
+                            setReraNumberError(false)
+                        }} onBlur={checkIfReraNumberExists} />
+                        {reraNumberError && <p className="text-red-500">{reraNumberErrorMessage}</p>}
                     </div>
 
                     {/*email*/}

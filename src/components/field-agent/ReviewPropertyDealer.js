@@ -49,6 +49,10 @@ function ReviewPropertyDealer(props) {
                             <td className="pt-2 pb-2 text-center" >{dealer.gstNumber}</td>
                         </tr>
                         <tr className="border-2 border-gray-200">
+                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">RERA Number</td>
+                            <td className="pt-2 pb-2 text-center" >{dealer.reraNumber}</td>
+                        </tr>
+                        <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
                                 {dealer.addressArray.map(address => {
