@@ -7,20 +7,22 @@ import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
 import ReviewResidentialPropertyAfterSubmission from "./ReviewResidentialPropertyAfterSubmission"
 import Spinner from "../Spinner"
 
-//This component is a form used by a field agent to add a property dealer
+//This component is a form used by a field agent to add a residential property
 function ResidentialPropertyAddForm() {
   const navigate = useNavigate()
 
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
-  const propertyDealerId = queryParams.get('id')
-  const propertyDealerLogoUrl = queryParams.get('logoUrl')
-  const propertyDealerFirmName = queryParams.get('firmName')
-  const residentialPropertyType = queryParams.get('propertyType')
+
+  const propertyDealerId = queryParams.get('id') //We get property dealer ID from the query params 
+  const propertyDealerLogoUrl = queryParams.get('logoUrl') //We get property dealer logo url from the query params 
+  const propertyDealerFirmName = queryParams.get('firmName') //We get property dealer firm name from the query params  
+  const residentialPropertyType = queryParams.get('propertyType') //We get residential property type from the query params
 
   const [spinner, setSpinner] = useState(true)
 
   useEffect(() => {
+    //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName or residentialPropertyType is not available, the user is routed to the field-agent home page
     if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (residentialPropertyType.toLowerCase() !== 'plot' && residentialPropertyType.toLowerCase() !== 'flat' && residentialPropertyType.toLowerCase() !== 'house')) {
       navigate('/field-agent', { replace: true })
     } else {
@@ -35,39 +37,40 @@ function ResidentialPropertyAddForm() {
     routeTo: null
   })
 
-  const [propertyTitle, setPropertyTitle] = useState('')
-  const [propertyTitleErrorMessage, setPropertyTitleErrorMessage] = useState('')
+  const [propertyTitle, setPropertyTitle] = useState('') //title of the proeprty
+  const [propertyTitleErrorMessage, setPropertyTitleErrorMessage] = useState('') //Error message to be shown when no title is provided
 
-  const [propertyDetail, setPropertyDetail] = useState('')
-  const [propertyDetailError, setPropertyDetailError] = useState(false)
+  const [propertyDetail, setPropertyDetail] = useState('') //details of property
+  const [propertyDetailError, setPropertyDetailError] = useState(false) //It is true if property details are not property
 
-  const [priceErrorMessage, setPriceErrorMessage] = useState('')
-  const [isDeclareFixedPrice, setIsDeclaredFixedPrice] = useState(false)
-  const [isRangeOfPrice, setIsRangeOfPrice] = useState(false)
-  const [fixedPrice, setFixedPrice] = useState('')
-  const [fixedPriceError, setFixedPriceError] = useState(false)
-  const [rangeOfPriceFrom, setRangeOfPriceFrom] = useState('')
-  const [rangeOfPriceFromError, setRangeOfPriceFromError] = useState(false)
-  const [rangeOfPriceTo, setRangeOfPriceTo] = useState('')
-  const [rangeOfPriceToError, setRangeOfPriceToError] = useState(false)
+  const [priceErrorMessage, setPriceErrorMessage] = useState('') //Meesage to be shown when no price is provided
+  const [isDeclareFixedPrice, setIsDeclaredFixedPrice] = useState(false) //Is true if user wants to give a fixed price
+  const [isRangeOfPrice, setIsRangeOfPrice] = useState(false) //Is true if user wants to give a range of price
+  const [fixedPrice, setFixedPrice] = useState('') //fixed price provided by the user
+  const [fixedPriceError, setFixedPriceError] = useState(false) //It is true if fixed price is not provided by the user
+  const [rangeOfPriceFrom, setRangeOfPriceFrom] = useState('') //It is a number which stores the lower value of the range
+  const [rangeOfPriceFromError, setRangeOfPriceFromError] = useState(false) //It is true if rangeOfPriceFrom is not provided by the user
+  const [rangeOfPriceTo, setRangeOfPriceTo] = useState('') //It is a number which stores the upper value of the range
+  const [rangeOfPriceToError, setRangeOfPriceToError] = useState(false) //It is true if rangeOfPriceTo is not provided by the user
 
-  const [isWaterSupply, setIsWaterSupply] = useState(null)
-  const [isWaterSupplyTwentyFourHours, setIsWaterSupplyTwentyFourHours] = useState(null)
-  const [waterSupplyError, setWaterSupplyError] = useState(false)
-  const [waterSupplyTwentyFourHoursError, setWaterSupplyTwentyFourHoursError] = useState(false)
+  const [isWaterSupply, setIsWaterSupply] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [isWaterSupplyTwentyFourHours, setIsWaterSupplyTwentyFourHours] = useState(null) ////It is true if yes option is selected. It is false if the option no is selected. It is null if the user selets neither of the option
+  const [waterSupplyError, setWaterSupplyError] = useState(false) //If isWaterSupply is null, this is set to true
+  const [waterSupplyTwentyFourHoursError, setWaterSupplyTwentyFourHoursError] = useState(false)//If  isWaterSupplyTwentyFourHours is null, this is set to true
 
-  const [electricityConnection, setElectricityConnection] = useState(null)
-  const [electricityConnectionError, setElectricityConnectionError] = useState(false)
+  const [electricityConnection, setElectricityConnection] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [electricityConnectionError, setElectricityConnectionError] = useState(false) //If electricityConnection is null, this is set to true
 
-  const [sewageSystem, setSewageSystem] = useState(null)
-  const [sewageSystemError, setSewageSystemError] = useState(false)
+  const [sewageSystem, setSewageSystem] = useState(null)//It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [sewageSystemError, setSewageSystemError] = useState(false) //If sewageSystem is null, this is set to true
 
-  const [cableTV, setCableTV] = useState(null)
-  const [cableTVError, setCableTVError] = useState(false)
+  const [cableTV, setCableTV] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [cableTVError, setCableTVError] = useState(false) //If cableTV is null, this is set to true
 
-  const [highSpeedInternet, setHighSpeedInternet] = useState(null)
-  const [highSpeedInternetError, setHighSpeedInternetError] = useState(false)
+  const [highSpeedInternet, setHighSpeedInternet] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [highSpeedInternetError, setHighSpeedInternetError] = useState(false) //If highSpeedInternet is null, this is set to true
 
+  //The states below stores distances from a certain point, and the errors are set to true if a distance is not provided by the user
   const [distanceFromGroceryStore, setDistanceFromGroceryStore] = useState('')
   const [distanceFromGroceryStoreError, setDistanceFromGroceryStoreError] = useState(false)
   const [distanceFromRestaurantCafe, setDistanceFromRestaurantCafe] = useState('')
@@ -79,23 +82,23 @@ function ResidentialPropertyAddForm() {
   const [distanceFromHospital, setDistanceFromHospital] = useState('')
   const [distanceFromHospitalError, setDistanceFromHospitalError] = useState(false)
 
-  const [areaType, setAreaType] = useState(false)
-  const [areaTypeError, setAreaTypeError] = useState(false)
+  const [areaType, setAreaType] = useState(null) //It stores the type of area selected by user
+  const [areaTypeError, setAreaTypeError] = useState(false) //An error is shown if the user areaType state in null
 
-  const [numberOfFloors, setNumberOfFloors] = useState(1)
+  const [numberOfFloors, setNumberOfFloors] = useState(1) //Stores number of floors in a property
 
-  const [typeOfSale, setTypeOfSale] = useState(null)
-  const [typeOfSaleError, setTypeOfSaleError] = useState(false)
+  const [typeOfSale, setTypeOfSale] = useState(null) //It stores the type of sale selected by user
+  const [typeOfSaleError, setTypeOfSaleError] = useState(false) //An error is shown if the user typeOfSale state in null
 
-  const [totalAreaMetreSquare, setTotalAreaMetreSquare] = useState('')
-  const [totalAreaGajj, setTotalAreaGajj] = useState('')
-  const [totalAreaMetreSquareError, setTotalAreaErrorMetreSquareError] = useState(false)
-  const [totalAreaGajjError, setTotalAreaGajjError] = useState(false)
+  const [totalAreaMetreSquare, setTotalAreaMetreSquare] = useState('') //Total area of the property in metre square
+  const [totalAreaGajj, setTotalAreaGajj] = useState('') //Total area of the property in gajj
+  const [totalAreaMetreSquareError, setTotalAreaErrorMetreSquareError] = useState(false) //It is false if totalAreaMetreSquare state is empty, and vice-versa
+  const [totalAreaGajjError, setTotalAreaGajjError] = useState(false) //It is false if totalAreaGajj state is empty, and vice-versa
 
-  const [coveredAreaMetreSquare, setCoveredAreaMetreSquare] = useState('')
-  const [coveredAreaGajj, setCoveredAreaGajj] = useState('')
-  const [coveredAreaMetreSquareError, setCoveredAreaErrorMetreSquareError] = useState(false)
-  const [coveredAreaGajjError, setCoveredAreaGajjError] = useState(false)
+  const [coveredAreaMetreSquare, setCoveredAreaMetreSquare] = useState('') //covered area of the property in metre square
+  const [coveredAreaGajj, setCoveredAreaGajj] = useState('') //covered area of the property in gajj
+  const [coveredAreaMetreSquareError, setCoveredAreaErrorMetreSquareError] = useState(false) //It is false if coveredAreaMetreSquare state is empty, and vice-versa
+  const [coveredAreaGajjError, setCoveredAreaGajjError] = useState(false) //It is false if coveredAreaGajj state is empty, and vice-versa
 
   const [numberOfLivingRooms, setNumberOfLivingRooms] = useState(1)
   const [numberOfBedrooms, setNumberOfBedrooms] = useState(1)
@@ -105,77 +108,78 @@ function ResidentialPropertyAddForm() {
   const [numberOfCarParkingSpaces, setNumberOfCarParkingSpaces] = useState(0)
   const [numberOfBalconies, setNumberOfBalconies] = useState(0)
 
-  const [storeRoom, setStoreRoom] = useState(null)
-  const [storeRoomError, setStoreRoomError] = useState(false)
+  const [storeRoom, setStoreRoom] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [storeRoomError, setStoreRoomError] = useState(false) //If storeRoom is null, this is set to true
 
-  const [servantRoom, setServantRoom] = useState(null)
-  const [servantRoomError, setServantRoomError] = useState(false)
-  const [servantWashroom, setServantWashroom] = useState(null)
-  const [servantWashroomError, setServantWashroomError] = useState(false)
+  const [servantRoom, setServantRoom] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [servantRoomError, setServantRoomError] = useState(false) //If servantRoom is null, this is set to true
+  const [servantWashroom, setServantWashroom] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [servantWashroomError, setServantWashroomError] = useState(false) //If servantWashroom is null, this is set to true
 
-  const [furnishing, setFurnishing] = useState(null)
-  const [furnishingError, setFurnishingError] = useState(false)
-  const [furnishingDetails, setFurnishingDetails] = useState('')
-  const [furnishingDetailsError, setFurnishingDetailsError] = useState('')
+  const [furnishing, setFurnishing] = useState(null)//It is null when no radio button is selected, and stores a value when a radio button is clicked
+  const [furnishingError, setFurnishingError] = useState(false) //If furnishing is null, this is set to true
+  const [furnishingDetails, setFurnishingDetails] = useState('') //Details of furnishing
+  const [furnishingDetailsError, setFurnishingDetailsError] = useState(false) //It is true if furnishingDetails state is empty
 
-  const [kitchenFurnishing, setKitchenFurnishing] = useState(null)
-  const [kitchenFurnishingError, setKitchenFurnishingError] = useState(false)
-  const [kitchenFurnishingDetails, setKitchenFurnishingDetails] = useState('')
-  const [kitchenFurnishingDetailsError, setKitchenFurnishingDetailsError] = useState('')
+  const [kitchenFurnishing, setKitchenFurnishing] = useState(null) //It is null when no radio button is selected, and stores a value when a radio button is clicked
+  const [kitchenFurnishingError, setKitchenFurnishingError] = useState(false) //If kitchenFurnishing is null, this is set to true
+  const [kitchenFurnishingDetails, setKitchenFurnishingDetails] = useState('') //Details of kitchen furnishing
+  const [kitchenFurnishingDetailsError, setKitchenFurnishingDetailsError] = useState(false) //It is true if kitchenFurnishingDetails state is empty
 
-  const [kitchenAppliances, setKitchenAppliances] = useState(null)
-  const [kitchenAppliancesDetails, setKitchenAppliancesDetails] = useState('')
-  const [kitchenAppliancesError, setKitchenAppliancesError] = useState(false)
-  const [kitchenAppliancesDetailsError, setKitchenAppliancesDetailsError] = useState('')
+  const [kitchenAppliances, setKitchenAppliances] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [kitchenAppliancesDetails, setKitchenAppliancesDetails] = useState('') //Details of kitchen appliances
+  const [kitchenAppliancesError, setKitchenAppliancesError] = useState(false)  //If kitchenAppliances is null, this is set to true
+  const [kitchenAppliancesDetailsError, setKitchenAppliancesDetailsError] = useState(false) //It is true if kitchenAppliancesDetails state is empty
 
-  const [washroomFitting, setWashRoomFitting] = useState(null)
-  const [washroomFittingError, setWashRoomFittingError] = useState(false)
+  const [washroomFitting, setWashRoomFitting] = useState(null) //It is null when no radio button is selected, and stores a value when a radio button is clicked
+  const [washroomFittingError, setWashRoomFittingError] = useState(false) //If washroomFitting is null, this is set to true
 
-  const [electricalFitting, setElectricalFitting] = useState(null)
-  const [electricalFittingError, setElectricalFittingError] = useState(false)
+  const [electricalFitting, setElectricalFitting] = useState(null) //It is null when no radio button is selected, and stores a value when a radio button is clicked
+  const [electricalFittingError, setElectricalFittingError] = useState(false) //If electricalFitting is null, this is set to true
 
-  const [flooringTypeArray, setFlooringTypeArray] = useState(null)
-  const [flooringTypeError, setFlooringTypeError] = useState(false)
+  const [flooringTypeArray, setFlooringTypeArray] = useState(null) //It is null when no checkbox is selected. If checkboxes are selected, The array stores the values of all the checkboxes selected
+  const [flooringTypeError, setFlooringTypeError] = useState(false) //If flooringTypeArray is null, this is set to true
   const flooringTypeOptions = ['Cemented', 'Marble', 'Luxurious Marble', 'Standard tiles', 'Premium tiles', 'Luxurious tiles']
 
-  const [roofTypeArray, setRoofTypeArray] = useState(null)
-  const [roofTypeError, setRoofTypeError] = useState(false)
+  const [roofTypeArray, setRoofTypeArray] = useState(null) //It is null when no checkbox is selected. If checkboxes are selected, The array stores the values of all the checkboxes selected
+  const [roofTypeError, setRoofTypeError] = useState(false) //If roofTypeArray is null, this is set to true
   const roofTypeOptions = ['Standard', 'POP work', 'Down ceiling']
 
   const [wallTypeArray, setWallTypeArray] = useState(null)
   const [wallTypeError, setWallTypeError] = useState(false)
   const wallTypeOptions = ['Plaster', 'Paint', 'Premium paint', 'Wall paper', 'PVC panelling', 'Art work']
 
-  const [windowTypeArray, setWindowTypeArray] = useState(null)
-  const [windowTypeError, setWindowTypeError] = useState(false)
+  const [windowTypeArray, setWindowTypeArray] = useState(null) //It is null when no checkbox is selected. If checkboxes are selected, The array stores the values of all the checkboxes selected
+  const [windowTypeError, setWindowTypeError] = useState(false) //If windowTypeArray is null, this is set to true
   const windowTypeOptions = ['Standard', 'Wood', 'Premium material']
 
-  const [safetySystemArray, setSafetySystemArray] = useState([])
+  const [safetySystemArray, setSafetySystemArray] = useState([]) //If checkboxes are selected, The array stores the values of all the checkboxes selected
   const safetySystemOptions = ['CCTV', 'Glass break siren', 'Entry sensor', 'Motion sensor', 'Panic button', 'Keypad', 'Keyfob', 'Smoke detector', 'CO detector', 'Water sprinkler', 'Doorbell camera']
 
-  const [garden, setGarden] = useState(null)
-  const [gardenDetails, setGardenDetails] = useState('')
-  const [gardenError, setGardenError] = useState(false)
-  const [gardenDetailsError, setGardenDetailsError] = useState('')
+  const [garden, setGarden] = useState(null)  //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
+  const [gardenDetails, setGardenDetails] = useState('') //Details of garden
+  const [gardenError, setGardenError] = useState(false) //If garden state is null, this is set to true
+  const [gardenDetailsError, setGardenDetailsError] = useState(false) //It is true if gardenDetails state is empty
 
-  const [ageOfConstruction, setAgeOfConstruction] = useState('')
-  const [ageOfConstructionError, setAgeOfConstructionError] = useState(false)
+  const [ageOfConstruction, setAgeOfConstruction] = useState('') //It consist of a number that represents age of construction
+  const [ageOfConstructionError, setAgeOfConstructionError] = useState(false) //If ageOfConstruction state is empty, this state is set to true
 
-  const [conditionOfProperty, setConditionOfProperty] = useState(null)
-  const [conditionOfPropertyError, setConditionOfPropertyError] = useState(false)
+  const [conditionOfProperty, setConditionOfProperty] = useState(null) //It is null when no radio button is selected, and stores a value when a radio button is clicked
+  const [conditionOfPropertyError, setConditionOfPropertyError] = useState(false) //if conditionOfProperty state is null, this state is set to true
   const conditionOfPropertyOptions = ['Exceptionally new', 'Near to new', 'Some signs of agying', 'Need some renovations', 'Needs complete renovation']
 
   const [numberOfOwners, setNumberOfOwners] = useState(1)
 
-  const [isLegalRestrictions, setIsLegalRestrictions] = useState(null)
-  const [legalRestrictionError, setLegalRestrictionError] = useState(false)
-  const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
-  const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
+  const [isLegalRestrictions, setIsLegalRestrictions] = useState(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the options
+  const [legalRestrictionError, setLegalRestrictionError] = useState(false) //If isLegalRestrictions state is null, this state is set to true
+  const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('') //stores details about legal restrictions
+  const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false) //if  legalRestrictionDetails state is empty, this state is set to true
 
-  const [propertyTaxes, setPropertyTaxes] = useState('')
+  const [propertyTaxes, setPropertyTaxes] = useState('') //This states stores a number representing property taxes
 
-  const [homeOwnersAssociationFees, setHomeOwnersAssociationFees] = useState('')
+  const [homeOwnersAssociationFees, setHomeOwnersAssociationFees] = useState('') //This states stores a number representing home owners association fees
 
+  //The states below are for location of the property
   const [state, setState] = useState('')
   const [stateError, setStateError] = useState(false)
   const [district, setDistrict] = useState('')
@@ -184,10 +188,12 @@ function ResidentialPropertyAddForm() {
   const [tehsil, setTehsil] = useState('')
   const [village, setVillage] = useState('')
 
+  //The states below are for the uploading property images
   const [residentialLandImageUpload, setResidentialLandImageUpload] = useState([])
   const [residentialLandImageFile, setResidentialLandImageFile] = useState([])
   const [residentialLandImageFileError, setResidentialLandImageFileError] = useState(false)
 
+  //The states below are for uploading contract images
   const [contractImageUpload, setContractImageUpload] = useState([])
   const [contractImageFile, setContractImageFile] = useState([])
 
@@ -195,12 +201,14 @@ function ResidentialPropertyAddForm() {
 
   const [propertyData, setPropertyData] = useState()
 
+  //The function triggers when the user adds a proeprty image
   const residentialLandImageHandler = (event) => {
     setResidentialLandImageFileError(false)
     setResidentialLandImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
     setResidentialLandImageUpload(array => [...array, event.target.files[0]])
   }
 
+  //The function triggers when the user adds a contract image
   const contractImageHandler = (event) => {
     setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
     setContractImageUpload(array => [...array, event.target.files[0]])
@@ -217,6 +225,7 @@ function ResidentialPropertyAddForm() {
     return wordMatches ? wordMatches.length : 0
   }
 
+  //The function is used to throw errors if the user has given incomplete data
   const errorCheckingBeforeSubmit = () => {
     if (!propertyTitle.trim()) {
       setPropertyTitleErrorMessage('Provide a title')
@@ -410,8 +419,12 @@ function ResidentialPropertyAddForm() {
       setResidentialLandImageFileError(true)
     }
   }
+
+  //The function is triggered when the user submits the form
   const formSubmit = async (e) => {
     e.preventDefault()
+
+    //This function is triggered when the user has provided incomplete data
     const errorFunction = () => {
       errorCheckingBeforeSubmit()
       setAlert({
@@ -423,95 +436,66 @@ function ResidentialPropertyAddForm() {
     }
 
     if (!propertyTitle.trim() || countWords(propertyTitle.trim()) > 30) {
-      console.log(1)
       return errorFunction()
     } else if (propertyDetail.trim() && countWords(propertyDetail.trim()) > 150) {
-      console.log(2)
       return errorFunction()
     } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
-      console.log(3)
       return errorFunction()
     } else if (isWaterSupply === null || (isWaterSupply && isWaterSupplyTwentyFourHours === null)) {
-      console.log(4)
       return errorFunction()
     } else if (electricityConnection === null) {
-      console.log(5)
       return errorFunction()
     } else if (sewageSystem === null) {
-      console.log(6)
       return errorFunction()
     } else if (cableTV === null) {
-      console.log(7)
       return errorFunction()
     } else if (highSpeedInternet === null) {
-      console.log(8)
       return errorFunction()
     } else if (!distanceFromGroceryStore || !distanceFromRestaurantCafe || !distanceFromExerciseArea || !distanceFromSchool || !distanceFromHospital) {
-      console.log(9)
       return errorFunction()
     } else if (!areaType) {
-      console.log(10)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() === 'house' && !typeOfSale) {
-      console.log(11)
       return errorFunction()
     } else if (!totalAreaMetreSquare || !totalAreaGajj || !coveredAreaGajj || !coveredAreaMetreSquare) {
-      console.log(12)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
-      console.log(13)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
-      console.log(14)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && (furnishing.semiFurnished || furnishing.fullyFurnished) && countWords(furnishingDetails.trim()) > 150))) {
-      console.log(15)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && (kitchenFurnishing.semiFurnished || kitchenFurnishing.modular) && countWords(kitchenFurnishingDetails.trim()) > 150))) {
-      console.log(16)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && countWords(kitchenAppliancesDetails.trim()) > 50))) {
-      console.log(17)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
-      console.log(18)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && !electricalFitting) {
-      console.log(19)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!flooringTypeArray || (flooringTypeArray && !flooringTypeArray.length))) {
-      console.log(20)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!roofTypeArray || (roofTypeArray && !roofTypeArray.length))) {
-      console.log(21)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!wallTypeArray || (wallTypeArray && !wallTypeArray.length))) {
-      console.log(22)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
-      console.log(23)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && countWords(gardenDetails.trim()) > 50))) {
-      console.log(24)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
-      console.log(25)
       return errorFunction()
     } else if (residentialPropertyType.toLowerCase() !== 'plot' && !conditionOfProperty) {
-      console.log(26)
       return errorFunction()
     } else if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
-      console.log(27)
       return errorFunction()
     } else if (!district.trim() && !state.trim()) {
-      console.log(28)
       return errorFunction()
     } else if (!residentialLandImageFile.length) {
-      console.log(29)
       return errorFunction()
     }
 
-
+    //Final property data submitted by the user
     const finalPropertyData = {
       addedByPropertyDealer: propertyDealerId,
       residentialPropertyType,
@@ -567,9 +551,13 @@ function ResidentialPropertyAddForm() {
         }
       }
     }
+
+    //data specific to house property type
     const houseSpecificData = {
       typeOfSale
     }
+
+    //data specific to house and flat property typr
     const fieldsCommonToHouseAndFlat = {
       numberOfFloors,
       numberOfLivingRooms,
@@ -611,6 +599,7 @@ function ResidentialPropertyAddForm() {
       conditionOfProperty
     }
 
+    //The if statements below are used to set property data in accordance with property type
     if (residentialPropertyType.toLowerCase() === 'plot') {
       setPropertyData(finalPropertyData)
     } else if (residentialPropertyType.toLowerCase() !== 'house') {
@@ -634,6 +623,7 @@ function ResidentialPropertyAddForm() {
         })
       }} />}
 
+      {/*If propertyData is available, it will be shown in ReviewResidentialPropertyAfterSubmission component */}
       {propertyData && <ReviewResidentialPropertyAfterSubmission
         propertyData={propertyData}
         residentialLandImageFile={residentialLandImageFile}

@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useState } from "react"
 import Spinner from "../Spinner"
 import { useNavigate } from "react-router-dom"
 
+//This component is used to show property data in a tables
 function ReviewAgriculturalProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
@@ -16,6 +17,7 @@ function ReviewAgriculturalProperty(props) {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
 
+    //This function is used to get the firmName of property dealer who added the proeprty
     const getPropertyDealer = useCallback(async () => {
         try {
             setSpinner(true)

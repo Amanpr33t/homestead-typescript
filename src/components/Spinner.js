@@ -1,4 +1,5 @@
 
+//This component is a spinner
 function Spinner() {
     return (
         <div role="status" className="fixed top-40 z-50 w-full h-screen flex justify-center">

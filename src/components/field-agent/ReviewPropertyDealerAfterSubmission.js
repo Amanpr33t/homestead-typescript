@@ -3,7 +3,7 @@ import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
-//This component is used to review the property dealer data submitted
+//This component is used to review the property dealer data befor sending the data to the server
 function ReviewPropertyDealerAfterSubmission(props) {
     const {
         firmName,
@@ -35,6 +35,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
 
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
+    //The function is used to upload images to the server
     const imageUpload = async () => {
         try {
             const formData = new FormData()
@@ -62,7 +63,7 @@ function ReviewPropertyDealerAfterSubmission(props) {
         }
     }
 
-    //This function is used to send details to backend API
+    //This function is used to save details to backend API
     const saveDetailsToDatabase = async () => {
         setSpinner(true)
         try {

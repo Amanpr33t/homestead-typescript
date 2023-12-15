@@ -1,3 +1,4 @@
+//This file stores data regarding all the tehsils of districts in punjab
 const amritsarTehsils = ['Amritsar-I', 'Amritsar-II', 'Ajnala',
 'Baba Bakala', 'Majitha', 'Lopoke']
 const barnalaTehsils = ['Barnala', 'Tapa', 'Mehal Kalan']

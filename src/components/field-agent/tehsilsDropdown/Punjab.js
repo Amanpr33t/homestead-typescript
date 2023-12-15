@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import { amritsarTehsils, barnalaTehsils, bathindaTehsils, faridkotTehsils, fatehgarhSahibTehsils, fazilkaTehsils, ferozepurTehsils, gurdaspurTehsils, hoshiarpurTehsils, jalandharTehsils, kapurthalaTehsils, ludhianaTehsils, malerkotlaTehsils, mogaTehsils, mansaTehsils, sriMuktsarSahibTehsils, pathankotTehsils, patialaTehsils, rupNagarTehsils, sasNagarTehsils, sbsNagarTehsils, sangrurTehsils, tarnTaranTehsils } from '../../../utils/tehsilsAndDistricts/tehsils/punjabTehsils'
 
+//This component is a dropdown for tehsils in punjab
 function PunjabTehsilsDropdown({district}) {
 
     return (

@@ -8,6 +8,13 @@ import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 //This component is a form used by a field agent to add a property dealer
 function PropertyDealerAddForm() {
     const navigate = useNavigate()
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/field-agent/signIn')
+        }
+    }, [authToken, navigate])
 
     const fieldAgentAuthToken = localStorage.getItem('homestead-field-agent-authToken') //This variable is the authentication token stored in local storage
 
@@ -340,7 +347,7 @@ function PropertyDealerAddForm() {
                             <label className="text-lg font-semibold mb-0.5" htmlFor="firmName">Name of the firm</label>
                         </div>
                         <input type="text" id="firmName" name="firmName" className={`border-2 border-gray-400 ${firmNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={firmName} onChange={e => {
-                            setFirmName(e.target.value.toUpperCase())
+                            setFirmName(e.target.value)
                             setFirmNameError(false)
                         }} />
                         {firmNameError && <p className="text-red-500">Provide a firm name</p>}
@@ -353,7 +360,7 @@ function PropertyDealerAddForm() {
                             <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
                         </div>
                         <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
-                            setPropertyDealerName(e.target.value.toUpperCase())
+                            setPropertyDealerName(e.target.value)
                             setPropertyDealerNameError(false)
                         }} />
                         {propertyDealerNameError && <p className="text-red-500">Provide property dealer's name</p>}
@@ -381,7 +388,7 @@ function PropertyDealerAddForm() {
                                 </div>
                                 <input type="text" id="number" name="number"
                                     className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={flatPlotHouseNumber} onChange={e => {
-                                        setFlatPlotHouseNumber(e.target.value.toUpperCase())
+                                        setFlatPlotHouseNumber(e.target.value)
                                         setFlatPlotHouseNumberError(false)
                                         setAddressError(false)
                                     }} />
@@ -393,7 +400,7 @@ function PropertyDealerAddForm() {
                                     <label className="font-semibold" htmlFor="area">Area,Street, Sector, Village</label>
                                 </div>
                                 <input type="text" id="area" name="area" className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={areaSectorVillage} onChange={e => {
-                                    setAreaSectorVillage(e.target.value.toUpperCase())
+                                    setAreaSectorVillage(e.target.value)
                                     setAreaSectorVillageError(false)
                                     setAddressError(false)
                                 }} />
@@ -402,7 +409,7 @@ function PropertyDealerAddForm() {
                             <div className="flex flex-col">
                                 <label className=" font-semibold" htmlFor="landmark">Landmark</label>
                                 <input type="text" id="landmark" name="landmark" className='border-2 border-gray-400 p-1 rounded' autoComplete="new-password" placeholder="E.g. near apollo hospital" value={landmark} onChange={e => {
-                                    setLandmark(e.target.value.toUpperCase())
+                                    setLandmark(e.target.value)
                                     setAddressError(false)
                                 }} />
                             </div>
@@ -428,7 +435,7 @@ function PropertyDealerAddForm() {
                                     <label className=" font-semibold" htmlFor="town">Town/City</label>
                                 </div>
                                 <input type="text" id="town" name="town" className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={city} onChange={e => {
-                                    setCity(e.target.value.toUpperCase())
+                                    setCity(e.target.value)
                                     setCityError(false)
                                     setAddressError(false)
                                 }} />
@@ -449,7 +456,7 @@ function PropertyDealerAddForm() {
                                 }}>
                                     <option className="font-semibold" value="" disabled>Select a state</option>
                                     {states.map(state => {
-                                        return <option key={state.toUpperCase()} value={state.toUpperCase()}>{state.toUpperCase()}</option>
+                                        return <option key={state} value={state}>{state}</option>
                                     })}
                                 </select>
                                 {stateError && <p className="text-red-500">Select a state</p>}
@@ -468,7 +475,7 @@ function PropertyDealerAddForm() {
                                     <option className="font-semibold" value="" disabled>Select a district:</option>
                                     {state.toLowerCase() === 'chandigarh' && <option value="CHANDIGARH">CHANDIGARH</option>}
                                     {state.toLowerCase() === 'punjab' && punjabDistricts.map(district => {
-                                        return <option key={district.toUpperCase()} value={district.toUpperCase()}>{district.toUpperCase()}</option>
+                                        return <option key={district} value={district}>{district}</option>
                                     })}
                                 </select>
                                 {districtError && <p className="text-red-500">Select a district</p>}

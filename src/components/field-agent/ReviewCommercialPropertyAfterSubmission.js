@@ -3,6 +3,7 @@ import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
+//The component is used to review the details of a commercial proeprty before they are sent to the server
 function ReviewCommercialPropertyAfterSubmission(props) {
     const { propertyData, commercialPropertyImageFile, contractImageFile, propertyDataReset, commercialPropertyImageUpload, contractImageUpload, firmName } = props
     const navigate=useNavigate()
@@ -14,14 +15,16 @@ function ReviewCommercialPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
-    const [commercialLandImagesUrl, setCommercialPropertyImagesUrl] = useState([])
-    const [contractImagesUrl, setContractImagesUrl] = useState([])
+
+    const [commercialLandImagesUrl, setCommercialPropertyImagesUrl] = useState([]) //array that stores the url of the commercial property images
+    const [contractImagesUrl, setContractImagesUrl] = useState([])//array that stores the url of the contract images
 
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //it scrools screen to the top
     }, [])
     const authToken = localStorage.getItem("homestead-field-agent-authToken") 
 
+    //The function is used to upload images to the database
     const uploadImages = async () => {
         try {
             setCommercialPropertyImagesUrl([])
@@ -74,6 +77,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
         }
     }
 
+    //The function is used to storre data to the database
     const saveDetailsToDatabase = useCallback(async (finalPropertyData) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addCommercialProperty`, {
@@ -115,6 +119,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
         }
     }, [authToken, navigate])
 
+    //The code in the useEffect hook is executed when the images are sucessfully uploaded
     useEffect(() => {
         if (commercialLandImagesUrl.length === commercialPropertyImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
             saveDetailsToDatabase({

@@ -4,12 +4,13 @@ import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
 import ReviewAgriculturalProperty from "./ReviewAgriculturalProperty"
 
+//The component is used to show the list of agricultural properties added by a field agent
 function AgriculturalPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
 
-    const [selectedProperty, setSelectedProperty] = useState()
-    const [agriculturalProperties, setAgriculturalProperties] = useState([])
+    const [selectedProperty, setSelectedProperty] = useState() //Property selected to be shown in a table
+    const [agriculturalProperties, setAgriculturalProperties] = useState([]) //number of agricultural properties added by the field agent
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
     const [alert, setAlert] = useState({
@@ -21,6 +22,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
 
     let index = 0
 
+    //the function is used to fetch agricultural properties added by the field agent
     const fetchAgriculturalProperties = useCallback(async () => {
         try {
             setError(false)
@@ -86,6 +88,7 @@ function AgriculturalPropertiesAddedByFieldAgent() {
                 <Link to='/field-agent' className="bg-blue-500 text-white font-semibold p-1 rounded">Home</Link>
             </div>}
 
+            {/*When a property is selected, it will be shown in a table in  ReviewAgriculturalProperty component*/}
             {selectedProperty && !spinner && !error && <ReviewAgriculturalProperty property={selectedProperty} hideReviewPage={() => setSelectedProperty(null)} />}
 
             {!selectedProperty && !spinner && !error && <>

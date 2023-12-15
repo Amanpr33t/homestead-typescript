@@ -1,4 +1,3 @@
-
 import { Fragment, useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import AlertModal from '../AlertModal'
@@ -8,19 +7,20 @@ import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPrope
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
 import Spinner from "../Spinner"
 
-//This component is a form used by a field agent to add a property dealer
+//This component is a form used by a field agent to add an agricultural property
 function AgriculturalPropertyAddForm() {
     const navigate = useNavigate()
+    const location = useLocation()
 
-    const location = useLocation();
     const queryParams = new URLSearchParams(location.search)
-    const propertyDealerId = queryParams.get('id')
-    const propertyDealerLogoUrl = queryParams.get('logoUrl')
-    const propertyDealerFirmName = queryParams.get('firmName')
+    const propertyDealerId = queryParams.get('id') //we get the proeprty dealer ID from query params
+    const propertyDealerLogoUrl = queryParams.get('logoUrl') //we get the proeprty dealer logo url from query params
+    const propertyDealerFirmName = queryParams.get('firmName') //we get the proeprty dealer firm name from query params
 
     const [spinner, setSpinner] = useState(true)
 
     useEffect(() => {
+        //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName is not available, we route to the field agent home page
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName) {
             navigate('/field-agent', { replace: true })
         } else {
@@ -35,11 +35,11 @@ function AgriculturalPropertyAddForm() {
         routeTo: null
     })
 
-    const [landSize, setLandSize] = useState('')
-    const [landSizeUnit, setLandSizeUnit] = useState('')
-    const [landSizeDetails, setLandSizeDetails] = useState('')
-    const [landSizeError, setLandSizeError] = useState(false)
-    const [landSizeUnitError, setLandSizeUnitError] = useState(false)
+    const [landSize, setLandSize] = useState('') //Land size in number
+    const [landSizeUnit, setLandSizeUnit] = useState('') //Unit of land size
+    const [landSizeDetails, setLandSizeDetails] = useState('') //details of land size
+    const [landSizeError, setLandSizeError] = useState(false) //error if land size is not provided
+    const [landSizeUnitError, setLandSizeUnitError] = useState(false) //error if land size unit is not provided
 
     const [state, setState] = useState('')
     const [stateError, setStateError] = useState(false)
@@ -49,72 +49,74 @@ function AgriculturalPropertyAddForm() {
     const [tehsil, setTehsil] = useState('')
     const [village, setVillage] = useState('')
 
-    const [agricultureLandImageUpload, setAgricultureLandImageUpload] = useState([])
-    const [agriculturalLandImageFile, setAgriculturalLandImageFile] = useState([])
-    const [agriculturalLandImageFileError, setAgriculturalLandImageFileError] = useState(false)
+    const [agricultureLandImageUpload, setAgricultureLandImageUpload] = useState([]) //an array that contains property image files to be uploaded to the server
+    const [agriculturalLandImageFile, setAgriculturalLandImageFile] = useState([]) //an array that contains property images selected by the user
+    const [agriculturalLandImageFileError, setAgriculturalLandImageFileError] = useState(false) //Error will be true if agriculturalLandImageFileError array is empty
 
-    const [contractImageUpload, setContractImageUpload] = useState([])
-    const [contractImageFile, setContractImageFile] = useState([])
+    const [contractImageUpload, setContractImageUpload] = useState([]) //an array that contains contract image files to be uploaded to the server
+    const [contractImageFile, setContractImageFile] = useState([]) //an array that contains contract images selected by the user
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
 
-    const [isCanal, setIsCanal] = useState(false)
-    const [canalNameArray, setCanalNameArray] = useState([])
-    const [newCanal, setNewCanal] = useState('')
-    const [canalNameError, setCanalNameError] = useState(false)
-    const [isRiver, setIsRiver] = useState(false)
-    const [riverNameArray, setRiverNameArray] = useState([])
-    const [newRiver, setNewRiver] = useState('')
-    const [riverNameError, setRiverNameError] = useState(false)
-    const [isTubeWell, setIsTubewell] = useState(false)
-    const [tubewellDepthArray, setTubewellDepthArray] = useState([])
-    const [newTubewell, setNewTubewell] = useState('')
-    const [tubewellDepthError, setTubewellDepthError] = useState(false)
-    const [waterSourceError, setWaterSourceError] = useState(false)
+    const [isCanal, setIsCanal] = useState(false) //Will be true if user selects the canal option
+    const [canalNameArray, setCanalNameArray] = useState([]) //canal names added by user will be added to this array
+    const [newCanal, setNewCanal] = useState('') //The new canal that user adds will be stored here
+    const [canalNameError, setCanalNameError] = useState(false) //if canal option is selected by the user and no canal is added this state will be true, and vice-versa
+    const [isRiver, setIsRiver] = useState(false)  //Will be true if user selects the river option
+    const [riverNameArray, setRiverNameArray] = useState([]) //river names added by user will be added to this array
+    const [newRiver, setNewRiver] = useState('') //The new river that user adds will be stored here
+    const [riverNameError, setRiverNameError] = useState(false)  //if river option is selected by the user and no river is added this state will be true, and vice-versa
+    const [isTubeWell, setIsTubewell] = useState(false)  //Will be true if user selects the tubewell option
+    const [tubewellDepthArray, setTubewellDepthArray] = useState([]) //tubewell depth added by user will be added to this array
+    const [newTubewell, setNewTubewell] = useState('') //The new tubewell that user adds will be stored here
+    const [tubewellDepthError, setTubewellDepthError] = useState(false) //if tubewell option is selected by the user and no tubewell is added this state will be true, and vice-versa
+    const [waterSourceError, setWaterSourceError] = useState(false) //if none of canal, river and tubewell option is selected or no data is provided, this state becomes true
 
-    const [isReservoir, setIsReservoir] = useState()
-    const [typeOfReservoir, setTypeOfReservoir] = useState([])
-    const [unitOfCapacityForPrivateReservoir, setUnitOfCapacityForPrivateReservoir] = useState('')
-    const [capacityOfPrivateReservoir, setCapacityOfPrivateReservoir] = useState('')
-    const [reservoirError, setReservoirError] = useState(false)
-    const [typeOfReservoirError, setTypeOfReservoirError] = useState(false)
-    const [capacityOfReservoirError, setCapacityOfReservoirError] = useState(false)
-    const [unitOfCapacityReservoirError, setUnitOfCapacityReservoirError] = useState(false)
+    const [isReservoir, setIsReservoir] = useState(null) //Will be true if user selects the yes opotion and and false if user selects the no option. will be null initially when no user action has taken place
+    const [typeOfReservoir, setTypeOfReservoir] = useState([]) //this array contains the type of reservoir selected. There are 2 types os reservoir: public and private. The user can select both of them
+    const [unitOfCapacityForPrivateReservoir, setUnitOfCapacityForPrivateReservoir] = useState('') //In case a private reservoir is selected, this setate contains the unit of capacity
+    const [capacityOfPrivateReservoir, setCapacityOfPrivateReservoir] = useState('') ////In case a private reservoir is selected, this setate contains the capacity of reservoir
+    const [reservoirError, setReservoirError] = useState(false) //If no option is selected, an error is shown and this state becomes true
+    const [typeOfReservoirError, setTypeOfReservoirError] = useState(false) //if no type of reservoir is selected, this state becomes true
+    const [capacityOfReservoirError, setCapacityOfReservoirError] = useState(false) //If capacity of private reservoir is not provided, this state becomes true
+    const [unitOfCapacityReservoirError, setUnitOfCapacityReservoirError] = useState(false) //If capacity of private reservoir is not provided, this state becomes false
 
     const irrigationSystemOptions = ['Sprinkler', 'Drip', 'Underground pipeline']
-    const [irrigationSystemArray, setIrrigationSystemArray] = useState([])
+    const [irrigationSystemArray, setIrrigationSystemArray] = useState([]) //This array contains all the irrigation system options selected by user
 
-    const [priceDemandedNumber, setPriceDemandedNumber] = useState('')
-    const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('')
-    const [priceDemandedWords, setPriceDemandedWords] = useState('')
-    const [priceDemandedWordsError, setPriceDemandedWordsError] = useState(false)
+    const [priceDemandedNumber, setPriceDemandedNumber] = useState('') //Price in numbers
+    const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('') //This state is true if not price in numbers is provided
+    const [priceDemandedWords, setPriceDemandedWords] = useState('') //price in words
+    const [priceDemandedWordsError, setPriceDemandedWordsError] = useState(false) //This state is true if not price in words is provided
 
     const cropOptions = ['Rice', 'Wheat', 'Maize', 'Cotton']
-    const [cropArray, setCropArray] = useState([])
-    const [cropError, setCropError] = useState(false)
+    const [cropArray, setCropArray] = useState([]) //Array contans the crop selected by user
+    const [cropError, setCropError] = useState(false) //state will be true if the cropArray is empty
 
-    const [roadType, setRoadType] = useState('')
-    const [roadDetails, setRoadDetails] = useState('')
-    const [roadError, setRoadError] = useState(false)
+    const [roadType, setRoadType] = useState('') //Type of road selected
+    const [roadDetails, setRoadDetails] = useState('') //Details of the type of road
+    const [roadError, setRoadError] = useState(false) //state is true if no road type is selected
     const roadOptions = ['Unpaved road', 'Village road', 'District road', 'State highway', 'National highway']
 
-    const [isLegalRestrictions, setIsLegalRestrictions] = useState(false)
-    const [legalRestrictionError, setLegalRestrictionError] = useState(false)
-    const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('')
-    const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false)
+    const [isLegalRestrictions, setIsLegalRestrictions] = useState(null) //The state is true if the user clicks on yes option. It is false if user clicks on no option. It is null if no option is selected
+    const [legalRestrictionError, setLegalRestrictionError] = useState(false) //if no option is elected by user, this state is true
+    const [legalRestrictionDetails, setLegalRestrictionDetails] = useState('') //details ablout legal restrictions
+    const [legalRestrictionDetailsError, setLegalRestrictionDetailsError] = useState(false) //If no details are provided, this state is true
 
     const [nearbyTown, setNearbyTown] = useState('')
 
     const states = ['Chandigarh', 'Punjab']
 
-    const [propertyData, setPropertyData] = useState()
+    const [propertyData, setPropertyData] = useState() //contains final property data added by user
 
+    //This function is triggered when the user selects a proeprty image
     const agriculturalLandImageHandler = (event) => {
         setAgriculturalLandImageFileError(false)
         setAgriculturalLandImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
         setAgricultureLandImageUpload(array => [...array, event.target.files[0]])
     }
 
+    //This function is triggered when the user selects a contract image
     const contractImageHandler = (event) => {
         setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
         setContractImageUpload(array => [...array, event.target.files[0]])
@@ -123,6 +125,7 @@ function AgriculturalPropertyAddForm() {
     const arrayOfNumbersFromOneToTen = Array.apply(null, Array(10))
         .map(function (y, i) { return i + 1 })
 
+    //This function triggers different errors if the user does not provide suitable data
     const errorCheckingBeforeSubmit = () => {
         if (!agriculturalLandImageFile.length) {
             setAgriculturalLandImageFileError(true)
@@ -167,7 +170,7 @@ function AgriculturalPropertyAddForm() {
             }
         }
 
-        if (isReservoir === undefined) {
+        if (isReservoir === null) {
             setReservoirError(true)
         } else {
             if (!typeOfReservoir.length) {
@@ -190,7 +193,7 @@ function AgriculturalPropertyAddForm() {
             setRoadError(true)
         }
 
-        if (isLegalRestrictions === undefined) {
+        if (isLegalRestrictions === null) {
             setLegalRestrictionError(true)
         } else {
             if (isLegalRestrictions && !legalRestrictionDetails.trim()) {
@@ -199,8 +202,11 @@ function AgriculturalPropertyAddForm() {
         }
     }
 
+    //this function is triggered when the user submits the form
     const formSubmit = async (e) => {
         e.preventDefault()
+
+        //This function is triggered when the user does not provide suitable data
         const errorFunction = () => {
             errorCheckingBeforeSubmit()
             setAlert({
@@ -212,31 +218,33 @@ function AgriculturalPropertyAddForm() {
             return
         }
 
+        //the if statements below are triggered if the user does not provide suitable data
         if (!agriculturalLandImageFile.length) {
             return errorFunction()
         }
         if (!district.trim() || !state.trim()) {
             return errorFunction()
         }
-        if(!landSize || !landSizeUnit){
+        if (!landSize || !landSizeUnit) {
             return errorFunction()
         }
-        if( !priceDemandedNumber || !priceDemandedWords.trim()){
+        if (!priceDemandedNumber || !priceDemandedWords.trim()) {
             return errorFunction()
         }
-        if((!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0)){
-            return errorFunction(!cropArray.length )
+        if ((!isCanal && !isRiver && !isTubeWell) || (isCanal && canalNameArray.length === 0) || (isRiver && riverNameArray.length === 0) || (isTubeWell && tubewellDepthArray.length === 0)) {
+            return errorFunction(!cropArray.length)
         }
-        if(!roadType ){
+        if (!roadType) {
             return errorFunction()
         }
-        if(isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim())){
+        if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
             return errorFunction()
         }
-        if(isReservoir === undefined || (typeOfReservoir.includes('private') && (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir))){
+        if (isReservoir === null || (typeOfReservoir.includes('private') && (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir))) {
             return errorFunction()
         }
 
+        //The final property data to be submitted by user
         const finalPropertyData = {
             addedByPropertyDealer: propertyDealerId,
             landSize: {
@@ -246,11 +254,11 @@ function AgriculturalPropertyAddForm() {
             },
             location: {
                 name: {
-                    village: village.trim() && (village.trim()[0].toUpperCase() + village.trim().slice(1)),
-                    city: city.trim() && (city.trim()[0].toUpperCase() + city.trim().slice(1)),
-                    tehsil: tehsil,
-                    district,
-                    state
+                    village: village.trim().toLowerCase(),
+                    city: city.trim().toLowerCase(),
+                    tehsil: tehsil.toLowerCase(),
+                    district: district.toLowerCase(),
+                    state: state.toLowerCase()
                 }
             },
             numberOfOwners,
@@ -280,9 +288,9 @@ function AgriculturalPropertyAddForm() {
             },
             legalRestrictions: {
                 isLegalRestrictions,
-                details: legalRestrictionDetails.trim() && (legalRestrictionDetails.trim()[0].toUpperCase() + legalRestrictionDetails.trim().slice(1)),
+                details: legalRestrictionDetails.trim().toLowerCase(),
             },
-            nearbyTown: nearbyTown.trim() && nearbyTown.trim()[0].toUpperCase() + nearbyTown.trim().slice(1),
+            nearbyTown: nearbyTown.trim().toLowerCase(),
         }
         setPropertyData(finalPropertyData)
     }
@@ -300,6 +308,7 @@ function AgriculturalPropertyAddForm() {
                 })
             }} />}
 
+            {/*Once proeprty data is available, property data with be shown in a table in ReviewAgriculturalPropertyAfterSubmission component */}
             {propertyData && <ReviewAgriculturalPropertyAfterSubmission
                 propertyData={propertyData}
                 agriculturalLandImageFile={agriculturalLandImageFile}
@@ -319,6 +328,7 @@ function AgriculturalPropertyAddForm() {
 
                 <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
+                    {/*property dealer firm name and logo */}
                     <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
                         <p className="text-3xl font-bold text-gray-500 w-fit text-center">{propertyDealerFirmName}</p>
                         {propertyDealerLogoUrl && <img className="w-20 h-auto " src={propertyDealerLogoUrl} alt='' />}

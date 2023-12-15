@@ -1,9 +1,12 @@
 
 import { Fragment } from "react"
 import { useNavigate } from "react-router-dom"
+
+//this component is an alert modal
 function AlertModal(props) {
     const navigate = useNavigate()
     const { message, type, alertModalRemover, routeTo } = props
+    
     const routeToPage = () => {
         navigate(routeTo, { replace: true })
     }

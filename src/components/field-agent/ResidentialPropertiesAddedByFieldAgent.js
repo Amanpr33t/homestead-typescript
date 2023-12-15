@@ -4,12 +4,13 @@ import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
 import ReviewResidentialProperty from "./ReviewResidentialProperty"
 
+//this component gives the list of residential properties added by a field-agent
 function ResidentialPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
 
-    const [selectedProperty, setSelectedProperty] = useState()
-    const [residentialProperties, setResidentialProperties] = useState([])
+    const [selectedProperty, setSelectedProperty] = useState() //Selected prperty to be shown in a table
+    const [residentialProperties, setResidentialProperties] = useState([]) //array stores all the residential proeprties added by a field agent
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
     const [alert, setAlert] = useState({
@@ -21,6 +22,7 @@ function ResidentialPropertiesAddedByFieldAgent() {
 
     let index = 0
 
+    //Function is used to fetch all residebtial proeprties
     const fetchResidentialProperties = useCallback(async () => {
         try {
             setError(false)
@@ -86,6 +88,7 @@ function ResidentialPropertiesAddedByFieldAgent() {
                 <Link to='/field-agent' className="bg-blue-500 text-white font-semibold p-1 rounded">Home</Link>
             </div>}
 
+            {/*Selected property is shown in ReviewResidentialProperty component */}
             {selectedProperty && !spinner && !error && <ReviewResidentialProperty property={selectedProperty} hideReviewPage={() => setSelectedProperty(null)} />}
 
             {!selectedProperty && !spinner && !error && <>

@@ -1,10 +1,17 @@
 
-import { Fragment, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import VerifyPropertyDealerBeforeAddingProperty from "./VerifyPropertyDealerBeforeAddingProperty"
 
 function AddProperty() {
     const navigate = useNavigate()
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+    useEffect(() => {
+        if (!authToken) {
+          navigate('/field-agent/signIn')
+        }
+      }, [authToken, navigate])
 
     const [propertyDealer, setPropertyDealer] = useState()
     const [selectedPropertyType, setSelectedPropertyType] = useState()

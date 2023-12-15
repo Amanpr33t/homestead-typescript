@@ -1,10 +1,11 @@
 import { Fragment, useEffect } from "react"
 
+//This component is used to show property dealer details in a table
 function ReviewPropertyDealer(props) {
     const { dealer, hideReviewPage } = props
 
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //to scroll to the top of the page
     }, [])
 
     return (

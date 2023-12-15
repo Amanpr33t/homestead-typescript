@@ -3,10 +3,10 @@ import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
+//The component is used to review the residential proeprty before it is saved in the database
 function ReviewResidentialPropertyAfterSubmission(props) {
     const { propertyData, residentialLandImageFile, contractImageFile, propertyDataReset, residentialLandImageUpload, contractImageUpload, firmName } = props
     const navigate = useNavigate()
-    //console.log(propertyData)
 
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
@@ -15,14 +15,15 @@ function ReviewResidentialPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
-    const [residentialLandImagesUrl, setResidentialPropertyImagesUrl] = useState([])
-    const [contractImagesUrl, setContractImagesUrl] = useState([])
+    const [residentialLandImagesUrl, setResidentialPropertyImagesUrl] = useState([]) //the array stores the url of the property images uploaded
+    const [contractImagesUrl, setContractImagesUrl] = useState([]) //the array stores the url of the contract images uploaded
 
-    /*useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }, [])*/
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //scroll to the top od the screen
+    }, [])
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
+    //function is used to upload images to the server
     const uploadImages = async () => {
         try {
             setResidentialPropertyImagesUrl([])
@@ -75,6 +76,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
         }
     }
 
+    //function is used to save proeprty details to the database
     const saveDetailsToDatabase = useCallback(async (finalPropertyData) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addResidentialProperty`, {
@@ -116,6 +118,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
         }
     }, [authToken, navigate])
 
+   //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
         if (residentialLandImagesUrl.length === residentialLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
             saveDetailsToDatabase({
@@ -125,8 +128,6 @@ function ReviewResidentialPropertyAfterSubmission(props) {
             })
         }
     }, [residentialLandImagesUrl.length, residentialLandImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, residentialLandImagesUrl, contractImagesUrl, propertyData])
-
-    console.log(propertyData.residentialPropertyType.toLowerCase())
 
     return (
         <Fragment>

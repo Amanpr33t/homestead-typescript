@@ -4,9 +4,16 @@ import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 
+//The component shows the home page of the field agent
 function HomeFieldAgent() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/field-agent/signIn')
+        }
+    }, [authToken, navigate])
 
     const [alert, setAlert] = useState({
         isAlertModal: false,
@@ -15,14 +22,15 @@ function HomeFieldAgent() {
         routeTo: null
     })
 
-    const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState(0)
-    const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState(0)
+    const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState(0) //Number of properties added by the field agent
+    const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState(0) //number of property dealers added by the field agent
 
-    const [requestsDropdown, setRequestsDropdown] = useState(false)
+    const [requestsDropdown, setRequestsDropdown] = useState(false) //If true, a request dropdown will be shown to the user
 
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
 
+    //The function is used to fetch the number of properties and property dealers added by the field agent
     const fetchPropertiesAndPropertyDealersAddedByFieldAgent = useCallback(async () => {
         try {
             setSpinner(true)
@@ -55,8 +63,10 @@ function HomeFieldAgent() {
     }, [authToken, navigate])
 
     useEffect(() => {
-        fetchPropertiesAndPropertyDealersAddedByFieldAgent()
-    }, [fetchPropertiesAndPropertyDealersAddedByFieldAgent])
+        if (authToken) {
+            fetchPropertiesAndPropertyDealersAddedByFieldAgent()
+        }
+    }, [authToken, fetchPropertiesAndPropertyDealersAddedByFieldAgent])
 
 
     return (
@@ -82,6 +92,7 @@ function HomeFieldAgent() {
                     setRequestsDropdown(false)
                 }}>
 
+                    {/*This div will only be shown for screeen with width larger than 768px */}
                     <div className="hidden md:flex flex-col w-96 h-fit bg-white gap-2 p-3 rounded">
                         <p className="text-2xl font-bold text-center mb-2">Pending Requests</p>
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded  hover:bg-sky-100">
@@ -98,6 +109,7 @@ function HomeFieldAgent() {
                         </div>
                     </div>
 
+                    {/*This div will only be shown for screeen with width smaller than 768px */}
                     <div className={`fixed md:hidden top-16 w-full z-10 ${requestsDropdown ? 'h-screen' : 'h-fit'}`}>
                         <div className="relative mt-3.5 border border-gray-400 w-fit p-1 cursor-pointer bg-white" onClick={e => {
                             e.stopPropagation()

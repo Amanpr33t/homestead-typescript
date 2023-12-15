@@ -5,13 +5,20 @@ import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
 //This component is the navigation bar
 
+//This component shows a list of property dealers added by the field agent
 function ListOfAllPropertyDealersAddedByFieldAgent() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
-    const [propertyDealers, setPropertyDealers] = useState([])
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/field-agent/signIn')
+        }
+    }, [authToken, navigate])
 
-    const [selectedPropertyDealer, setSelectedPropertyDealer] = useState(null)
+    const [propertyDealers, setPropertyDealers] = useState([]) //array contains all the proeprty dealers added by the field agent
+
+    const [selectedPropertyDealer, setSelectedPropertyDealer] = useState(null) //it stores the selected property dealer
     let index = 0
 
     const [spinner, setSpinner] = useState(true)
@@ -24,6 +31,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
         routeTo: null
     })
 
+    //The function is used to fetch property dealers
     const fetchPropertyDealers = useCallback(async () => {
         try {
             setError(false)
@@ -83,6 +91,7 @@ function ListOfAllPropertyDealersAddedByFieldAgent() {
                 <p className="text-red-500 cursor-pointer" onClick={fetchPropertyDealers}>Try again</p>
             </div>}
 
+            {/*The component ReviewPropertyDealer is used to show the selected property dealer in a table*/}
             {selectedPropertyDealer && !spinner && !error && <ReviewPropertyDealer dealer={selectedPropertyDealer} hideReviewPage={() => setSelectedPropertyDealer(null)} />}
 
             {!selectedPropertyDealer && !spinner && <>

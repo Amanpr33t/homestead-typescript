@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useState } from "react"
 import Spinner from "../Spinner"
 import { useNavigate } from "react-router-dom"
 
+//This component is used to show a commercial property details in a table
 function ReviewCommercialProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
@@ -13,9 +14,10 @@ function ReviewCommercialProperty(props) {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //used to scroll to top of the screen
     }, [])
 
+    //the function is used to get the firmName of a proeprty dealer
     const getPropertyDealer = useCallback(async () => {
         try {
             setSpinner(true)

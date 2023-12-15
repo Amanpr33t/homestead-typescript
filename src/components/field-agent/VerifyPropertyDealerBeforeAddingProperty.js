@@ -4,17 +4,18 @@ import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
+//This component is used to verify a property dealer before adding a property
 function VerifyPropertyDealerBeforeAddingProperty(props) {
     const navigate = useNavigate()
     const { propertyDealerSetterFunction } = props
-    const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
+    const authToken = localStorage.getItem("homestead-field-agent-authToken") 
 
-    const [email, setEmail] = useState('')
-    const [emailValid, setEmailValid] = useState(true)
+    const [email, setEmail] = useState('') //email of the proeprty dealer
+    const [emailValid, setEmailValid] = useState(true) //it is false if the email is not in valid format
 
-    const [contactNumber, setContactNumber] = useState('')
+    const [contactNumber, setContactNumber] = useState('') //contact number of the proeprty dealer
 
-    const [dealerId, setDealerId] = useState('')
+    const [dealerId, setDealerId] = useState('') //dealerID of the proerty dealer
 
     const [alert, setAlert] = useState({
         isAlertModal: false,
@@ -22,11 +23,12 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
         alertMessage: ''
     }) //This state is used to show or hide alert modal
 
-    const [showOtpModal, setShowOtopModal] = useState(false)
-    const [otp, setOtp] = useState('')
+    const [showOtpModal, setShowOtopModal] = useState(false) //If it is true, an OTP modal will be shown where the user can fill the OTP
+    const [otp, setOtp] = useState('') //This state stores the OTP
 
     const [spinner, setSpinner] = useState(false) //This state is used to show or hide spinner
 
+    //This function is used to generate an OTP. The OTP is sent to the property dealers email
     const formSubmit = async (e) => {
         e.preventDefault()
         if (!email.trim() && !contactNumber.trim() && !dealerId.trim()) {
@@ -86,6 +88,7 @@ function VerifyPropertyDealerBeforeAddingProperty(props) {
         }
     }
 
+    //The function is to verify the OTP
     const verifyOtp = async (e) => {
         e.preventDefault()
         if (!otp.trim()) {

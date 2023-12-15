@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 //This component is used to review the property dealer data submitted
 function ReviewAgriculturalPropertyAfterSubmission(props) {
     const { propertyData, agriculturalLandImageFile, contractImageFile, propertyDataReset, agricultureLandImageUpload, contractImageUpload, firmName } = props
-    const navigate= useNavigate()
+    const navigate = useNavigate()
 
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
@@ -15,14 +15,18 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
-    const [agriculturalLandImagesUrl, setAgriculturalLandImagesUrl] = useState([])
-    const [contractImagesUrl, setContractImagesUrl] = useState([])
+
+    const [agriculturalLandImagesUrl, setAgriculturalLandImagesUrl] = useState([]) //This state is array that stores the url of all the property images uploaded
+    const [contractImagesUrl, setContractImagesUrl] = useState([]) //This state is array that stores the url of all the proeprty images uploaded
 
     useEffect(() => {
+        //The code below is used to scroll the screen to the top
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
+
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
+    //The function is used to upload the images to the server
     const uploadImages = async () => {
         try {
             setAgriculturalLandImagesUrl([])
@@ -75,6 +79,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         }
     }
 
+    //The function is used to save proeprty details to the database
     const saveDetailsToDatabase = useCallback(async (finalPropertyData) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addAgriculturalProperty`, {
@@ -101,6 +106,14 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+            } else if (data.status === 'no-evaluator-available') {
+                setSpinner(false)
+                setAlert({
+                    isAlertModal: true,
+                    alertType: 'warning',
+                    alertMessage: 'No evaluator is available. Try later',
+                    routeTo: '/field-agent'
+                })
             } else {
                 throw new Error('Some error occured')
             }
@@ -116,6 +129,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         }
     }, [authToken, navigate])
 
+    //The code inside the useEffect hook is triggered when the images have been successfully uploaded
     useEffect(() => {
         if (agriculturalLandImagesUrl.length === agricultureLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
             saveDetailsToDatabase({

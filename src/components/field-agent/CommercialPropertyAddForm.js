@@ -7,19 +7,21 @@ import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/strin
 import ReviewCommercialPropertyAfterSubmission from "./ReviewCommercialPropertyAfterSubmission"
 import Spinner from "../Spinner"
 
+//Component is used to add a commercial proerty
 function CommercialPropertyAddForm() {
     const navigate = useNavigate()
     const location = useLocation()
 
     const queryParams = new URLSearchParams(location.search)
-    const propertyDealerId = queryParams.get('id')
-    const propertyDealerLogoUrl = queryParams.get('logoUrl')
-    const propertyDealerFirmName = queryParams.get('firmName')
-    const commercialPropertyType = queryParams.get('propertyType')
+    const propertyDealerId = queryParams.get('id') //We get property dealer ID from the query params 
+    const propertyDealerLogoUrl = queryParams.get('logoUrl') //We get property dealer logo url from the query params 
+    const propertyDealerFirmName = queryParams.get('firmName') //We get property dealer firm name from the query params 
+    const commercialPropertyType = queryParams.get('propertyType') //We get commercial property type from the query params 
 
     const [spinner, setSpinner] = useState(true)
 
     useEffect(() => {
+        //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName or commercialPropertyType is not available, the user is routed to the field-agent home page
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (commercialPropertyType !== 'industrial' && commercialPropertyType !== 'shop')) {
             navigate('/field-agent', { replace: true })
         } else {

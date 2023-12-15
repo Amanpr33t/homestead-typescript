@@ -4,12 +4,13 @@ import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
 import ReviewCommercialProperty from "./ReviewCommercialProperty"
 
+//This component shows the list commercial proeprties added by the field agent
 function CommercialPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
 
-    const [selectedProperty, setSelectedProperty] = useState()
-    const [commercialProperties, setCommercialProperties] = useState([])
+    const [selectedProperty, setSelectedProperty] = useState() //Property selected to be shown in a table
+    const [commercialProperties, setCommercialProperties] = useState([]) //List of all the commercial proeprties
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
     const [alert, setAlert] = useState({
@@ -21,6 +22,7 @@ function CommercialPropertiesAddedByFieldAgent() {
 
     let index = 0
 
+    //Function used to fetch all the commercial proerties added by field agent
     const fetchCommercialProperties = useCallback(async () => {
         try {
             setError(false)
