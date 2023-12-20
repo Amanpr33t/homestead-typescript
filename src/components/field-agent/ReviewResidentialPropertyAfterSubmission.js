@@ -118,7 +118,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
         }
     }, [authToken, navigate])
 
-   //The code inside the useEffect hook is executed when the images have been uploaded successfully
+    //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
         if (residentialLandImagesUrl.length === residentialLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
             saveDetailsToDatabase({

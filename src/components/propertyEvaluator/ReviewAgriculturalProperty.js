@@ -1,15 +1,13 @@
-import { Fragment, useCallback, useEffect, useState } from "react"
-import Spinner from "../Spinner"
+import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import PropertyEvaluationForm from "./PropertyEvaluationForm"
 
 //This component is used to show property data in a tables
 function ReviewAgriculturalProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
 
-    const [spinner, setSpinner] = useState(true)
-    const [error, setError] = useState(false)
-    const [firmName, setFirmName] = useState()
+    const [showEvaluationForm, setShowEvaluationForm] = useState(false)
 
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
@@ -17,59 +15,18 @@ function ReviewAgriculturalProperty(props) {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
 
-    //This function is used to get the firmName of property dealer who added the proeprty
-    const getPropertyDealer = useCallback(async () => {
-        try {
-            setSpinner(true)
-            setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerOfaProperty/${property.addedByPropertyDealer
-                }`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
-            } else if (data.status === 'ok') {
-                setSpinner(false)
-                setFirmName(data.firmName)
-            }
-        } catch (error) {
-            setError(true)
-            setSpinner(false)
-        }
-    }, [property.addedByPropertyDealer, authToken, navigate])
-
-    useEffect(() => {
-        getPropertyDealer()
-    }, [getPropertyDealer])
-
     return (
         <Fragment>
-            {spinner && !error && <Spinner />}
+            {/*spinner && !error && <Spinner />*/}
 
-            {!spinner &&
+            {!showEvaluationForm &&
                 <div className="w-full fixed top-16 bg-white pb-2 z-50">
                     <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
+                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
                 </div>
             }
 
-            {error && !spinner && <>
-                <div className="fixed top-32 w-full flex flex-col place-items-center">
-                    <p>Some error occured</p>
-                    <p className="text-red-500 cursor-pointer" onClick={getPropertyDealer}>Try again</p>
-                </div>
-            </>}
-
-            {!error && !spinner && firmName && <>
+            {!showEvaluationForm && <>
                 <div className="w-full mt-28 bg-white z-20 mb-4">
                     <p className="text-2xl font-bold text-center">Agricultural property details</p>
                 </div>
@@ -83,10 +40,6 @@ function ReviewAgriculturalProperty(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="border-2 border-gray-200">
-                                <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Firm name</td>
-                                <td className=" pt-2 pb-2 text-center">{firmName}</td>
-                            </tr>
                             <tr className="border-2 border-gray-300">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Property ID</td>
                                 <td className=" pt-4 pb-4 text-center">{property.uniqueId}</td>
@@ -200,7 +153,7 @@ function ReviewAgriculturalProperty(props) {
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Road Type</td>
                                 <td className="pt-2 pb-2 flex flex-col place-items-center gap-1">
                                     <p>{property.road.type}</p>
-                                    {property.road.details && <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center" text-center>{property.road.details}</p>}
+                                    {property.road.details && <p className="p-1 mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center" >{property.road.details}</p>}
                                 </td>
                             </tr>
                             <tr className="border-2 border-gray-200">
@@ -224,7 +177,7 @@ function ReviewAgriculturalProperty(props) {
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.agriculturalLandImagesUrl
                                         .map(image => {
-                                            return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
+                                            return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
                                         })}
                                 </td>
                             </tr>
@@ -232,13 +185,26 @@ function ReviewAgriculturalProperty(props) {
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {
-                                        return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')} />
                                     })}
                                 </td>
                             </tr>}
                         </tbody>
                     </table>
                 </div></>}
+
+            {!showEvaluationForm && <div className="w-full -mt-4 mb-6 flex justify-center ">
+                <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
+            </div>}
+
+            <div className={`${showEvaluationForm ? '' : 'fixed left-100'}`}>
+                <PropertyEvaluationForm
+                    hideEvaluationForm={() => setShowEvaluationForm(false)}
+                    propertyType='agricultural'
+                    propertyId={property._id}
+                    propertyEvaluatorId={property.propertyEvaluator}
+                    fieldAgentId={property.addedByFieldAgent} />
+            </div>
 
         </Fragment >
     )

@@ -216,7 +216,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             <td className=" pt-4 pb-4 text-center">{propertyData.floors.basementFloors}</td>
                         </tr>
 
-                        {propertyData.commercialPropertyType === 'shop' && (propertyData.leasePeriod.years || propertyData.leasePeriod.months) && <tr className="border-2 border-gray-300">
+                        {propertyData.commercialPropertyType === 'shop' && (propertyData.leasePeriod.years!==0 || propertyData.leasePeriod.months!==0) && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
                             <td className=" pt-4 pb-4 text-center">
                                 <div className="flex flex-col">
@@ -226,7 +226,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             </td>
                         </tr>}
 
-                        {propertyData.commercialPropertyType === 'shop' && (propertyData.lockInPeriod.years || propertyData.lockInPeriod.months) && <tr className="border-2 border-gray-300">
+                        {propertyData.commercialPropertyType === 'shop' && (propertyData.lockInPeriod.years!==0 || propertyData.lockInPeriod.months!==0) && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
                             <td className=" pt-4 pb-4 text-center">
                                 <div className="flex flex-col">
@@ -266,7 +266,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             </td>
                         </tr>
 
-                        {propertyData.widthOfRoadFacing.metre && propertyData.widthOfRoadFacing.feet && <tr className="border-2 border-gray-300">
+                        {propertyData.widthOfRoadFacing.metre!==0 && propertyData.widthOfRoadFacing.feet!==0 && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road width</td>
                             <td className=" pt-4 pb-4 text-center">
                                 <div className="flex flex-col place-items-center">

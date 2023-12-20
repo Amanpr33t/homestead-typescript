@@ -1434,7 +1434,7 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label classNtrueame="whitespace-nowrap" htmlFor="semi-furnished">Semi-furnished</label>
+                  <label className="whitespace-nowrap" htmlFor="semi-furnished">Semi-furnished</label>
                 </div>
 
                 <div className="flex flex-row h-fit">

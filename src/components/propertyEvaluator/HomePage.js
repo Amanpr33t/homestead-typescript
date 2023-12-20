@@ -93,19 +93,19 @@ function PropertyEvaluatorHomePage() {
                     <div className={`flex flex-col gap-10 w-full bg-white rounded pt-6 pb-6 h-full`} >
 
                         <div className="flex justify-center">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit w-fit  hover:bg-sky-100" >
+                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit w-fit  hover:bg-sky-100" onClick={() => pendingPropertyEvaluations > 0 ? navigate('/property-evaluator/list-of-pending-evaluations') : null}>
                                 <p className="text-5xl text-green-800">{pendingPropertyEvaluations}</p>
                                 <p className="w-40">property evaluation requests are pending</p>
                             </div>
                         </div>
 
                         <div className="flex flex-col sm:flex-row  gap-10 w-full place-items-center sm:place-content-center">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" >
+                            <div className="flex flex-row border border-gray-400 gap-2 p-1 rounded h-fit " >
                                 <p className="text-5xl text-green-800">{propertiesSuccessfullyEvaluated}</p>
                                 <p className="w-36">properties have been successfully evaluated by you</p>
                             </div>
 
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" >
+                            <div className="flex flex-row border border-gray-400 gap-2 p-1  rounded h-fit " >
                                 <p className="text-5xl text-green-800">{propertiesSentToFieldAgentForReconsideration}</p>
                                 <p className="w-40">properties have been sent to field agent for reconsideration</p>
                             </div>

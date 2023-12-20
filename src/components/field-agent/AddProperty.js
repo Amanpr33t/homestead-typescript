@@ -3,6 +3,7 @@ import { Fragment, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import VerifyPropertyDealerBeforeAddingProperty from "./VerifyPropertyDealerBeforeAddingProperty"
 
+//This component shows a modal from which the field agent can choose which type of property needs to be added
 function AddProperty() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
@@ -13,11 +14,12 @@ function AddProperty() {
         }
       }, [authToken, navigate])
 
-    const [propertyDealer, setPropertyDealer] = useState()
-    const [selectedPropertyType, setSelectedPropertyType] = useState()
-    const [commericialPropertyType, setCommercialPropertyType] = useState()
-    const [residentialPropertyType, setResidentialPropertyType] = useState()
+    const [propertyDealer, setPropertyDealer] = useState() //Information about the property dealer who wants to add a property
+    const [selectedPropertyType, setSelectedPropertyType] = useState() //Type of property that has been selected
+    const [commericialPropertyType, setCommercialPropertyType] = useState() //Type of commercial property chosen
+    const [residentialPropertyType, setResidentialPropertyType] = useState() //Type of residential property chosen
 
+    //The function is used to set the dealer
     const propertyDealerSetterFunction = (dealer) => {
         setPropertyDealer(dealer)
     }
@@ -30,6 +32,7 @@ function AddProperty() {
                     <button type='button' className="bg-green-500 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 h-8  " onClick={() => navigate('/field-agent', { replace: true })}>Home</button>
                 </div>
 
+                {/*The component below is used to verify the property dealer who wants to add the property */}
                 {!propertyDealer && <VerifyPropertyDealerBeforeAddingProperty propertyDealerSetterFunction={propertyDealerSetterFunction} />}
 
                 {propertyDealer &&

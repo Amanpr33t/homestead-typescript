@@ -24,11 +24,43 @@ function HomeFieldAgent() {
 
     const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState(0) //Number of properties added by the field agent
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState(0) //number of property dealers added by the field agent
+    const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState(0) //number of pending requests for property reevaluation
 
     const [requestsDropdown, setRequestsDropdown] = useState(false) //If true, a request dropdown will be shown to the user
 
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
+
+    //This function is used to fetch data about properties which are to be reevaluated by the field agent
+    const fetchNumberOfPendingRequestsForPropertyReevaluation = useCallback(async () => {
+        try {
+            setSpinner(true)
+            setError(false)
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPendingPequestsForReevaluationOfProperty`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            if (data.status === 'ok') {
+                setSpinner(false)
+                setPendingRequestForPropertyReevaluation(data.numberOfPendingPropertyReevaluations)
+                return
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-field-agent-authToken")
+                navigate('/field-agent/signIn', { replace: true })
+            }
+        } catch (error) {
+            setError(true)
+            setSpinner(false)
+        }
+    }, [authToken, navigate])
 
     //The function is used to fetch the number of properties and property dealers added by the field agent
     const fetchPropertiesAndPropertyDealersAddedByFieldAgent = useCallback(async () => {
@@ -47,10 +79,9 @@ function HomeFieldAgent() {
             }
             const data = await response.json()
             if (data.status === 'ok') {
-                setSpinner(false)
                 setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent)
                 setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent)
-                return
+                await fetchNumberOfPendingRequestsForPropertyReevaluation()
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
@@ -103,8 +134,8 @@ function HomeFieldAgent() {
                             <p className="text-5xl">0</p>
                             <p className="w-40">Pending visits to add a property dealer</p>
                         </div>
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100">
-                            <p className="text-5xl">0</p>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100" >
+                            <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
                             <p className="w-40">Pending requests to reconsider to details of a property</p>
                         </div>
                     </div>
@@ -125,8 +156,8 @@ function HomeFieldAgent() {
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property dealer</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100">
-                                    <p className="text-5xl">0</p>
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" >
+                                    <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
                                     <p className="w-40">Pending requests to reconsider details of a property</p>
                                 </div>
                             </div>}

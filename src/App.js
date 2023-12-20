@@ -20,6 +20,9 @@ import ResidentialPropertyAddForm from "./components/field-agent/ResidentialProp
 import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
 import PropertyEvaluatorHomePage from "./components/propertyEvaluator/HomePage";
 import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
+import ListOfPropertiesToBeEvaluated from './components/propertyEvaluator/ListOfPropertiesToBeEvaluated';
+import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
+import ListOfPendingPropertyReevaluations from './components/field-agent/ListOfPendingPropertyReevaluations';
 
 function App() {
   const currentUrl = window.location.href
@@ -37,6 +40,7 @@ function App() {
             <Route path='' element={<HomeFieldAgent />}></Route>
             <Route path='signIn' element={<FieldAgentSignIn />}></Route>
             <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
+            <Route path='list-of-pending-property-reevaluations' element={<ListOfPendingPropertyReevaluations />}></Route>
             <Route path='list-of-property-dealers-added-by-field-agent' element={<ListOfAllPropertyDealersAddedByFieldAgent />}></Route>
 
             {/*routes to add new property */}
@@ -65,7 +69,8 @@ function App() {
           <Route path='/property-evaluator/*'>
             <Route path='' element={<PropertyEvaluatorHomePage />}></Route>
             <Route path='signIn' element={<PropertyEvaluatorSignIn />}></Route>
-
+            <Route path='list-of-pending-evaluations' element={<ListOfPropertiesToBeEvaluated />}></Route>
+            {<Route path='evaluate-property' element={<EvaluateProperty />}></Route>}
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
           </Route>
