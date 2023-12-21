@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 function ReviewAgriculturalProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
+    console.log(property)
 
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)

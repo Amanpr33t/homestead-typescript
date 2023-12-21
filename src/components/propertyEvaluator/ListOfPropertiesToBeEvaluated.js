@@ -106,7 +106,7 @@ function ListOfPropertiesToBeEvaluated() {
 
                     {pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
                         index++
-                        return <div key={property.propertyId
+                        return <div key={property._id
                         } className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row gap-3 ">
                                 <p className="text-gray-500 text-lg font-semibold">{index})</p>
@@ -114,7 +114,7 @@ function ListOfPropertiesToBeEvaluated() {
                                     <p className=" text-lg font-semibold">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.propertyType)} property</p>
                                     <div className="flex flex-row gap-2">
                                         <p className="text-lg font-semibold">Location:</p>
-                                        <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.state)}</p>
+                                        <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.state)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -124,7 +124,7 @@ function ListOfPropertiesToBeEvaluated() {
                                 <p>{dateCreater(property.date)}</p>
                             </div>
                             <div className="w-full flex justify-center ">
-                                <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property.propertyId}`} className="bg-blue-500 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
+                                <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
                             </div>
                         </div>
                     })}

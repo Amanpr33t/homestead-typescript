@@ -462,7 +462,8 @@ function ReviewResidentialProperty(props) {
                     residentialPropertyType={property.residentialPropertyType.toLowerCase()}
                     propertyId={property._id}
                     propertyEvaluatorId={property.propertyEvaluator}
-                    fieldAgentId={property.addedByFieldAgent} />
+                    fieldAgentId={property.addedByFieldAgent}
+                    numberOfReevaluationsReceived={property.numberOfReevaluationsReceived} />
             </div>
         </Fragment >
     )

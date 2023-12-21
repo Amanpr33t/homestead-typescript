@@ -34,7 +34,6 @@ function HomeFieldAgent() {
     //This function is used to fetch data about properties which are to be reevaluated by the field agent
     const fetchNumberOfPendingRequestsForPropertyReevaluation = useCallback(async () => {
         try {
-            setSpinner(true)
             setError(false)
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPendingPequestsForReevaluationOfProperty`, {
                 method: 'GET',

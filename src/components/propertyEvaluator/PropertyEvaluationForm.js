@@ -7,7 +7,7 @@ import { countWordsInAString } from "../../utils/stringUtilityFunctions"
 //This component is a form used by a field agent to add an agricultural property
 function PropertyEvaluationForm(props) {
     const navigate = useNavigate()
-    const { propertyType, propertyId, propertyEvaluatorId, fieldAgentId, residentialPropertyType, hideEvaluationForm, isBuiltUpProperty } = props
+    const { propertyType, propertyId, propertyEvaluatorId, fieldAgentId, residentialPropertyType, hideEvaluationForm, isBuiltUpProperty, numberOfReevaluationsReceived } = props
     const authToken = localStorage.getItem("homestead-property-evaluator-authToken")
 
     const [spinner, setSpinner] = useState(false)
@@ -185,10 +185,6 @@ function PropertyEvaluationForm(props) {
         }*/
 
         const finalEvaluationData = {
-            information: {
-                isInformationComplete: true,
-                details: ''
-            },
             photographs: {
                 arePhotographsComplete: true,
                 details: ''
@@ -250,18 +246,11 @@ function PropertyEvaluationForm(props) {
     }
 
     const errorCheckingBeforeSubmitForInCompleteForm = () => {
-        if (isInformationComplete === null) {
-            setIsInformationCompleteError(true)
-        } else if (!isInformationComplete && isInformationInCompleteDetailsArray.length === 0) {
-            setIsInformationInCompleteDetailsError(true)
-        }
-
         if (arePhotographsComplete === null) {
             setArePhotographsCompleteError(true)
         } else if (!arePhotographsComplete && !arePhotographsInCompleteDetails.trim()) {
             setArePhotographsInCompleteDetailsError(true)
         }
-
     }
 
     const incompleteDetailsFormSubmit = async () => {
@@ -275,11 +264,6 @@ function PropertyEvaluationForm(props) {
             })
             return
         }
-        if (isInformationComplete === null) {
-            return errorFunction()
-        } else if (!isInformationComplete && isInformationInCompleteDetailsArray.length === 0) {
-            return errorFunction()
-        }
 
         if (arePhotographsComplete === null) {
             return errorFunction()
@@ -288,10 +272,6 @@ function PropertyEvaluationForm(props) {
         }
 
         const evaluationData = {
-            information: {
-                isInformationComplete,
-                details: isInformationInCompleteDetailsArray
-            },
             photographs: {
                 arePhotographsComplete,
                 details: arePhotographsInCompleteDetails.trim()
@@ -311,7 +291,7 @@ function PropertyEvaluationForm(props) {
 
         try {
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/property-evaluation-data-update?propertyType=${propertyType}&propertyId=${propertyId}&evaluatorId=${propertyEvaluatorId}&fieldAgentId=${fieldAgentId}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/property-evaluation-data-update?propertyType=${propertyType}&propertyId=${propertyId}&evaluatorId=${propertyEvaluatorId}&fieldAgentId=${fieldAgentId}&numberOfReevaluationsReceived=${numberOfReevaluationsReceived}`, {
                 method: 'POST',
                 body: JSON.stringify(evaluationData),
                 headers: {
@@ -351,6 +331,7 @@ function PropertyEvaluationForm(props) {
 
     }
 
+
     return (
         <Fragment>
             {spinner && <Spinner />}
@@ -369,81 +350,12 @@ function PropertyEvaluationForm(props) {
                 <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
             </div>
 
-
-
             <div className={`pl-2 pr-2 h-fit  mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || spinner ? 'blur' : ''} `} >
                 <div className="w-full mt-32 bg-white mb-4">
                     <p className="text-2xl font-bold text-center">Evaluate {propertyType} property</p>
                 </div>
                 <form className="w-full  md:w-10/12 lg:w-8/12  h-fit  flex flex-col rounded border-2 border-gray-200 shadow" >
 
-                    {/*information complete */}
-                    <div className="p-2 flex flex-col pb-5 pt-5 bg-gray-100">
-                        {isInformationCompleteError && <p className="text-red-500">Select an option</p>}
-                        <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                            <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
-                                <p className="h-4 text-2xl text-red-500">*</p>
-                                <p className="text-xl font-semibold text-gray-500 mb-2">Is the information complete</p>
-                            </div>
-                            <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                                <div className="flex flex-row h-fit">
-                                    <input className="mr-1 cursor-pointer" type="radio" id="yes" name="information" value="yes" onChange={e => {
-                                        setIsInformationInCompleteDetails('')
-                                        setIsInformationInCompleteDetailsError(false)
-                                        setIsInformationCompleteError(false)
-                                        if (e.target.checked) {
-                                            setIsInformationComplete(true)
-                                        }
-                                        setIsInformationInCompleteDetailsArray([])
-                                    }} />
-                                    <label htmlFor="yes">Yes</label>
-                                </div>
-
-                                <div className="flex flex-row h-fit">
-                                    <input className=" mr-1 cursor-pointer" type="radio" id="no" name="information" value="no" onChange={e => {
-                                        setIsInformationInCompleteDetails('')
-                                        setIsInformationInCompleteDetailsError(false)
-                                        setIsInformationCompleteError(false)
-                                        if (e.target.checked) {
-                                            setIsInformationComplete(false)
-                                        }
-                                    }} />
-                                    <label htmlFor="no">No</label>
-                                </div>
-                            </div>
-                        </div>
-                        {isInformationComplete === false && <>
-                            <div className="flex flex-row mr-2 ml-2 mb-3">
-                                <input id="information-detail" type="text" autoComplete="new-password" name='information-detail' className={`w-full border-2  pl-1 pr-1 rounded bg-white ${isInformationInCompleteDetailsError ? 'border-red-400' : 'border-gray-400'}`} placeholder="Add details here..." value={isInformationInCompleteDetails} onChange={e => {
-                                    setIsInformationInCompleteDetails(e.target.value)
-                                    setIsInformationInCompleteDetailsError(false)
-                                }} />
-                                <button type="button" className="bg-green-500 hover:bg-green-700 text-white text-2xl font-bold py-1 px-2 rounded" onClick={(e) => {
-                                    e.stopPropagation()
-                                    if (isInformationInCompleteDetails.trim()) {
-                                        if (isInformationInCompleteDetailsError) {
-                                            setIsInformationInCompleteDetailsError(false)
-                                        }
-                                        setIsInformationInCompleteDetailsArray(array => [...array, isInformationInCompleteDetails])
-                                        setIsInformationInCompleteDetails('')
-                                    }
-                                }}>+</button>
-                            </div>
-                            {isInformationInCompleteDetailsArray.length > 0 && <div className="flex flex-col gap-2">
-                                {isInformationInCompleteDetailsArray.map(details => {
-                                    return <div key={details} className="flex flex-row gap-2 mr-2 ml-2 bg-white p-1 rounded">
-                                        <p className="w-full">{details}</p>
-                                        <button className="bg-red-500 hover:bg-red-700 text-white text-xl font-semibold py-1 px-2 rounded h-fit" onClick={() => {
-                                            const updatedArray = isInformationInCompleteDetailsArray.filter((data) => data.trim() !== details.trim())
-                                            setIsInformationInCompleteDetailsArray(updatedArray)
-                                        }}>X</button>
-                                    </div>
-                                })}
-                            </div>}
-
-                            {isInformationInCompleteDetailsError && <p className="text-red-500">Provide details</p>}
-                        </>}
-                    </div>
 
                     {/*photographs complete*/}
                     <div className="p-2  flex flex-col pb-5 pt-5 ">
@@ -496,8 +408,7 @@ function PropertyEvaluationForm(props) {
                         </div>}
                     </div>
 
-                    {isInformationComplete && arePhotographsComplete && <>
-
+                    {arePhotographsComplete && <>
                         {/*type of location*/}
                         <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
                             {(typeOfLocationError) && <p className="text-red-500">Select an option</p>}
@@ -682,15 +593,16 @@ function PropertyEvaluationForm(props) {
                         </div>
 
                     </>}
+
                 </form>
                 <div className="flex justify-center mt-4 p-2">
-                    <button type='submit' className=" bg-green-400 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={(e) => {
-                    e.preventDefault()
-                    if (isInformationComplete && arePhotographsComplete) {
-                        return completeDetailsFormSubmit()
-                    }
-                    incompleteDetailsFormSubmit()
-                }}>Save</button>
+                    <button type='submit' className="text-lg bg-green-500 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={(e) => {
+                        e.preventDefault()
+                        if (isInformationComplete && arePhotographsComplete) {
+                            return completeDetailsFormSubmit()
+                        }
+                        incompleteDetailsFormSubmit()
+                    }}>Save evaluation data</button>
                 </div>
             </div >
         </Fragment >

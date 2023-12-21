@@ -203,7 +203,8 @@ function ReviewAgriculturalProperty(props) {
                     propertyType='agricultural'
                     propertyId={property._id}
                     propertyEvaluatorId={property.propertyEvaluator}
-                    fieldAgentId={property.addedByFieldAgent} />
+                    fieldAgentId={property.addedByFieldAgent}
+                    numberOfReevaluationsReceived={property.numberOfReevaluationsReceived} />
             </div>
 
         </Fragment >

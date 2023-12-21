@@ -219,6 +219,7 @@ function ReviewCommercialProperty(props) {
                     propertyId={property._id}
                     propertyEvaluatorId={property.propertyEvaluator}
                     fieldAgentId={property.addedByFieldAgent}
+                    numberOfReevaluationsReceived={property.numberOfReevaluationsReceived}
                 />
             </div>
 
