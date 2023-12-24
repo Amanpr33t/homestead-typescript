@@ -5,9 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 //The component is used to review the details of a commercial proeprty before they are sent to the server
 function ReviewCommercialPropertyAfterSubmission(props) {
-    const { propertyData, commercialPropertyImageFile, contractImageFile, propertyDataReset, commercialPropertyImageUpload, contractImageUpload, firmName } = props
-    const navigate=useNavigate()
-
+    const { propertyData, propertyDataReset, firmName, commercialPropertyImages, contractImages } = props
+    const navigate = useNavigate()
     const [spinner, setSpinner] = useState(false)
     const [alert, setAlert] = useState({
         isAlertModal: false,
@@ -22,7 +21,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //it scrools screen to the top
     }, [])
-    const authToken = localStorage.getItem("homestead-field-agent-authToken") 
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
     //The function is used to upload images to the database
     const uploadImages = async () => {
@@ -30,9 +29,9 @@ function ReviewCommercialPropertyAfterSubmission(props) {
             setCommercialPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
-            commercialPropertyImageUpload.length && commercialPropertyImageUpload.forEach(async (image) => {
+            commercialPropertyImages.length && commercialPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
-                formData.append('file', image)
+                formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -48,9 +47,9 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                 }
             })
 
-            contractImageUpload.length && contractImageUpload.forEach(async (image) => {
+            contractImages.length && contractImages.forEach(async (image) => {
                 const formData = new FormData()
-                formData.append('file', image)
+                formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -62,6 +61,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                     setContractImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
+                    console.log(contractImagesUrl)
                     setContractImagesUrl(images => [...images, data.secure_url])
                 }
             })
@@ -121,14 +121,14 @@ function ReviewCommercialPropertyAfterSubmission(props) {
 
     //The code in the useEffect hook is executed when the images are sucessfully uploaded
     useEffect(() => {
-        if (commercialLandImagesUrl.length === commercialPropertyImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
+        if (commercialLandImagesUrl.length === commercialPropertyImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase({
                 commercialLandImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [commercialLandImagesUrl.length, commercialPropertyImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, commercialLandImagesUrl, contractImagesUrl, propertyData])
+    }, [commercialLandImagesUrl, contractImagesUrl, commercialLandImagesUrl.length, commercialPropertyImages.length, contractImagesUrl.length, contractImages.length, saveDetailsToDatabase, propertyData])
 
     return (
         <Fragment>
@@ -216,7 +216,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             <td className=" pt-4 pb-4 text-center">{propertyData.floors.basementFloors}</td>
                         </tr>
 
-                        {propertyData.commercialPropertyType === 'shop' && (propertyData.leasePeriod.years!==0 || propertyData.leasePeriod.months!==0) && <tr className="border-2 border-gray-300">
+                        {propertyData.commercialPropertyType === 'shop' && (propertyData.leasePeriod.years !== 0 || propertyData.leasePeriod.months !== 0) && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
                             <td className=" pt-4 pb-4 text-center">
                                 <div className="flex flex-col">
@@ -226,7 +226,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             </td>
                         </tr>}
 
-                        {propertyData.commercialPropertyType === 'shop' && (propertyData.lockInPeriod.years!==0 || propertyData.lockInPeriod.months!==0) && <tr className="border-2 border-gray-300">
+                        {propertyData.commercialPropertyType === 'shop' && (propertyData.lockInPeriod.years !== 0 || propertyData.lockInPeriod.months !== 0) && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
                             <td className=" pt-4 pb-4 text-center">
                                 <div className="flex flex-col">
@@ -266,7 +266,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                             </td>
                         </tr>
 
-                        {propertyData.widthOfRoadFacing.metre!==0 && propertyData.widthOfRoadFacing.feet!==0 && <tr className="border-2 border-gray-300">
+                        {propertyData.widthOfRoadFacing.metre !== 0 && propertyData.widthOfRoadFacing.feet !== 0 && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road width</td>
                             <td className=" pt-4 pb-4 text-center">
                                 <div className="flex flex-col place-items-center">
@@ -310,16 +310,16 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                {commercialPropertyImageFile.map(image => {
-                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
+                                {commercialPropertyImages.map(image => {
+                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image.file} alt="" />;
                                 })}
                             </td>
                         </tr>
-                        {contractImageFile.length > 0 && <tr className="border-2 border-gray-300">
+                        {contractImages.length > 0 && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                {contractImageFile.map(image => {
-                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
+                                {contractImages.map(image => {
+                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image.file} alt="" />
                                 })}
                             </td>
                         </tr>}

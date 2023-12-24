@@ -53,14 +53,13 @@ function CommercialPropertyAddForm() {
     const [tehsil, setTehsil] = useState('')
     const [village, setVillage] = useState('')
 
-    const [commercialPropertyImageUpload, setCommercialPropertyImageUpload] = useState([])
-    const [commercialPropertyImageFile, setCommercialPropertyImageFile] = useState([])
-    const [commercialPropertyImageFileError, setCommercialPropertyImageFileError] = useState(false)
+    const [commercialPropertyImages, setCommercialPropertyImages] = useState([])
+    const [commercialPropertyImageError, setCommercialPropertyImageError] = useState(false)
+
+    const [contractImages, setContractImages] = useState([])
+    console.log(contractImages, commercialPropertyImages)
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
-
-    const [contractImageUpload, setContractImageUpload] = useState([])
-    const [contractImageFile, setContractImageFile] = useState([])
 
     const [priceDemandedNumber, setPriceDemandedNumber] = useState('')
     const [priceDemandedNumberError, setPriceDemandedNumberError] = useState('')
@@ -100,15 +99,20 @@ function CommercialPropertyAddForm() {
 
     const [propertyData, setPropertyData] = useState()
 
+
     const commercialPropertyImageHandler = (event) => {
-        setCommercialPropertyImageFileError(false)
-        setCommercialPropertyImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-        setCommercialPropertyImageUpload(array => [...array, event.target.files[0]])
+        setCommercialPropertyImageError(false)
+        setCommercialPropertyImages(array => [...array, {
+            file: URL.createObjectURL(event.target.files[0]),
+            upload: event.target.files[0]
+        }])
     }
 
     const contractImageHandler = (event) => {
-        setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-        setContractImageUpload(array => [...array, event.target.files[0]])
+        setContractImages(array => [...array, {
+            file: URL.createObjectURL(event.target.files[0]),
+            upload: event.target.files[0]
+        }])
     }
 
     const arrayOfNumbers = (from, to) => {
@@ -122,8 +126,8 @@ function CommercialPropertyAddForm() {
     }
 
     const errorCheckingBeforeSubmit = () => {
-        if (!commercialPropertyImageFile.length) {
-            setCommercialPropertyImageFileError(true)
+        if (!commercialPropertyImages.length) {
+            setCommercialPropertyImageError(true)
         }
 
         if (!district.trim() && !state.trim()) {
@@ -185,25 +189,25 @@ function CommercialPropertyAddForm() {
             })
             return
         }
-        if(!commercialPropertyImageFile.length){
+        if (!commercialPropertyImages.length) {
             return errorFunction()
         }
-        if(!district.trim() || !state.trim() ){
+        if (!district.trim() || !state.trim()) {
             return errorFunction()
         }
-        if(!coveredAreaMetreSquare || !coveredAreaSquareFeet || !totalAreaMetreSquare || !totalAreaSquareFeet){
+        if (!coveredAreaMetreSquare || !coveredAreaSquareFeet || !totalAreaMetreSquare || !totalAreaSquareFeet) {
             return errorFunction()
         }
-        if(!priceDemandedNumber || !priceDemandedWords.trim()){
+        if (!priceDemandedNumber || !priceDemandedWords.trim()) {
             return errorFunction()
         }
-        if(isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim()) ){
+        if (isLegalRestrictions === undefined || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
             return errorFunction()
         }
-        if((!builtUpProperty && !isEmptyProperty) || (commercialPropertyType === 'industrial' && (builtUpProperty && !builtUpSelectedOption))){
+        if ((!builtUpProperty && !isEmptyProperty) || (commercialPropertyType === 'industrial' && (builtUpProperty && !builtUpSelectedOption))) {
             return errorFunction()
         }
-        if(commercialPropertyType === 'shop' && !selectedPropertyType){
+        if (commercialPropertyType === 'shop' && !selectedPropertyType) {
             return errorFunction()
         }
 
@@ -291,10 +295,8 @@ function CommercialPropertyAddForm() {
 
             {propertyData && <ReviewCommercialPropertyAfterSubmission
                 propertyData={propertyData}
-                commercialPropertyImageFile={commercialPropertyImageFile}
-                contractImageFile={contractImageFile}
-                commercialPropertyImageUpload={commercialPropertyImageUpload}
-                contractImageUpload={contractImageUpload}
+                commercialPropertyImages={commercialPropertyImages}
+                contractImages={contractImages}
                 propertyDataReset={() => setPropertyData(null)}
                 firmName={propertyDealerFirmName} />}
 
@@ -557,13 +559,13 @@ function CommercialPropertyAddForm() {
                             <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
                         </div>
-                        {contractImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-                            {contractImageFile.map(image => {
-                                return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                                    <img className='relative w-auto h-60' src={image} alt="" />
+                        {contractImages.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+                            {contractImages.map(image => {
+                                return <div key={Math.random()} className='relative w-fit'>
+                                    <img className='relative w-auto h-60' src={image.file} alt="" />
                                     <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                                        const updatedState = contractImageFile.filter(file => file !== image)
-                                        setContractImageFile(updatedState)
+                                        const updatedState = contractImages.filter(item => item.file !== image.file)
+                                        setContractImages(updatedState)
                                     }}>X</div>
                                 </div>
                             })}
@@ -790,7 +792,7 @@ function CommercialPropertyAddForm() {
 
                     {/*images */}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                        {commercialPropertyImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+                        {commercialPropertyImageError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         <div className="flex flex-row gap-5">
                             <div className="flex flex-row gap-0.5">
                                 <p className="h-4 text-2xl text-red-500">*</p>
@@ -798,13 +800,13 @@ function CommercialPropertyAddForm() {
                             </div>
                             <input type="file" className='text-transparent ' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={commercialPropertyImageHandler} onClick={e => e.target.value = null} />
                         </div>
-                        {commercialPropertyImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-                            {commercialPropertyImageFile.map(image => {
+                        {commercialPropertyImages.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+                            {commercialPropertyImages.map(image => {
                                 return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                                    <img className='relative w-auto h-60' src={image} alt="" />
+                                    <img className='relative w-auto h-60' src={image.file} alt="" />
                                     <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                                        const updatedState = commercialPropertyImageFile.filter(file => file !== image)
-                                        setCommercialPropertyImageFile(updatedState)
+                                        const updatedState = commercialPropertyImages.filter(item => item.file !== image.file)
+                                        setCommercialPropertyImages(updatedState)
                                     }}>X</div>
                                 </div>
                             })}

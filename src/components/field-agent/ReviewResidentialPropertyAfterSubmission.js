@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
-import AlertModal from "../AlertModal";
-import Spinner from "../Spinner";
-import { useNavigate } from "react-router-dom";
+import AlertModal from "../AlertModal"
+import Spinner from "../Spinner"
+import { useNavigate } from "react-router-dom"
 
 //The component is used to review the residential proeprty before it is saved in the database
 function ReviewResidentialPropertyAfterSubmission(props) {
-    const { propertyData, residentialLandImageFile, contractImageFile, propertyDataReset, residentialLandImageUpload, contractImageUpload, firmName } = props
+    const { propertyData, propertyDataReset, firmName, residentialLandImages, contractImages } = props
     const navigate = useNavigate()
 
     const [spinner, setSpinner] = useState(false)
@@ -29,9 +29,9 @@ function ReviewResidentialPropertyAfterSubmission(props) {
             setResidentialPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
-            residentialLandImageUpload.length && residentialLandImageUpload.forEach(async (image) => {
+            residentialLandImages.length && residentialLandImages.forEach(async (image) => {
                 const formData = new FormData()
-                formData.append('file', image)
+                formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -47,9 +47,9 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                 }
             })
 
-            contractImageUpload.length && contractImageUpload.forEach(async (image) => {
+            contractImages.length && contractImages.forEach(async (image) => {
                 const formData = new FormData()
-                formData.append('file', image)
+                formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -120,14 +120,14 @@ function ReviewResidentialPropertyAfterSubmission(props) {
 
     //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
-        if (residentialLandImagesUrl.length === residentialLandImageUpload.length && contractImagesUrl.length === contractImageUpload.length) {
+        if (residentialLandImagesUrl.length === residentialLandImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase({
                 residentialLandImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [residentialLandImagesUrl.length, residentialLandImageUpload.length, contractImagesUrl.length, contractImageUpload.length, saveDetailsToDatabase, residentialLandImagesUrl, contractImagesUrl, propertyData])
+    }, [saveDetailsToDatabase, propertyData, residentialLandImagesUrl.length, residentialLandImages.length, contractImagesUrl.length, contractImages.length, residentialLandImagesUrl, contractImagesUrl])
 
     return (
         <Fragment>
@@ -547,18 +547,18 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                {residentialLandImageFile.map(image => {
-                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
+                                {residentialLandImages.map(image => {
+                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image.file} alt="" />
                                 })}
                             </td>
                         </tr>
 
                         {/*Contract images*/}
-                        {contractImageFile.length > 0 && <tr className="border-2 border-gray-300">
+                        {contractImages.length > 0 && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                {contractImageFile.map(image => {
-                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />
+                                {contractImages.map(image => {
+                                    return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image.file} alt="" />
                                 })}
                             </td>
                         </tr>}

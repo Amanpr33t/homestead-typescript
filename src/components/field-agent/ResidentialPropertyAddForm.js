@@ -189,13 +189,11 @@ function ResidentialPropertyAddForm() {
   const [village, setVillage] = useState('')
 
   //The states below are for the uploading property images
-  const [residentialLandImageUpload, setResidentialLandImageUpload] = useState([])
-  const [residentialLandImageFile, setResidentialLandImageFile] = useState([])
   const [residentialLandImageFileError, setResidentialLandImageFileError] = useState(false)
+  const [residentialLandImages, setResidentialLandImages] = useState([])
 
   //The states below are for uploading contract images
-  const [contractImageUpload, setContractImageUpload] = useState([])
-  const [contractImageFile, setContractImageFile] = useState([])
+  const [contractImages, setContractImages] = useState([])
 
   const states = ['Chandigarh', 'Punjab']
 
@@ -204,15 +202,19 @@ function ResidentialPropertyAddForm() {
   //The function triggers when the user adds a proeprty image
   const residentialLandImageHandler = (event) => {
     setResidentialLandImageFileError(false)
-    setResidentialLandImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-    setResidentialLandImageUpload(array => [...array, event.target.files[0]])
+    setResidentialLandImages(array => [...array, {
+      file: URL.createObjectURL(event.target.files[0]),
+      upload: event.target.files[0]
+  }])
   }
 
   //The function triggers when the user adds a contract image
   const contractImageHandler = (event) => {
-    setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-    setContractImageUpload(array => [...array, event.target.files[0]])
-  }
+    setContractImages(array => [...array, {
+        file: URL.createObjectURL(event.target.files[0]),
+        upload: event.target.files[0]
+    }])
+}
 
   const arrayOfNumbersFromOneToTen = Array.apply(null, Array(10))
     .map(function (y, i) { return i + 1 })
@@ -299,7 +301,7 @@ function ResidentialPropertyAddForm() {
       setAreaTypeError(true)
     }
 
-    if (!residentialLandImageFile.length) {
+    if (!residentialLandImages.length) {
       setResidentialLandImageFileError(true)
     }
 
@@ -415,7 +417,7 @@ function ResidentialPropertyAddForm() {
       setStateError(true)
     }
 
-    if (!residentialLandImageFile.length) {
+    if (!residentialLandImages.length) {
       setResidentialLandImageFileError(true)
     }
   }
@@ -491,7 +493,7 @@ function ResidentialPropertyAddForm() {
       return errorFunction()
     } else if (!district.trim() && !state.trim()) {
       return errorFunction()
-    } else if (!residentialLandImageFile.length) {
+    } else if(!residentialLandImages.length) {
       return errorFunction()
     }
 
@@ -626,10 +628,8 @@ function ResidentialPropertyAddForm() {
       {/*If propertyData is available, it will be shown in ReviewResidentialPropertyAfterSubmission component */}
       {propertyData && <ReviewResidentialPropertyAfterSubmission
         propertyData={propertyData}
-        residentialLandImageFile={residentialLandImageFile}
-        contractImageFile={contractImageFile}
-        residentialLandImageUpload={residentialLandImageUpload}
-        contractImageUpload={contractImageUpload}
+        contractImages={contractImages}
+        residentialLandImages={residentialLandImages}
         propertyDataReset={() => setPropertyData(null)}
         firmName={propertyDealerFirmName} />}
 
@@ -2128,13 +2128,13 @@ function ResidentialPropertyAddForm() {
               <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
               <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
             </div>
-            {contractImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-              {contractImageFile.map(image => {
+            {contractImages.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+              {contractImages.map(image => {
                 return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                  <img className='relative w-auto h-60' src={image} alt="" />
+                  <img className='relative w-auto h-60' src={image.file} alt="" />
                   <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                    const updatedState = contractImageFile.filter(file => file !== image)
-                    setContractImageFile(updatedState)
+                    const updatedState = contractImages.filter(item => item.file !== image.file)
+                    setContractImages(updatedState)
                   }}>X</div>
                 </div>
               })}
@@ -2151,13 +2151,13 @@ function ResidentialPropertyAddForm() {
               </div>
               <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={residentialLandImageHandler} onClick={e => e.target.value = null} />
             </div>
-            {residentialLandImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-              {residentialLandImageFile.map(image => {
+            {residentialLandImages.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+              {residentialLandImages.map(image => {
                 return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                  <img className='relative w-auto h-60' src={image} alt="" />
+                  <img className='relative w-auto h-60' src={image.file} alt="" />
                   <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                    const updatedState = residentialLandImageFile.filter(file => file !== image)
-                    setResidentialLandImageFile(updatedState)
+                    const updatedState = residentialLandImages.filter(item => item.file !== image.file)
+                    setResidentialLandImages(updatedState)
                   }}>X</div>
                 </div>
               })}

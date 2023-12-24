@@ -1,5 +1,5 @@
-import { Fragment, useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { Fragment, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import Spinner from "../Spinner"
 import { countWordsInAString } from "../../utils/stringUtilityFunctions"
@@ -19,11 +19,11 @@ function PropertyEvaluationForm(props) {
         routeTo: null
     })
 
-    const [isInformationComplete, setIsInformationComplete] = useState(null)
-    const [isInformationCompleteError, setIsInformationCompleteError] = useState(false)
+    //const [isInformationComplete, setIsInformationComplete] = useState(null)
+    /*const [isInformationCompleteError, setIsInformationCompleteError] = useState(false)
     const [isInformationInCompleteDetails, setIsInformationInCompleteDetails] = useState('')
     const [isInformationInCompleteDetailsArray, setIsInformationInCompleteDetailsArray] = useState([])
-    const [isInformationInCompleteDetailsError, setIsInformationInCompleteDetailsError] = useState(false)
+    const [isInformationInCompleteDetailsError, setIsInformationInCompleteDetailsError] = useState(false)*/
 
     const [arePhotographsComplete, setArePhotographsComplete] = useState(null)
     const [arePhotographsCompleteError, setArePhotographsCompleteError] = useState(false)
@@ -598,7 +598,7 @@ function PropertyEvaluationForm(props) {
                 <div className="flex justify-center mt-4 p-2">
                     <button type='submit' className="text-lg bg-green-500 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={(e) => {
                         e.preventDefault()
-                        if (isInformationComplete && arePhotographsComplete) {
+                        if (arePhotographsComplete) {
                             return completeDetailsFormSubmit()
                         }
                         incompleteDetailsFormSubmit()

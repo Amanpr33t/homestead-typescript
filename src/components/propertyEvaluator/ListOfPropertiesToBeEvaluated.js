@@ -2,10 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
-import { capitaliseFirstAlphabetsOfAllWordsOfASentence, capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
-import ReviewCommercialProperty from "../field-agent/ReviewCommercialProperty"
-import ReviewAgriculturalProperty from "../field-agent/ReviewAgriculturalProperty"
-import ReviewResidentialProperty from "../field-agent/ReviewResidentialProperty"
+import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
 //This component is the navigation bar
 
 //This component shows a list of property dealers added by the field agent
@@ -121,7 +118,8 @@ function ListOfPropertiesToBeEvaluated() {
 
                             <div className="flex flex-row gap-4">
                                 <p className="font-medium text-gray-500">Request date:</p>
-                                <p>{dateCreater(property.date)}</p>
+                                <p>{dateCreater(property.evaluationRequestDate
+                                )}</p>
                             </div>
                             <div className="w-full flex justify-center ">
                                 <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>

@@ -9,7 +9,7 @@ function ReviewCommercialProperty(props) {
 
     const [showEvaluationForm, setShowEvaluationForm] = useState(false)
 
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+    //const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //used to scroll to top of the screen

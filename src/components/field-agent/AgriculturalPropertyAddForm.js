@@ -49,12 +49,18 @@ function AgriculturalPropertyAddForm() {
     const [tehsil, setTehsil] = useState('')
     const [village, setVillage] = useState('')
 
-    const [agricultureLandImageUpload, setAgricultureLandImageUpload] = useState([]) //an array that contains property image files to be uploaded to the server
-    const [agriculturalLandImageFile, setAgriculturalLandImageFile] = useState([]) //an array that contains property images selected by the user
-    const [agriculturalLandImageFileError, setAgriculturalLandImageFileError] = useState(false) //Error will be true if agriculturalLandImageFileError array is empty
+    //const [agricultureLandImageUpload, setAgricultureLandImageUpload] = useState([]) 
+    //const [agriculturalLandImageFile, setAgriculturalLandImageFile] = useState([]) 
+    const [agriculturalLandImageError, setAgriculturalLandImageError] = useState(false) //Error will be true if agriculturalLandImageError array is empty
+    const [agriculturalLandImages, setAgriculturalLandImages]=useState([])
+    console.log(agriculturalLandImages)
+   
 
-    const [contractImageUpload, setContractImageUpload] = useState([]) //an array that contains contract image files to be uploaded to the server
-    const [contractImageFile, setContractImageFile] = useState([]) //an array that contains contract images selected by the user
+    //const [contractImageUpload, setContractImageUpload] = useState([]) //an array that contains contract image files to be uploaded to the server
+   // const [contractImageFile, setContractImageFile] = useState([]) //an array that contains contract images selected by the user
+    const [contractImages, setContractImages]=useState([])
+
+    console.log(contractImages)
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
 
@@ -111,15 +117,23 @@ function AgriculturalPropertyAddForm() {
 
     //This function is triggered when the user selects a proeprty image
     const agriculturalLandImageHandler = (event) => {
-        setAgriculturalLandImageFileError(false)
-        setAgriculturalLandImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-        setAgricultureLandImageUpload(array => [...array, event.target.files[0]])
+        setAgriculturalLandImageError(false)
+        //setAgriculturalLandImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
+        //setAgricultureLandImageUpload(array => [...array, event.target.files[0]])
+        setAgriculturalLandImages(array=>[...array,{
+            file:URL.createObjectURL(event.target.files[0]),
+            upload:event.target.files[0]
+        }])
     }
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event) => {
-        setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-        setContractImageUpload(array => [...array, event.target.files[0]])
+        //setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
+        //setContractImageUpload(array => [...array, event.target.files[0]])
+        setContractImages(array=>[...array,{
+            file:URL.createObjectURL(event.target.files[0]),
+            upload:event.target.files[0]
+        }])
     }
 
     const arrayOfNumbersFromOneToTen = Array.apply(null, Array(10))
@@ -127,8 +141,8 @@ function AgriculturalPropertyAddForm() {
 
     //This function triggers different errors if the user does not provide suitable data
     const errorCheckingBeforeSubmit = () => {
-        if (!agriculturalLandImageFile.length) {
-            setAgriculturalLandImageFileError(true)
+        if (!agriculturalLandImages.length) {
+            setAgriculturalLandImageError(true)
         }
 
         if (!district.trim() && !state.trim()) {
@@ -219,7 +233,7 @@ function AgriculturalPropertyAddForm() {
         }
 
         //the if statements below are triggered if the user does not provide suitable data
-        if (!agriculturalLandImageFile.length) {
+        if (!agriculturalLandImages.length) {
             return errorFunction()
         }
         if (!district.trim() || !state.trim()) {
@@ -311,10 +325,8 @@ function AgriculturalPropertyAddForm() {
             {/*Once proeprty data is available, property data with be shown in a table in ReviewAgriculturalPropertyAfterSubmission component */}
             {propertyData && <ReviewAgriculturalPropertyAfterSubmission
                 propertyData={propertyData}
-                agriculturalLandImageFile={agriculturalLandImageFile}
-                contractImageFile={contractImageFile}
-                agricultureLandImageUpload={agricultureLandImageUpload}
-                contractImageUpload={contractImageUpload}
+                agriculturalLandImages={agriculturalLandImages}
+                contractImages={contractImages}
                 propertyDataReset={() => setPropertyData(null)}
                 firmName={propertyDealerFirmName} />}
 
@@ -340,13 +352,13 @@ function AgriculturalPropertyAddForm() {
                             <label className="text-gray-500 text-xl font-semibold" htmlFor="image">Upload images of contract between seller and dealer (optional)</label>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={contractImageHandler} onClick={e => e.target.value = null} />
                         </div>
-                        {contractImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-                            {contractImageFile.map(image => {
+                        {contractImages.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+                            {contractImages.map(image => {
                                 return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                                    <img className='relative w-auto h-60' src={image} alt="" />
+                                    <img className='relative w-auto h-60' src={image.file} alt="" />
                                     <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                                        const updatedState = contractImageFile.filter(file => file !== image)
-                                        setContractImageFile(updatedState)
+                                        const updatedState = contractImages.filter(item => item.file !== image.file)
+                                        setContractImages(updatedState)
                                     }}>X</div>
                                 </div>
                             })}
@@ -940,7 +952,7 @@ function AgriculturalPropertyAddForm() {
 
                     {/*images */}
                     <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                        {agriculturalLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+                        {agriculturalLandImageError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                         <div className="flex flex-row gap-5">
                             <div className="flex flex-row gap-0.5">
                                 <p className="h-4 text-2xl text-red-500">*</p>
@@ -948,13 +960,13 @@ function AgriculturalPropertyAddForm() {
                             </div>
                             <input type="file" className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={agriculturalLandImageHandler} onClick={e => e.target.value = null} />
                         </div>
-                        {agriculturalLandImageFile.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
-                            {agriculturalLandImageFile.map(image => {
+                        {agriculturalLandImages.length !== 0 && <div className='flex flex-wrap justify-center gap-5 p-5'>
+                            {agriculturalLandImages.map(image => {
                                 return <div key={Math.random()} className='relative w-fit bg-blue-300'>
-                                    <img className='relative w-auto h-60' src={image} alt="" />
+                                    <img className='relative w-auto h-60' src={image.file} alt="" />
                                     <div className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer' onClick={() => {
-                                        const updatedState = agriculturalLandImageFile.filter(file => file !== image)
-                                        setAgriculturalLandImageFile(updatedState)
+                                        const updatedState = agriculturalLandImages.filter(item => item.file !== image.file)
+                                        setAgriculturalLandImages(updatedState)
                                     }}>X</div>
                                 </div>
                             })}

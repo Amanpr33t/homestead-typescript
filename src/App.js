@@ -15,6 +15,8 @@ import CommercialPropertiesAddedByFieldAgent from "./components/field-agent/Comm
 import ResidentialPropertiesAddedByFieldAgent from "./components/field-agent/ResidentialPropertiesAddedByFieldAgent";
 import CommercialPropertyAddForm from "./components/field-agent/CommercialPropertyAddForm";
 import ResidentialPropertyAddForm from "./components/field-agent/ResidentialPropertyAddForm";
+import ListOfPendingPropertyReevaluations from './components/field-agent/ListOfPendingPropertyReevaluations';
+import ReevaluateProperty from './components/field-agent/ReevaluateProperty';
 
 //Components imported for property evaluator
 import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
@@ -22,7 +24,7 @@ import PropertyEvaluatorHomePage from "./components/propertyEvaluator/HomePage";
 import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
 import ListOfPropertiesToBeEvaluated from './components/propertyEvaluator/ListOfPropertiesToBeEvaluated';
 import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
-import ListOfPendingPropertyReevaluations from './components/field-agent/ListOfPendingPropertyReevaluations';
+
 
 function App() {
   const currentUrl = window.location.href
@@ -42,6 +44,7 @@ function App() {
             <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
             <Route path='list-of-pending-property-reevaluations' element={<ListOfPendingPropertyReevaluations />}></Route>
             <Route path='list-of-property-dealers-added-by-field-agent' element={<ListOfAllPropertyDealersAddedByFieldAgent />}></Route>
+            <Route path='reevaluate-property' element={<ReevaluateProperty />}></Route>
 
             {/*routes to add new property */}
             <Route path='add-property/*' >

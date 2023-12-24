@@ -1,13 +1,10 @@
-import { Link, useNavigate } from "react-router-dom"
+import {  useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
-import { useParams } from 'react-router-dom';
-import { capitaliseFirstAlphabetsOfAllWordsOfASentence, capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
 import ReviewCommercialProperty from "../propertyEvaluator/ReviewCommercialProperty"
 import ReviewAgriculturalProperty from "../propertyEvaluator/ReviewAgriculturalProperty"
 import ReviewResidentialProperty from "../propertyEvaluator/ReviewResidentialProperty"
-import PropertyEvaluationForm from "./PropertyEvaluationForm";
 //This component is the navigation bar
 
 //This component shows a list of property dealers added by the field agent
@@ -72,16 +69,11 @@ function EvaluateProperty() {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate,propertyId,propertyType])
 
     useEffect(() => {
         fetchSelectedProperty()
     }, [fetchSelectedProperty])
-
-    const dateCreater = (date) => {
-        const dateFormat = new Date(date)
-        return `${dateFormat.getDate()}-${dateFormat.getMonth() + 1}-${dateFormat.getFullYear()}`;
-    }
 
     return (
         <Fragment>
