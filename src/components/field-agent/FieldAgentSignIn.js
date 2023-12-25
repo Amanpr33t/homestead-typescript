@@ -344,95 +344,99 @@ function FieldAgentSignIn() {
             {/* The code below is used to show a spinner */}
             {isSpinner && <Spinner />}
 
-            <div className={`w-full h-screen mt-20 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
-                    <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
-                        e.preventDefault()
-                        if (!isForgotPassword) {
-                            return signInFunction()
-                        }
-                        if (isForgotPassword) {
-                            if (!confirmOTP) {
-                                return forgotPasswordRequest()
-                            }
-                            if (confirmOTP) {
-                                if (newPasswordEnabler) {
-                                    return updatePassword()
-                                }
-                                return confirmOneTimePasswordFunction()
-                            }
-                        }
-                    }}>
+            {!alert.isAlertModal && !isSpinner && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+                <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/', { replace: true })}>Home</button>
+            </div>}
 
-                        {!isForgotPassword && <>
-                            <label className="text-lg font-semibold mb-1" htmlFor="email-1">Field agent email</label>
-                            <input type="email" id="email-1" name="email-1" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={email}
-                                onChange={e => {
+            <div className={`w-full h-screen mt-28 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
+                <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
+                    e.preventDefault()
+                    if (!isForgotPassword) {
+                        return signInFunction()
+                    }
+                    if (isForgotPassword) {
+                        if (!confirmOTP) {
+                            return forgotPasswordRequest()
+                        }
+                        if (confirmOTP) {
+                            if (newPasswordEnabler) {
+                                return updatePassword()
+                            }
+                            return confirmOneTimePasswordFunction()
+                        }
+                    }
+                }}>
+
+                    {!isForgotPassword && <>
+                        <label className="text-lg font-semibold mb-1" htmlFor="email-1">Field agent email</label>
+                        <input type="email" id="email-1" name="email-1" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={email}
+                            onChange={e => {
+                                setEmailValid(true)
+                                setEmail(e.target.value.trimEnd().toLowerCase())
+                            }} />
+                        {!emailValid && <p className="text-red-500">Email not in correct format</p>}
+                        <label className="text-lg font-semibold mb-1 mt-2" htmlFor="password">Field Agent Password</label>
+                        <input type="password" id="password" name="password" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={password}
+                            onChange={e => {
+                                setPassword(e.target.value.trimEnd())
+                                setPasswordValid(true)
+                            }} />
+                        {!passwordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
+                    </>}
+
+
+                    {isForgotPassword && !confirmOTP && <>
+                        <label className="text-lg font-semibold mb-1" htmlFor="email-2">Field agent email</label>
+                        <input type="email" id="email-2" name="email-2" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={emailForPasswordChange}
+                            onChange={e => {
+                                seetEmailForPasswordChangeValid(true)
+                                setEmailForPasswordChange(e.target.value.trimEnd())
+                            }} />
+                        {!isEmailForPasswordChangeValid && <p className="text-red-500">Email not in correct format</p>}
+                    </>}
+
+
+                    {confirmOTP && !newPasswordEnabler && <>
+                        <label className="text-lg font-semibold mb-1" htmlFor="otp">A one-time-password(OTP) has been sent to your email. OTP will be valid for 10 minutes.</label>
+                        <input type="text" id="otp" name="otp" className="border-2 border-gray-400 p-1 rounded" placeholder="Enter OTP here..." autoComplete="new-password" value={oneTimePassword}
+                            onChange={e => { setOneTimePassword(e.target.value.trimEnd()) }} />
+                    </>}
+
+                    {newPasswordEnabler && <>
+                        <label className="text-lg font-semibold mb-1 mt-2" htmlFor="newPassword">New password</label>
+                        <input type="password" id="newPassword" name="newPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={newPassword}
+                            onChange={e => {
+                                setNewPassword(e.target.value.trimEnd())
+                                setNewPasswordValid(true)
+                            }} />
+                        {!newPasswordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
+
+                        <label className="text-lg font-semibold mb-1 mt-2" htmlFor="confirmNewPassword">Confirm new password</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={confirmNewPassword}
+                            onChange={e => {
+                                setConfirmNewPassword(e.target.value.trimEnd())
+                                setConfirmNewPasswordValid(true)
+                            }} />
+                        {!confirmNewPasswordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
+                    </>}
+
+                    <div className="w-full h-12 flex justify-center mt-4 border-b border-gray-400 ">
+                        <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">{buttonText}</button>
+                    </div>
+
+                    {!isForgotPassword &&
+                        <div className="w-full flex flex-col place-items-center mt-2 cursor-pointer font-medium ">
+                            <p>Forgot password?</p>
+                            <div className="flex flex-row gap-1">
+                                <button type='button' className="text-red-600" onClick={(e) => {
+                                    setIsForgotPassword(true)
+                                    setEmail('')
                                     setEmailValid(true)
-                                    setEmail(e.target.value.trimEnd().toLowerCase())
-                                }} />
-                            {!emailValid && <p className="text-red-500">Email not in correct format</p>}
-                            <label className="text-lg font-semibold mb-1 mt-2" htmlFor="password">Field Agent Password</label>
-                            <input type="password" id="password" name="password" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={password}
-                                onChange={e => {
-                                    setPassword(e.target.value.trimEnd())
-                                    setPasswordValid(true)
-                                }} />
-                            {!passwordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
-                        </>}
-
-
-                        {isForgotPassword && !confirmOTP && <>
-                            <label className="text-lg font-semibold mb-1" htmlFor="email-2">Field agent email</label>
-                            <input type="email" id="email-2" name="email-2" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={emailForPasswordChange}
-                                onChange={e => {
-                                    seetEmailForPasswordChangeValid(true)
-                                    setEmailForPasswordChange(e.target.value.trimEnd())
-                                }} />
-                            {!isEmailForPasswordChangeValid && <p className="text-red-500">Email not in correct format</p>}
-                        </>}
-
-
-                        {confirmOTP && !newPasswordEnabler && <>
-                            <label className="text-lg font-semibold mb-1" htmlFor="otp">A one-time-password(OTP) has been sent to your email. OTP will be valid for 10 minutes.</label>
-                            <input type="text" id="otp" name="otp" className="border-2 border-gray-400 p-1 rounded" placeholder="Enter OTP here..." autoComplete="new-password" value={oneTimePassword}
-                                onChange={e => { setOneTimePassword(e.target.value.trimEnd()) }} />
-                        </>}
-
-                        {newPasswordEnabler && <>
-                            <label className="text-lg font-semibold mb-1 mt-2" htmlFor="newPassword">New password</label>
-                            <input type="password" id="newPassword" name="newPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={newPassword}
-                                onChange={e => {
-                                    setNewPassword(e.target.value.trimEnd())
-                                    setNewPasswordValid(true)
-                                }} />
-                            {!newPasswordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
-
-                            <label className="text-lg font-semibold mb-1 mt-2" htmlFor="confirmNewPassword">Confirm new password</label>
-                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={confirmNewPassword}
-                                onChange={e => {
-                                    setConfirmNewPassword(e.target.value.trimEnd())
-                                    setConfirmNewPasswordValid(true)
-                                }} />
-                            {!confirmNewPasswordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
-                        </>}
-
-                        <div className="w-full h-12 flex justify-center mt-4 border-b border-gray-400 ">
-                            <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">{buttonText}</button>
-                        </div>
-
-                        {!isForgotPassword &&
-                            <div className="w-full flex flex-col place-items-center mt-2 cursor-pointer font-medium ">
-                                <p>Forgot password?</p>
-                                <div className="flex flex-row gap-1">
-                                    <button type='button' className="text-red-600" onClick={(e) => {
-                                        setIsForgotPassword(true)
-                                        setEmail('')
-                                        setEmailValid(true)
-                                    }}>Click here</button>
-                                    <p>to create a new password.</p>
-                                </div>
-                            </div>}
-                            {isForgotPassword &&
+                                }}>Click here</button>
+                                <p>to create a new password.</p>
+                            </div>
+                        </div>}
+                    {isForgotPassword &&
                         <div className="flex justify-center mt-4">
                             <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={async () => {
                                 if (confirmOTP) {
@@ -441,7 +445,7 @@ function FieldAgentSignIn() {
                                 resetStateFunction()
                             }}>Sign in with an existing account</button>
                         </div>}
-                    </form>
+                </form>
             </div>
         </Fragment >
     )

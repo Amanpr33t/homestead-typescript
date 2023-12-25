@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import AddPropertyOrDealerSlice from "./slices/addPropertyOrDealer-slice";
+import NavbarSelectorSlice from "./slices/navbarSelector-slice";
 
 
 //The store stores all the data we want manage using react-redux
 const store = configureStore({
   reducer: {
-    addPropertyOrDealer: AddPropertyOrDealerSlice.reducer
+    navbarSelector: NavbarSelectorSlice.reducer
   }
 })
 

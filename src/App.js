@@ -24,43 +24,91 @@ import PropertyEvaluatorHomePage from "./components/propertyEvaluator/HomePage";
 import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
 import ListOfPropertiesToBeEvaluated from './components/propertyEvaluator/ListOfPropertiesToBeEvaluated';
 import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
+import HomePage from './components/HomePage';
 
 
 function App() {
   const currentUrl = window.location.href
-
+  console.log(currentUrl)
   return (
     <Fragment>
       <div className="box-border w-full min-h-screen">
-        {currentUrl.includes('field-agent') && <NavbarFieldAgent />}
-        {currentUrl.includes('property-evaluator') && <NavbarPropertyEvaluator />}
+        {/*currentUrl.includes('field-agent') && <NavbarFieldAgent />*/}
+        {/*currentUrl.includes('property-evaluator') && <NavbarPropertyEvaluator />*/}
 
         <Routes>
 
+          {/*Routes for property evaluator */}
+          <Route path='/' element={<HomePage />}></Route>
+
           {/*Routes for field agent */}
           <Route path='/field-agent/*'>
-            <Route path='' element={<HomeFieldAgent />}></Route>
-            <Route path='signIn' element={<FieldAgentSignIn />}></Route>
-            <Route path='add-property-dealer' element={<PropertyDealerAddForm />}></Route>
-            <Route path='list-of-pending-property-reevaluations' element={<ListOfPendingPropertyReevaluations />}></Route>
-            <Route path='list-of-property-dealers-added-by-field-agent' element={<ListOfAllPropertyDealersAddedByFieldAgent />}></Route>
-            <Route path='reevaluate-property' element={<ReevaluateProperty />}></Route>
+            <Route path='' element={<>
+              <NavbarFieldAgent />
+              <HomeFieldAgent />
+            </>}></Route>
+            <Route path='signIn' element={<>
+              <NavbarFieldAgent />
+              <FieldAgentSignIn />
+            </>}></Route>
+            <Route path='add-property-dealer' element={<>
+              <NavbarFieldAgent />
+              <PropertyDealerAddForm />
+            </>}></Route>
+            <Route path='list-of-pending-property-reevaluations' element={<>
+              <NavbarFieldAgent />
+              <PropertyDealerAddForm />
+            </>}></Route>
+            <Route path='list-of-property-dealers-added-by-field-agent' element={<>
+              <NavbarFieldAgent />
+              <ListOfAllPropertyDealersAddedByFieldAgent />
+            </>
+            }></Route>
+            <Route path='reevaluate-property' element={<>
+              <NavbarFieldAgent />
+              <ReevaluateProperty />
+            </>
+            }></Route>
 
             {/*routes to add new property */}
             <Route path='add-property/*' >
-              <Route path='' element={<AddProperty />}></Route>
-              <Route path='agricultural' element={<AgriculturalPropertyAddForm />}></Route>
-              <Route path='commercial' element={<CommercialPropertyAddForm />}></Route>
-              <Route path='residential' element={<ResidentialPropertyAddForm />}></Route>
+              <Route path='' element={<>
+                <AddProperty />
+                <NavbarFieldAgent />
+              </>}></Route>
+              <Route path='agricultural' element={<>
+                <NavbarFieldAgent />
+                <AgriculturalPropertyAddForm />
+              </>}></Route>
+              <Route path='commercial' element={<>
+                <NavbarFieldAgent />
+                <CommercialPropertyAddForm />
+              </>}></Route>
+              <Route path='residential' element={<>
+                <NavbarFieldAgent />
+                <ResidentialPropertyAddForm />
+              </>}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
             {/*routes to get proeprties previously added */}
             <Route path='properties-added/*' >
-              <Route path='' element={<ListOfPropertiesAddedByFieldAgent />}></Route>
-              <Route path='agricultual-properties' element={<AgriculturalPropertiesAddedByFieldAgent />}></Route>
-              <Route path='commercial-properties' element={<CommercialPropertiesAddedByFieldAgent />}></Route>
-              <Route path='residential-properties' element={<ResidentialPropertiesAddedByFieldAgent />}></Route>
+              <Route path='' element={<>
+                <NavbarFieldAgent />
+                <ListOfPropertiesAddedByFieldAgent />
+              </>}></Route>
+              <Route path='agricultual-properties' element={<>
+                <NavbarFieldAgent />
+                <AgriculturalPropertiesAddedByFieldAgent />
+              </>}></Route>
+              <Route path='commercial-properties' element={<>
+                <NavbarFieldAgent />
+                <CommercialPropertiesAddedByFieldAgent />
+              </>}></Route>
+              <Route path='residential-properties' element={<>
+                <NavbarFieldAgent />
+                <ResidentialPropertiesAddedByFieldAgent />
+              </>}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
@@ -70,10 +118,22 @@ function App() {
 
           {/*Routes for property evaluator */}
           <Route path='/property-evaluator/*'>
-            <Route path='' element={<PropertyEvaluatorHomePage />}></Route>
-            <Route path='signIn' element={<PropertyEvaluatorSignIn />}></Route>
-            <Route path='list-of-pending-evaluations' element={<ListOfPropertiesToBeEvaluated />}></Route>
-            {<Route path='evaluate-property' element={<EvaluateProperty />}></Route>}
+            <Route path='' element={<>
+              <NavbarPropertyEvaluator />
+              <PropertyEvaluatorHomePage />
+            </>}></Route>
+            <Route path='signIn' element={<>
+              <NavbarPropertyEvaluator />
+              <PropertyEvaluatorSignIn />
+            </>}></Route>
+            <Route path='list-of-pending-evaluations' element={<>
+              <ListOfPropertiesToBeEvaluated />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            {<Route path='evaluate-property' element={<>
+              <NavbarPropertyEvaluator />
+              <EvaluateProperty />
+            </>}></Route>}
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
           </Route>

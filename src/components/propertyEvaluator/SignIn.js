@@ -15,7 +15,7 @@ function PropertyEvaluatorSignIn() {
 
     useEffect(() => {
         if (authToken) {
-            navigate('/property-evaluator', { replace: true } )
+            navigate('/property-evaluator', { replace: true })
         }
     }, [authToken, navigate])
 
@@ -344,7 +344,11 @@ function PropertyEvaluatorSignIn() {
             {/* The code below is used to show a spinner */}
             {isSpinner && <Spinner />}
 
-            <div className={`w-full h-screen mt-20 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
+            {!alert.isAlertModal && !isSpinner && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+                <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/', { replace: true })}>Home</button>
+            </div>}
+
+            <div className={`w-full h-screen mt-28 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
                 <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
                     e.preventDefault()
                     if (!isForgotPassword) {
