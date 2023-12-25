@@ -11,6 +11,13 @@ import Spinner from "../Spinner"
 function CommercialPropertyAddForm() {
     const navigate = useNavigate()
     const location = useLocation()
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+    useEffect(() => {
+        if (!authToken) {
+          navigate('/field-agent/signIn', { replace: true })
+        }
+      }, [authToken, navigate])
 
     const queryParams = new URLSearchParams(location.search)
     const propertyDealerId = queryParams.get('id') //We get property dealer ID from the query params 
@@ -57,7 +64,6 @@ function CommercialPropertyAddForm() {
     const [commercialPropertyImageError, setCommercialPropertyImageError] = useState(false)
 
     const [contractImages, setContractImages] = useState([])
-    console.log(contractImages, commercialPropertyImages)
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
 

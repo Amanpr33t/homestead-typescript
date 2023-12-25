@@ -10,9 +10,9 @@ function AddProperty() {
 
     useEffect(() => {
         if (!authToken) {
-          navigate('/field-agent/signIn')
+            navigate('/field-agent/signIn', { replace: true })
         }
-      }, [authToken, navigate])
+    }, [authToken, navigate])
 
     const [propertyDealer, setPropertyDealer] = useState() //Information about the property dealer who wants to add a property
     const [selectedPropertyType, setSelectedPropertyType] = useState() //Type of property that has been selected

@@ -4,10 +4,16 @@ import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
 import ReviewResidentialProperty from "./ReviewResidentialProperty"
 
-//this component gives the list of residential properties added by a field-agent
+//This component gives the list of residential properties added by a field-agent
 function ResidentialPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!authToken) {
+          navigate('/field-agent/signIn', { replace: true })
+        }
+      }, [authToken, navigate])
 
     const [selectedProperty, setSelectedProperty] = useState() //Selected prperty to be shown in a table
     const [residentialProperties, setResidentialProperties] = useState([]) //array stores all the residential proeprties added by a field agent

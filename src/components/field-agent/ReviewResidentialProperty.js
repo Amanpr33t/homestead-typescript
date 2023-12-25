@@ -473,10 +473,10 @@ function ReviewResidentialProperty(props) {
                             </tr>
 
                             {/*Property images*/}
-                            {property.residentialLandImagesUrl.length > 0 && < tr className="border-2 border-gray-300">
+                            {property.propertyImagesUrl.length > 0 && < tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                    {property.residentialLandImagesUrl.map(image => {
+                                    {property.propertyImagesUrl.map(image => {
                                         return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
                                     })}
                                 </td>

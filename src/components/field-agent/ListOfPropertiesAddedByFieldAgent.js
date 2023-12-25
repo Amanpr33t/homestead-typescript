@@ -7,7 +7,7 @@ function ListOfPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn')
+            navigate('/field-agent/signIn', { replace: true })
         }
     }, [authToken, navigate])
 

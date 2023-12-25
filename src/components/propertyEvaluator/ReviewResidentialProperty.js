@@ -5,15 +5,9 @@ import PropertyEvaluationForm from "./PropertyEvaluationForm"
 //This component is used to review the residential proeprty details
 function ReviewResidentialProperty(props) {
     const navigate = useNavigate()
-    const { property, hideReviewPage, residentialPropertyTypeSetter } = props
+    const { property, hideReviewPage} = props
 
     const [showEvaluationForm, setShowEvaluationForm] = useState(false)
-
-    //const authToken = localStorage.getItem("homestead-field-agent-authToken")
-
-    useEffect(() => {
-        residentialPropertyTypeSetter(property.residentialPropertyType.toLowerCase())
-    }, [residentialPropertyTypeSetter, property.residentialPropertyType])
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })//scroll to the top of the screen
@@ -427,10 +421,10 @@ function ReviewResidentialProperty(props) {
                             </tr>
 
                             {/*Property images*/}
-                            {property.residentialLandImagesUrl.length > 0 && < tr className="border-2 border-gray-300">
+                            {property.propertyImagesUrl.length > 0 && < tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                    {property.residentialLandImagesUrl.map(image => {
+                                    {property.propertyImagesUrl.map(image => {
                                         return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')} />;
                                     })}
                                 </td>

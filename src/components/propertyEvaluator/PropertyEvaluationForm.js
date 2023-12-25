@@ -202,8 +202,6 @@ function PropertyEvaluationForm(props) {
             evaluatedAt: Date.now()
         }
 
-        console.log(finalEvaluationData)
-
         try {
             setSpinner(true)
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/successful-evaluation-of-data?propertyType=${propertyType}&propertyId=${propertyId}&evaluatorId=${propertyEvaluatorId}&fieldAgentId=${fieldAgentId}`, {
@@ -595,7 +593,7 @@ function PropertyEvaluationForm(props) {
                     </>}
 
                 </form>
-                <div className="flex justify-center mt-4 p-2">
+                {!alert.isAlertModal && <div className="flex justify-center mt-4 p-2">
                     <button type='submit' className="text-lg bg-green-500 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={(e) => {
                         e.preventDefault()
                         if (arePhotographsComplete) {
@@ -603,7 +601,7 @@ function PropertyEvaluationForm(props) {
                         }
                         incompleteDetailsFormSubmit()
                     }}>Save evaluation data</button>
-                </div>
+                </div>}
             </div >
         </Fragment >
     )

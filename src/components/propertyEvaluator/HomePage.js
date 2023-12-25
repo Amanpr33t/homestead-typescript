@@ -10,7 +10,7 @@ function PropertyEvaluatorHomePage() {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn')
+            navigate('/property-evaluator/signIn', { replace: true } )
         }
     }, [authToken, navigate])
 
@@ -24,11 +24,9 @@ function PropertyEvaluatorHomePage() {
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
 
-
     const [propertiesSuccessfullyEvaluated, setPropertiesSuccessfullyEvaluated] = useState(0)
     const [propertiesSentToFieldAgentForReconsideration, setPropertiesSentToFieldAgentForReconsideration] = useState(0)
     const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState(0)
-
 
     const fetchPropertyData = useCallback(async () => {
         try {
@@ -93,7 +91,7 @@ function PropertyEvaluatorHomePage() {
                     <div className={`flex flex-col gap-10 w-full bg-white rounded pt-6 pb-6 h-full`} >
 
                         <div className="flex justify-center">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit w-fit  hover:bg-sky-100" onClick={() => pendingPropertyEvaluations > 0 ? navigate('/property-evaluator/list-of-pending-evaluations') : null}>
+                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit w-fit  hover:bg-sky-100" onClick={() => pendingPropertyEvaluations > 0 ? navigate('/property-evaluator/list-of-pending-evaluations', { replace: true } ): null}>
                                 <p className="text-5xl text-green-800">{pendingPropertyEvaluations}</p>
                                 <p className="w-40">property evaluation requests are pending</p>
                             </div>

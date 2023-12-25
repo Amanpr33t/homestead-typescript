@@ -9,6 +9,12 @@ function AgriculturalPropertiesAddedByFieldAgent() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
 
+    useEffect(() => {
+        if (!authToken) {
+          navigate('/field-agent/signIn', { replace: true })
+        }
+      }, [authToken, navigate])
+
     const [selectedProperty, setSelectedProperty] = useState() //Property selected to be shown in a table
     const [agriculturalProperties, setAgriculturalProperties] = useState([]) //number of agricultural properties added by the field agent
     const [spinner, setSpinner] = useState(true)

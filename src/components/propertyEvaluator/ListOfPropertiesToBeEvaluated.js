@@ -14,7 +14,7 @@ function ListOfPropertiesToBeEvaluated() {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn')
+            navigate('/property-evaluator/signIn', { replace: true } )
         }
     }, [authToken, navigate])
 

@@ -15,7 +15,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
         routeTo: null
     })
 
-    const [commercialLandImagesUrl, setCommercialPropertyImagesUrl] = useState([]) //array that stores the url of the commercial property images
+    const [propertyImagesUrl, setPropertyImagesUrl] = useState([]) //array that stores the url of the commercial property images
     const [contractImagesUrl, setContractImagesUrl] = useState([])//array that stores the url of the contract images
 
     useEffect(() => {
@@ -26,7 +26,7 @@ function ReviewCommercialPropertyAfterSubmission(props) {
     //The function is used to upload images to the database
     const uploadImages = async () => {
         try {
-            setCommercialPropertyImagesUrl([])
+            setPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
             commercialPropertyImages.length && commercialPropertyImages.forEach(async (image) => {
@@ -40,10 +40,10 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setCommercialPropertyImagesUrl([])
+                    setPropertyImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
-                    setCommercialPropertyImagesUrl(images => [...images, data.secure_url])
+                    setPropertyImagesUrl(images => [...images, data.secure_url])
                 }
             })
 
@@ -61,7 +61,6 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                     setContractImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
-                    console.log(contractImagesUrl)
                     setContractImagesUrl(images => [...images, data.secure_url])
                 }
             })
@@ -121,14 +120,14 @@ function ReviewCommercialPropertyAfterSubmission(props) {
 
     //The code in the useEffect hook is executed when the images are sucessfully uploaded
     useEffect(() => {
-        if (commercialLandImagesUrl.length === commercialPropertyImages.length && contractImagesUrl.length === contractImages.length) {
+        if (propertyImagesUrl.length === commercialPropertyImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase({
-                commercialLandImagesUrl,
+                propertyImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [commercialLandImagesUrl, contractImagesUrl, commercialLandImagesUrl.length, commercialPropertyImages.length, contractImagesUrl.length, contractImages.length, saveDetailsToDatabase, propertyData])
+    }, [propertyImagesUrl, contractImagesUrl, propertyImagesUrl.length, commercialPropertyImages.length, contractImagesUrl.length, contractImages.length, saveDetailsToDatabase, propertyData])
 
     return (
         <Fragment>
@@ -325,13 +324,13 @@ function ReviewCommercialPropertyAfterSubmission(props) {
                         </tr>}
                     </tbody>
                 </table>
-                <div className="w-full flex gap-4 flex-row place-content-center pt-4">
+                {!alert.isAlertModal &&<div className="w-full flex gap-4 flex-row place-content-center pt-4">
                     <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         propertyDataReset()
                         //setFinalPropertyData(null)
                     }}>Edit</button>
-                </div>
+                </div>}
             </div>
 
         </Fragment >

@@ -16,7 +16,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
         routeTo: null
     })
 
-    const [agriculturalLandImagesUrl, setAgriculturalLandImagesUrl] = useState([]) //This state is array that stores the url of all the property images uploaded
+    const [propertyImagesUrl, setPropertyImagesUrl] = useState([]) //This state is array that stores the url of all the property images uploaded
     const [contractImagesUrl, setContractImagesUrl] = useState([]) //This state is array that stores the url of all the proeprty images uploaded
 
     useEffect(() => {
@@ -29,7 +29,7 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
     //The function is used to upload the images to the server
     const uploadImages = async () => {
         try {
-            setAgriculturalLandImagesUrl([])
+            setPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
             agriculturalLandImages.length && agriculturalLandImages.forEach(async (image) => {
@@ -43,10 +43,10 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setAgriculturalLandImagesUrl([])
+                    setPropertyImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
-                    setAgriculturalLandImagesUrl(images => [...images, data.secure_url])
+                    setPropertyImagesUrl(images => [...images, data.secure_url])
                 }
             })
 
@@ -131,14 +131,14 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
 
     //The code inside the useEffect hook is triggered when the images have been successfully uploaded
     useEffect(() => {
-        if (agriculturalLandImagesUrl.length === agriculturalLandImages.length && contractImagesUrl.length === contractImages.length) {
+        if (propertyImagesUrl.length === agriculturalLandImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase({
-                agriculturalLandImagesUrl,
+                propertyImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [agriculturalLandImagesUrl, agriculturalLandImagesUrl.length, agriculturalLandImages.length, contractImagesUrl, contractImagesUrl.length, contractImages.length, saveDetailsToDatabase, propertyData])
+    }, [propertyImagesUrl, propertyImagesUrl.length, agriculturalLandImages.length, contractImagesUrl, contractImagesUrl.length, contractImages.length, saveDetailsToDatabase, propertyData])
 
     return (
         <Fragment>
@@ -332,12 +332,12 @@ function ReviewAgriculturalPropertyAfterSubmission(props) {
 
                     </tbody>
                 </table>
-                <div className="w-full flex gap-4 flex-row place-content-center pt-4">
+                {!alert.isAlertModal && <div className="w-full flex gap-4 flex-row place-content-center pt-4">
                     <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         propertyDataReset()
                     }}>Edit</button>
-                </div>
+                </div>}
             </div>
 
         </Fragment >

@@ -11,7 +11,7 @@ function HomeFieldAgent() {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn')
+            navigate('/field-agent/signIn', { replace: true })
         }
     }, [authToken, navigate])
 
@@ -133,7 +133,7 @@ function HomeFieldAgent() {
                             <p className="text-5xl">0</p>
                             <p className="w-40">Pending visits to add a property dealer</p>
                         </div>
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation ? navigate('/field-agent/list-of-pending-property-reevaluations') : null}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation ? navigate('/field-agent/list-of-pending-property-reevaluations', { replace: true }) : null}>
                             <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
                             <p className="w-40">Pending requests to reconsider to details of a property</p>
                         </div>
@@ -155,7 +155,7 @@ function HomeFieldAgent() {
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property dealer</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => navigate('/field-agent/list-of-pending-property-reevaluations')}>
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => navigate('/field-agent/list-of-pending-property-reevaluations', { replace: true })}>
                                     <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
                                     <p className="w-40">Pending requests to reconsider details of a property</p>
                                 </div>

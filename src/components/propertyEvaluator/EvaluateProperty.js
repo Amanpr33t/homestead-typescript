@@ -1,4 +1,4 @@
-import {  useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
@@ -23,9 +23,15 @@ function EvaluateProperty() {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn')
+            navigate('/property-evaluator/signIn', { replace: true })
         }
     }, [authToken, navigate])
+
+    useEffect(() => {
+        if (!propertyId || !propertyType) {
+            navigate('/property-evaluator', { replace: true })
+        }
+    }, [propertyId, propertyType, navigate])
 
     const [spinner, setSpinner] = useState(true)
 
@@ -36,11 +42,6 @@ function EvaluateProperty() {
         alertMessage: '',
         routeTo: null
     })
-
-    const [residentialPropertyType, setResidentialPropertyType] = useState(null)
-    const residentialPropertyTypeSetter = (type) => {
-        setResidentialPropertyType(type)
-    }
 
     const fetchSelectedProperty = useCallback(async () => {
         try {
@@ -69,7 +70,7 @@ function EvaluateProperty() {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate,propertyId,propertyType])
+    }, [authToken, navigate, propertyId, propertyType])
 
     useEffect(() => {
         fetchSelectedProperty()
@@ -95,8 +96,7 @@ function EvaluateProperty() {
 
             {selectedProperty && propertyType === 'residential' && !spinner && !error && <ReviewResidentialProperty
                 property={selectedProperty}
-                hideReviewPage={() => navigate('/property-evaluator/list-of-pending-evaluations', { replace: true })}
-                residentialPropertyTypeSetter={residentialPropertyTypeSetter} />}
+                hideReviewPage={() => navigate('/property-evaluator/list-of-pending-evaluations', { replace: true })} />}
 
             {selectedProperty && propertyType === 'commercial' && !spinner && !error && <ReviewCommercialProperty
                 property={selectedProperty}

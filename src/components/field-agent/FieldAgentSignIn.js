@@ -12,6 +12,13 @@ import { useNavigate } from "react-router-dom";
 function FieldAgentSignIn() {
     const navigate = useNavigate()
 
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+    useEffect(() => {
+        if (authToken) {
+            navigate('/field-agent', { replace: true })
+        }
+    }, [authToken, navigate])
+
     const [emailForPasswordChange, setEmailForPasswordChange] = useState('') //This state stores the email for which the user wants to change password.
     const [isEmailForPasswordChangeValid, seetEmailForPasswordChangeValid] = useState(true) //This state it true when the format of email, for the password change, is valid.
 

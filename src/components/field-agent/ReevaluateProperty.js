@@ -9,6 +9,12 @@ function ReevaluateProperty() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/field-agent/signIn', { replace: true })
+        }
+    }, [authToken, navigate])
+
     // Get the query parameters from the URL
     const queryParams = new URLSearchParams(window.location.search);
 
@@ -34,19 +40,13 @@ function ReevaluateProperty() {
 
     useEffect(() => {
         if (selectedProperty) {
-            if (selectedProperty.propertyType === 'agricultural') {
-                setUrlOfImagesPreviouslyFetched(selectedProperty.agriculturalLandImagesUrl)
-            } else if (selectedProperty.propertyType === 'commercial') {
-                setUrlOfImagesPreviouslyFetched(selectedProperty.commercialLandImagesUrl)
-            } else if (selectedProperty.propertyType === 'residential') {
-                setUrlOfImagesPreviouslyFetched(selectedProperty.residentialLandImagesUrl)
-            }
+            setUrlOfImagesPreviouslyFetched(selectedProperty.propertyImagesUrl)
         }
     }, [selectedProperty])
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn')
+            navigate('/field-agent/signIn', { replace: true })
         }
     }, [authToken, navigate])
 
@@ -181,8 +181,6 @@ function ReevaluateProperty() {
         }
     }, [urlOfNewImagesUploaded, newImagesToBeUploaded, submitReevaluationData])
 
-    console.log(selectedProperty)
-
     return (
         <Fragment>
             {spinner && !error && <Spinner />}
@@ -251,9 +249,9 @@ function ReevaluateProperty() {
 
                         </div>}
                 </div>
-                <div className="flex justify-center mt-4 p-2">
+                {!alert.isAlertModal && <div className="flex justify-center mt-4 p-2">
                     <button type='submit' className="text-lg bg-green-500 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={uploadImages}>Save data</button>
-                </div>
+                </div>}
             </div >}
 
         </Fragment>

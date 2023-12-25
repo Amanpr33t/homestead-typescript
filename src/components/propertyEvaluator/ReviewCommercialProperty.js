@@ -9,13 +9,9 @@ function ReviewCommercialProperty(props) {
 
     const [showEvaluationForm, setShowEvaluationForm] = useState(false)
 
-    //const authToken = localStorage.getItem("homestead-field-agent-authToken")
-
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //used to scroll to top of the screen
     }, [])
-
-    console.log(property.commercialLandImagesUrl)
 
     return (
         <Fragment>
@@ -189,7 +185,7 @@ function ReviewCommercialProperty(props) {
                             <tr className="border-2 border-gray-200">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Land Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
-                                    {property.commercialLandImagesUrl.map(image => {
+                                    {property.propertyImagesUrl.map(image => {
                                         return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
                                     })}
                                 </td>

@@ -200,10 +200,10 @@ function ReviewPropertyDealerAfterSubmission(props) {
                         </tr>}
                     </tbody>
                 </table>
-                <div className="w-full flex gap-4 flex-row place-content-center pt-4">
+                {!alert.isAlertModal && <div className="w-full flex gap-4 flex-row place-content-center pt-4">
                     <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={saveDetailsToDatabase}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={hideReviewForm}>Edit</button>
-                </div>
+                </div>}
             </div>
 
         </Fragment >

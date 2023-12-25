@@ -15,7 +15,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
         alertMessage: '',
         routeTo: null
     })
-    const [residentialLandImagesUrl, setResidentialPropertyImagesUrl] = useState([]) //the array stores the url of the property images uploaded
+    const [propertyImagesUrl, setPropertyImagesUrl] = useState([]) //the array stores the url of the property images uploaded
     const [contractImagesUrl, setContractImagesUrl] = useState([]) //the array stores the url of the contract images uploaded
 
     useEffect(() => {
@@ -26,7 +26,7 @@ function ReviewResidentialPropertyAfterSubmission(props) {
     //function is used to upload images to the server
     const uploadImages = async () => {
         try {
-            setResidentialPropertyImagesUrl([])
+            setPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
             residentialLandImages.length && residentialLandImages.forEach(async (image) => {
@@ -40,10 +40,10 @@ function ReviewResidentialPropertyAfterSubmission(props) {
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setResidentialPropertyImagesUrl([])
+                    setPropertyImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
-                    setResidentialPropertyImagesUrl(images => [...images, data.secure_url])
+                    setPropertyImagesUrl(images => [...images, data.secure_url])
                 }
             })
 
@@ -120,14 +120,14 @@ function ReviewResidentialPropertyAfterSubmission(props) {
 
     //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
-        if (residentialLandImagesUrl.length === residentialLandImages.length && contractImagesUrl.length === contractImages.length) {
+        if (propertyImagesUrl.length === residentialLandImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase({
-                residentialLandImagesUrl,
+                propertyImagesUrl,
                 contractImagesUrl,
                 ...propertyData
             })
         }
-    }, [saveDetailsToDatabase, propertyData, residentialLandImagesUrl.length, residentialLandImages.length, contractImagesUrl.length, contractImages.length, residentialLandImagesUrl, contractImagesUrl])
+    }, [saveDetailsToDatabase, propertyData, propertyImagesUrl.length, residentialLandImages.length, contractImagesUrl.length, contractImages.length, propertyImagesUrl, contractImagesUrl])
 
     return (
         <Fragment>
@@ -565,12 +565,12 @@ function ReviewResidentialPropertyAfterSubmission(props) {
 
                     </tbody>
                 </table>
-                <div className="w-full flex gap-4 flex-row place-content-center pt-4">
+                {!alert.isAlertModal && <div className="w-full flex gap-4 flex-row place-content-center pt-4">
                     <button type='button' className="bg-green-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={uploadImages}>Save</button>
                     <button type='button' className="bg-orange-400 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
                         propertyDataReset()
                     }}>Edit</button>
-                </div>
+                </div>}
             </div>
 
         </Fragment >

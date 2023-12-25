@@ -11,6 +11,13 @@ import Spinner from "../Spinner"
 function AgriculturalPropertyAddForm() {
     const navigate = useNavigate()
     const location = useLocation()
+    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+    useEffect(() => {
+        if (!authToken) {
+          navigate('/field-agent/signIn', { replace: true })
+        }
+      }, [authToken, navigate])
 
     const queryParams = new URLSearchParams(location.search)
     const propertyDealerId = queryParams.get('id') //we get the proeprty dealer ID from query params
@@ -49,18 +56,10 @@ function AgriculturalPropertyAddForm() {
     const [tehsil, setTehsil] = useState('')
     const [village, setVillage] = useState('')
 
-    //const [agricultureLandImageUpload, setAgricultureLandImageUpload] = useState([]) 
-    //const [agriculturalLandImageFile, setAgriculturalLandImageFile] = useState([]) 
     const [agriculturalLandImageError, setAgriculturalLandImageError] = useState(false) //Error will be true if agriculturalLandImageError array is empty
     const [agriculturalLandImages, setAgriculturalLandImages]=useState([])
-    console.log(agriculturalLandImages)
-   
 
-    //const [contractImageUpload, setContractImageUpload] = useState([]) //an array that contains contract image files to be uploaded to the server
-   // const [contractImageFile, setContractImageFile] = useState([]) //an array that contains contract images selected by the user
     const [contractImages, setContractImages]=useState([])
-
-    console.log(contractImages)
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
 
@@ -118,8 +117,6 @@ function AgriculturalPropertyAddForm() {
     //This function is triggered when the user selects a proeprty image
     const agriculturalLandImageHandler = (event) => {
         setAgriculturalLandImageError(false)
-        //setAgriculturalLandImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-        //setAgricultureLandImageUpload(array => [...array, event.target.files[0]])
         setAgriculturalLandImages(array=>[...array,{
             file:URL.createObjectURL(event.target.files[0]),
             upload:event.target.files[0]
@@ -128,8 +125,6 @@ function AgriculturalPropertyAddForm() {
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event) => {
-        //setContractImageFile(array => [...array, URL.createObjectURL(event.target.files[0])])
-        //setContractImageUpload(array => [...array, event.target.files[0]])
         setContractImages(array=>[...array,{
             file:URL.createObjectURL(event.target.files[0]),
             upload:event.target.files[0]
@@ -928,7 +923,7 @@ function AgriculturalPropertyAddForm() {
                                             setIsLegalRestrictions(false)
                                         }
                                     }} />
-                                    <label htmlFor="nos">No</label>
+                                    <label htmlFor="no">No</label>
                                 </div>
                             </div>
                         </div>

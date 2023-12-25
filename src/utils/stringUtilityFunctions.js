@@ -8,6 +8,7 @@ const capitaliseFirstAlphabetsOfAllWordsOfASentence = (str) => {
 
 function capitalizeFirstLetterOfAString(string) {
     // Check if the string is not empty
+    console.log('herr')
     if (string && typeof string === 'string') {
         // Capitalize the first letter and concatenate the rest of the string
         return string.charAt(0).toUpperCase() + string.slice(1);

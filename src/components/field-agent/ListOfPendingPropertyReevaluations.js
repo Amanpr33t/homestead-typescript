@@ -2,10 +2,17 @@ import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
+import {  capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
 
 function ListOfPendingPropertyReevaluations() {
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/field-agent/signIn', { replace: true })
+        }
+    }, [authToken, navigate])
 
     const [pendingPropertyReevaluations, setPendingPropertyReevaluations] = useState([])
     const [spinner, setSpinner] = useState(true)
@@ -41,7 +48,6 @@ function ListOfPendingPropertyReevaluations() {
                 navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
-                console.log(data)
                 if (!data.pendingPropertyReevaluations.length) {
                     navigate('/field-agent', { replace: true })
                 } else {
@@ -89,13 +95,12 @@ function ListOfPendingPropertyReevaluations() {
                 <div className=' pt-28 w-full min-h-screen flex flex-col place-items-center bg-gray-100 pl-2 pr-2 '>
                     {pendingPropertyReevaluations.length > 0 && <p className="w-full text-center text-xl font-bold mb-5 mt-2">{pendingPropertyReevaluations.length} properties pending for re-evaluation</p>}
                     {pendingPropertyReevaluations.length > 0 && pendingPropertyReevaluations.map(property => {
-                        console.log(property)
                         index++
                         return <div key={property._id} className="h-fit flex flex-col gap-4 mb-10 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row">
                                 <p className="text-gray-500 text-lg font-semibold">{index})</p>
                                 <div className="flex flex-col gap-2">
-                                    <p className="text-lg font-semibold pl-2">{property.propertyType} property</p>
+                                    <p className="text-lg font-semibold pl-2">{capitalizeFirstLetterOfAString(property.propertyType)} property</p>
                                     <p className="font-semibold pl-2">{property.location.name.district}, {property.location.name.state}</p>
                                 </div>
                             </div>
@@ -104,7 +109,7 @@ function ListOfPendingPropertyReevaluations() {
                                 <p>{dateCreater(property.evaluationData.evaluatedAt)}</p>
                             </div>
                             <div className="w-full flex justify-center ">
-                                <button type="button" className="bg-blue-500 text-white font-medium rounded pb-1 pr-1 pl-1" onClick={() => navigate(`/field-agent/reevaluate-property?id=${property._id}&type=${property.propertyType}`)}>Open details</button>
+                                <button type="button" className="bg-blue-500 text-white font-medium rounded pb-1 pr-1 pl-1" onClick={() => navigate(`/field-agent/reevaluate-property?id=${property._id}&type=${property.propertyType}`, { replace: true })}>Open details</button>
                             </div>
                         </div>
                     })}

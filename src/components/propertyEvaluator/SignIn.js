@@ -11,6 +11,13 @@ import { useNavigate } from "react-router-dom";
 
 function PropertyEvaluatorSignIn() {
     const navigate = useNavigate()
+    const authToken = localStorage.getItem("homestead-property-evaluator-authToken")
+
+    useEffect(() => {
+        if (authToken) {
+            navigate('/property-evaluator', { replace: true } )
+        }
+    }, [authToken, navigate])
 
     const [emailForPasswordChange, setEmailForPasswordChange] = useState('') //This state stores the email for which the user wants to change password.
     const [isEmailForPasswordChangeValid, seetEmailForPasswordChangeValid] = useState(true) //This state it true when the format of email, for the password change, is valid.

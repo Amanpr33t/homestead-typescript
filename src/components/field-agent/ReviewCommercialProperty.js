@@ -236,7 +236,7 @@ function ReviewCommercialProperty(props) {
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
-                                    {property.commercialLandImagesUrl.map(image => {
+                                    {property.propertyImagesUrl.map(image => {
                                             return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
                                         })}
                                 </td>

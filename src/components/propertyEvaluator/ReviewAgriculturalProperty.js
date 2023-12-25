@@ -9,8 +9,6 @@ function ReviewAgriculturalProperty(props) {
 
     const [showEvaluationForm, setShowEvaluationForm] = useState(false)
 
-    //const authToken = localStorage.getItem("homestead-field-agent-authToken")
-
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
@@ -175,8 +173,7 @@ function ReviewAgriculturalProperty(props) {
                             <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
-                                    {property.agriculturalLandImagesUrl
-                                        .map(image => {
+                                    {property.propertyImagesUrl.map(image => {
                                             return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
                                         })}
                                 </td>

@@ -10,6 +10,13 @@ import Spinner from "../Spinner"
 //This component is a form used by a field agent to add a residential property
 function ResidentialPropertyAddForm() {
   const navigate = useNavigate()
+  const authToken = localStorage.getItem("homestead-field-agent-authToken")
+
+    useEffect(() => {
+        if (!authToken) {
+          navigate('/field-agent/signIn', { replace: true })
+        }
+      }, [authToken, navigate])
 
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
