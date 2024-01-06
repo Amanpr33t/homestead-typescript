@@ -2,12 +2,12 @@ import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import PropertyEvaluationForm from "./PropertyEvaluationForm"
 
-//This component is used to show a commercial property details in a table
+//This component is used to show property data. It also passes property data as props to PropertyEvaluationForm component 
 function ReviewCommercialProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
 
-    const [showEvaluationForm, setShowEvaluationForm] = useState(false)
+    const [showEvaluationForm, setShowEvaluationForm] = useState(false) //If set to true, PropertyEvaluationForm component will be shown to the user
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //used to scroll to top of the screen

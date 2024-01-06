@@ -3,14 +3,13 @@ import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
-//This component is the navigation bar
 
-//This component shows a list of property dealers added by the field agent
+//This component shows list of proerties pending for evaluation by field agent
 function ListOfPropertiesToBeEvaluated() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-property-evaluator-authToken") //This variable stores the authToken present in local storage
 
-    const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState()
+    const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState() //Information regarding pending property evaluations
 
     useEffect(() => {
         if (!authToken) {
@@ -21,7 +20,6 @@ function ListOfPropertiesToBeEvaluated() {
     let index = 0
 
     const [spinner, setSpinner] = useState(true)
-
     const [error, setError] = useState(false)
     const [alert, setAlert] = useState({
         isAlertModal: false,
@@ -30,7 +28,7 @@ function ListOfPropertiesToBeEvaluated() {
         routeTo: null
     })
 
-    //The function is used to fetch property dealers
+    //The function is used to fetch properties pending for evaluation by evaluator
     const fetchPendingPropertyEvaluations = useCallback(async () => {
         try {
             setError(false)

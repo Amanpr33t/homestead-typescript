@@ -5,9 +5,8 @@ import AlertModal from "../AlertModal"
 import ReviewCommercialProperty from "../propertyEvaluator/ReviewCommercialProperty"
 import ReviewAgriculturalProperty from "../propertyEvaluator/ReviewAgriculturalProperty"
 import ReviewResidentialProperty from "../propertyEvaluator/ReviewResidentialProperty"
-//This component is the navigation bar
 
-//This component shows a list of property dealers added by the field agent
+//This component is used to fetch the property to be evaluated and property details are passed as props to other components
 function EvaluateProperty() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-property-evaluator-authToken") //This variable stores the authToken present in local storage
@@ -19,6 +18,16 @@ function EvaluateProperty() {
     const propertyId = queryParams.get('propertyId');
     const propertyType = queryParams.get('propertyType');
 
+    const [spinner, setSpinner] = useState(true)
+    const [error, setError] = useState(false)
+    const [alert, setAlert] = useState({
+        isAlertModal: false,
+        alertType: '',
+        alertMessage: '',
+        routeTo: null
+    })
+
+    // The state is used to store to details of selected proeprty
     const [selectedProperty, setSelectedProperty] = useState()
 
     useEffect(() => {
@@ -33,16 +42,7 @@ function EvaluateProperty() {
         }
     }, [propertyId, propertyType, navigate])
 
-    const [spinner, setSpinner] = useState(true)
-
-    const [error, setError] = useState(false)
-    const [alert, setAlert] = useState({
-        isAlertModal: false,
-        alertType: '',
-        alertMessage: '',
-        routeTo: null
-    })
-
+    //The function is used to fetch the selected property
     const fetchSelectedProperty = useCallback(async () => {
         try {
             setError(false)

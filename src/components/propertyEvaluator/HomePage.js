@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 
+//This component is the home page for property evaluator 
 function PropertyEvaluatorHomePage() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-property-evaluator-authToken")
@@ -20,14 +21,14 @@ function PropertyEvaluatorHomePage() {
         alertMessage: '',
         routeTo: null
     })
-
     const [spinner, setSpinner] = useState(true)
     const [error, setError] = useState(false)
 
-    const [propertiesSuccessfullyEvaluated, setPropertiesSuccessfullyEvaluated] = useState(0)
-    const [propertiesSentToFieldAgentForReconsideration, setPropertiesSentToFieldAgentForReconsideration] = useState(0)
-    const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState(0)
+    const [propertiesSuccessfullyEvaluated, setPropertiesSuccessfullyEvaluated] = useState(0) //number of properties successfully evaluated by the proeprty evaluator
+    const [propertiesSentToFieldAgentForReconsideration, setPropertiesSentToFieldAgentForReconsideration] = useState(0) //Properties sent to the field agent for reconsideration of the field agent
+    const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState(0)//Number of pending proeprty evaluations
 
+    //The function is used to fetch data regarding properties evaluated by the property evaluator
     const fetchPropertyData = useCallback(async () => {
         try {
             setSpinner(true)

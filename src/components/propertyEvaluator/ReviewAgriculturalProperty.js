@@ -2,12 +2,12 @@ import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import PropertyEvaluationForm from "./PropertyEvaluationForm"
 
-//This component is used to show property data in a tables
+//This component is used to show property data. It also passes property data as props to PropertyEvaluationForm component 
 function ReviewAgriculturalProperty(props) {
     const navigate = useNavigate()
     const { property, hideReviewPage } = props
 
-    const [showEvaluationForm, setShowEvaluationForm] = useState(false)
+    const [showEvaluationForm, setShowEvaluationForm] = useState(false) //If set to true, PropertyEvaluationForm component will be shown to the user
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -15,7 +15,6 @@ function ReviewAgriculturalProperty(props) {
 
     return (
         <Fragment>
-            {/*spinner && !error && <Spinner />*/}
 
             {!showEvaluationForm &&
                 <div className="w-full fixed top-16 bg-white pb-2 z-50">

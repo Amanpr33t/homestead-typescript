@@ -5,10 +5,9 @@ import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
 /*This component contains code for the following tasks:
-  1) For sign in of a field agent
-  2) For password change by a field agent in case he forgets password
+  1) For sign in of a property evaluator
+  2) For password change by a proeprty evaluator in case he forgets password
 */
-
 function PropertyEvaluatorSignIn() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-property-evaluator-authToken")

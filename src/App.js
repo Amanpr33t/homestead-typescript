@@ -57,7 +57,7 @@ function App() {
             </>}></Route>
             <Route path='list-of-pending-property-reevaluations' element={<>
               <NavbarFieldAgent />
-              <PropertyDealerAddForm />
+              <ListOfPendingPropertyReevaluations />
             </>}></Route>
             <Route path='list-of-property-dealers-added-by-field-agent' element={<>
               <NavbarFieldAgent />
@@ -137,7 +137,6 @@ function App() {
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
           </Route>
-
 
           <Route path='*' element={<Navigate replace to='/' />}></Route>
         </Routes>

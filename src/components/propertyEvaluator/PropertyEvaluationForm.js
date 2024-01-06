@@ -4,7 +4,7 @@ import AlertModal from '../AlertModal'
 import Spinner from "../Spinner"
 import { countWordsInAString } from "../../utils/stringUtilityFunctions"
 
-//This component is a form used by a field agent to add an agricultural property
+//This component is a form used to evaluate a property
 function PropertyEvaluationForm(props) {
     const navigate = useNavigate()
     const { propertyType, propertyId, propertyEvaluatorId, fieldAgentId, residentialPropertyType, hideEvaluationForm, isBuiltUpProperty, numberOfReevaluationsReceived } = props
@@ -25,37 +25,38 @@ function PropertyEvaluationForm(props) {
     const [isInformationInCompleteDetailsArray, setIsInformationInCompleteDetailsArray] = useState([])
     const [isInformationInCompleteDetailsError, setIsInformationInCompleteDetailsError] = useState(false)*/
 
-    const [arePhotographsComplete, setArePhotographsComplete] = useState(null)
-    const [arePhotographsCompleteError, setArePhotographsCompleteError] = useState(false)
-    const [arePhotographsInCompleteDetails, setArePhotographsInCompleteDetails] = useState('')
-    const [arePhotographsInCompleteDetailsError, setArePhotographsInCompleteDetailsError] = useState(false)
-    const [arePhotographsInCompleteDetailsMoreThanFiveHundredWordError, setArePhotographsInCompleteDetailsMoreThanFiveHundredWordError] = useState(false)
+    const [arePhotographsComplete, setArePhotographsComplete] = useState(null) //State is used to tell whether photograhs are upto standard
+    const [arePhotographsCompleteError, setArePhotographsCompleteError] = useState(false) //State is set to true if arePhotographsComplete state is null, otherwise is set to false
 
-    const [typeOfLocation, setTypeOfLocation] = useState(null)
-    const [typeOfLocationError, setTypeOfLocationError] = useState(false)
-    const typesOfLocationArray = ['Rural', 'Sub-urban', 'Urban', 'Mixed-use', 'Industrial']
+    const [arePhotographsInCompleteDetails, setArePhotographsInCompleteDetails] = useState('') //Details about incomplete photograph information
+    const [arePhotographsInCompleteDetailsError, setArePhotographsInCompleteDetailsError] = useState(false) //Is set to true if no details are provided, otherwise is set to false
+    const [arePhotographsInCompleteDetailsMoreThanFiveHundredWordError, setArePhotographsInCompleteDetailsMoreThanFiveHundredWordError] = useState(false) //Is set to true if details about incomplete information is less than 500 words
 
-    const [locationStatus, setLocationStatus] = useState(null)
-    const [locationStatusError, setLocationStatusError] = useState(false)
-    const typesOfPropertyStatusArray = ['Posh', 'Premium', 'Popular', 'Ordinary', 'Low Income']
+    const [typeOfLocation, setTypeOfLocation] = useState(null) //stores th type of location
+    const [typeOfLocationError, setTypeOfLocationError] = useState(false) //set to true if type of location is not selected
+    const typesOfLocationArray = ['Rural', 'Sub-urban', 'Urban', 'Mixed-use', 'Industrial'] //option for type of location
+
+    const [locationStatus, setLocationStatus] = useState(null) //stores location of status
+    const [locationStatusError, setLocationStatusError] = useState(false) //set to true if location status is null, otherwise is set to true
+    const typesOfPropertyStatusArray = ['Posh', 'Premium', 'Popular', 'Ordinary', 'Low Income'] //options for property status
 
 
-    const [conditionOfConstruction, setConditionOfConstruction] = useState(null)
-    const [conditionOfConstructionError, setConditionOfConstructionError] = useState(false)
-    const conditionOfConstructionArray = ['Newly built', 'Ready to move', 'Needs renovation', 'Needs repair']
+    const [conditionOfConstruction, setConditionOfConstruction] = useState(null) //condition of constucted property
+    const [conditionOfConstructionError, setConditionOfConstructionError] = useState(false) //Is set to true if conditionOfConstruction state is null, otherwise is set to false
+    const conditionOfConstructionArray = ['Newly built', 'Ready to move', 'Needs renovation', 'Needs repair'] //Options for construction of property
 
-    const [qualityOfConstructionRating, setQualityOfConstructionRating] = useState(null)
-    const [qualityOfConstructionRatingError, setQualityOfConstructionRatingError] = useState(false)
+    const [qualityOfConstructionRating, setQualityOfConstructionRating] = useState(null) //Rating for quality of construction
+    const [qualityOfConstructionRatingError, setQualityOfConstructionRatingError] = useState(false) //Is set to true if qualityOfConstructionRating state is null, otherwise is set to false
 
-    const [fairValueOfProperty, setFairValueOfProperty] = useState('')
-    const [fairValueOfPropertyError, setFairValueOfPropertyError] = useState(false)
+    const [fairValueOfProperty, setFairValueOfProperty] = useState('') //Fair value of property in number
+    const [fairValueOfPropertyError, setFairValueOfPropertyError] = useState(false) //Is set to true if fairValueOfProperty state is not provided, otherwise is set to false
 
-    const [fiveYearProjectionPriceIncrease, setFiveYearProjectionPriceIncrease] = useState(null)
-    const [fiveYearProjectionPercentageNumber, setFiveYearProjectionPercentageNumber] = useState('')
-    const [fiveYearProjectionError, setFiveYearProjectionError] = useState(false)
-    const [fiveYearProjectionPercentageNumberError, setFiveYearProjectionPercentageNumberError] = useState(false)
+    const [fiveYearProjectionPriceIncrease, setFiveYearProjectionPriceIncrease] = useState(null) //Is true if prices are projected to increase, otherwise set to false
+    const [fiveYearProjectionPercentageNumber, setFiveYearProjectionPercentageNumber] = useState('') //A number which tells percentage increase or decrease in prices
+    const [fiveYearProjectionError, setFiveYearProjectionError] = useState(false) //Is true if fiveYearProjectionPriceIncrease state is null, otherwise is false
+    const [fiveYearProjectionPercentageNumberError, setFiveYearProjectionPercentageNumberError] = useState(false) //Is false if fiveYearProjectionPercentageNumber state is empty, otherwise is false
 
-    //This function triggers different errors if the user does not provide suitable data
+    //This function triggers different errors if the user does not provide suitable data.
     const errorCheckingBeforeSubmitForCompleteForm = () => {
 
         if (!typeOfLocation) {
@@ -88,7 +89,7 @@ function PropertyEvaluationForm(props) {
         }
     }
 
-    //this function is triggered when the user submits the form
+    //This function is triggered when the details are complete and the user submits the form
     const completeDetailsFormSubmit = async () => {
         //This function is triggered when the user does not provide suitable data
         const errorFunction = () => {
@@ -243,6 +244,7 @@ function PropertyEvaluationForm(props) {
 
     }
 
+    //This function triggers different errors if the user does not provide suitable data.
     const errorCheckingBeforeSubmitForInCompleteForm = () => {
         if (arePhotographsComplete === null) {
             setArePhotographsCompleteError(true)
@@ -251,6 +253,7 @@ function PropertyEvaluationForm(props) {
         }
     }
 
+    //This function is triggered when the details are incomplete and the user submits the form
     const incompleteDetailsFormSubmit = async () => {
         const errorFunction = () => {
             errorCheckingBeforeSubmitForInCompleteForm()
@@ -328,7 +331,6 @@ function PropertyEvaluationForm(props) {
 
 
     }
-
 
     return (
         <Fragment>
