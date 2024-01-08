@@ -5,19 +5,25 @@ import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
 /*This component contains code for the following tasks:
-  1) For sign in of a field agent
-  2) For password change by a field agent in case he forgets password
+  1) For sign in of a property dealer
+  2) For password change by a proeprty dealer in case he forgets password
 */
-
-function FieldAgentSignIn() {
+function PropertyDealerSignIn() {
     const navigate = useNavigate()
+    const authToken = localStorage.getItem("homestead-property-dealer-authToken")
 
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
     useEffect(() => {
         if (authToken) {
-            navigate('/field-agent', { replace: true })
+            navigate('/property-dealer', { replace: true })
         }
     }, [authToken, navigate])
+
+    const [alert, setAlert] = useState({
+        isAlertModal: false,
+        alertType: '',
+        alertMessage: ''
+    }) //This state is used to show or hide alert modal
+    const [isSpinner, setIsSpinner] = useState(false) //This state is used to show or hide spinner
 
     const [emailForPasswordChange, setEmailForPasswordChange] = useState('') //This state stores the email for which the user wants to change password.
     const [isEmailForPasswordChangeValid, seetEmailForPasswordChangeValid] = useState(true) //This state it true when the format of email, for the password change, is valid.
@@ -27,14 +33,6 @@ function FieldAgentSignIn() {
 
     const [password, setPassword] = useState('') //This state stores the password provided by the user for sign in.
     const [passwordValid, setPasswordValid] = useState(true) //This state is true when if the password provided by the user for sign in is valid, and vice-versa
-
-    const [alert, setAlert] = useState({
-        isAlertModal: false,
-        alertType: '',
-        alertMessage: ''
-    }) //This state is used to show or hide alert modal
-
-    const [isSpinner, setIsSpinner] = useState(false) //This state is used to show or hide spinner
 
     const [isForgotPassword, setIsForgotPassword] = useState(false) //This state is set to true when the chooses to change password
     const [confirmOTP, setConfirmOTP] = useState(false) //This state is set to true if the OTP for password change has been successfully sent to the email of the user.
@@ -98,7 +96,7 @@ function FieldAgentSignIn() {
         }
         setIsSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/signIn`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/signIn`, {
                 method: 'POST',
                 body: JSON.stringify({ email, password }),
                 headers: {
@@ -110,15 +108,15 @@ function FieldAgentSignIn() {
             }
             const data = await response.json()
             if (data.status === 'ok') {
-                localStorage.setItem('homestead-field-agent-authToken', data.authToken)
-                navigate('/field-agent', { replace: true })
+                localStorage.setItem('homestead-property-dealer-authToken', data.authToken)
+                navigate('/property-dealer', { replace: true })
                 setIsSpinner(false)
             } else if (data.status === 'not_found') {
                 setIsSpinner(false)
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
-                    alertMessage: 'No field agent agent with this email exists'
+                    alertMessage: 'No dealer agent with this email exists'
                 })
             } else if (data.status === 'incorrect_password') {
                 setIsSpinner(false)
@@ -151,7 +149,7 @@ function FieldAgentSignIn() {
         }
         setIsSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/forgotPassword`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/forgotPassword`, {
                 method: 'PATCH',
                 body: JSON.stringify({ email: emailForPasswordChange }),
                 headers: {
@@ -170,7 +168,7 @@ function FieldAgentSignIn() {
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
-                    alertMessage: 'No field agent with this email exists'
+                    alertMessage: 'No dealer with this email exists'
                 })
             } else {
                 throw new Error('Some error occured')
@@ -189,7 +187,7 @@ function FieldAgentSignIn() {
     const confirmOneTimePasswordFunction = async () => {
         setIsSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/confirmPasswordVerificationToken`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/confirmPasswordVerificationToken`, {
                 method: 'POST',
                 body: JSON.stringify({
                     email: emailForPasswordChange,
@@ -257,13 +255,13 @@ function FieldAgentSignIn() {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Both password not similar'
+                alertMessage: 'Both password are not similar'
             })
             return
         }
         setIsSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/updatePassword`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/updatePassword`, {
                 method: 'PATCH',
                 body: JSON.stringify({
                     email: emailForPasswordChange,
@@ -303,7 +301,7 @@ function FieldAgentSignIn() {
     const resetPasswordVerificationToken = async () => {
         setIsSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/resetPasswordVerificationToken`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/resetPasswordVerificationToken`, {
                 method: 'PATCH',
                 body: JSON.stringify({ email: emailForPasswordChange }),
                 headers: {
@@ -342,13 +340,13 @@ function FieldAgentSignIn() {
             })} />}
 
             {/* The code below is used to show a spinner */}
-            {isSpinner && <Spinner />}
+            {/*isSpinner && <Spinner />*/}
 
-            {!alert.isAlertModal && !isSpinner && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+            {!alert.isAlertModal  && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                 <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/', { replace: true })}>Home</button>
             </div>}
 
-            <div className={`w-full h-screen pt-28 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
+            <div className={`w-full h-screen pt-28 flex justify-center ${alert.isAlertModal ? 'blur-sm' : null}`} >
                 <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
                     e.preventDefault()
                     if (!isForgotPassword) {
@@ -368,14 +366,14 @@ function FieldAgentSignIn() {
                 }}>
 
                     {!isForgotPassword && <>
-                        <label className="text-lg font-semibold mb-1" htmlFor="email-1">Field agent email</label>
+                        <label className="text-lg font-semibold mb-1" htmlFor="email-1">Email</label>
                         <input type="email" id="email-1" name="email-1" className="border-2 border-gray-400 p-1 rounded" placeholder="abcd@gmail.com" autoComplete="new-password" value={email}
                             onChange={e => {
                                 setEmailValid(true)
                                 setEmail(e.target.value.trimEnd().toLowerCase())
                             }} />
                         {!emailValid && <p className="text-red-500">Email not in correct format</p>}
-                        <label className="text-lg font-semibold mb-1 mt-2" htmlFor="password">Field Agent Password</label>
+                        <label className="text-lg font-semibold mb-1 mt-2" htmlFor="password">Password</label>
                         <input type="password" id="password" name="password" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={password}
                             onChange={e => {
                                 setPassword(e.target.value.trimEnd())
@@ -421,19 +419,28 @@ function FieldAgentSignIn() {
                     </>}
 
                     <div className="w-full h-12 flex justify-center mt-4 border-b border-gray-400 ">
-                        <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">{buttonText}</button>
+                        {!isSpinner && <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">{buttonText}</button>}
+                        {isSpinner && <div className="w-full bg-blue-500 rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1 cursor-pointer">
+                            <div className="animate-spin text-white font-bold text-xl">&#9696;</div>
+                        </div>}
                     </div>
 
                     {!isForgotPassword &&
+                        <div className="w-full flex flex-col place-items-center mt-2 pb-2 cursor-pointer font-medium border-b border-gray-400">
+                            <div className="flex flex-row gap-1">
+                                <p>Don't have an account?</p>
+                                <button type='button' className="text-blue-600" onClick={()=>navigate('/property-dealer/signUp')}>Sign Up</button>
+                            </div>
+                        </div>}
+
+                    {!isForgotPassword &&
                         <div className="w-full flex flex-col place-items-center mt-2 cursor-pointer font-medium ">
-                            <p>Forgot password?</p>
                             <div className="flex flex-row gap-1">
                                 <button type='button' className="text-red-600" onClick={(e) => {
                                     setIsForgotPassword(true)
                                     setEmail('')
                                     setEmailValid(true)
-                                }}>Click here</button>
-                                <p>to create a new password.</p>
+                                }}>Forgot password?</button>
                             </div>
                         </div>}
                     {isForgotPassword &&
@@ -450,4 +457,4 @@ function FieldAgentSignIn() {
         </Fragment >
     )
 }
-export default FieldAgentSignIn
+export default PropertyDealerSignIn

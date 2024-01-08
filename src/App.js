@@ -26,6 +26,12 @@ import ListOfPropertiesToBeEvaluated from './components/propertyEvaluator/ListOf
 import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
 import HomePage from './components/HomePage';
 
+//Components evaluated for property dealer
+import PropertyDealerSignIn from './components/property-dealer/SignIn';
+import NavbarPropertyDealer from './components/property-dealer/Navbar';
+import PropertyDealerHomePage from './components/property-dealer/HomePage';
+import PropertyDealerSignUp from './components/property-dealer/SignUp';
+
 
 function App() {
   const currentUrl = window.location.href
@@ -38,7 +44,6 @@ function App() {
 
         <Routes>
 
-          {/*Routes for property evaluator */}
           <Route path='/' element={<HomePage />}></Route>
 
           {/*Routes for field agent */}
@@ -134,6 +139,24 @@ function App() {
               <NavbarPropertyEvaluator />
               <EvaluateProperty />
             </>}></Route>}
+            <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
+            </Route>
+          </Route>
+
+          {/*Routes for property dealer */}
+          <Route path='/property-dealer/*'>
+            <Route path='' element={<>
+              <NavbarPropertyDealer />
+              <PropertyDealerHomePage />
+            </>}></Route>
+            <Route path='signIn' element={<>
+              <NavbarPropertyDealer />
+              <PropertyDealerSignIn />
+            </>}></Route>
+            <Route path='signUp' element={<>
+              <NavbarPropertyDealer />
+              <PropertyDealerSignUp />
+            </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
           </Route>

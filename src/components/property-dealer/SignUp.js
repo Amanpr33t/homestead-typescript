@@ -2,19 +2,23 @@ import validator from 'validator'
 import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
-import ReviewPropertyDealerAfterSubmission from './ReviewPropertyDealerAfterSubmission'
+import ReviewPropertyDealerSignUpData from './ReviewPropertyDealerSignUpData'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 
 //This component is a form used by a field agent to add a property dealer
-function PropertyDealerAddForm() {
+function PropertyDealerSignUp() {
     const navigate = useNavigate()
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
+    const [alert, setAlert] = useState({
+        isAlertModal: false,
+        alertType: '',
+        alertMessage: ''
+    }) //This state is used to manage alerts
+
+    //This code in useEffect hook is used to scroll the page to top 
     useEffect(() => {
-        if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
-        }
-    }, [authToken, navigate])
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [])
 
     const [firmName, setFirmName] = useState('') //Name of the firm
     const [firmNameError, setFirmNameError] = useState(false) //Used to set error in case no firm name is provided
@@ -51,16 +55,6 @@ function PropertyDealerAddForm() {
     const [about, setAbout] = useState('') //Used to set about
     const [aboutMoreThanOneFiftyWords, setAboutMoreThanOneFiftyWords] = useState(false) //used to show an error when about is more than 150 words
 
-    const [email, setEmail] = useState('') //Used to set email
-    const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided ot the format of email is not correct
-    const [emailErrorMessage, setEmailErrorMessage] = useState(false) //Used to set error message to be shown when an error regarding email occurs
-    const [emailVerified, setEmailVerified] = useState(false) //used to check if an email already exists in the database
-
-    const [contactNumber, setContactNumber] = useState('') //used to set contact number
-    const [contactNumberError, setContactNumberError] = useState(false) //used to set error when no contact number is provided or a similar contact number already exists in database
-    const [contactNumberErrorMessage, setContactNumberErrorMessage] = useState(false) //used to set error message for contact number errors
-    const [contactNumberVerified, setContactNumberVerified] = useState(false) //used to check if the contact number is already present in the database
-
     const [gstNumber, setGstNumber] = useState('') //used to set GST number
     const [gstNumberError, setGstNumberError] = useState(false) //used to show error when no gst number is provided or the gst number is already present in the database
     const [gstNumberErrorMessage, setGstNumberErrorMessage] = useState(false) //used to set gst number error message
@@ -76,16 +70,6 @@ function PropertyDealerAddForm() {
 
     const [showReviewForm, setShowReviewForm] = useState(false) //used to show a review form when the user saves the data
 
-    //This code in useEffect hook is used to scroll the page to top 
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }, [])
-
-    const [alert, setAlert] = useState({
-        isAlertModal: false,
-        alertType: '',
-        alertMessage: ''
-    }) //This state is used to manage alerts
 
     //This fuction is used to manage the image selected by the user
     const imageChangeHandler = (event) => {
@@ -96,7 +80,7 @@ function PropertyDealerAddForm() {
 
     //This fuction is used to store the address
     const addAddress = () => {
-        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || postalCode.toString().length !== 6 || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyWords) {
+        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || (postalCode.toString().length !== 6) || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyWords) {
             if (!flatPlotHouseNumber.trim()) {
                 setFlatPlotHouseNumberError(true)
             }
@@ -135,54 +119,10 @@ function PropertyDealerAddForm() {
         setState('')
     }
 
-    //This function is used to check if the email provided by the user is already present in the database
-    const checkIfEmailExists = async (e) => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerEmailExists?email=${email}`)
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'emailExists') {
-                setEmailError(true)
-                setEmailErrorMessage('This email already exists')
-                setEmailVerified(false)
-            } else if (data.status === 'ok') {
-                setEmailVerified(true)
-            } else {
-                setEmailVerified(false)
-            }
-        } catch (error) {
-            setEmailVerified(false)
-        }
-    }
-
-    //This function is used to check if the contact number provided by the user is already present in the database
-    const checkIfContactNumberExists = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerContactNumberExists?contactNumber=${contactNumber}`)
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'contactNumberExists') {
-                setContactNumberError(true)
-                setContactNumberErrorMessage('This contact number already exists')
-                setContactNumberVerified(false)
-            } else if (data.status === 'ok') {
-                setContactNumberVerified(true)
-            } else {
-                setContactNumberVerified(false)
-            }
-        } catch (error) {
-            setContactNumberVerified(false)
-        }
-    }
-
     //This function is used to check if the gst number provided by the user is already present in the database
     const checkIfGstNumberExists = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerGstNumberExists?gstNumber=${gstNumber}`)
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/propertyDealerGstNumberExists?gstNumber=${gstNumber}`)
             if (!response.ok) {
                 throw new Error('Some error occured')
             }
@@ -204,7 +144,7 @@ function PropertyDealerAddForm() {
     //This function is used to check if the gst number provided by the user is already present in the database
     const checkIfReraNumberExists = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerReraNumberExists?reraNumber=${reraNumber}`)
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/propertyDealerReraNumberExists?reraNumber=${reraNumber}`)
             if (!response.ok) {
                 throw new Error('Some error occured')
             }
@@ -226,7 +166,7 @@ function PropertyDealerAddForm() {
     //This function is used to submit the form once the save button is clicked
     const formSubmit = e => {
         e.preventDefault()
-        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim() || !contactNumber.trim() || !email.trim() || !validator.isEmail(email.trim())) {
+        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim() ) {
             if (!firmName.trim()) {
                 setFirmNameError(true)
             }
@@ -243,23 +183,11 @@ function PropertyDealerAddForm() {
             }
             if (!gstNumber.trim()) {
                 setGstNumberError(true)
-                setGstNumberErrorMessage('provide a GST number')
+                setGstNumberErrorMessage('Provide a GST number')
             }
             if (!reraNumber.trim()) {
                 setReraNumberError(true)
-                setReraNumberErrorMessage('provide a RERA number')
-            }
-            if (!email.trim()) {
-                setEmailError(true)
-                setEmailErrorMessage('Provide an email')
-            }
-            if (email.trim() && !validator.isEmail(email.trim())) {
-                setEmailError(true)
-                setEmailErrorMessage('Email not in correct format')
-            }
-            if (!contactNumber.trim()) {
-                setContactNumberError(true)
-                setContactNumberErrorMessage('Provide a contact number')
+                setReraNumberErrorMessage('Provide a RERA number')
             }
             setAlert({
                 isAlertModal: true,
@@ -268,7 +196,7 @@ function PropertyDealerAddForm() {
             })
             return
         }
-        if (emailError || contactNumberError || gstNumberError || reraNumberError) {
+        if (gstNumberError || reraNumberError) {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -276,7 +204,7 @@ function PropertyDealerAddForm() {
             })
             return
         }
-        if (!emailVerified || !contactNumberVerified || !gstNumberVerified || !reraNumberVerified) {
+        if (!gstNumberVerified || !reraNumberVerified) {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -302,7 +230,7 @@ function PropertyDealerAddForm() {
                 alertMessage: ''
             })} />}
 
-            {showReviewForm && <ReviewPropertyDealerAfterSubmission
+            {showReviewForm && <ReviewPropertyDealerSignUpData
                 firmName={firmName.trim()}
                 propertyDealerName={propertyDealerName.trim()}
                 experience={experience}
@@ -312,8 +240,6 @@ function PropertyDealerAddForm() {
                 about={about.trim()}
                 firmLogoImageUpload={firmLogoImageUpload}
                 firmLogoImageFile={firmLogoImageFile}
-                email={email.trim()}
-                contactNumber={contactNumber.trim()}
                 hideReviewForm={() => {
                     setShowReviewForm(false)
                     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -323,16 +249,16 @@ function PropertyDealerAddForm() {
 
                 {!showReviewForm && <>
                     <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
-                        <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/field-agent', { replace: true })}>Home</button>
+                        <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/property-dealer/signIn', { replace: true })}>Back</button>
                     </div>
 
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold">Add a property dealer by filling the form</p>
+                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold">Sign Up by filling this form</p>
                 </>}
 
-                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                     {/*Firm name */}
-                    <div className="flex flex-col mb-1.5 ">
+                    <div className="flex flex-col p-3  bg-gray-100">
                         <div className="flex flex-row gap-0.5">
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="firmName">Name of the firm</label>
@@ -345,7 +271,7 @@ function PropertyDealerAddForm() {
                     </div>
 
                     {/*dealer name */}
-                    <div className="flex flex-col mb-1.5">
+                    <div className="flex flex-col p-3">
                         <div className="flex flex-row gap-0.5">
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
@@ -358,7 +284,7 @@ function PropertyDealerAddForm() {
                     </div>
 
                     {/*Experience */}
-                    <div className="flex flex-row gap-4 mt-3 mb-1.5">
+                    <div className="flex flex-row gap-4 p-3  bg-gray-100">
                         <label className="text-lg font-semibold" htmlFor="state">Experience (years)</label>
                         <select className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="experience" id="experience" value={experience} onChange={e => {
                             setExperience(e.target.value)
@@ -368,7 +294,7 @@ function PropertyDealerAddForm() {
                     </div>
 
                     {/*address */}
-                    <div className="flex flex-col mt-3 mb-1.5">
+                    <div className="flex flex-col p-3">
                         <p className="text-lg font-semibold" htmlFor="address">Office Address:</p>
                         {addressError && !addressArray.length && <p className="text-red-500 -mt-1">Provide atleast one address</p>}
                         <div className="flex flex-col pl-6 pr-6 gap-2">
@@ -410,11 +336,11 @@ function PropertyDealerAddForm() {
                                     <label className=" font-semibold" htmlFor="pincode">Pincode</label>
                                 </div>
                                 <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
-                                    setPostalCode(+e.target.value.trim())
+                                    setPostalCode(+e.target.value.trimEnd())
                                     setPostalCodeError(false)
                                     setAddressError(false)
                                 }} />
-                                {postalCodeError && <p className="text-red-500">Provide must be a 6 digit numbe</p>}
+                                {postalCodeError && <p className="text-red-500">Provide a 6 digit postal code</p>}
                             </div>
                             <div className="flex flex-col">
                                 <div className="flex flex-row gap-0.5">
@@ -428,7 +354,6 @@ function PropertyDealerAddForm() {
                                 }} />
                                 {cityError && <p className="text-red-500">Provide a town</p>}
                             </div>
-
                             <div className="flex flex-col">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -448,7 +373,6 @@ function PropertyDealerAddForm() {
                                 </select>
                                 {stateError && <p className="text-red-500">Select a state</p>}
                             </div>
-
                             <div className="flex flex-col">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -488,7 +412,7 @@ function PropertyDealerAddForm() {
                     </div>
 
                     {/*gst*/}
-                    <div className="flex flex-col mb-1.5 mt-3 ">
+                    <div className="flex flex-col p-3  bg-gray-100">
                         <div className="flex flex-row gap-0.5">
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="gst">GST number</label>
@@ -501,7 +425,7 @@ function PropertyDealerAddForm() {
                     </div>
 
                     {/*RERA number*/}
-                    <div className="flex flex-col mb-1.5 mt-3 ">
+                    <div className="flex flex-col p-3">
                         <div className="flex flex-row gap-0.5">
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="rera">RERA number</label>
@@ -513,34 +437,8 @@ function PropertyDealerAddForm() {
                         {reraNumberError && <p className="text-red-500">{reraNumberErrorMessage}</p>}
                     </div>
 
-                    {/*email*/}
-                    <div className="flex flex-col mb-1.5 ">
-                        <div className="flex flex-row gap-0.5">
-                            <p className="h-4 text-2xl text-red-500">*</p>
-                            <label className="text-lg font-semibold mb-0.5" htmlFor="email">Email</label>
-                        </div>
-                        <input type="email" id="email" name="email" className={`border-2 ${emailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={email} onChange={e => {
-                            setEmail(e.target.value.trimEnd().toLowerCase())
-                            setEmailError(false)
-                        }} onBlur={checkIfEmailExists} />
-                        {emailError && <p className="text-red-500">{emailErrorMessage}</p>}
-                    </div>
-
-                    {/*contact number*/}
-                    <div className="flex flex-col mb-1.5 ">
-                        <div className="flex flex-row gap-0.5">
-                            <p className="h-4 text-2xl text-red-500">*</p>
-                            <label className="text-lg font-semibold mb-0.5" htmlFor="contactNumber">Contact number</label>
-                        </div>
-                        <input type="tel" className={`border-2 ${contactNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} id="contactNumber" name="contactNumber" placeholder='E.g. 9876543210' autoComplete="new-password" value={contactNumber} onChange={e => {
-                            setContactNumber(e.target.value.trimEnd())
-                            setContactNumberError(false)
-                        }} onBlur={checkIfContactNumberExists} />
-                        {contactNumberError && <p className="text-red-500">{contactNumberErrorMessage}</p>}
-                    </div>
-
                     {/*about*/}
-                    <div className="flex flex-col mb-1.5 ">
+                    <div className="flex flex-col p-3  bg-gray-100">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
                         <textarea className={`border-2 ${aboutMoreThanOneFiftyWords ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
                             setAboutMoreThanOneFiftyWords(false)
@@ -554,13 +452,13 @@ function PropertyDealerAddForm() {
                     </div>
 
                     {/*add firm logo*/}
-                    <div className="flex flex-row gap-2 mt-2">
+                    <div className="flex flex-row gap-2 p-3">
                         <label className="text-lg font-semibold" htmlFor="image">Add firm logo</label>
                         <input type='file' className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={imageChangeHandler} />
                         {firmLogoImageFile && <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />}
                     </div>
 
-                    <div type='submit' className="w-full h-10 flex justify-center mt-8">
+                    <div type='submit' className="w-full h-10 flex justify-center mt-4">
                         <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8">Save details</button>
                     </div>
                 </form>
@@ -568,4 +466,4 @@ function PropertyDealerAddForm() {
         </Fragment>
     )
 }
-export default PropertyDealerAddForm
+export default PropertyDealerSignUp

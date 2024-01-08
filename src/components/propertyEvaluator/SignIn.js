@@ -347,7 +347,7 @@ function PropertyEvaluatorSignIn() {
                 <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/', { replace: true })}>Home</button>
             </div>}
 
-            <div className={`w-full h-screen mt-28 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
+            <div className={`w-full h-screen pt-28 flex justify-center ${alert.isAlertModal || isSpinner ? 'blur-sm' : null}`} >
                 <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
                     e.preventDefault()
                     if (!isForgotPassword) {
