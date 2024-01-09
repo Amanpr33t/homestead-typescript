@@ -30,7 +30,7 @@ function ReviewPropertyDealerSignUpData(props) {
     const [showEmailPasswordPage, setShowEmailPasswordPage] = useState(false)
 
     const [email, setEmail] = useState('') //Used to set email
-    const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided ot the format of email is not correct
+    const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided or the format of email is not correct
     const [emailErrorMessage, setEmailErrorMessage] = useState(false) //Used to set error message to be shown when an error regarding email occurs
     const [emailVerified, setEmailVerified] = useState(false) //used to check if an email already exists in the database
 

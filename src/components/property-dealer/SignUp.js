@@ -248,14 +248,14 @@ function PropertyDealerSignUp() {
             <div className={`p-1 mb-10 sm:p-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur-sm' : ''} ${showReviewForm ? 'fixed right-full' : ''}`} >
 
                 {!showReviewForm && <>
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
+                    <div className='fixed w-full top-20 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
                         <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/property-dealer/signIn', { replace: true })}>Back</button>
                     </div>
 
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold">Sign Up by filling this form</p>
+                    <p className="fixed w-full text-center top-32 sm:top-20 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold">Sign Up by filling this form</p>
                 </>}
 
-                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                <form className="w-full mt-44 sm:mt-40 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                     {/*Firm name */}
                     <div className="flex flex-col p-3  bg-gray-100">
@@ -458,8 +458,8 @@ function PropertyDealerSignUp() {
                         {firmLogoImageFile && <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />}
                     </div>
 
-                    <div type='submit' className="w-full h-10 flex justify-center mt-4">
-                        <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8">Save details</button>
+                    <div type='submit' className="w-full h-10 flex justify-center mt-4 mb-2">
+                        <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded mr-2 ml-2 h-8">Save details</button>
                     </div>
                 </form>
             </div>

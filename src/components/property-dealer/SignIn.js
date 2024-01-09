@@ -342,11 +342,11 @@ function PropertyDealerSignIn() {
             {/* The code below is used to show a spinner */}
             {/*isSpinner && <Spinner />*/}
 
-            {!alert.isAlertModal  && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+            {!alert.isAlertModal  && <div className='fixed w-full top-20 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                 <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/', { replace: true })}>Home</button>
             </div>}
 
-            <div className={`w-full h-screen pt-28 flex justify-center ${alert.isAlertModal ? 'blur-sm' : null}`} >
+            <div className={`w-full h-screen pt-32 flex justify-center ${alert.isAlertModal ? 'blur-sm' : null}`} >
                 <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={e => {
                     e.preventDefault()
                     if (!isForgotPassword) {
@@ -402,7 +402,7 @@ function PropertyDealerSignIn() {
 
                     {newPasswordEnabler && <>
                         <label className="text-lg font-semibold mb-1 mt-2" htmlFor="newPassword">New password</label>
-                        <input type="password" id="newPassword" name="newPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={newPassword}
+                        <input type="password" id="newPassword" name="newPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="password" value={newPassword}
                             onChange={e => {
                                 setNewPassword(e.target.value.trimEnd())
                                 setNewPasswordValid(true)
@@ -410,7 +410,7 @@ function PropertyDealerSignIn() {
                         {!newPasswordValid && <p className="text-red-500">Password should be of atleast 6 and not more than 10 characters.</p>}
 
                         <label className="text-lg font-semibold mb-1 mt-2" htmlFor="confirmNewPassword">Confirm new password</label>
-                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="new-password" value={confirmNewPassword}
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" className="border-2 border-gray-400 p-1 rounded" autoComplete="password" value={confirmNewPassword}
                             onChange={e => {
                                 setConfirmNewPassword(e.target.value.trimEnd())
                                 setConfirmNewPasswordValid(true)

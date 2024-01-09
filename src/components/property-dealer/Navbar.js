@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { FaHome } from "react-icons/fa"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
+import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa"
+import { MdOutlineMessage } from "react-icons/md";
 
 //This component is the navigation bar
 function NavbarPropertyDealer() {
@@ -16,6 +18,8 @@ function NavbarPropertyDealer() {
 
     const [isSpinner, setIsSpinner] = useState(false)
     const authToken = localStorage.getItem("homestead-property-dealer-authToken")
+
+    const [userDropdown, setUserDropdown] = useState(false)
 
     const logoutFunction = async () => {
         setIsSpinner(true)
@@ -49,10 +53,12 @@ function NavbarPropertyDealer() {
         }
     }
 
+    console.log(userDropdown)
+
     return (
         <Fragment>
-             {/*The code bolow is used to show an alert modal to the user */}
-             {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType}  alertModalRemover={() => setAlert({
+            {/*The code bolow is used to show an alert modal to the user */}
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} alertModalRemover={() => setAlert({
                 isAlertModal: false,
                 alertType: '',
                 alertMessage: ''
@@ -62,18 +68,37 @@ function NavbarPropertyDealer() {
 
             <div className='fixed z-40 top-0 w-full'>
                 <nav className=" flex flex-col w-full bg-white" >
-                    <div className="flex flex-row justify-between items-center h-16 w-full border-b shadow ">
+                    <div className="flex flex-row justify-between items-center h-20 w-full border-b shadow ">
                         <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => navigate('/', { replace: true })}>
                             <FaHome role="svg" className="font-semibold text-4xl md:text-5xl text-gray-600" />
                             <p className='font-semibold text-3xl md:text-4xl italic text-gray-600' >HomeStead</p>
                         </div>
-                        {authToken && <div className="flex flex-row  gap-4 pr-2 md:pr-6">
-                            <button className='font-semibold text-xl sm:text-xl italic text-red-500 hover:text-red-600 pb-1 pt-1' onClick={logoutFunction}>Logout</button>
-                        </div>}
+                        {authToken &&
+                            <div className="flex flex-row gap-4 pr-2 md:pr-6">
+                                <div className="relative flex items-center justify-center p-2 pt-5">
+                                    <MdOutlineMessage className="text-4xl cursor-pointer text-gray-500 hover:text-blue-500" />
+                                    <p className="absolute right-0 top-4 bg-orange-400 w-5 text-center rounded-full text-white font-bold">5</p>
+                                </div>
+                                <div className="relative hover:bg-blue-100 cursor-pointer h-20 flex items-center justify-center pl-5 pr-5" onMouseEnter={() => setUserDropdown(true)} onMouseLeave={() => setUserDropdown(false)}>
+                                    {userDropdown ?
+                                        <FaArrowAltCircleUp className="text-4xl cursor-pointer text-blue-500" />
+                                        :
+                                        <FaArrowAltCircleDown className="text-4xl cursor-pointer text-gray-600" />
+                                    }
+                                    {userDropdown && <div className="fixed top-20 right-5 w-72 flex flex-col border shadow ">
+                                        <div className="p-5 border-b cursor-text">
+                                            <p className="font-semibold  text-lg">ABCD private limited</p>
+                                            <p>abcd@gmail.com</p>
+                                        </div>
+                                        <p className="pl-5 pr-3 pt-5 pb-2 font-semibold text-gray-700 text-lg hover:text-blue-500">Edit user details</p>
+                                        <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-gray-700 text-lg hover:text-blue-500" onClick={logoutFunction}>Logout</p>
+                                    </div>}
+                                </div>
+                            </div>}
                     </div>
                 </nav>
-            </div>
-        </Fragment>
+            </div >
+        </Fragment >
     )
 }
 export default NavbarPropertyDealer
