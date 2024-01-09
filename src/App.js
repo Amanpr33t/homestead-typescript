@@ -31,6 +31,7 @@ import PropertyDealerSignIn from './components/property-dealer/SignIn';
 import NavbarPropertyDealer from './components/property-dealer/Navbar';
 import PropertyDealerHomePage from './components/property-dealer/HomePage';
 import PropertyDealerSignUp from './components/property-dealer/SignUp';
+import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
 
 
 function App() {
@@ -156,6 +157,10 @@ function App() {
             <Route path='signUp' element={<>
               <NavbarPropertyDealer />
               <PropertyDealerSignUp />
+            </>}></Route>
+            <Route path='details' element={<>
+              <NavbarPropertyDealer />
+              <PropertyDealerDetails/>
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
