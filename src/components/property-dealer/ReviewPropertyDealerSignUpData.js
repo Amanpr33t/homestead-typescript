@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useState } from "react"
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
-import { useNavigate } from "react-router-dom";
 import validator from 'validator'
 
 //This component is used to review the property dealer data befor sending the data to the server
@@ -18,7 +17,6 @@ function ReviewPropertyDealerSignUpData(props) {
         firmLogoImageFile,
         hideReviewForm
     } = props
-    const navigate = useNavigate()
 
     const [spinner, setSpinner] = useState(false) //used to set spinner
     const [alert, setAlert] = useState({

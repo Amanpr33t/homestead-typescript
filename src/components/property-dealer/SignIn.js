@@ -1,7 +1,6 @@
 import { Fragment, useState, useEffect } from "react"
 import * as EmailValidator from 'email-validator';
 import AlertModal from "../AlertModal";
-import Spinner from "../Spinner";
 import { useNavigate } from "react-router-dom";
 
 /*This component contains code for the following tasks:
@@ -338,9 +337,6 @@ function PropertyDealerSignIn() {
                 alertType: '',
                 alertMessage: ''
             })} />}
-
-            {/* The code below is used to show a spinner */}
-            {/*isSpinner && <Spinner />*/}
 
             {!alert.isAlertModal  && <div className='fixed w-full top-20 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                 <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/', { replace: true })}>Home</button>

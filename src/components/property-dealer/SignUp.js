@@ -1,4 +1,3 @@
-import validator from 'validator'
 import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
