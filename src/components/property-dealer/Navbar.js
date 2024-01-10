@@ -103,7 +103,7 @@ function NavbarPropertyDealer() {
                                 </div>
 
                                 {/*The div below is for icons on navbar for screens with width smaller than 'sm' */}
-                                <div className="relative active:bg-blue-100 cursor-pointer h-20 flex items-center justify-center pl-5 pr-5 sm:hidden" onClick={(e) => {
+                                <div className="relative cursor-pointer h-20 flex items-center justify-center pl-5 pr-5 sm:hidden" onClick={(e) => {
                                     e.stopPropagation()
                                     setUserDropdown(true)
                                 }} >
@@ -125,7 +125,11 @@ function NavbarPropertyDealer() {
                                                 setUserDropdown(false)
                                                 navigate('/property-dealer/details')
                                             }}>User details</p>
-                                            <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-red-400 text-lg active:text-red-700" onClick={logoutFunction}>Logout</p>
+                                            <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-red-400 text-lg active:text-red-700" onClick={(e) => {
+                                                e.stopPropagation()
+                                                setUserDropdown(false)
+                                                logoutFunction()
+                                            }}>Logout</p>
                                         </div>}
                                 </div>
                             </div>}
