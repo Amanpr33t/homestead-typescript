@@ -2,9 +2,11 @@ import { Fragment, useEffect, useState } from "react"
 import AlertModal from "../AlertModal";
 import Spinner from "../Spinner";
 import validator from 'validator'
+import { useNavigate } from "react-router-dom";
 
 //This component is used to review the property dealer data befor sending the data to the server
 function ReviewPropertyDealerSignUpData(props) {
+    const navigate = useNavigate()
     const {
         firmName,
         propertyDealerName,
@@ -25,26 +27,25 @@ function ReviewPropertyDealerSignUpData(props) {
         alertMessage: ''
     }) //used to set the alert modal
 
-    const [showEmailPasswordPage, setShowEmailPasswordPage] = useState(false)
+    const [showEmailPasswordPage, setShowEmailPasswordPage] = useState(false) //If true, a modal is shown where the dealer can fill his email, contact number and password
 
     const [email, setEmail] = useState('') //Used to set email
     const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided or the format of email is not correct
     const [emailErrorMessage, setEmailErrorMessage] = useState(false) //Used to set error message to be shown when an error regarding email occurs
     const [emailVerified, setEmailVerified] = useState(false) //used to check if an email already exists in the database
 
-    const [password, setPassword] = useState('')
-    const [passwordError, setPasswordError] = useState(false)
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [confirmPasswordError, setConfirmPasswordError] = useState(false)
-    const [passwordsNotSameError, setPasswordsNotSameError] = useState(false)
+    const [password, setPassword] = useState('') //used to store password
+    const [passwordError, setPasswordError] = useState(false) //Is set to true if no password is less than 6 or greater than 10 characters
+    const [confirmPassword, setConfirmPassword] = useState('') //used to store re-confirmed password value 
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false) //Is set to true if no password is less than 6 or greater than 10 characters
+    const [passwordsNotSameError, setPasswordsNotSameError] = useState(false) //Is set to true if both the passwords are not the same
 
     const [contactNumber, setContactNumber] = useState('') //used to set contact number
     const [contactNumberError, setContactNumberError] = useState(false) //used to set error when no contact number is provided or a similar contact number already exists in database
     const [contactNumberErrorMessage, setContactNumberErrorMessage] = useState(false) //used to set error message for contact number errors
     const [contactNumberVerified, setContactNumberVerified] = useState(false) //used to check if the contact number is already present in the database
 
-    const [finalAlertModal, setFinalAlertModal] = useState(false)
-
+    const [finalAlertModal, setFinalAlertModal] = useState(false) //If true, a modal is shown to the user. The modal asks user to make sure details are correct before details are saved to the database
 
     //The code in useEffect hook is used to scroll to the top of the page
     useEffect(() => {
@@ -125,6 +126,7 @@ function ReviewPropertyDealerSignUpData(props) {
         }
     }
 
+    //The function is used to verify the data set by the user.
     const verifyData = (e) => {
         e.preventDefault()
         if (!contactNumber.trim() || !email.trim() || !validator.isEmail(email.trim()) || (!password || password.length < 6 || password.length > 10) || (!confirmPassword || confirmPassword.length < 6 || confirmPassword.length > 10) || (password !== confirmPassword)) {
@@ -161,7 +163,7 @@ function ReviewPropertyDealerSignUpData(props) {
         setFinalAlertModal(true)
     }
 
-    //This function is used to save details to backend API
+    //This function is used to save property dealer details to database
     const saveDetailsToDatabase = async (e) => {
         try {
             setSpinner(true)
@@ -202,6 +204,10 @@ function ReviewPropertyDealerSignUpData(props) {
                     alertMessage: 'Property dealer added successfully',
                     routeTo: '/property-dealer/signIn'
                 })
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-property-dealer-authToken")
+                navigate('/property-dealer/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }

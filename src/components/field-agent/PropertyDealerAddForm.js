@@ -49,7 +49,7 @@ function PropertyDealerAddForm() {
     const [addressError, setAddressError] = useState(false) //Used to show error when no address is provided, i.e. addressArray is empty
 
     const [about, setAbout] = useState('') //Used to set about
-    const [aboutMoreThanOneFiftyWords, setAboutMoreThanOneFiftyWords] = useState(false) //used to show an error when about is more than 150 words
+    const [aboutMoreThanFourHundredCharacters, setAboutMoreThanFourHundredCharacters] = useState(false) //used to show an error when about is more than 400 characters
 
     const [email, setEmail] = useState('') //Used to set email
     const [emailError, setEmailError] = useState(false) //used to show an error when email is not provided ot the format of email is not correct
@@ -96,7 +96,7 @@ function PropertyDealerAddForm() {
 
     //This fuction is used to store the address
     const addAddress = () => {
-        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || postalCode.toString().length !== 6 || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyWords) {
+        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || postalCode.toString().length !== 6 || !city.trim() || !state.trim() || !district.trim()) {
             if (!flatPlotHouseNumber.trim()) {
                 setFlatPlotHouseNumberError(true)
             }
@@ -541,16 +541,15 @@ function PropertyDealerAddForm() {
 
                     {/*about*/}
                     <div className="flex flex-col mb-1.5 ">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
-                        <textarea className={`border-2 ${aboutMoreThanOneFiftyWords ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
-                            setAboutMoreThanOneFiftyWords(false)
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 400 characters)</label>
+                        <textarea className={`border-2 ${aboutMoreThanFourHundredCharacters ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
+                            setAboutMoreThanFourHundredCharacters(false)
                             setAbout(e.target.value)
-                            const numberOfWordsInAbout = e.target.value.trim().split(/\s+/);
-                            if (numberOfWordsInAbout.length > 150) {
-                                setAboutMoreThanOneFiftyWords(true)
+                            if (e.target.value.trim().length > 400) {
+                                return setAboutMoreThanFourHundredCharacters(true)
                             }
                         }} />
-                        {aboutMoreThanOneFiftyWords && <p className="text-red-500">About should be less than 150  words</p>}
+                        {aboutMoreThanFourHundredCharacters && <p className="text-red-500">About should be less than 400 characters</p>}
                     </div>
 
                     {/*add firm logo*/}

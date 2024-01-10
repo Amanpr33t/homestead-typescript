@@ -4,7 +4,7 @@ import AlertModal from '../AlertModal'
 import ReviewPropertyDealerSignUpData from './ReviewPropertyDealerSignUpData'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 
-//This component is a form used by a field agent to add a property dealer
+//This component is used to signUp a property dealer
 function PropertyDealerSignUp() {
     const navigate = useNavigate()
 
@@ -52,7 +52,7 @@ function PropertyDealerSignUp() {
     const [addressError, setAddressError] = useState(false) //Used to show error when no address is provided, i.e. addressArray is empty
 
     const [about, setAbout] = useState('') //Used to set about
-    const [aboutMoreThanOneFiftyWords, setAboutMoreThanOneFiftyWords] = useState(false) //used to show an error when about is more than 150 words
+    const [aboutMoreThanFourHundredCharacters, setAboutMoreThanFourHundredCharacters] = useState(false) //used to show an error when about is more than 400 characters
 
     const [gstNumber, setGstNumber] = useState('') //used to set GST number
     const [gstNumberError, setGstNumberError] = useState(false) //used to show error when no gst number is provided or the gst number is already present in the database
@@ -79,7 +79,7 @@ function PropertyDealerSignUp() {
 
     //This fuction is used to store the address
     const addAddress = () => {
-        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || (postalCode.toString().length !== 6) || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyWords) {
+        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || (postalCode.toString().length !== 6) || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanFourHundredCharacters) {
             if (!flatPlotHouseNumber.trim()) {
                 setFlatPlotHouseNumberError(true)
             }
@@ -165,7 +165,7 @@ function PropertyDealerSignUp() {
     //This function is used to submit the form once the save button is clicked
     const formSubmit = e => {
         e.preventDefault()
-        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim() ) {
+        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim()) {
             if (!firmName.trim()) {
                 setFirmNameError(true)
             }
@@ -217,7 +217,6 @@ function PropertyDealerSignUp() {
     //This function is used to create an array of 51 numbers from 0-50
     const arrayOfFiftyNumbers = Array.apply(null, Array(51))
         .map(function (y, i) { return i })
-
 
     return (
         <Fragment>
@@ -275,7 +274,7 @@ function PropertyDealerSignUp() {
                             <p className="h-4 text-2xl text-red-500">*</p>
                             <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
                         </div>
-                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} placeholder="Passord should be of 6 digits" autoComplete="new-password" value={propertyDealerName} onChange={e => {
+                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" value={propertyDealerName} onChange={e => {
                             setPropertyDealerName(e.target.value)
                             setPropertyDealerNameError(false)
                         }} />
@@ -335,6 +334,9 @@ function PropertyDealerSignUp() {
                                     <label className=" font-semibold" htmlFor="pincode">Pincode</label>
                                 </div>
                                 <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
+                                    if (+e.target.value === 0) {
+                                        return setPostalCode('')
+                                    }
                                     setPostalCode(+e.target.value.trimEnd())
                                     setPostalCodeError(false)
                                     setAddressError(false)
@@ -438,16 +440,15 @@ function PropertyDealerSignUp() {
 
                     {/*about*/}
                     <div className="flex flex-col p-3  bg-gray-100">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
-                        <textarea className={`border-2 ${aboutMoreThanOneFiftyWords ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
-                            setAboutMoreThanOneFiftyWords(false)
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 400 characters)</label>
+                        <textarea className={`border-2 ${aboutMoreThanFourHundredCharacters ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
+                            setAboutMoreThanFourHundredCharacters(false)
                             setAbout(e.target.value)
-                            const numberOfWordsInAbout = e.target.value.trim().split(/\s+/);
-                            if (numberOfWordsInAbout.length > 150) {
-                                setAboutMoreThanOneFiftyWords(true)
+                            if (e.target.value.trim().length > 400) {
+                                return setAboutMoreThanFourHundredCharacters(true)
                             }
                         }} />
-                        {aboutMoreThanOneFiftyWords && <p className="text-red-500">About should be less than 150  words</p>}
+                        {aboutMoreThanFourHundredCharacters && <p className="text-red-500">About should be less than 400 characters</p>}
                     </div>
 
                     {/*add firm logo*/}

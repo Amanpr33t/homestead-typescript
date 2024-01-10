@@ -19,8 +19,9 @@ function NavbarPropertyDealer() {
     const [isSpinner, setIsSpinner] = useState(false)
     const authToken = localStorage.getItem("homestead-property-dealer-authToken")
 
-    const [userDropdown, setUserDropdown] = useState(false)
+    const [userDropdown, setUserDropdown] = useState(false) //if true, a dropdown is shown 
 
+    //to logout user
     const logoutFunction = async () => {
         setIsSpinner(true)
         try {
@@ -88,14 +89,16 @@ function NavbarPropertyDealer() {
                                         :
                                         <FaArrowAltCircleDown className="text-3xl sm:text-4xl cursor-pointer text-gray-600" />
                                     }
+
+                                    {/*The div below is a dropdown box*/}
                                     {userDropdown &&
-                                        <div className="fixed top-20 right-6 w-72 flex flex-col border shadow bg-white cursor-pointer z-50" >
+                                        <div className="fixed top-20 right-6 w-72 flex flex-col border shadow bg-white cursor-pointer" >
                                             <div className="p-5 border-b cursor-text">
                                                 <p className="font-semibold  text-lg">ABCD private limited</p>
                                                 <p>abcd@gmail.com</p>
                                             </div>
                                             <p className="pl-5 pr-3 pt-5 pb-2 font-semibold text-gray-700 text-lg hover:text-blue-500" onClick={() => navigate('/property-dealer/details')}>User details</p>
-                                            <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-gray-700 text-lg hover:text-blue-500" onClick={logoutFunction}>Logout</p>
+                                            <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-red-400 text-lg hover:text-red-700" onClick={logoutFunction}>Logout</p>
                                         </div>}
                                 </div>
 
@@ -109,8 +112,10 @@ function NavbarPropertyDealer() {
                                         :
                                         <FaArrowAltCircleDown className="text-3xl sm:text-4xl cursor-pointer text-gray-600" />
                                     }
+
+                                    {/*The div below is a dropdown box*/}
                                     {userDropdown &&
-                                        <div className="fixed top-20 right-2 w-72 flex flex-col border shadow bg-white cursor-pointer z-50" onClick={e => e.stopPropagation()} onMouseLeave={() => setUserDropdown(false)}>
+                                        <div className="fixed top-20 right-2 w-72 flex flex-col border shadow bg-white cursor-pointer" onClick={e => e.stopPropagation()} onMouseLeave={() => setUserDropdown(false)}>
                                             <div className="p-5 border-b cursor-text">
                                                 <p className="font-semibold  text-lg">ABCD private limited</p>
                                                 <p>abcd@gmail.com</p>
@@ -119,13 +124,13 @@ function NavbarPropertyDealer() {
                                                 setUserDropdown(false)
                                                 navigate('/property-dealer/details')
                                             }}>User details</p>
-                                            <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-gray-700 text-lg active:text-blue-500" onClick={logoutFunction}>Logout</p>
+                                            <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-red-400 text-lg active:text-red-700" onClick={logoutFunction}>Logout</p>
                                         </div>}
                                 </div>
                             </div>}
                     </div>
                 </nav>
-                <div className="h-full w-full blur-xl z-40 "></div>
+                <div className="h-full w-full blur-xl"></div>
             </div >
         </Fragment >
     )

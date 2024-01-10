@@ -1,11 +1,11 @@
 import { Fragment, useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
-import ReviewPropertyDealerSignUpData from './ReviewPropertyDealerSignUpData'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import Spinner from "../Spinner"
+import { countWordsInAString } from "../../utils/stringUtilityFunctions"
 
-//This component is a div used by a field agent to add a property dealer
+//This component is used to review and edit details of property dealer
 function PropertyDealerDetails() {
     const navigate = useNavigate()
 
@@ -22,9 +22,11 @@ function PropertyDealerDetails() {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     }, [])
 
-    const [dealerDetails, setDealerDetails] = useState(null)
+    const [editDetails, setEditDetails] = useState(false) //If true, the user will be able to edit details
 
-    const [editDetails, setEditDetails] = useState(false)
+    const [fetchedDealerDetails, setFetchedDealerDetails] = useState(null) //It stores the dealer information fetched from server
+
+    const [dealerId, setDealerId] = useState('') //unique dealerId provided to the dealer
 
     const [firmName, setFirmName] = useState('') //Name of the firm
     const [firmNameError, setFirmNameError] = useState(false) //Used to set error in case no firm name is provided
@@ -59,7 +61,7 @@ function PropertyDealerDetails() {
     const [addressError, setAddressError] = useState(false) //Used to show error when no address is provided, i.e. addressArray is empty
 
     const [about, setAbout] = useState('') //Used to set about
-    const [aboutMoreThanOneFiftyWords, setAboutMoreThanOneFiftyWords] = useState(false) //used to show an error when about is more than 150 words
+    const [aboutMoreThanFourHundredCharacters, setAboutMoreThanFourHundredCharacters] = useState(false) //used to show an error when about is more than 400 characters
 
     const [gstNumber, setGstNumber] = useState('') //used to set GST number
     const [reraNumber, setReraNumber] = useState('')
@@ -67,8 +69,8 @@ function PropertyDealerDetails() {
     const [firmLogoImageUpload, setFirmLogoImageUpload] = useState() //used to store the entire image object to be sent to the database
     const [firmLogoImageFile, setFirmLogoImageFile] = useState() //Used to store image file string
 
-    const [email, setEmail] = useState('')
-    const [contactNumber, setContactNumber] = useState('')
+    const [email, setEmail] = useState('') //email of dealer
+    const [contactNumber, setContactNumber] = useState('') //contact number of dealer
 
     //This fuction is used to manage the image selected by the user
     const imageChangeHandler = (event) => {
@@ -79,7 +81,7 @@ function PropertyDealerDetails() {
 
     //This fuction is used to store the address
     const addAddress = () => {
-        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || (postalCode.toString().length !== 6) || !city.trim() || !state.trim() || !district.trim() || aboutMoreThanOneFiftyWords) {
+        if (!flatPlotHouseNumber.trim() || !areaSectorVillage.trim() || (postalCode.toString().length !== 6) || !city.trim() || !state.trim() || !district.trim()) {
             if (!flatPlotHouseNumber.trim()) {
                 setFlatPlotHouseNumberError(true)
             }
@@ -118,8 +120,36 @@ function PropertyDealerDetails() {
         setState('')
     }
 
-    //This function is used to submit the div once the save button is clicked
-    const formSubmit = e => {
+    //The function is used to upload images to the server
+    const imageUpload = async () => {
+        try {
+            const formData = new FormData()
+            formData.append('file', firmLogoImageUpload)
+            formData.append('upload_preset', 'homestead')
+            formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
+            //The fetch promise code is used to store image in cloudinary database
+            const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'post',
+                body: formData
+            })
+            const cloudinaryData = await cloudinaryResponse.json()
+            if (cloudinaryData && cloudinaryData.error) {
+                throw new Error('Some error occured')
+            }
+            return cloudinaryData.secure_url
+        } catch (error) {
+            setSpinner(false)
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured'
+            })
+            return
+        }
+    }
+
+    //This function is used to save updated details to the database
+    const updateDetailsToDatabase = async (e) => {
         e.preventDefault()
         if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length) {
             if (!firmName.trim()) {
@@ -143,7 +173,61 @@ function PropertyDealerDetails() {
             })
             return
         }
+        setSpinner(true)
+        let updatedData = { addressArray }
+        if (fetchedDealerDetails.firmName.trim() !== firmName.trim()) {
+            updatedData = { ...updatedData, firmName }
+        }
+        if (fetchedDealerDetails.propertyDealerName.trim() !== propertyDealerName.trim()) {
+            updatedData = { ...updatedData, propertyDealerName }
+        }
+        if (fetchedDealerDetails.experience !== experience) {
+            updatedData = { ...updatedData, experience }
+        }
+        if (about.trim() && fetchedDealerDetails.about.trim() !== about.trim()) {
+            updatedData = { ...updatedData, about }
+        }
+        if (!firmLogoImageFile.includes('cloudinary')) {
+            const url = await imageUpload()
+            updatedData = { ...updatedData, firmLogoUrl: url }
+        }
 
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/updatePropertyDealerDetails`, {
+                method: 'PATCH',
+                body: JSON.stringify(updatedData),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                }
+            })
+            if (!response.ok) {
+                throw new Error('Some error occured')
+            }
+            const data = await response.json()
+            if (data.status === 'ok') {
+                setSpinner(false)
+                setAlert({
+                    isAlertModal: true,
+                    alertType: 'success',
+                    alertMessage: 'Property dealer details have been successfully updated',
+                    routeTo: '/property-dealer'
+                })
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-property-dealer-authToken")
+                navigate('/property-dealer/signIn', { replace: true })
+            } else {
+                throw new Error('Some error occured')
+            }
+        } catch (error) {
+            setSpinner(false)
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured'
+            })
+        }
     }
 
     //This function is used to submit the div once the save button is clicked
@@ -162,7 +246,8 @@ function PropertyDealerDetails() {
             }
             const data = await response.json()
             if (data.status === 'ok') {
-                setDealerDetails(data.details)
+                setFetchedDealerDetails(data.details)
+                setDealerId(data.details.uniqueId)
                 setFirmName(data.details.firmName)
                 setPropertyDealerName(data.details.propertyDealerName)
                 setExperience(data.details.experience)
@@ -174,6 +259,10 @@ function PropertyDealerDetails() {
                 setEmail(data.details.email)
                 setContactNumber(data.details.contactNumber)
                 setSpinner(false)
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-property-dealer-authToken")
+                navigate('/property-dealer/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
@@ -182,7 +271,8 @@ function PropertyDealerDetails() {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Some error occured'
+                alertMessage: 'Some error occured',
+                routeTo:'/property-dealer'
             })
             return
         }
@@ -196,12 +286,11 @@ function PropertyDealerDetails() {
     const arrayOfFiftyNumbers = Array.apply(null, Array(51))
         .map(function (y, i) { return i })
 
-
     return (
         <Fragment>
 
             {/*The code bolow is used to show an alert modal to the user */}
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} alertModalRemover={() => setAlert({
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => setAlert({
                 isAlertModal: false,
                 alertType: '',
                 alertMessage: ''
@@ -209,19 +298,30 @@ function PropertyDealerDetails() {
 
             {spinner && <Spinner />}
 
-            {!spinner && <div className={`p-1 mb-10 sm:p-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur-sm' : ''} $`} >
-                <div className='fixed w-full top-20 pt-2 pb-2 pl-2 z-50 bg-white sm:bg-transparent'>
+            <div className={`p-1 mb-10 sm:p-0 w-full flex flex-col place-items-center ${alert.isAlertModal || spinner ? 'blur-sm' : ''} $`} >
+                <div className='fixed w-full top-20 pt-2 pb-2 pl-2 z-20 '>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/property-dealer', { replace: true })}>Back</button>
                 </div>
 
-                <p className="fixed w-full text-center top-32 sm:top-20 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-bold z-40">{editDetails ? "Edit details" : "Review the details"}</p>
+                <p className=" pt-4 pl-4 pr-4  pb-4 mb-5 text-xl font-bold fixed w-full text-center top-20 z-10 bg-white">{editDetails ? "Edit user details" : "Review user details"}</p>
 
-                <div className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl">
+                {!editDetails && <div className=" mt-32 sm:mt-36 flex flex-row gap-1.5 place-content-center w-full pb-2">
+                    <p className="text-blue-600 text-lg font-semibold cursor-pointer" onClick={() => setEditDetails(true)}>Click here</p>
+                    <p className="text-lg">to edit details</p>
+                </div>}
+
+                <div className={`${editDetails ? 'mt-32 sm:mt-36' : ''} w-full sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl`}>
+
+                    {/*unique Id*/}
+                    {!editDetails && <div className="flex flex-col p-3">
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="dealerId">Dealer Id</label>
+                        <input type="text" id="dealerId" name="dealerId" className='border-2 border-gray-400 p-1 rounded' disabled={true} value={dealerId} />
+                    </div>}
 
                     {/*Firm name */}
                     <div className="flex flex-col p-3  bg-gray-100">
                         <div className="flex flex-row gap-0.5">
-                            <p className="h-4 text-2xl text-red-500">*</p>
+                            {editDetails && <p className="h-4 text-2xl text-red-500">*</p>}
                             <label className="text-lg font-semibold mb-0.5" htmlFor="firmName">Name of the firm</label>
                         </div>
                         <input type="text" id="firmName" name="firmName" className={`border-2 border-gray-400 ${firmNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" disabled={!editDetails} value={firmName} onChange={e => {
@@ -234,10 +334,10 @@ function PropertyDealerDetails() {
                     {/*dealer name */}
                     <div className="flex flex-col p-3">
                         <div className="flex flex-row gap-0.5">
-                            <p className="h-4 text-2xl text-red-500">*</p>
+                            {editDetails && <p className="h-4 text-2xl text-red-500">*</p>}
                             <label className="text-lg font-semibold mb-0.5" htmlFor="dealerName">Property dealer name</label>
                         </div>
-                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} placeholder="Passord should be of 6 digits" autoComplete="new-password" disabled={!editDetails} value={propertyDealerName} onChange={e => {
+                        <input type="text" id="dealerName" name="dealerName" className={`border-2 ${propertyDealerNameError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" disabled={!editDetails} value={propertyDealerName} onChange={e => {
                             setPropertyDealerName(e.target.value)
                             setPropertyDealerNameError(false)
                         }} />
@@ -297,6 +397,9 @@ function PropertyDealerDetails() {
                                         <label className=" font-semibold" htmlFor="pincode">Pincode</label>
                                     </div>
                                     <input type="number" id="pincode" name="pincode" className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`} autoComplete="new-password" placeholder="6 digits [0-9] PIN code" min={100000} max={999999} value={postalCode} onChange={e => {
+                                        if (+e.target.value === 0) {
+                                            return setPostalCode('')
+                                        }
                                         setPostalCode(+e.target.value.trimEnd())
                                         setPostalCodeError(false)
                                         setAddressError(false)
@@ -373,60 +476,57 @@ function PropertyDealerDetails() {
                     </div>
 
                     {/*gst*/}
-                    <div className="flex flex-col p-3  bg-gray-100">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="gst">GST number</label>
+                    {!editDetails && <div className="flex flex-col p-3  bg-gray-100">
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="email">GST Number</label>
                         <input type="text" id="gst" name="gst" className='border-2 border-gray-400 p-1 rounded' disabled={true} value={gstNumber} />
-                    </div>
+                    </div>}
 
                     {/*RERA number*/}
-                    <div className="flex flex-col p-3">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="rera">RERA number</label>
+                    {!editDetails && <div className="flex flex-col p-3">
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="email">RERA Number</label>
                         <input type="text" id="rera" name="rera" className='border-2  border-gray-400 p-1 rounded' disabled={true} value={reraNumber} />
-                    </div>
+                    </div>}
 
                     {/*email*/}
-                    <div className="flex flex-col p-3  bg-gray-100">
+                    {!editDetails && <div className="flex flex-col p-3  bg-gray-100">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="email">Email</label>
                         <input type="text" id="email" name="email" className='border-2 border-gray-400 p-1 rounded' disabled={true} value={email} />
-                    </div>
+                    </div>}
 
                     {/*contact number*/}
-                    <div className="flex flex-col p-3">
+                    {!editDetails && <div className="flex flex-col p-3">
                         <label className="text-lg font-semibold mb-0.5" htmlFor="contactNumber">Contact Number</label>
                         <input type="Number" id="contactNumber" name="contactNumber" className='border-2  border-gray-400 p-1 rounded' disabled={true} value={contactNumber} />
-                    </div>
+                    </div>}
 
                     {/*about*/}
-                    <div className="flex flex-col p-3  bg-gray-100">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 150 words)</label>
-                        <textarea disabled={!editDetails} className={`border-2 ${aboutMoreThanOneFiftyWords ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
-                            setAboutMoreThanOneFiftyWords(false)
+                    {(editDetails || (!editDetails && about.trim())) && <div className="flex flex-col p-3  bg-gray-100">
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 400 characters)</label>
+                        <textarea disabled={!editDetails} className={`border-2 ${aboutMoreThanFourHundredCharacters ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`} rows={3} autoCorrect="on" autoComplete="new-password" id="story" name="story" value={about} onChange={e => {
+                            setAboutMoreThanFourHundredCharacters(false)
                             setAbout(e.target.value)
-                            const numberOfWordsInAbout = e.target.value.trim().split(/\s+/);
-                            if (numberOfWordsInAbout.length > 150) {
-                                setAboutMoreThanOneFiftyWords(true)
+                            if (e.target.value.trim().length > 400) {
+                                return setAboutMoreThanFourHundredCharacters(true)
                             }
                         }} />
-                        {aboutMoreThanOneFiftyWords && <p className="text-red-500">About should be less than 150  words</p>}
-                    </div>
+                        {aboutMoreThanFourHundredCharacters && <p className="text-red-500">About should be less than 400 characters</p>}
+                    </div>}
 
                     {/*add firm logo*/}
-                    <div className="flex flex-row gap-2 p-3">
+                    {(editDetails || (!editDetails && firmLogoImageFile)) && <div className="flex flex-row gap-2 p-3">
                         {!editDetails && <p className="text-lg font-semibold mr-16" htmlFor="image">Firm logo</p>}
                         {editDetails && <><label className="text-lg font-semibold" htmlFor="image">Add firm logo</label>
                             <input type='file' className='text-transparent' placeholder="image" accept="image/png, image/jpeg" name='image' onChange={imageChangeHandler} /></>}
                         {firmLogoImageFile && <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />}
-                    </div>
+                    </div>}
 
-                    <div type='submit' className="w-full h-10 flex justify-center mt-4 mb-2">
-                        {!editDetails && <button type="submit" className="w-full bg-blue-500 text-white font-medium rounded mr-2 ml-2 h-8" onClick={() => {
-                            setEditDetails(true)
-                            window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-                        }}>Edit details</button>}
-                        {editDetails && <button type="button" className="w-full bg-green-500 text-white font-medium rounded mr-2 ml-2 h-8">Save Edited Details</button>}
-                    </div>
+                    {editDetails &&
+                        <div type='submit' className="w-full h-10 flex justify-center mt-4 mb-2">
+                            <button type="button" className="w-full bg-green-500 text-white font-medium rounded mr-2 ml-2 h-8" onClick={updateDetailsToDatabase}>Save Edited Details</button>
+                        </div>}
                 </div>
-            </div>}
+
+            </div>
         </Fragment>
     )
 }
