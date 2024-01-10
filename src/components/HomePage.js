@@ -7,7 +7,7 @@ function HomePage(props) {
 
     return (
         <Fragment>
-            <div className="fixed z-50 top-16 pt-12 bg-transparent h-screen w-full flex gap-2 justify-center " >
+            <div className="fixed z-50 top-16 pt-12 bg-transparent h-screen w-full flex flex-col gap-2 place-items-center " >
                 <Link to='/field-agent' className="bg-blue-500 h-fit text-white p-2 rounded">Field agent</Link>
                 <Link to='/property-evaluator' className="bg-blue-500 h-fit text-white p-2 rounded">Property evaluator</Link>
                 <Link to='/property-dealer' className="bg-blue-500 h-fit text-white p-2 rounded">Property dealer</Link>
