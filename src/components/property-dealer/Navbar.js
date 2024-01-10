@@ -16,14 +16,14 @@ function NavbarPropertyDealer() {
         routeTo: null
     })
 
-    const [isSpinner, setIsSpinner] = useState(false)
+    const [spinner, setSpinner] = useState(false)
     const authToken = localStorage.getItem("homestead-property-dealer-authToken")
 
     const [userDropdown, setUserDropdown] = useState(false) //if true, a dropdown is shown 
 
     //to logout user
     const logoutFunction = async () => {
-        setIsSpinner(true)
+        setSpinner(true)
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/logout`, {
                 method: 'PATCH',
@@ -37,14 +37,14 @@ function NavbarPropertyDealer() {
             }
             const data = await response.json()
             if (data.status === 'ok' || data.status === 'invalid_authentication') {
-                setIsSpinner(false)
+                setSpinner(false)
                 localStorage.removeItem("homestead-property-dealer-authToken")
                 navigate('/property-dealer/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
         } catch (error) {
-            setIsSpinner(false)
+            setSpinner(false)
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -63,7 +63,7 @@ function NavbarPropertyDealer() {
                 alertMessage: ''
             })} />}
 
-            {isSpinner && <Spinner />}
+            {spinner && <Spinner />}
 
             <div className={`fixed top-0 z-50 w-full ${!userDropdown ? '' : 'h-screen sm:h-fit'}`} onClick={() => setUserDropdown(false)} >
                 <nav className=" flex flex-col w-full bg-white " >
@@ -82,7 +82,7 @@ function NavbarPropertyDealer() {
                                     <p className="absolute right-0 top-4 bg-orange-400 w-5 text-center rounded-full text-white font-bold">5</p>
                                 </div>
 
-                                {/*The div below is for user dropdown for screens with width greater than 'sm' */}
+                                {/*The div below is for icons on navbar for screens with width greater than 'sm' */}
                                 <div className="relative hover:bg-blue-100 cursor-pointer h-20 hidden sm:flex items-center justify-center pl-5 pr-5" onMouseEnter={() => setUserDropdown(true)} onMouseLeave={() => setUserDropdown(false)}>
                                     {userDropdown ?
                                         <FaArrowAltCircleUp className="text-3xl sm:text-4xl cursor-pointer text-blue-500" />
@@ -102,7 +102,7 @@ function NavbarPropertyDealer() {
                                         </div>}
                                 </div>
 
-                                {/*The div below is for user dropdown for screens with width smaller than 'sm' */}
+                                {/*The div below is for icons on navbar for screens with width smaller than 'sm' */}
                                 <div className="relative active:bg-blue-100 cursor-pointer h-20 flex items-center justify-center pl-5 pr-5 sm:hidden" onClick={(e) => {
                                     e.stopPropagation()
                                     setUserDropdown(true)
@@ -115,12 +115,13 @@ function NavbarPropertyDealer() {
 
                                     {/*The div below is a dropdown box*/}
                                     {userDropdown &&
-                                        <div className="fixed top-20 right-2 w-72 flex flex-col border shadow bg-white cursor-pointer" onClick={e => e.stopPropagation()} onMouseLeave={() => setUserDropdown(false)}>
+                                        <div className="fixed top-20 right-2 w-72 flex flex-col border shadow bg-white cursor-pointer z-50" >
                                             <div className="p-5 border-b cursor-text">
                                                 <p className="font-semibold  text-lg">ABCD private limited</p>
                                                 <p>abcd@gmail.com</p>
                                             </div>
-                                            <p className="pl-5 pr-3 pt-5 pb-2 font-semibold text-gray-700 text-lg active:text-blue-500" onClick={() => {
+                                            <p className="pl-5 pr-3 pt-5 pb-2 font-semibold text-gray-700 text-lg active:text-blue-500" onClick={(e) => {
+                                                e.stopPropagation()
                                                 setUserDropdown(false)
                                                 navigate('/property-dealer/details')
                                             }}>User details</p>
