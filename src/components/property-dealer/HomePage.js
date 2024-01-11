@@ -55,7 +55,7 @@ function PropertyDealerHomePage() {
                 </div>
                 <div className="flex flex-col gap-4 place-items-center mt-12">
                     <button className="bg-green-400 text-white text-xl font-semibold p-5 rounded">Add Property</button>
-                    <button className="bg-blue-400 text-white p-5 text-xl font-semibold rounded">Properties previously added</button>
+                    <button className="bg-blue-400 text-white p-5 text-xl font-semibold rounded" onClick={()=>navigate('/property-dealer/properties-added')}>Properties previously added</button>
                 </div>
 
 

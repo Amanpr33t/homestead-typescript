@@ -77,7 +77,7 @@ function NavbarPropertyDealer() {
                         {authToken &&
                             <div className="flex flex-row gap-2 sm:gap-4 pr-2 md:pr-6">
                                 {/*The div below is for messsage font */}
-                                <div className="relative flex items-center justify-center p-2 pt-5 cursor-pointer">
+                                <div className="relative flex items-center justify-center p-2 pt-5 cursor-pointer" onClick={() => navigate('/property-dealer/customer-notifications')}>
                                     <MdOutlineMessage className="text-3xl sm:text-4xl  text-gray-500 hover:text-blue-500 active:text-blue-500" />
                                     <p className="absolute right-0 top-4 bg-orange-400 w-5 text-center rounded-full text-white font-bold">5</p>
                                 </div>

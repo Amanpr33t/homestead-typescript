@@ -32,6 +32,8 @@ import NavbarPropertyDealer from './components/property-dealer/Navbar';
 import PropertyDealerHomePage from './components/property-dealer/HomePage';
 import PropertyDealerSignUp from './components/property-dealer/SignUp';
 import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
+import CustomerNotifications from './components/property-dealer/CustomerNotifications';
+import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded';
 
 
 function App() {
@@ -160,7 +162,15 @@ function App() {
             </>}></Route>
             <Route path='details' element={<>
               <NavbarPropertyDealer />
-              <PropertyDealerDetails/>
+              <PropertyDealerDetails />
+            </>}></Route>
+            <Route path='customer-notifications' element={<>
+              <NavbarPropertyDealer />
+              <CustomerNotifications />
+            </>}></Route>
+            <Route path='properties-added' element={<>
+              <NavbarPropertyDealer />
+              <PropertiesPreviouslyAdded />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
