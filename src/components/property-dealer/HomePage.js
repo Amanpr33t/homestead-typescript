@@ -1,5 +1,5 @@
 
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 import { MdFrontHand } from "react-icons/md";
@@ -24,8 +24,6 @@ function PropertyDealerHomePage() {
     })
     const [spinner, setSpinner] = useState(false)
     const [error, setError] = useState(false)
-
-
 
     return (
         <Fragment>
@@ -55,7 +53,7 @@ function PropertyDealerHomePage() {
                 </div>
                 <div className="flex flex-col gap-4 place-items-center mt-12">
                     <button className="bg-green-400 text-white text-xl font-semibold p-5 rounded">Add Property</button>
-                    <button className="bg-blue-400 text-white p-5 text-xl font-semibold rounded" onClick={()=>navigate('/property-dealer/properties-added')}>Properties previously added</button>
+                    <button className="bg-blue-400 text-white p-5 text-xl font-semibold rounded" onClick={() => navigate('/property-dealer/properties-added')}>Properties previously added</button>
                 </div>
 
 
