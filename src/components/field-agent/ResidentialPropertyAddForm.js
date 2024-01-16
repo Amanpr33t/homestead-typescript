@@ -1610,7 +1610,7 @@ function ResidentialPropertyAddForm() {
               </div>
               <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                 <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="standard" name="washroom-fitting" onChange={e => {
+                  <input className="mr-1 cursor-pointer" type="radio" id="standard-washroom" name="washroom-fitting" onChange={e => {
                     if (e.target.checked) {
                       setWashRoomFittingError(false)
                       setWashRoomFitting({
@@ -1620,11 +1620,11 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="standard">Standard</label>
+                  <label htmlFor="standard-washroom">Standard</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="premium" name="washroom-fitting" onChange={e => {
+                  <input className="mr-1 cursor-pointer" type="radio" id="premium-washroom" name="washroom-fitting" onChange={e => {
                     if (e.target.checked) {
                       setWashRoomFittingError(false)
                       setWashRoomFitting({
@@ -1634,11 +1634,11 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="premium">Premium</label>
+                  <label htmlFor="premium-washroom">Premium</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="luxurious" name="washroom-fitting" onChange={e => {
+                  <input className="mr-1 cursor-pointer" type="radio" id="luxurious-washroom" name="washroom-fitting" onChange={e => {
                     if (e.target.checked) {
                       setWashRoomFittingError(false)
                       setWashRoomFitting({
@@ -1648,7 +1648,7 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="luxurious">Luxurious</label>
+                  <label htmlFor="luxurious-washroom">Luxurious</label>
                 </div>
               </div>
             </div>
@@ -1665,7 +1665,7 @@ function ResidentialPropertyAddForm() {
               </div>
               <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                 <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="standard" name="electrical-fitting" onChange={e => {
+                  <input className="mr-1 cursor-pointer" type="radio" id="standard-electricial" name="electrical-fitting" onChange={e => {
                     if (e.target.checked) {
                       setElectricalFittingError(false)
                       setElectricalFitting({
@@ -1675,11 +1675,11 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="standard">Standard</label>
+                  <label htmlFor="standard-electricial">Standard</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="premium" name="electrical-fitting" onChange={e => {
+                  <input className="mr-1 cursor-pointer" type="radio" id="premium-electrical" name="electrical-fitting" onChange={e => {
                     if (e.target.checked) {
                       setElectricalFittingError(false)
                       setElectricalFitting({
@@ -1689,11 +1689,11 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="premium">Premium</label>
+                  <label htmlFor="premium-electrical">Premium</label>
                 </div>
 
                 <div className="flex flex-row h-fit">
-                  <input className="mr-1 cursor-pointer" type="radio" id="luxurious" name="electrical-fitting" onChange={e => {
+                  <input className="mr-1 cursor-pointer" type="radio" id="luxurious-electrical" name="electrical-fitting" onChange={e => {
                     if (e.target.checked) {
                       setElectricalFittingError(false)
                       setElectricalFitting({
@@ -1703,7 +1703,7 @@ function ResidentialPropertyAddForm() {
                       })
                     }
                   }} />
-                  <label htmlFor="luxurious">Luxurious</label>
+                  <label htmlFor="luxurious-electrical">Luxurious</label>
                 </div>
               </div>
             </div>

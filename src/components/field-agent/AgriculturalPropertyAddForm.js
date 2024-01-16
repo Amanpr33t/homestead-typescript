@@ -15,9 +15,9 @@ function AgriculturalPropertyAddForm() {
 
     useEffect(() => {
         if (!authToken) {
-          navigate('/field-agent/signIn', { replace: true })
+            navigate('/field-agent/signIn', { replace: true })
         }
-      }, [authToken, navigate])
+    }, [authToken, navigate])
 
     const queryParams = new URLSearchParams(location.search)
     const propertyDealerId = queryParams.get('id') //we get the proeprty dealer ID from query params
@@ -57,9 +57,9 @@ function AgriculturalPropertyAddForm() {
     const [village, setVillage] = useState('')
 
     const [agriculturalLandImageError, setAgriculturalLandImageError] = useState(false) //Error will be true if agriculturalLandImageError array is empty
-    const [agriculturalLandImages, setAgriculturalLandImages]=useState([])
+    const [agriculturalLandImages, setAgriculturalLandImages] = useState([])
 
-    const [contractImages, setContractImages]=useState([])
+    const [contractImages, setContractImages] = useState([])
 
     const [numberOfOwners, setNumberOfOwners] = useState(1)
 
@@ -117,17 +117,17 @@ function AgriculturalPropertyAddForm() {
     //This function is triggered when the user selects a proeprty image
     const agriculturalLandImageHandler = (event) => {
         setAgriculturalLandImageError(false)
-        setAgriculturalLandImages(array=>[...array,{
-            file:URL.createObjectURL(event.target.files[0]),
-            upload:event.target.files[0]
+        setAgriculturalLandImages(array => [...array, {
+            file: URL.createObjectURL(event.target.files[0]),
+            upload: event.target.files[0]
         }])
     }
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event) => {
-        setContractImages(array=>[...array,{
-            file:URL.createObjectURL(event.target.files[0]),
-            upload:event.target.files[0]
+        setContractImages(array => [...array, {
+            file: URL.createObjectURL(event.target.files[0]),
+            upload: event.target.files[0]
         }])
     }
 
@@ -263,11 +263,11 @@ function AgriculturalPropertyAddForm() {
             },
             location: {
                 name: {
-                    village: village.trim().toLowerCase(),
-                    city: city.trim().toLowerCase(),
-                    tehsil: tehsil.toLowerCase(),
-                    district: district.toLowerCase(),
-                    state: state.toLowerCase()
+                    village: village.trim(),
+                    city: city.trim(),
+                    tehsil: tehsil,
+                    district: district,
+                    state: state
                 }
             },
             numberOfOwners,
