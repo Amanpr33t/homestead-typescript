@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { useParams } from "react-router-dom"
 
 //This component is used to show property data in a tables
-function ReviewAgriculturalProperty() {
+function ReviewAgriculturalProperty(props) {
     const navigate = useNavigate()
     const { id } = useParams()
 
@@ -23,7 +23,7 @@ function ReviewAgriculturalProperty() {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/getPropertyDetails?type=agricultural&id=${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/getPropertyDetails?type=agricultural&id=${props.propertyId || id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,8 +40,8 @@ function ReviewAgriculturalProperty() {
                 navigate('/property-dealer/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
-                if(!data.property){
-                   return setError(true)
+                if (!data.property) {
+                    return setError(true)
                 }
                 setProperty(data.property)
             } else {
@@ -51,7 +51,7 @@ function ReviewAgriculturalProperty() {
             setError(true)
             setSpinner(false)
         }
-    }, [id, authToken, navigate])
+    }, [id, authToken, navigate, props.propertyId])
 
     useEffect(() => {
         getPropertyDetails()
@@ -63,23 +63,28 @@ function ReviewAgriculturalProperty() {
 
             {!spinner &&
                 <div className="w-full fixed top-20 bg-white pb-2 z-50">
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-dealer/properties-added', { replace: true })}>Back</button>
+                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                        if (props.propertyId) {
+                            return props.hidePropertyDetailsPage()
+                        }
+                        navigate('/property-dealer/properties-added', { replace: true })
+                    }}>Back</button>
                 </div>
             }
 
             {error && !spinner && <>
-                <div className="fixed top-36 w-full flex flex-col place-items-center">
+                <div className="fixed top-36 w-full flex flex-col place-items-center ">
                     <p>Some error occured</p>
                     <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
                 </div>
             </>}
 
             {!error && !spinner && property && <>
-                <div className="w-full mt-32 bg-white z-20 mb-4">
+                <div className="w-full mt-32 bg-white z-20 mb-4 ">
                     <p className="text-gray-600 text-xl font-semibold text-center">Agricultural property details</p>
                 </div>
 
-                <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
+                <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center ' >
                     <table className="w-full sm:w-10/12 md:w-9/12 lg:w-7/12 table-auto">
                         <thead >
                             <tr className="bg-gray-200 border-2 border-gray-200">

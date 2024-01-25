@@ -6,8 +6,11 @@ import { TbFilterSearch } from "react-icons/tb";
 import { formatDate } from "../../utils/dateFunctions";
 import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions";
 import Spinner from "../Spinner";
+import ReviewAgriculturalProperty from "./ReviewAgriculturalProperty";
+import ReviewCommercialProperty from "./ReviewCommercialProperty";
+import ReviewResidentialProperty from "./ReviewResidentialProperty";
 
-//This component is used to see allt he properties previously added by the dealer
+//This component is used to see all the properties previously added by the dealer
 function PropertiesPreviouslyAdded() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-property-dealer-authToken")
@@ -35,6 +38,8 @@ function PropertiesPreviouslyAdded() {
 
     const [showFiltersContainer, setShowFiltersContainer] = useState(false)//Used to hide and show filters container for small screens
 
+    const [showPropertyDetails, setShowPropertyDetails] = useState(null) //stores id and type of property to be shown
+
     const states = ['Chandigarh', 'Punjab']
     const arrayOfYears = [2024, 2025, 2026]
 
@@ -59,7 +64,6 @@ function PropertiesPreviouslyAdded() {
                 setSpinner(false)
                 setShowFiltersContainer(false)
                 setPropertiesAddedByDealer(data.properties)
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-dealer-authToken")
@@ -139,7 +143,7 @@ function PropertiesPreviouslyAdded() {
             {spinner && <Spinner />}
 
 
-            <div className={`${alert.isAlertModal || spinner ? 'blur' : ''} pt-20  bg-gray-100 min-h-screen `}>
+            <div className={`${alert.isAlertModal || spinner ? 'blur' : ''} pt-20  bg-gray-100 min-h-screen ${showPropertyDetails ? 'fixed left-full' : ''}`}>
 
                 {/*Used to show a home button that takes the user to property dealer home page*/}
                 {!showFiltersContainer &&
@@ -311,6 +315,7 @@ function PropertiesPreviouslyAdded() {
                     </div>
                 }
 
+                {/*Container for list of properties */}
                 {<div className="flex flex-row place-content-center gap-5 pt-5 md:10 pb-20">
 
                     {/*Filters container for large screen*/}
@@ -439,13 +444,10 @@ function PropertiesPreviouslyAdded() {
                                     </div>
                                     <div className="flex justify-center mt-4">
                                         <button type='button' className="bg-blue-500 hover:bg-blue-700 text-white font-semibold text-lg rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1" onClick={() => {
-                                            if (property.propertyType.toLowerCase() === 'agricultural') {
-                                                navigate(`/property-dealer/agricultural-property/${property._id}`)
-                                            } else if (property.propertyType.toLowerCase() === 'residential') {
-                                                navigate(`/property-dealer/residential-property/${property._id}`)
-                                            } else if (property.propertyType.toLowerCase() === 'commercial') {
-                                                navigate(`/property-dealer/commercial-property/${property._id}`)
-                                            }
+                                            setShowPropertyDetails({
+                                                propertyId: property._id,
+                                                propertyType: property.propertyType
+                                            })
                                         }}>View details</button>
                                     </div>
                                 </div>
@@ -457,6 +459,22 @@ function PropertiesPreviouslyAdded() {
 
                 </div>}
             </div>
+
+            {/*Used to  show selected property */}
+            {showPropertyDetails && <>
+                {showPropertyDetails.propertyType === 'agricultural' && <ReviewAgriculturalProperty
+                    propertyId={showPropertyDetails.propertyId}
+                    hidePropertyDetailsPage={() => setShowPropertyDetails(null)}
+                />}
+                {showPropertyDetails.propertyType === 'commercial' && <ReviewCommercialProperty
+                    propertyId={showPropertyDetails.propertyId}
+                    hidePropertyDetailsPage={() => setShowPropertyDetails(null)}
+                />}
+                {showPropertyDetails.propertyType === 'residential' && <ReviewResidentialProperty
+                    propertyId={showPropertyDetails.propertyId}
+                    hidePropertyDetailsPage={() => setShowPropertyDetails(null)}
+                />}
+            </>}
 
         </Fragment >
     )

@@ -2,13 +2,15 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
-import { MdFrontHand } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { IoArrowUndo } from "react-icons/io5";
 import { TbMessage2Off } from "react-icons/tb";
 import { formatDate, getDaysDifference } from "../../utils/dateFunctions";
+import ReviewAgriculturalProperty from "./ReviewAgriculturalProperty";
+import ReviewCommercialProperty from "./ReviewCommercialProperty";
+import ReviewResidentialProperty from "./ReviewResidentialProperty";
 
-//This component is the home page for property dealer
+//This component is used to show customer messages to property dealer
 function CustomerNotifications() {
     const navigate = useNavigate()
     const authToken = localStorage.getItem("homestead-property-dealer-authToken")
@@ -27,13 +29,16 @@ function CustomerNotifications() {
     })
     const [spinner, setSpinner] = useState(false)
 
-    const [showAllMessages, setShowAllMessages] = useState(true)
+    const [showAllMessages, setShowAllMessages] = useState(true)//if true all messages will be shown and if false only unread messages will be shown
 
-    const [allCustomerQueries, setAllCustomerQueries] = useState([])
-    const [unreadCustomerQueries, setUnreadCustomerQueries] = useState([])
+    const [allCustomerQueries, setAllCustomerQueries] = useState([])//stores data about all customers who sent queries
+    const [unreadCustomerQueries, setUnreadCustomerQueries] = useState([]) //stores data about customers whose queries have not been read
 
-    const [selectedCustomer, setSelectedCustomer] = useState(null)
+    const [selectedCustomer, setSelectedCustomer] = useState(null) //stores data about customer who has been selected
 
+    const [showPropertyDetails, setShowPropertyDetails] = useState(false)//If true, details of property in which customer is interested will be shown to the dealer
+
+    //When an unread query has been seen, its status will be updated to seen using this function
     const updateSeenStatusOfSelectedCustomer = useCallback(async (customerId, propertyId) => {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/updateSeenStatusOfCustomerRequest?customerId=${customerId}&propertyId=${propertyId}`, {
             method: 'PATCH',
@@ -49,6 +54,7 @@ function CustomerNotifications() {
         }
     }, [authToken, navigate])
 
+    //Used to fetch all customer requests
     const fetchCustomerRequests = useCallback(async () => {
         try {
             setSpinner(true)
@@ -90,6 +96,7 @@ function CustomerNotifications() {
     }, [fetchCustomerRequests])
 
     useEffect(() => {
+        //used to filter unread customer queries from all queries
         if (allCustomerQueries.length) {
             const unreadQueries = allCustomerQueries.filter(data => data.requestSeen === false)
             setUnreadCustomerQueries(unreadQueries)
@@ -115,7 +122,7 @@ function CustomerNotifications() {
                     }} />}
 
             {/*A modal that shows customer information */}
-            {selectedCustomer &&
+            {selectedCustomer && !showPropertyDetails &&
                 <div className="fixed z-50 top-20 pt-12 bg-transparent h-screen w-full flex justify-center " onClick={() => {
                     fetchCustomerRequests()
                     setSelectedCustomer(null)
@@ -146,7 +153,9 @@ function CustomerNotifications() {
                                     <p>{selectedCustomer.customerContactNumber}</p>
                                 </div>
                             </div>
-                            <p className="mb-4"><a href="https://www.freecodecamp.org/" target="_blank" className="text-red-500">Click here</a> to see the property in which the customer is interested.</p>
+                            <p>
+                                <span class="text-red-500 cursor-pointer" onClick={() => { setShowPropertyDetails(true) }}>Click here</span> to see the property in which the customer is interested.
+                            </p>
                             <button data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" onClick={() => {
                                 fetchCustomerRequests()
                                 setSelectedCustomer(null)
@@ -155,7 +164,7 @@ function CustomerNotifications() {
                     </div>
                 </div>}
 
-            <div className={`flex justify-center min-h-screen bg-gray-100 pt-32 pb-10 ${selectedCustomer || spinner ? 'blur' : ''}`} >
+            {!showPropertyDetails && <div className={`flex justify-center min-h-screen bg-gray-100 pt-32 pb-10 ${selectedCustomer || spinner ? 'blur' : ''}`} >
 
                 <div className='fixed w-full top-20 pt-2 pb-2 pl-2 z-20 '>
                     <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/property-dealer', { replace: true })}>Back</button>
@@ -227,7 +236,24 @@ function CustomerNotifications() {
                         </div>}
 
                 </div>
-            </div>
+            </div>}
+
+           {/*Used to show selected property details*/}
+            {showPropertyDetails && <>
+                {selectedCustomer.propertyType === 'agricultural' && <ReviewAgriculturalProperty
+                    propertyId={selectedCustomer.propertyId}
+                    hidePropertyDetailsPage={() => setShowPropertyDetails(false)}
+                />}
+                {selectedCustomer.propertyType === 'commercial' && <ReviewCommercialProperty
+                    propertyId={selectedCustomer.propertyId}
+                    hidePropertyDetailsPage={() => setShowPropertyDetails(false)}
+                />}
+                {selectedCustomer.propertyType === 'residential' && <ReviewResidentialProperty
+                    propertyId={selectedCustomer.propertyId}
+                    hidePropertyDetailsPage={() => setShowPropertyDetails(false)}
+                />}
+            </>}
+
 
         </Fragment>
     )

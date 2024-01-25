@@ -1,9 +1,8 @@
 import { Fragment } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 //this component is an alert modal
-function HomePage(props) {
-    const navigate = useNavigate()
+const HomePage: React.FC = () => {
 
     return (
         <Fragment>

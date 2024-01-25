@@ -3,7 +3,7 @@ import Spinner from "../Spinner"
 import { useNavigate, useParams } from "react-router-dom"
 
 //This component is used to show a commercial property details in a table
-function ReviewCommercialProperty() {
+function ReviewCommercialProperty(props) {
     const navigate = useNavigate()
     const { id } = useParams()
 
@@ -22,7 +22,7 @@ function ReviewCommercialProperty() {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/getPropertyDetails?type=commercial&id=${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/getPropertyDetails?type=commercial&id=${props.propertyId || id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ function ReviewCommercialProperty() {
             setError(true)
             setSpinner(false)
         }
-    }, [id, authToken, navigate])
+    }, [id, authToken, navigate,props.propertyId])
 
     useEffect(() => {
         getPropertyDetails()
@@ -62,7 +62,12 @@ function ReviewCommercialProperty() {
 
             {!spinner &&
                 <div className="w-full fixed top-20 bg-white pb-2 z-50">
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-dealer/properties-added', { replace: true })}>Back</button>
+                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                        if (props.propertyId) {
+                            return props.hidePropertyDetailsPage()
+                        }
+                        navigate('/property-dealer/properties-added', { replace: true })
+                    }}>Back</button>
                 </div>
             }
 

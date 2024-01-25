@@ -13,7 +13,7 @@ function NavbarPropertyDealer() {
         isAlertModal: false,
         alertType: '',
         alertMessage: '',
-        routeTo: null
+        routeTo: null 
     })
 
     const [spinner, setSpinner] = useState(false)
@@ -21,24 +21,25 @@ function NavbarPropertyDealer() {
 
     const [userDropdown, setUserDropdown] = useState(false) //if true, a dropdown is shown 
 
-    const [numberOfCustomerRequests, setNumberOfCustomerRequests] = useState(0)
+    const [numberOfCustomerRequests, setNumberOfCustomerRequests] = useState(0)//stores number of unread customer queries
 
+    //used to fetch unread customer queries
     const fetchNumberOfCustomerRequests = useCallback(async () => {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/numberOfCustomerRequests`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            const data = await response.json()
-            if (data.status === 'ok') {
-                setNumberOfCustomerRequests(data.numberOfCustomerRequests)
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
-            } 
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/numberOfCustomerRequests`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            }
+        })
+        const data = await response.json()
+        if (data.status === 'ok') {
+            setNumberOfCustomerRequests(data.numberOfCustomerRequests)
+        } else if (data.status === 'invalid_authentication') {
+            setSpinner(false)
+            localStorage.removeItem("homestead-property-dealer-authToken")
+            navigate('/property-dealer/signIn', { replace: true })
+        }
     }, [authToken, navigate])
 
     useEffect(() => {
@@ -103,7 +104,7 @@ function NavbarPropertyDealer() {
                                 {/*The div below is for messsage font */}
                                 <div className="relative flex items-center justify-center p-2 pt-5 cursor-pointer" onClick={() => navigate('/property-dealer/customer-notifications')}>
                                     <MdOutlineMessage className="text-3xl sm:text-4xl  text-gray-500 hover:text-blue-500 active:text-blue-500" />
-                                    <p className="absolute right-0 top-4 bg-orange-400 w-5 text-center rounded-full text-white font-bold">{numberOfCustomerRequests}</p>
+                                    {numberOfCustomerRequests > 0 && <p className="absolute right-0 top-4 bg-orange-400 w-5 text-center rounded-full text-white font-bold">{numberOfCustomerRequests}</p>}
                                 </div>
 
                                 {/*The div below is for icons on navbar for screens with width greater than 'sm' */}

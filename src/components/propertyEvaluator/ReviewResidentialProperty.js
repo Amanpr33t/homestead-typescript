@@ -5,7 +5,7 @@ import PropertyEvaluationForm from "./PropertyEvaluationForm"
 //This component is used to show property data. It also passes property data as props to PropertyEvaluationForm component 
 function ReviewResidentialProperty(props) {
     const navigate = useNavigate()
-    const { property, hideReviewPage} = props
+    const { property, hideReviewPage } = props
 
     const [showEvaluationForm, setShowEvaluationForm] = useState(false) //If set to true, PropertyEvaluationForm component will be shown to the user
 
@@ -16,16 +16,15 @@ function ReviewResidentialProperty(props) {
     return (
         <Fragment>
 
-            {!showEvaluationForm &&
-                <div className="w-full fixed top-16 bg-white pb-2 z-50">
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
-                </div>
-            }
+            <div className={`${showEvaluationForm ? 'blur' : ''} w-full fixed top-16 bg-white pb-2 z-30`}>
+                <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
+                <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
+            </div>
 
-            {!showEvaluationForm && <>
+            <div className={`${showEvaluationForm ? 'blur' : ''}`}>
+
                 <div className="w-full mt-28 bg-white z-20 mb-4">
-                    <p className="text-2xl font-bold text-center">Review residential property</p>
+                    <p className="text-2xl font-semibold text-center">Review residential property</p>
                 </div>
 
                 <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
@@ -425,7 +424,7 @@ function ReviewResidentialProperty(props) {
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                     {property.propertyImagesUrl.map(image => {
-                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')} />;
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
                                     })}
                                 </td>
                             </tr>}
@@ -435,7 +434,7 @@ function ReviewResidentialProperty(props) {
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {
-                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')} />
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />
                                     })}
                                 </td>
                             </tr>}
@@ -443,22 +442,23 @@ function ReviewResidentialProperty(props) {
 
                         </tbody>
                     </table>
-                </div></>}
+                </div>
 
-            {!showEvaluationForm && <div className="w-full -mt-4 mb-6 flex justify-center ">
-                <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
-            </div>}
-
-            <div className={`${showEvaluationForm ? '' : 'fixed left-100'}`}>
-                <PropertyEvaluationForm
-                    hideEvaluationForm={() => setShowEvaluationForm(false)}
-                    propertyType='residential'
-                    residentialPropertyType={property.residentialPropertyType.toLowerCase()}
-                    propertyId={property._id}
-                    propertyEvaluatorId={property.propertyEvaluator}
-                    fieldAgentId={property.addedByFieldAgent}
-                    numberOfReevaluationsReceived={property.numberOfReevaluationsReceived} />
+                <div className="w-full -mt-4 mb-6 flex justify-center ">
+                    <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
+                </div>
             </div>
+
+            <PropertyEvaluationForm
+                showEvaluationForm={showEvaluationForm}
+                hideEvaluationForm={() => setShowEvaluationForm(false)}
+                propertyType='residential'
+                residentialPropertyType={property.residentialPropertyType.toLowerCase()}
+                propertyId={property._id}
+                propertyEvaluatorId={property.propertyEvaluator}
+                fieldAgentId={property.addedByFieldAgent}
+                numberOfReevaluationsReceived={property.numberOfReevaluationsReceived} />
+
         </Fragment >
     )
 }

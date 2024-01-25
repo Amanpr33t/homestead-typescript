@@ -34,19 +34,13 @@ import PropertyDealerSignUp from './components/property-dealer/SignUp';
 import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
 import CustomerNotifications from './components/property-dealer/CustomerNotifications';
 import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded';
-import ReviewAgriculturalProperty from './components/property-dealer/ReviewAgriculturalProperty';
-import ReviewCommercialProperty from './components/property-dealer/ReviewCommercialProperty';
-import ReviewResidentialProperty from './components/property-dealer/ReviewResidentialProperty';
-
 
 function App() {
-  const currentUrl = window.location.href
-  console.log(currentUrl)
+  console.log('here')
+  
   return (
     <Fragment>
       <div className="box-border w-full min-h-screen">
-        {/*currentUrl.includes('field-agent') && <NavbarFieldAgent />*/}
-        {/*currentUrl.includes('property-evaluator') && <NavbarPropertyEvaluator />*/}
 
         <Routes>
 
@@ -174,18 +168,6 @@ function App() {
             <Route path='properties-added' element={<>
               <NavbarPropertyDealer />
               <PropertiesPreviouslyAdded />
-            </>}></Route>
-            <Route path='agricultural-property/:id' element={<>
-              <NavbarPropertyDealer />
-              <ReviewAgriculturalProperty />
-            </>}></Route>
-            <Route path='commercial-property/:id' element={<>
-              <NavbarPropertyDealer />
-              <ReviewCommercialProperty />
-            </>}></Route>
-            <Route path='residential-property/:id' element={<>
-              <NavbarPropertyDealer />
-              <ReviewResidentialProperty />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>

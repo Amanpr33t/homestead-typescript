@@ -10,20 +10,18 @@ function ReviewAgriculturalProperty(props) {
     const [showEvaluationForm, setShowEvaluationForm] = useState(false) //If set to true, PropertyEvaluationForm component will be shown to the user
 
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     }, [])
 
     return (
         <Fragment>
+            <div className={`${showEvaluationForm ? 'blur' : ''} w-full fixed top-16 bg-white pb-2 z-30`}>
+                <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
+                <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
+            </div>
 
-            {!showEvaluationForm &&
-                <div className="w-full fixed top-16 bg-white pb-2 z-50">
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
-                </div>
-            }
+            <div className={`${showEvaluationForm ? 'blur' : ''}`}>
 
-            {!showEvaluationForm && <>
                 <div className="w-full mt-28 bg-white z-20 mb-4">
                     <p className="text-2xl font-bold text-center">Agricultural property details</p>
                 </div>
@@ -173,36 +171,35 @@ function ReviewAgriculturalProperty(props) {
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.propertyImagesUrl.map(image => {
-                                            return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
-                                        })}
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
+                                    })}
                                 </td>
                             </tr>
                             {property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {
-                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')} />
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />
                                     })}
                                 </td>
                             </tr>}
                         </tbody>
                     </table>
-                </div></>}
+                </div>
 
-            {!showEvaluationForm && <div className="w-full -mt-4 mb-6 flex justify-center ">
-                <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
-            </div>}
-
-            <div className={`${showEvaluationForm ? '' : 'fixed left-100'}`}>
-                <PropertyEvaluationForm
-                    hideEvaluationForm={() => setShowEvaluationForm(false)}
-                    propertyType='agricultural'
-                    propertyId={property._id}
-                    propertyEvaluatorId={property.propertyEvaluator}
-                    fieldAgentId={property.addedByFieldAgent}
-                    numberOfReevaluationsReceived={property.numberOfReevaluationsReceived} />
+                <div className="w-full -mt-4 mb-6 flex justify-center ">
+                    <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
+                </div>
             </div>
 
+            <PropertyEvaluationForm
+                showEvaluationForm={showEvaluationForm}
+                hideEvaluationForm={() => setShowEvaluationForm(false)}
+                propertyType='agricultural'
+                propertyId={property._id}
+                propertyEvaluatorId={property.propertyEvaluator}
+                fieldAgentId={property.addedByFieldAgent}
+                numberOfReevaluationsReceived={property.numberOfReevaluationsReceived} />
         </Fragment >
     )
 }

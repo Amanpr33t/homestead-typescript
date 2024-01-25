@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom"
 import AlertModal from '../AlertModal'
 import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
 import Spinner from "../Spinner"
-import { countWordsInAString } from "../../utils/stringUtilityFunctions"
 
 //This component is used to review and edit details of property dealer
 function PropertyDealerDetails() {

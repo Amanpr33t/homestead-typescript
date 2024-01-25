@@ -4,10 +4,17 @@ import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 
+interface AlertType {
+    isAlertModal: boolean,
+    alertType: 'success' | 'warning' | null,
+    alertMessage: string | null
+    routeTo: string | null
+}
+
 //The component shows the home page of the field agent
-function HomeFieldAgent() {
+const HomeFieldAgent: React.FC = () => {
     const navigate = useNavigate()
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+    const authToken: null | string = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
         if (!authToken) {
@@ -15,21 +22,21 @@ function HomeFieldAgent() {
         }
     }, [authToken, navigate])
 
-    const [alert, setAlert] = useState({
+    const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
-        alertType: '',
-        alertMessage: '',
+        alertType: null,
+        alertMessage: null,
         routeTo: null
     })
 
-    const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState(0) //Number of properties added by the field agent
-    const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState(0) //number of property dealers added by the field agent
-    const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState(0) //number of pending requests for property reevaluation
+    const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState<number>(0) //Number of properties added by the field agent
+    const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState<number>(0) //number of property dealers added by the field agent
+    const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState<number>(0) //number of pending requests for property reevaluation
 
-    const [requestsDropdown, setRequestsDropdown] = useState(false) //If true, a request dropdown will be shown to the user
+    const [requestsDropdown, setRequestsDropdown] = useState<boolean>(false) //If true, a request dropdown will be shown to the user
 
-    const [spinner, setSpinner] = useState(true)
-    const [error, setError] = useState(false)
+    const [spinner, setSpinner] = useState<boolean>(true)
+    const [error, setError] = useState<boolean>(false)
 
     //This function is used to fetch data about properties which are to be reevaluated by the field agent
     const fetchNumberOfPendingRequestsForPropertyReevaluation = useCallback(async () => {
@@ -90,7 +97,7 @@ function HomeFieldAgent() {
             setError(true)
             setSpinner(false)
         }
-    }, [authToken, navigate,fetchNumberOfPendingRequestsForPropertyReevaluation])
+    }, [authToken, navigate, fetchNumberOfPendingRequestsForPropertyReevaluation])
 
     useEffect(() => {
         if (authToken) {
@@ -103,15 +110,20 @@ function HomeFieldAgent() {
         <Fragment>
             {spinner && !error && <Spinner />}
 
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
-                setAlert({
-                    isAlertModal: false,
-                    alertType: '',
-                    alertMessage: '',
-                    routeTo: null
-                })
-            }} />}
+            {alert.isAlertModal && <AlertModal
+                message={alert.alertMessage}
+                type={alert.alertType}
+                routeTo={alert.routeTo}
+                alertModalRemover={() => {
+                    setAlert({
+                        isAlertModal: false,
+                        alertType: null,
+                        alertMessage: null,
+                        routeTo: null
+                    })
+                }} />}
 
+            {/*This message is shown when an error occurs while fetching data */}
             {error && !spinner && <div className="fixed top-36 w-full flex flex-col place-items-center">
                 <p>Some error occured</p>
                 <p className="text-red-500 cursor-pointer" onClick={fetchPropertiesAndPropertyDealersAddedByFieldAgent}>Try again</p>
@@ -133,7 +145,8 @@ function HomeFieldAgent() {
                             <p className="text-5xl">0</p>
                             <p className="w-40">Pending visits to add a property dealer</p>
                         </div>
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation ? navigate('/field-agent/list-of-pending-property-reevaluations', { replace: true }) : null}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100"
+                            onClick={() => pendingRequestsForPropertyReevaluation ? navigate('/field-agent/list-of-pending-property-reevaluations', { replace: true }) : null}>
                             <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
                             <p className="w-40">Pending requests to reconsider to details of a property</p>
                         </div>
@@ -141,8 +154,8 @@ function HomeFieldAgent() {
 
                     {/*This div will only be shown for screeen with width smaller than 768px */}
                     <div className={`fixed md:hidden top-16 w-full z-10 ${requestsDropdown ? 'h-screen' : 'h-fit'}`}>
-                        <div className="relative mt-3.5 border border-gray-400 w-fit p-1 cursor-pointer bg-white" onClick={e => {
-                            e.stopPropagation()
+                        <div className="relative mt-3.5 border border-gray-400 w-fit p-1 cursor-pointer bg-white" onClick={(event: React.MouseEvent<HTMLDivElement>) => {
+                            event.stopPropagation()
                             setRequestsDropdown(requestsDropdown => !requestsDropdown)
                         }
                         }>Pending Requests {requestsDropdown ? "▲" : "▼"}
@@ -166,18 +179,30 @@ function HomeFieldAgent() {
 
                     <div className={`w-full bg-white rounded pt-6 pb-6 ${requestsDropdown || alert.isAlertModal ? 'blur' : ''}`} >
                         <div className="flex flex-row gap-3 w-full place-content-center">
-                            <button className="bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8 w-fit" onClick={e => {
-                                e.stopPropagation()
-                                navigate('/field-agent/add-property', { replace: true })
-                            }}>Add Property</button>
-                            <Link to='/field-agent/add-property-dealer' className="bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-1 h-8 w-fit" >Add Property Dealer</Link>
+                            <button
+                                className="bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8 w-fit"
+                                onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                                    event.stopPropagation()
+                                    navigate('/field-agent/add-property', { replace: true })
+                                }}>
+                                Add Property
+                            </button>
+                            <Link
+                                to='/field-agent/add-property-dealer'
+                                className="bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-1 h-8 w-fit" >
+                                Add Property Dealer
+                            </Link>
                         </div>
                         <div className="flex flex-col sm:flex-row  gap-3 w-full place-items-center sm:place-content-center mt-10">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfPropertiesAdded ? navigate('/field-agent/properties-added', { replace: true }) : null}>
+                            <div
+                                className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100"
+                                onClick={() => numberOfPropertiesAdded ? navigate('/field-agent/properties-added', { replace: true }) : null}>
                                 <p className="text-5xl text-green-800">{numberOfPropertiesAdded}</p>
                                 <p className="w-36">properties have been added by you</p>
                             </div>
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfPropertyDealersAdded ? navigate('/field-agent/list-of-property-dealers-added-by-field-agent', { replace: true }) : null}>
+                            <div
+                                className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100"
+                                onClick={() => numberOfPropertyDealersAdded ? navigate('/field-agent/list-of-property-dealers-added-by-field-agent', { replace: true }) : null}>
                                 <p className="text-5xl text-green-800">{numberOfPropertyDealersAdded}</p>
                                 <p className="w-40">property dealers have been added by you</p>
                             </div>

@@ -7,7 +7,17 @@ import { countWordsInAString } from "../../utils/stringUtilityFunctions"
 //This component is a form used to evaluate a property
 function PropertyEvaluationForm(props) {
     const navigate = useNavigate()
-    const { propertyType, propertyId, propertyEvaluatorId, fieldAgentId, residentialPropertyType, hideEvaluationForm, isBuiltUpProperty, numberOfReevaluationsReceived } = props
+    const {
+        propertyType,
+        propertyId,
+        propertyEvaluatorId,
+        fieldAgentId,
+        residentialPropertyType,
+        hideEvaluationForm,
+        isBuiltUpProperty,
+        numberOfReevaluationsReceived,
+        showEvaluationForm
+    } = props
     const authToken = localStorage.getItem("homestead-property-evaluator-authToken")
 
     const [spinner, setSpinner] = useState(false)
@@ -25,12 +35,16 @@ function PropertyEvaluationForm(props) {
     const [isInformationInCompleteDetailsArray, setIsInformationInCompleteDetailsArray] = useState([])
     const [isInformationInCompleteDetailsError, setIsInformationInCompleteDetailsError] = useState(false)*/
 
-    const [arePhotographsComplete, setArePhotographsComplete] = useState(null) //State is used to tell whether photograhs are upto standard
-    const [arePhotographsCompleteError, setArePhotographsCompleteError] = useState(false) //State is set to true if arePhotographsComplete state is null, otherwise is set to false
+    let incompleteInformationDetailsIndex = 1
+    const [isInformationComplete, setIsInformationComplete] = useState(null) //State is used to tell whether photograhs are upto standard
+    const [incompleteInformationDetail, setIncompleteInformationDetail] = useState('') //detail of incomplete information
+    const [incompleteInformationDetailsArray, setIncompleteInformationDetailsArray] = useState([])//An array that stores information about incomplete details
+    const [incompleteInformationDetailsError, setInfromationIncompleteDetailsError] = useState(false)
+    const [isInformationCompleteError, setIsInformationCompleteError] = useState(false) //State is set to true if isInformationComplete state is null, otherwise is set to false
 
-    const [arePhotographsInCompleteDetails, setArePhotographsInCompleteDetails] = useState('') //Details about incomplete photograph information
-    const [arePhotographsInCompleteDetailsError, setArePhotographsInCompleteDetailsError] = useState(false) //Is set to true if no details are provided, otherwise is set to false
-    const [arePhotographsInCompleteDetailsMoreThanFiveHundredWordError, setArePhotographsInCompleteDetailsMoreThanFiveHundredWordError] = useState(false) //Is set to true if details about incomplete information is less than 500 words
+    //const [arePhotographsInCompleteDetails, setArePhotographsInCompleteDetails] = useState('') //Details about incomplete photograph information
+    //const [arePhotographsInCompleteDetailsError, setArePhotographsInCompleteDetailsError] = useState(false) //Is set to true if no details are provided, otherwise is set to false
+    //const [arePhotographsInCompleteDetailsMoreThanFiveHundredWordError, setArePhotographsInCompleteDetailsMoreThanFiveHundredWordError] = useState(false) //Is set to true if details about incomplete information is less than 500 words
 
     const [typeOfLocation, setTypeOfLocation] = useState(null) //stores th type of location
     const [typeOfLocationError, setTypeOfLocationError] = useState(false) //set to true if type of location is not selected
@@ -140,7 +154,7 @@ function PropertyEvaluationForm(props) {
                 details: ''
             },
             photographs: {
-                arePhotographsComplete: true,
+                isInformationComplete: true,
                 details: ''
             },
             typeOfLocation,
@@ -186,10 +200,7 @@ function PropertyEvaluationForm(props) {
         }*/
 
         const finalEvaluationData = {
-            photographs: {
-                arePhotographsComplete: true,
-                details: ''
-            },
+            inCompleteInformationDetails: null,
             typeOfLocation,
             locationStatus,
             fairValueOfProperty: +fairValueOfProperty,
@@ -202,8 +213,9 @@ function PropertyEvaluationForm(props) {
             qualityOfConstructionRating,
             evaluatedAt: Date.now()
         }
+        console.log(finalEvaluationData)
 
-        try {
+        /*try {
             setSpinner(true)
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/successful-evaluation-of-data?propertyType=${propertyType}&propertyId=${propertyId}&evaluatorId=${propertyEvaluatorId}&fieldAgentId=${fieldAgentId}`, {
                 method: 'POST',
@@ -240,16 +252,16 @@ function PropertyEvaluationForm(props) {
                 alertMessage: 'Some error occured'
             })
             return
-        }
+        }*/
 
     }
 
     //This function triggers different errors if the user does not provide suitable data.
     const errorCheckingBeforeSubmitForInCompleteForm = () => {
-        if (arePhotographsComplete === null) {
-            setArePhotographsCompleteError(true)
-        } else if (!arePhotographsComplete && !arePhotographsInCompleteDetails.trim()) {
-            setArePhotographsInCompleteDetailsError(true)
+        if (isInformationComplete === null) {
+            setIsInformationCompleteError(true)
+        } else if (!isInformationComplete && !incompleteInformationDetailsArray.length) {
+            setInfromationIncompleteDetailsError(true)
         }
     }
 
@@ -266,17 +278,17 @@ function PropertyEvaluationForm(props) {
             return
         }
 
-        if (arePhotographsComplete === null) {
+        if (isInformationComplete === null) {
             return errorFunction()
-        } else if (!arePhotographsComplete && !arePhotographsInCompleteDetails.trim()) {
+        } else if (!isInformationComplete && !incompleteInformationDetailsArray.length) {
             return errorFunction()
         }
 
+        let inCompleteInformationDetails = []
+        incompleteInformationDetailsArray.forEach(detail => inCompleteInformationDetails.push(detail.incompleteInformationDetail))
+
         const evaluationData = {
-            photographs: {
-                arePhotographsComplete,
-                details: arePhotographsInCompleteDetails.trim()
-            },
+            inCompleteInformationDetails,
             typeOfLocation: null,
             locationStatus: null,
             fairValueOfProperty: null,
@@ -287,10 +299,11 @@ function PropertyEvaluationForm(props) {
             },
             conditionOfConstruction: null,
             qualityOfConstructionRating: null,
-            evaluatedAt: Date.now()
+            evaluatedAt: new Date()
         }
+        console.log(evaluationData)
 
-        try {
+        /*try {
             setSpinner(true)
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/property-evaluation-data-update?propertyType=${propertyType}&propertyId=${propertyId}&evaluatorId=${propertyEvaluatorId}&fieldAgentId=${fieldAgentId}&numberOfReevaluationsReceived=${numberOfReevaluationsReceived}`, {
                 method: 'POST',
@@ -327,7 +340,7 @@ function PropertyEvaluationForm(props) {
                 alertMessage: 'Some error occured'
             })
             return
-        }
+        }*/
 
 
     }
@@ -345,138 +358,125 @@ function PropertyEvaluationForm(props) {
                 })
             }} />}
 
-            <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-30 bg-white sm:bg-transparent'>
-                <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 mr-2 h-8" onClick={hideEvaluationForm}>Back</button>
-                <button type='button' className="bg-green-500 text-white font-semibold rounded pl-2 pr-2 h-8" onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
-            </div>
-
-            <div className={`pl-2 pr-2 h-fit  mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || spinner ? 'blur' : ''} `} >
-                <div className="w-full mt-32 bg-white mb-4">
-                    <p className="text-2xl font-bold text-center">Evaluate {propertyType} property</p>
-                </div>
-                <form className="w-full  md:w-10/12 lg:w-8/12  h-fit  flex flex-col rounded border-2 border-gray-200 shadow" >
-
-
-                    {/*photographs complete*/}
-                    <div className="p-2  flex flex-col pb-5 pt-5 ">
-                        {arePhotographsCompleteError && <p className="text-red-500">Select an option</p>}
-                        <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                            <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
-                                <p className="h-4 text-2xl text-red-500">*</p>
-                                <p className="text-xl font-semibold text-gray-500 mb-2">Are the photographs complete</p>
-                            </div>
-                            <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                                <div className="flex flex-row h-fit">
-                                    <input className="mr-1 cursor-pointer" type="radio" id="yes" name="photograph" value="yes" onChange={e => {
-                                        setArePhotographsInCompleteDetails('')
-                                        setArePhotographsInCompleteDetailsError(false)
-                                        setArePhotographsCompleteError(false)
-                                        if (e.target.checked) {
-                                            setArePhotographsComplete(true)
-                                        }
-                                    }} />
-                                    <label htmlFor="yes">Yes</label>
-                                </div>
-
-                                <div className="flex flex-row h-fit">
-                                    <input className=" mr-1 cursor-pointer" type="radio" id="no" name="photograph" value="no" onChange={e => {
-                                        setArePhotographsInCompleteDetails('')
-                                        setArePhotographsInCompleteDetailsError(false)
-                                        setArePhotographsCompleteError(false)
-                                        if (e.target.checked) {
-                                            setArePhotographsComplete(false)
-                                        }
-                                    }} />
-                                    <label htmlFor="no">No</label>
-                                </div>
-                            </div>
-                        </div>
-                        {arePhotographsComplete === false && <div className="text-center">
-                            <textarea className={`border-2 ${arePhotographsInCompleteDetailsError || arePhotographsInCompleteDetailsMoreThanFiveHundredWordError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`} id="photograph" name="photograph" autoCorrect="on" autoComplete="new-password" placeholder="Add details about incomplete information" value={arePhotographsInCompleteDetails} onChange={e => {
-                                setArePhotographsInCompleteDetailsError(false)
-                                if (countWordsInAString(e.target.value.trim()) > 500) {
-                                    setArePhotographsInCompleteDetailsMoreThanFiveHundredWordError(true)
-                                    setArePhotographsInCompleteDetails(e.target.value.trimEnd())
-                                    return
-                                }
-                                setArePhotographsInCompleteDetailsError(false)
-                                setArePhotographsInCompleteDetailsMoreThanFiveHundredWordError(false)
-                                setArePhotographsInCompleteDetails(e.target.value)
-                            }} />
-                            {arePhotographsInCompleteDetailsError && <p className="text-red-500">Provide details</p>}
-                            {arePhotographsInCompleteDetailsMoreThanFiveHundredWordError && <p className="text-red-500">Details cannot be more than 500 words</p>}
-                        </div>}
+            <div className={`z-40 w-full h-full max-h-screen fixed top-0 pt-24 pb-10  bg-transparent flex justify-center ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal || spinner ? 'blur' : ''} `} onClick={hideEvaluationForm}>
+                <div className="relative w-10/12 sm:w-9/12 md:w-7/12 h-fit max-h-full bg-gray-100 rounded-md overflow-y-auto flex flex-col place-items-center pl-2 pr-2 md:pl-0 md:pr-0" onClick={e => e.stopPropagation()}>
+                    <div className="absolute -top-1.5 right-0">
+                        <button className="text-2xl font-bold p-1 text-gray-600" onClick={hideEvaluationForm}>X</button>
                     </div>
+                    <div className="w-full mt-8 mb-4">
+                        <p className="text-2xl font-semibold text-center ">Property Evaluation Form</p>
+                    </div>
+                    <form className=" h-fit  flex flex-col rounded" >
 
-                    {arePhotographsComplete && <>
-                        {/*type of location*/}
-                        <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
-                            {(typeOfLocationError) && <p className="text-red-500">Select an option</p>}
+                        <div className="p-2  flex flex-col  pb-5 pt-5">
+                            {isInformationCompleteError && <p className="text-red-500 w-full text-left">Select an option</p>}
+
+                            {/*Is information complete?*/}
                             <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
                                 <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Type of location</p>
+                                    <p className="text-xl font-semibold text-gray-500 mb-2">Is the information complete ?</p>
                                 </div>
-                                <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
-                                    {typesOfLocationArray.map(type => {
-                                        return <div key={type} className="flex flex-row h-fit">
-                                            <input className="mr-1 cursor-pointer" type="radio" id={type} name="type-of-location" value={type} onChange={e => {
-                                                setTypeOfLocationError(false)
-                                                if (e.target.checked) {
-                                                    setTypeOfLocation(e.target.value)
-                                                }
-                                            }} />
-                                            <label htmlFor={type}>{type}</label>
-                                        </div>
-                                    })}
-                                </div>
-                            </div>
-                        </div>
+                                <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                                    <div className="flex flex-row h-fit">
+                                        <input className="mr-1 cursor-pointer" type="radio" id="yes" name="photograph" value="yes" onChange={e => {
+                                            setIsInformationCompleteError(false)
+                                            if (e.target.checked) {
+                                                setIsInformationComplete(true)
+                                            }
+                                        }} />
+                                        <label htmlFor="yes">Yes</label>
+                                    </div>
 
-                        {/*property status */}
-                        <div className="p-2  flex flex-col pb-5 pt-5">
-                            {locationStatusError && <p className="text-red-500">Select an option</p>}
-                            <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
-                                    <p className="h-4 text-2xl text-red-500">*</p>
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Location status</p>
-                                </div>
-                                <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
-                                    {typesOfPropertyStatusArray.map(type => {
-                                        return <div key={type} className="flex flex-row h-fit">
-                                            <input className="mr-1 cursor-pointer" type="radio" id={type} name="property-status" value={type} onChange={e => {
-                                                setLocationStatusError(false)
-                                                if (e.target.checked) {
-                                                    setLocationStatus(e.target.value)
-                                                }
-                                            }} />
-                                            <label htmlFor={type}>{type}</label>
-                                        </div>
-                                    })}
-
+                                    <div className="flex flex-row h-fit">
+                                        <input className=" mr-1 cursor-pointer" type="radio" id="no" name="photograph" value="no" onChange={e => {
+                                            setIsInformationCompleteError(false)
+                                            if (e.target.checked) {
+                                                setIsInformationComplete(false)
+                                            }
+                                        }} />
+                                        <label htmlFor="no">No</label>
+                                    </div>
                                 </div>
                             </div>
 
+                            {isInformationComplete === false &&
+                                <div className="w-full flex justify-center"> 
+                                    <div className="w-96">
+                                        {incompleteInformationDetailsArray.length > 0 && <div className="bg-white px-2 py-3 ">
+                                            {incompleteInformationDetailsArray.map(details => {
+                                                return <div className="flex flex-row border-b py-1">
+                                                    <div className="w-full flex flex-row gap-2">
+                                                        <p className="text-lg font-semibold">{incompleteInformationDetailsIndex++}.</p>
+                                                        <p className="pt-0.5 text-left">{details.incompleteInformationDetail}</p>
+                                                    </div>
+                                                    <button type='button' className="text-red-500 text-xl px-2 font-bold" onClick={() => {
+                                                        const filteredArray = incompleteInformationDetailsArray.filter(item => item.index !== details.index)
+                                                        setIncompleteInformationDetailsArray(filteredArray)
+                                                    }}>X</button>
+                                                </div>
+                                            })}
+                                        </div>}
+                                        <div className="flex flex-row">
+                                            <textarea id="incomplete-data-details" className="resize-none h-20 w-full border-2 border-gray-400 px-2 py-0.5" name="incomplete-data-details" autoCorrect="on" autoComplete="new-password" placeholder="Add details about incomplete information" value={incompleteInformationDetail} onChange={e => {
+                                                setIncompleteInformationDetail(e.target.value)
+                                            }} />
+                                            <button type='button' className="bg-blue-500 text-xl px-2 font-bold text-white" onClick={() => {
+                                                if (incompleteInformationDetail.trim()) {
+                                                    setIncompleteInformationDetailsArray(array => [...array, {
+                                                        index: array.length,
+                                                        incompleteInformationDetail
+                                                    }])
+                                                    setIncompleteInformationDetail('')
+                                                    setInfromationIncompleteDetailsError(false)
+                                                }
+                                            }}>+</button>
+                                        </div>
+                                        {incompleteInformationDetailsError && <p className="text-red-500">Provide details</p>}
+                                    </div>
+                                </div>}
                         </div>
 
-                        {/*condition of construction*/}
-                        {propertyType !== 'agricultural' &&
-                            ((propertyType === 'residential' && residentialPropertyType !== 'plot') ||
-                                (propertyType === 'commercial' && isBuiltUpProperty)) &&
-                            <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
-                                {conditionOfConstructionError && <p className="text-red-500">Select an option</p>}
+                        {isInformationComplete && <>
+                            {/*type of location*/}
+                            <div className="p-2  flex flex-col pb-5 pt-5 ">
+                                {(typeOfLocationError) && <p className="text-red-500">Select an option</p>}
                                 <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
                                     <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
                                         <p className="h-4 text-2xl text-red-500">*</p>
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">Condtion of construction</p>
+                                        <p className="text-xl font-semibold text-gray-500 mb-2">Type of location</p>
                                     </div>
                                     <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
-                                        {conditionOfConstructionArray.map(type => {
+                                        {typesOfLocationArray.map(type => {
                                             return <div key={type} className="flex flex-row h-fit">
-                                                <input className="mr-1 cursor-pointer" type="radio" id={type} name="condition-of-construction" value={type} onChange={e => {
-                                                    setConditionOfConstructionError(false)
+                                                <input className="mr-1 cursor-pointer" type="radio" id={type} name="type-of-location" value={type} onChange={e => {
+                                                    setTypeOfLocationError(false)
                                                     if (e.target.checked) {
-                                                        setConditionOfConstruction(e.target.value)
+                                                        setTypeOfLocation(e.target.value)
+                                                    }
+                                                }} />
+                                                <label htmlFor={type}>{type}</label>
+                                            </div>
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/*property status */}
+                            <div className="p-2  flex flex-col pb-5 pt-5">
+                                {locationStatusError && <p className="text-red-500">Select an option</p>}
+                                <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
+                                    <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
+                                        <p className="h-4 text-2xl text-red-500">*</p>
+                                        <p className="text-xl font-semibold text-gray-500 mb-2">Location status</p>
+                                    </div>
+                                    <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
+                                        {typesOfPropertyStatusArray.map(type => {
+                                            return <div key={type} className="flex flex-row h-fit">
+                                                <input className="mr-1 cursor-pointer" type="radio" id={type} name="property-status" value={type} onChange={e => {
+                                                    setLocationStatusError(false)
+                                                    if (e.target.checked) {
+                                                        setLocationStatus(e.target.value)
                                                     }
                                                 }} />
                                                 <label htmlFor={type}>{type}</label>
@@ -485,125 +485,157 @@ function PropertyEvaluationForm(props) {
 
                                     </div>
                                 </div>
-                            </div>}
 
-                        {/*quality of construction rating */}
-                        {propertyType !== 'agricultural' &&
-                            ((propertyType === 'residential' && residentialPropertyType !== 'plot') ||
-                                (propertyType === 'commercial' && isBuiltUpProperty)) &&
-                            <div className="p-2  flex flex-col pb-5 pt-5 ">
-                                {qualityOfConstructionRatingError && <p className="text-red-500">Select a rating</p>}
+                            </div>
+
+                            {/*condition of construction*/}
+                            {propertyType !== 'agricultural' &&
+                                ((propertyType === 'residential' && residentialPropertyType !== 'plot') ||
+                                    (propertyType === 'commercial' && isBuiltUpProperty)) &&
+                                <div className="p-2  flex flex-col pb-5 pt-5">
+                                    {conditionOfConstructionError && <p className="text-red-500">Select an option</p>}
+                                    <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
+                                        <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
+                                            <p className="h-4 text-2xl text-red-500">*</p>
+                                            <p className="text-xl font-semibold text-gray-500 mb-2">Condtion of construction</p>
+                                        </div>
+                                        <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
+                                            {conditionOfConstructionArray.map(type => {
+                                                return <div key={type} className="flex flex-row h-fit">
+                                                    <input className="mr-1 cursor-pointer" type="radio" id={type} name="condition-of-construction" value={type} onChange={e => {
+                                                        setConditionOfConstructionError(false)
+                                                        if (e.target.checked) {
+                                                            setConditionOfConstruction(e.target.value)
+                                                        }
+                                                    }} />
+                                                    <label htmlFor={type}>{type}</label>
+                                                </div>
+                                            })}
+
+                                        </div>
+                                    </div>
+                                </div>}
+
+                            {/*quality of construction rating */}
+                            {propertyType !== 'agricultural' &&
+                                ((propertyType === 'residential' && residentialPropertyType !== 'plot') ||
+                                    (propertyType === 'commercial' && isBuiltUpProperty)) &&
+                                <div className="p-2  flex flex-col pb-5 pt-5">
+                                    {qualityOfConstructionRatingError && <p className="text-red-500">Select a rating</p>}
+                                    <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
+                                        <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
+                                            <p className="h-4 text-2xl text-red-500">*</p>
+                                            <p className="text-xl font-semibold text-gray-500 mb-2">Quality of construction</p>
+                                        </div>
+                                        <div className="flex flex-row gap-1">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <span key={star} className={`cursor-pointer text-2xl -mt-1 ${star <= qualityOfConstructionRating ? 'text-red-600' : 'text-gray-400'}`} onClick={() => {
+                                                    setQualityOfConstructionRatingError(false)
+                                                    setQualityOfConstructionRating(star)
+                                                }}>
+                                                    &#9733;
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>}
+
+                            {/*fair value of property*/}
+                            <div className="flex flex-col p-2 pb-5 pt-5 ">
+                                {fairValueOfPropertyError && <p className="text-red-500 -mt-1">Provide a price</p>}
+                                <div className="flex flex-row gap-5 sm:gap-16">
+                                    <div className="flex flex-row gap-0.5">
+                                        <p className="h-4 text-2xl text-red-500">*</p>
+                                        <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="fair-value">Fair value (Rs)</label>
+                                    </div>
+
+                                    <input id="fair-value" type="number" min="0" name='fair-value' className={`border-2 ${fairValueOfPropertyError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`} value={fairValueOfProperty} onChange={e => {
+                                        if (+e.target.value.trim() > 0) {
+                                            setFairValueOfPropertyError(false)
+                                            setFairValueOfProperty(+e.target.value.trim())
+                                        } else {
+                                            setFairValueOfProperty('')
+                                        }
+                                    }} />
+                                </div>
+                            </div>
+
+                            {/*five year projection*/}
+                            <div className="p-2 flex flex-col pb-5 pt-5">
+                                {fiveYearProjectionError && <p className="text-red-500">Select an option</p>}
                                 <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
                                     <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
                                         <p className="h-4 text-2xl text-red-500">*</p>
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">Quality of construction</p>
+                                        <p className="text-xl font-semibold text-gray-500 mb-2">Five year projection of property</p>
                                     </div>
-                                    <div className="flex flex-row gap-1">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <span key={star} className={`cursor-pointer text-2xl -mt-1 ${star <= qualityOfConstructionRating ? 'text-red-600' : 'text-gray-400'}`} onClick={() => {
-                                                setQualityOfConstructionRatingError(false)
-                                                setQualityOfConstructionRating(star)
-                                            }}>
-                                                &#9733;
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>}
-
-                        {/*fair value of property*/}
-                        <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                            {fairValueOfPropertyError && <p className="text-red-500 -mt-1">Provide a price</p>}
-                            <div className="flex flex-row gap-5 sm:gap-16">
-                                <div className="flex flex-row gap-0.5">
-                                    <p className="h-4 text-2xl text-red-500">*</p>
-                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="fair-value">Fair value (Rs)</label>
-                                </div>
-
-                                <input id="fair-value" type="number" min="0" name='fair-value' className={`border-2 ${fairValueOfPropertyError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`} value={fairValueOfProperty} onChange={e => {
-                                    if (+e.target.value.trim() > 0) {
-                                        setFairValueOfPropertyError(false)
-                                        setFairValueOfProperty(+e.target.value.trim())
-                                    } else {
-                                        setFairValueOfProperty('')
-                                    }
-                                }} />
-                            </div>
-                        </div>
-
-                        {/*five year projection*/}
-                        <div className="p-2  flex flex-col pb-5 pt-5 ">
-                            {fiveYearProjectionError && <p className="text-red-500">Select an option</p>}
-                            <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                <div className="flex flex-row gap-0.5 w-24 sm:w-fit">
-                                    <p className="h-4 text-2xl text-red-500">*</p>
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Five year projection of property</p>
-                                </div>
-                                <div className="flex flex-col sm:flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                                    <div className="flex flex-row h-fit">
-                                        <input className="mr-1 cursor-pointer" type="radio" id="increase" name="five-year-projection" onChange={e => {
-                                            setFiveYearProjectionError(false)
-                                            if (e.target.checked) {
-                                                setFiveYearProjectionPriceIncrease(true)
-                                                setFiveYearProjectionPercentageNumber('')
+                                    <div className="flex flex-col sm:flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                                        <div className="flex flex-row h-fit">
+                                            <input className="mr-1 cursor-pointer" type="radio" id="increase" name="five-year-projection" onChange={e => {
                                                 setFiveYearProjectionError(false)
-                                                setFiveYearProjectionPercentageNumberError(false)
-                                            }
-                                        }} />
-                                        <label htmlFor="increase">Prices might increase</label>
-                                    </div>
-
-                                    <div className="flex flex-row h-fit">
-                                        <input className=" mr-1 cursor-pointer" type="radio" id="decrease" name="five-year-projection" onChange={e => {
-                                            setFiveYearProjectionError(false)
-                                            if (e.target.checked) {
-                                                setFiveYearProjectionPriceIncrease(false)
-                                                setFiveYearProjectionPercentageNumber('')
-                                                setFiveYearProjectionError(false)
-                                                setFiveYearProjectionPercentageNumberError(false)
-                                            }
-                                        }} />
-                                        <label htmlFor="decrease">Prices might decrease</label>
-                                    </div>
-                                </div>
-                            </div>
-                            {fiveYearProjectionPriceIncrease !== null &&
-                                <>
-                                    {fiveYearProjectionPercentageNumberError && <p className="text-red-500">Provide a percentage</p>}
-                                    <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                                        <div className="flex flex-row gap-0.5">
-                                            <p className="h-4 text-2xl text-red-500">*</p>
-                                            <p className="text-xl font-semibold text-gray-500 mb-2">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
-                                        </div>
-                                        <div className="flex flex-row gap-1 pt-1 pr-4 sm:pr-0">
-                                            <input id="projection-percentage" type="number" name='projection-percentage' className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-20 text-center h-fit`} value={fiveYearProjectionPercentageNumber} onChange={e => {
-                                                if (+e.target.value.trim() === 0) {
+                                                if (e.target.checked) {
+                                                    setFiveYearProjectionPriceIncrease(true)
                                                     setFiveYearProjectionPercentageNumber('')
-                                                } else if (+e.target.value.trim() >= 0 && +e.target.value.trim() <= 100) {
                                                     setFiveYearProjectionError(false)
-                                                    setFiveYearProjectionPercentageNumber(+e.target.value.trim())
                                                     setFiveYearProjectionPercentageNumberError(false)
                                                 }
                                             }} />
-                                            <p className="text-lg font-semibold">%</p>
+                                            <label htmlFor="increase">Prices might increase</label>
+                                        </div>
+
+                                        <div className="flex flex-row h-fit">
+                                            <input className=" mr-1 cursor-pointer" type="radio" id="decrease" name="five-year-projection" onChange={e => {
+                                                setFiveYearProjectionError(false)
+                                                if (e.target.checked) {
+                                                    setFiveYearProjectionPriceIncrease(false)
+                                                    setFiveYearProjectionPercentageNumber('')
+                                                    setFiveYearProjectionError(false)
+                                                    setFiveYearProjectionPercentageNumberError(false)
+                                                }
+                                            }} />
+                                            <label htmlFor="decrease">Prices might decrease</label>
                                         </div>
                                     </div>
-                                </>
-                            }
-                        </div>
+                                </div>
+                                {fiveYearProjectionPriceIncrease !== null &&
+                                    <>
+                                        {fiveYearProjectionPercentageNumberError && <p className="text-red-500">Provide a percentage</p>}
+                                        <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+                                            <div className="flex flex-row gap-0.5">
+                                                <p className="h-4 text-2xl text-red-500">*</p>
+                                                <p className="text-xl font-semibold text-gray-500 mb-2">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
+                                            </div>
+                                            <div className="flex flex-row gap-1 pt-1 pr-4 sm:pr-0">
+                                                <input id="projection-percentage" type="number" name='projection-percentage' className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-20 text-center h-fit`} value={fiveYearProjectionPercentageNumber} onChange={e => {
+                                                    if (+e.target.value.trim() === 0) {
+                                                        setFiveYearProjectionPercentageNumber('')
+                                                    } else if (+e.target.value.trim() >= 0 && +e.target.value.trim() <= 100) {
+                                                        setFiveYearProjectionError(false)
+                                                        setFiveYearProjectionPercentageNumber(+e.target.value.trim())
+                                                        setFiveYearProjectionPercentageNumberError(false)
+                                                    }
+                                                }} />
+                                                <p className="text-lg font-semibold">%</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
+                            </div>
 
-                    </>}
-
-                </form>
-                {!alert.isAlertModal && <div className="flex justify-center mt-4 p-2">
-                    <button type='submit' className="text-lg bg-green-500 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={(e) => {
-                        e.preventDefault()
-                        if (arePhotographsComplete) {
-                            return completeDetailsFormSubmit()
+                        </>
                         }
-                        incompleteDetailsFormSubmit()
-                    }}>Save evaluation data</button>
-                </div>}
+                    </form>
+
+                    {!alert.isAlertModal &&
+                        <div className="flex justify-center mb-4 p-2 ">
+                            <button type='submit' className="text-lg bg-blue-500 text-white font-medium rounded pl-4 pr-4 pt-0.5 h-8" onClick={(e) => {
+                                e.preventDefault()
+                                if (isInformationComplete) {
+                                    return completeDetailsFormSubmit()
+                                }
+                                incompleteDetailsFormSubmit()
+                            }}>Save evaluation data</button>
+                        </div>}
+                </div>
             </div >
         </Fragment >
     )

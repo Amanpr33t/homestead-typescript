@@ -3,7 +3,7 @@ import Spinner from "../Spinner"
 import { useNavigate, useParams } from "react-router-dom"
 
 //This component is used to review the residential proeprty details
-function ReviewResidentialProperty() {
+function ReviewResidentialProperty(props) {
     const navigate = useNavigate()
     const { id } = useParams()
 
@@ -22,7 +22,7 @@ function ReviewResidentialProperty() {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/getPropertyDetails?type=residential&id=${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/getPropertyDetails?type=residential&id=${props.propertyId || id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,9 +39,9 @@ function ReviewResidentialProperty() {
                 navigate('/property-dealer/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
-                if(!data.property){
+                if (!data.property) {
                     return setError(true)
-                 }
+                }
                 setProperty(data.property)
             } else {
                 throw new Error('Some error occured')
@@ -50,7 +50,7 @@ function ReviewResidentialProperty() {
             setError(true)
             setSpinner(false)
         }
-    }, [id, authToken, navigate])
+    }, [id, authToken, navigate, props.propertyId])
 
     useEffect(() => {
         getPropertyDetails()
@@ -62,7 +62,12 @@ function ReviewResidentialProperty() {
 
             {!spinner &&
                 <div className="w-full fixed top-20 bg-white pb-2 z-50">
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-dealer/properties-added', { replace: true })}>Back</button>
+                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                        if (props.propertyId) {
+                            return props.hidePropertyDetailsPage()
+                        }
+                        navigate('/property-dealer/properties-added', { replace: true })
+                    }}>Back</button>
                 </div>
             }
 

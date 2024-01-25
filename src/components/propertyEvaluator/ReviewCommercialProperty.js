@@ -16,16 +16,15 @@ function ReviewCommercialProperty(props) {
     return (
         <Fragment>
 
-            {!showEvaluationForm &&
-                <div className="w-full fixed top-16 bg-white pb-2 z-50">
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
-                    <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
-                </div>
-            }
+            <div className={`${showEvaluationForm ? 'blur' : ''} w-full fixed top-16 bg-white pb-2 z-30`}>
+                <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={hideReviewPage}>Back</button>
+                <button type='button' className="bg-green-500  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
+            </div>
 
-            {!showEvaluationForm && <>
+            <div className={`${showEvaluationForm ? 'blur' : ''}`}>
+
                 <div className="w-full mt-32 bg-white z-20 mb-4">
-                    <p className="text-2xl font-bold text-center">Commercial property details</p>
+                    <p className="text-2xl font-semibold text-center">Commercial property details</p>
                 </div>
 
                 <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
@@ -186,7 +185,7 @@ function ReviewCommercialProperty(props) {
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Land Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.propertyImagesUrl.map(image => {
-                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
                                     })}
                                 </td>
                             </tr>
@@ -194,30 +193,29 @@ function ReviewCommercialProperty(props) {
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {
-                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>
+                                        return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />
                                     })}
                                 </td>
                             </tr>}
                         </tbody>
                     </table>
-                </div></>}
+                </div>
 
-            {!showEvaluationForm && <div className="w-full -mt-4 mb-6 flex justify-center ">
-                <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
-            </div>}
-
-            <div className={`${showEvaluationForm ? '' : 'fixed mx-[-200%]'}`}>
-                <PropertyEvaluationForm
-                    hideEvaluationForm={() => setShowEvaluationForm(false)}
-                    propertyType='commercial'
-                    commercialPropertyType={property.commercialPropertyType}
-                    isBuiltUpProperty={property.stateOfProperty.builtUp}
-                    propertyId={property._id}
-                    propertyEvaluatorId={property.propertyEvaluator}
-                    fieldAgentId={property.addedByFieldAgent}
-                    numberOfReevaluationsReceived={property.numberOfReevaluationsReceived}
-                />
+                <div className="w-full -mt-4 mb-6 flex justify-center ">
+                    <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
+                </div>
             </div>
+            <PropertyEvaluationForm
+                showEvaluationForm={showEvaluationForm}
+                hideEvaluationForm={() => setShowEvaluationForm(false)}
+                propertyType='commercial'
+                commercialPropertyType={property.commercialPropertyType}
+                isBuiltUpProperty={property.stateOfProperty.builtUp}
+                propertyId={property._id}
+                propertyEvaluatorId={property.propertyEvaluator}
+                fieldAgentId={property.addedByFieldAgent}
+                numberOfReevaluationsReceived={property.numberOfReevaluationsReceived}
+            />
 
         </Fragment >
     )

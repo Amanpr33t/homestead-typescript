@@ -1,12 +1,12 @@
 //This fi=unction is used to capitalise the first alphabet of a string
-const capitaliseFirstAlphabetsOfAllWordsOfASentence = (str) => {
+function capitaliseFirstAlphabetsOfAllWordsOfASentence(str: string): string {
     let words = str.split(' ')
     let capitalizedWords = words.map(word => word.trim().charAt(0).toUpperCase() + word.slice(1))
     let result = capitalizedWords.join(' ')
     return result;
 }
 
-function capitalizeFirstLetterOfAString(string) {
+function capitalizeFirstLetterOfAString(string: string): string {
     // Check if the string is not empty
     if (string && typeof string === 'string') {
         // Capitalize the first letter and concatenate the rest of the string
@@ -17,9 +17,9 @@ function capitalizeFirstLetterOfAString(string) {
     }
 }
 
-function countWordsInAString(string) {
+function countWordsInAString(string: string): number {
     // Remove leading and trailing whitespaces
-    const trimmedStr = typeof string === 'string' && string.trim();
+    const trimmedStr = string.trim();
 
     // If the string is empty, return 0
     if (trimmedStr === "") {
@@ -27,11 +27,12 @@ function countWordsInAString(string) {
     }
 
     // Split the string into words based on whitespaces
-    const words = typeof trimmedStr === 'string' && trimmedStr.split(/\s+/);
+    const words = trimmedStr.split(/\s+/);
 
     // Return the number of words
     return words.length;
 }
+  
 
 
 export {

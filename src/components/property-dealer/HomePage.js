@@ -1,7 +1,6 @@
 
-import { Fragment, useEffect, useState, useCallback } from "react"
+import { Fragment, useEffect, useState} from "react"
 import AlertModal from "../AlertModal"
-import Spinner from "../Spinner"
 import { MdFrontHand } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
@@ -22,12 +21,9 @@ function PropertyDealerHomePage() {
         alertMessage: '',
         routeTo: null
     })
-    const [spinner, setSpinner] = useState(false)
-    const [error, setError] = useState(false)
 
     return (
         <Fragment>
-            {spinner && !error && <Spinner />}
 
             {alert.isAlertModal &&
                 <AlertModal
@@ -52,8 +48,8 @@ function PropertyDealerHomePage() {
                     <div className="text-2xl text-gray-500 text-center">Let's help you expand your business</div>
                 </div>
                 <div className="flex flex-col gap-4 place-items-center mt-12">
-                    <button className="bg-green-400 text-white text-xl font-semibold p-5 rounded">Add Property</button>
-                    <button className="bg-blue-400 text-white p-5 text-xl font-semibold rounded" onClick={() => navigate('/property-dealer/properties-added')}>Properties previously added</button>
+                    <button className="bg-green-400 hover:bg-green-500 text-white text-xl font-semibold p-5 rounded">Add Property</button>
+                    <button className="bg-blue-400 hover:bg-blue-500 text-white p-5 text-xl font-semibold rounded" onClick={() => navigate('/property-dealer/properties-added')}>Properties previously added</button>
                 </div>
 
 
