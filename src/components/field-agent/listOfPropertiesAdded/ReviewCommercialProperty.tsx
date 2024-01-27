@@ -1,29 +1,96 @@
-import { Fragment, useCallback, useEffect, useState } from "react"
-import Spinner from "../Spinner"
+import React, { Fragment, useCallback, useEffect, useState } from "react"
+import Spinner from "../../Spinner"
 import { useNavigate } from "react-router-dom"
 
-//This component is used to show a commercial property details in a table
-function ReviewCommercialProperty(props) {
-    const navigate = useNavigate()
-    const { property, hideReviewPage } = props
+interface PropsType {
+    propertyId: string,
+    hideReviewPage: () => void
+}
 
-    const [spinner, setSpinner] = useState(true)
-    const [error, setError] = useState(false)
-    const [firmName, setFirmName] = useState()
-    
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
+
+interface PropertyType {
+    uniqueId: string,
+    propertyImagesUrl: string[],
+    contractImagesUrl: string[] | null,
+    addedByPropertyDealer: string,
+    commercialPropertyType: string,
+    landSize: {
+        totalArea: {
+            metreSquare: number,
+            squareFeet: number
+        },
+        coveredArea: {
+            metreSquare: number,
+            squareFeet: number
+        },
+        details: string | null,
+    },
+    stateOfProperty: {
+        empty: boolean,
+        builtUp: boolean,
+        builtUpPropertyType: BuiltUpType | null
+    },
+    location: {
+        name: {
+            plotNumber: number | null,
+            village: string | null,
+            city: string | null,
+            tehsil: string | null,
+            district: string,
+            state: string
+        }
+    },
+    numberOfOwners: number,
+    floors: {
+        floorsWithoutBasement: number,
+        basementFloors: number
+    },
+    widthOfRoadFacing: {
+        feet: number,
+        metre: number
+    },
+    priceDemanded: {
+        number: number,
+        words: string
+    },
+    legalRestrictions: {
+        isLegalRestrictions: boolean,
+        details: string | null,
+    },
+    remarks: string | null,
+    lockInPeriod?: {
+        years: number | null,
+        months: number | null
+    },
+    leasePeriod?: {
+        years: number | null,
+        months: number | null
+    },
+    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'
+}
+
+//This component is used to show a commercial property details in a table
+const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId, hideReviewPage }) => {
+    const navigate = useNavigate()
+
+    const [spinner, setSpinner] = useState<boolean>(true)
+    const [error, setError] = useState<boolean>(false)
+
+    const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
+
+    const [property, setProperty] = useState<PropertyType | null>(null)
 
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //used to scroll to top of the screen
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
 
-    //the function is used to get the firmName of a proeprty dealer
-    const getPropertyDealer = useCallback(async () => {
+    //This function is used to get proeprty details
+    const getPropertyDetails = useCallback(async () => {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerOfaProperty/${property.addedByPropertyDealer
-                }`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/getPropertyData?id=${propertyId}&type=commercial`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,17 +107,17 @@ function ReviewCommercialProperty(props) {
                 navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
-                setFirmName(data.firmName)
+                setProperty(data.propertyData)
             }
         } catch (error) {
             setError(true)
             setSpinner(false)
         }
-    }, [property.addedByPropertyDealer, authToken, navigate])
+    }, [propertyId, authToken, navigate])
 
     useEffect(() => {
-        getPropertyDealer()
-    }, [getPropertyDealer])
+        getPropertyDetails()
+    }, [getPropertyDetails])
 
     return (
         <Fragment>
@@ -65,13 +132,13 @@ function ReviewCommercialProperty(props) {
             {error && !spinner && <>
                 <div className="fixed top-32 w-full flex flex-col place-items-center">
                     <p>Some error occured</p>
-                    <p className="text-red-500 cursor-pointer" onClick={getPropertyDealer}>Try again</p>
+                    <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
                 </div>
             </>}
 
-            {!error && !spinner && firmName && <>
+            {!error && !spinner && property && <>
                 <div className="w-full mt-28 bg-white z-20 mb-4">
-                    <p className="text-2xl font-bold text-center">Commercial property details</p>
+                    <p className="text-2xl font-semibold text-center">Commercial property details</p>
                 </div>
 
                 <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
@@ -83,11 +150,6 @@ function ReviewCommercialProperty(props) {
                             </tr>
                         </thead>
                         <tbody>
-
-                            <tr className="border-2 border-gray-300">
-                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                                <td className=" pt-4 pb-4 text-center">{firmName}</td>
-                            </tr>
 
                             <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Property ID</td>
@@ -142,7 +204,7 @@ function ReviewCommercialProperty(props) {
                                 <td className=" pt-4 pb-4 text-center">{property.floors.basementFloors}</td>
                             </tr>
 
-                            {property.commercialPropertyType === 'shop' && (property.leasePeriod.years!==0 || property.leasePeriod.months!==0) && <tr className="border-2 border-gray-300">
+                            {property.commercialPropertyType === 'shop' && property.leasePeriod && (property.leasePeriod.years !== 0 || property.leasePeriod.months !== 0) && <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
                                 <td className=" pt-4 pb-4 text-center">
                                     <div className="flex flex-col">
@@ -152,7 +214,7 @@ function ReviewCommercialProperty(props) {
                                 </td>
                             </tr>}
 
-                            {property.commercialPropertyType === 'shop' && (property.lockInPeriod.years!==0 || property.lockInPeriod.months!==0) && <tr className="border-2 border-gray-300">
+                            {property.commercialPropertyType === 'shop' && property.lockInPeriod && (property.lockInPeriod.years !== 0 || property.lockInPeriod.months !== 0) && <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
                                 <td className=" pt-4 pb-4 text-center">
                                     <div className="flex flex-col">
@@ -237,11 +299,11 @@ function ReviewCommercialProperty(props) {
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Land Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.propertyImagesUrl.map(image => {
-                                            return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
-                                        })}
+                                        return <img key={Math.random()} className='w-40 h-auto border border-gray-500' src={image} alt="" />;
+                                    })}
                                 </td>
                             </tr>
-                            {property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
+                            {property.contractImagesUrl && property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
                                 <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Contract Images</td>
                                 <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {

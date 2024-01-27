@@ -4,17 +4,14 @@ import { Fragment } from "react";
 //Components imported for field agent
 import HomeFieldAgent from "./components/field-agent/HomeFieldAgent";
 import NavbarFieldAgent from "./components/field-agent/NavbarFieldAgent"
-import PropertyDealerAddForm from "./components/field-agent/PropertyDealerAddForm";
+import PropertyDealerAddForm from "./components/field-agent/addPropertyDealer/PropertyDealerAddForm";
 import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
 import ListOfAllPropertyDealersAddedByFieldAgent from "./components/field-agent/ListOfAllPropertyDealersAddedByFieldAgent";
-import AgriculturalPropertyAddForm from "./components/field-agent/AgriculturalPropertyAddForm";
-import AddProperty from "./components/field-agent/AddProperty";
-import ListOfPropertiesAddedByFieldAgent from "./components/field-agent/ListOfPropertiesAddedByFieldAgent";
-import AgriculturalPropertiesAddedByFieldAgent from "./components/field-agent/AgriculturalPropertiesAddedByFieldAgent";
-import CommercialPropertiesAddedByFieldAgent from "./components/field-agent/CommercialPropertiesAddedByFieldAgent";
-import ResidentialPropertiesAddedByFieldAgent from "./components/field-agent/ResidentialPropertiesAddedByFieldAgent";
-import CommercialPropertyAddForm from "./components/field-agent/CommercialPropertyAddForm";
-import ResidentialPropertyAddForm from "./components/field-agent/ResidentialPropertyAddForm";
+import AgriculturalPropertyAddForm from "./components/field-agent/addProperty/agricultural/AgriculturalPropertyAddForm";
+import AddProperty from "./components/field-agent/addProperty/AddProperty";
+import PropertiesAddedByFieldAgent from "./components/field-agent/listOfPropertiesAdded/PropertiesAddedByFieldAgent";
+import CommercialPropertyAddForm from "./components/field-agent/addProperty/commercial/CommercialPropertyAddForm";
+import ResidentialPropertyAddForm from "./components/field-agent/addProperty/residential/ResidentialPropertyAddForm";
 import ListOfPendingPropertyReevaluations from './components/field-agent/ListOfPendingPropertyReevaluations';
 import ReevaluateProperty from './components/field-agent/ReevaluateProperty';
 
@@ -34,6 +31,7 @@ import PropertyDealerSignUp from './components/property-dealer/SignUp';
 import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
 import CustomerNotifications from './components/property-dealer/CustomerNotifications';
 import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded';
+import ListOfPropertiesAddedByFieldAgent from './components/field-agent/listOfPropertiesAdded/ListOfPropertiesAddedByFieldAgent';
 
 function App() {
   console.log('here')
@@ -96,23 +94,23 @@ function App() {
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
-            {/*routes to get proeprties previously added */}
+            {/*routes to get properties previously added */}
             <Route path='properties-added/*' >
               <Route path='' element={<>
                 <NavbarFieldAgent />
-                <ListOfPropertiesAddedByFieldAgent />
+                <PropertiesAddedByFieldAgent />
               </>}></Route>
-              <Route path='agricultual-properties' element={<>
+              <Route path='agricultural-properties' element={<>
                 <NavbarFieldAgent />
-                <AgriculturalPropertiesAddedByFieldAgent />
+                <ListOfPropertiesAddedByFieldAgent />
               </>}></Route>
               <Route path='commercial-properties' element={<>
                 <NavbarFieldAgent />
-                <CommercialPropertiesAddedByFieldAgent />
+                <ListOfPropertiesAddedByFieldAgent  />
               </>}></Route>
               <Route path='residential-properties' element={<>
                 <NavbarFieldAgent />
-                <ResidentialPropertiesAddedByFieldAgent />
+                <ListOfPropertiesAddedByFieldAgent />
               </>}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>

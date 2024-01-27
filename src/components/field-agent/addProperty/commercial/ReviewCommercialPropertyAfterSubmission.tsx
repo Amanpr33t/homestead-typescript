@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
-import AlertModal from "../AlertModal";
-import Spinner from "../Spinner";
+import AlertModal from "../../../AlertModal";
+import Spinner from "../../../Spinner";
 import { useNavigate } from "react-router-dom";
 
 type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'

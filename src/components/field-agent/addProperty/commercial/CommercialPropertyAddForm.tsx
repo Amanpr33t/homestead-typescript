@@ -1,10 +1,10 @@
 import { Fragment, useState, useEffect, ChangeEvent, FormEvent } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import AlertModal from '../AlertModal'
-import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
-import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
+import AlertModal from '../../../AlertModal'
+import { punjabDistricts } from '../../../../utils/tehsilsAndDistricts/districts'
+import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import ReviewCommercialPropertyAfterSubmission from "./ReviewCommercialPropertyAfterSubmission"
-import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
+import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 
 const arrayOfNumbers = (from: number, to: number) => {
     if (from === 0) {

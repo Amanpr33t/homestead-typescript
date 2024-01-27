@@ -139,6 +139,7 @@ const FieldAgentSignIn: React.FC = () => {
                 throw new Error('Some error occured')
             }
         } catch (error) {
+            console.log(error)
             setSpinner(false)
             setAlert({
                 isAlertModal: true,

@@ -1,13 +1,13 @@
 
 import React, { Fragment, useState, useEffect, ChangeEvent, FormEvent } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import AlertModal from '../AlertModal'
-import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
-import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
+import AlertModal from '../../../AlertModal'
+import { punjabDistricts } from '../../../../utils/tehsilsAndDistricts/districts'
+import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import ReviewResidentialPropertyAfterSubmission from "./ReviewResidentialPropertyAfterSubmission"
-import Spinner from "../Spinner"
-import { generateNumberArray } from "../../utils/arrayFunctions"
-import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../utils/stringUtilityFunctions"
+import Spinner from "../../../Spinner"
+import { generateNumberArray } from "../../../../utils/arrayFunctions"
+import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../../../utils/stringUtilityFunctions"
 
 type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'

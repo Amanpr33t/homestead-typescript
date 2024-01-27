@@ -4,22 +4,29 @@ import { FaHome } from "react-icons/fa"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 
+interface AlertType {
+    isAlertModal: boolean,
+    alertType: 'success' | 'warning' | null,
+    alertMessage: string | null,
+    routeTo: string | null
+}
+
 //This component is the navigation bar
-function NavbarFieldAgent() {
+const NavbarFieldAgent: React.FC = () => {
     const navigate = useNavigate()
-    const [alert, setAlert] = useState({
+    const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
-        alertType: '',
-        alertMessage: '',
+        alertType: null,
+        alertMessage: null,
         routeTo: null
     })
 
-    const [isSpinner, setIsSpinner] = useState(false)
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+    const [spinner, setSpinner] = useState<boolean>(false)
+    const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
     //The function is triggered when the user logs out
     const logoutFunction = async () => {
-        setIsSpinner(true)
+        setSpinner(true)
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/logout`, {
                 method: 'PATCH',
@@ -32,15 +39,16 @@ function NavbarFieldAgent() {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
+            console.log(data)
             if (data.status === 'ok' || data.status === 'invalid_authentication') {
-                setIsSpinner(false)
+                setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
         } catch (error) {
-            setIsSpinner(false)
+            setSpinner(false)
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -52,25 +60,35 @@ function NavbarFieldAgent() {
 
     return (
         <Fragment>
-             {/*The code bolow is used to show an alert modal to the user */}
-             {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType}  alertModalRemover={() => setAlert({
-                isAlertModal: false,
-                alertType: '',
-                alertMessage: ''
-            })} />}
+            {/*The code bolow is used to show an alert modal to the user */}
+            {alert.isAlertModal &&
+                <AlertModal
+                    message={alert.alertMessage}
+                    type={alert.alertType}
+                    alertModalRemover={() => setAlert({
+                        isAlertModal: false,
+                        alertType: null,
+                        alertMessage: null,
+                        routeTo: null
+                    })} />}
 
-            {isSpinner && <Spinner />}
+            {spinner && <Spinner />}
 
             <div className='fixed z-40 top-0 w-full'>
                 <nav className=" flex flex-col w-full bg-white" >
                     <div className="flex flex-row justify-between items-center h-16 w-full border-b shadow ">
-                        <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => navigate('/', { replace: true })}>
+                        <div
+                            className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer"
+                            onClick={() => navigate('/', { replace: true })}>
                             <FaHome role="svg" className="font-semibold text-4xl md:text-5xl text-gray-600" />
                             <p className='font-semibold text-3xl md:text-4xl italic text-gray-600' >HomeStead </p>
                         </div>
-                        {authToken && <div className="flex flex-row  gap-4 pr-2 md:pr-6">
-                            <button className='font-semibold text-xl sm:text-xl italic text-red-500 hover:text-red-600 pb-1 pt-1' onClick={logoutFunction}>Logout</button>
-                        </div>}
+                        {authToken &&
+                            <div className="flex flex-row  gap-4 pr-2 md:pr-6">
+                                <button
+                                    className='font-semibold text-xl sm:text-xl italic text-red-500 hover:text-red-600 pb-1 pt-1'
+                                    onClick={logoutFunction}>Logout</button>
+                            </div>}
                     </div>
                 </nav>
             </div>

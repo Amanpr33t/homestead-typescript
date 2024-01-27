@@ -1,7 +1,7 @@
 
 import React, { Fragment, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import VerifyPropertyDealerBeforeAddingProperty from "./VerifyPropertyDealerBeforeAddingProperty"
+import VerifyPropertyDealerBeforeAddingProperty from "../VerifyPropertyDealerBeforeAddingProperty"
 
 interface dealerType {
     dealerId: string,

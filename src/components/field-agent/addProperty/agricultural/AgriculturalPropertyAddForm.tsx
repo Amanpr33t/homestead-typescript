@@ -1,12 +1,12 @@
 import React, { Fragment, useState, useEffect, ChangeEvent, FormEvent } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import AlertModal from '../AlertModal'
-import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts'
-import PunjabTehsilsDropdown from "./tehsilsDropdown/Punjab"
+import AlertModal from '../../../AlertModal'
+import { punjabDistricts } from '../../../../utils/tehsilsAndDistricts/districts'
+import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPropertyAfterSubmission"
-import Spinner from "../Spinner"
-import { generateNumberArray } from "../../utils/arrayFunctions"
-import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
+import Spinner from "../../../Spinner"
+import { generateNumberArray } from "../../../../utils/arrayFunctions"
+import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 
 type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
 type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'

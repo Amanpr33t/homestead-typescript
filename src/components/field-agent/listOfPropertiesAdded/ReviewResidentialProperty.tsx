@@ -1,29 +1,144 @@
 import { Fragment, useCallback, useEffect, useState } from "react"
-import Spinner from "../Spinner"
+import Spinner from "../../Spinner"
 import { useNavigate } from "react-router-dom"
 
+interface PropsType {
+    propertyId: string,
+    hideReviewPage: () => void
+}
+
+type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
+type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
+type RoofType = 'standard' | 'pop work' | 'down ceiling'
+type WindowType = 'standard' | 'wood' | 'premium material'
+type SafetySystemType = 'cctv' | 'glass break siren' | 'entry sensor' | 'motion sensor' | 'panic button' | 'keypad' | 'keyfob' | 'smoke detector' | 'co detector' | 'water sprinkler' | 'doorbell camera'
+type ConditionOfPropertyType = 'exceptionally new' | 'near to new' | 'some signs of agying' | 'need some renovations' | 'needs complete renovation'
+
+interface SaleType {
+    floorForSale: boolean,
+    houseForSale: boolean
+}
+
+interface PropertyType {
+    uniqueId: string,
+    propertyImagesUrl: string[],
+    contractImagesUrl: string[] | null,
+    addedByPropertyDealer: string,
+    residentialPropertyType: string,
+    title: string,
+    details: string | null,
+    price: {
+        fixed: number | null,
+        range: {
+            from: number | null,
+            to: number | null
+        }
+    },
+    waterSupply: {
+        available: boolean,
+        twentyFourHours: boolean | null
+    },
+    electricityConnection: boolean,
+    sewageSystem: boolean,
+    cableTV: boolean,
+    highSpeedInternet: boolean,
+    distance: {
+        distanceFromGroceryStore: number,
+        distanceFromRestaurantCafe: number,
+        distanceFromExerciseArea: number,
+        distanceFromSchool: number,
+        distanceFromHospital: number
+    },
+    areaType: 'rural' | 'urban' | 'sub-urban',
+    area: {
+        totalArea: {
+            metreSquare: number,
+            gajj: number
+        },
+        coveredArea: {
+            metreSquare: number,
+            gajj: number
+        }
+    },
+    numberOfOwners: number,
+    legalRestrictions: {
+        isLegalRestrictions: boolean,
+        details: string | null,
+    },
+    propertyTaxes: number | null,
+    homeOwnersAssociationFees: number | null,
+    location: {
+        name: {
+            village: string | null,
+            city: string | null,
+            tehsil: string | null,
+            district: string,
+            state: string
+        }
+    },
+    typeOfSale?: SaleType,
+    numberOfFloors?: number,
+    numberOfLivingRooms?: number,
+    numberOfBedrooms?: number,
+    numberOfOfficeRooms?: number,
+    numberOfWashrooms?: number,
+    numberOfKitchen?: number,
+    numberOfCarParkingSpaces?: number,
+    numberOfBalconies?: number,
+    storeRoom?: boolean,
+    servantRoom?: {
+        room: boolean,
+        washroom: boolean | null
+    },
+    furnishing?: {
+        type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
+        details: string | null
+    },
+    kitchenFurnishing?: {
+        type: 'modular' | 'semi-furnished' | 'unfurnished',
+        details: string | null
+    },
+    kitchenAppliances?: {
+        available: boolean,
+        details: string | null
+    },
+    washroomFitting?: 'standard' | 'premium' | 'luxurious',
+    electricalFitting?: 'standard' | 'premium' | 'luxurious',
+    flooringTypeArray?: FlooringType[],
+    roofTypeArray?: RoofType[],
+    wallTypeArray?: WallType[],
+    windowTypeArray?: WindowType[],
+    safetySystemArray?: SafetySystemType[] | null,
+    garden?: {
+        available: boolean,
+        details: string | null
+    },
+    ageOfConstruction?: number,
+    conditionOfProperty?: ConditionOfPropertyType
+}
+
+
 //This component is used to review the residential proeprty details
-function ReviewResidentialProperty(props) {
+const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId, hideReviewPage }) => {
     const navigate = useNavigate()
-    const { property, hideReviewPage } = props
 
-    const [spinner, setSpinner] = useState(true)
-    const [error, setError] = useState(false)
-    const [firmName, setFirmName] = useState()
+    const [spinner, setSpinner] = useState<boolean>(true)
+    const [error, setError] = useState<boolean>(false)
 
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+    const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
+
+    const [property, setProperty] = useState<PropertyType | null>(null)
 
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })//scroll to the top of the screen
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
 
-    //the fetch is used to fetch the firmName of the proeprty dealer
-    const getPropertyDealer = useCallback(async () => {
+    //This function is used to get proeprty details
+    const getPropertyDetails = useCallback(async () => {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/propertyDealerOfaProperty/${property.addedByPropertyDealer
-                }`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/getPropertyData?id=${propertyId}&type=residential`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,17 +155,17 @@ function ReviewResidentialProperty(props) {
                 navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
                 setSpinner(false)
-                setFirmName(data.firmName)
+                setProperty(data.propertyData)
             }
         } catch (error) {
             setError(true)
             setSpinner(false)
         }
-    }, [property.addedByPropertyDealer, authToken, navigate])
+    }, [propertyId, authToken, navigate])
 
     useEffect(() => {
-        getPropertyDealer()
-    }, [getPropertyDealer])
+        getPropertyDetails()
+    }, [getPropertyDetails])
 
     return (
         <Fragment>
@@ -65,13 +180,13 @@ function ReviewResidentialProperty(props) {
             {error && !spinner && <>
                 <div className="fixed top-32 w-full flex flex-col place-items-center">
                     <p>Some error occured</p>
-                    <p className="text-red-500 cursor-pointer" onClick={getPropertyDealer}>Try again</p>
+                    <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
                 </div>
             </>}
 
-            {!error && !spinner && firmName && <>
+            {!error && !spinner && property && <>
                 <div className="w-full mt-28 bg-white z-20 mb-4">
-                    <p className="text-2xl font-bold text-center">Review residential property</p>
+                    <p className="text-2xl font-semibold text-center">Review residential property</p>
                 </div>
 
                 <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
@@ -83,12 +198,6 @@ function ReviewResidentialProperty(props) {
                             </tr>
                         </thead>
                         <tbody>
-
-                            {/*firm name */}
-                            <tr className="border-2 border-gray-300">
-                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                                <td className=" pt-4 pb-4 text-center">{firmName}</td>
-                            </tr>
 
                             {/*unique id */}
                             <tr className="border-2 border-gray-300">
@@ -306,65 +415,67 @@ function ReviewResidentialProperty(props) {
 
 
                             {/*Servant room */}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.servantRoom && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant room</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">{property.servantRoom.room ? 'Yes' : 'No'}</td>
                             </tr>}
 
                             {/* Servant washroom*/}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.servantRoom && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant washroom</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">{property.servantRoom.washroom ? 'Yes' : 'No'}</td>
                             </tr>}
 
                             {/*Furnishing*/}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
-                                <td className="pt-4 pb-4 text-lg font-semibold text-center">Furnishing</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {property.furnishing.type.fullyFurnished && <p>Fully furnished</p>}
-                                    {property.furnishing.type.semiFurnished && <p>Semi furnished</p>}
-                                    {property.furnishing.type.unfurnished && <p> Unfurnished</p>}
-                                    {property.furnishing.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200"> {property.furnishing.details}</p>}
-                                </td>
-                            </tr>}
+                            {property.furnishing && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') &&
+                                <tr className="border-2 border-gray-300">
+                                    <td className="pt-4 pb-4 text-lg font-semibold text-center">Furnishing</td>
+                                    <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                        {property.furnishing.type === 'fully-furnished' && <p>Fully furnished</p>}
+                                        {property.furnishing.type === 'semi-furnished' && <p>Semi furnished</p>}
+                                        {property.furnishing.type === 'unfurnished' && <p> Unfurnished</p>}
+                                        {property.furnishing.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200"> {property.furnishing.details}</p>}
+                                    </td>
+                                </tr>}
 
                             {/* kitchen furnishing*/}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
-                                <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen furnishing</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {property.kitchenFurnishing.type.modular && <p>Modular</p>}
-                                    {property.kitchenFurnishing.type.semiFurnished && <p>Semi furnished</p>}
-                                    {property.kitchenFurnishing.type.unFurnished && <p> Unfurnished</p>}
-                                    {property.kitchenFurnishing.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200"> {property.kitchenFurnishing.details}</p>}
-                                </td>
-                            </tr>}
+                            {property.kitchenFurnishing && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') &&
+                                <tr className="border-2 border-gray-300">
+                                    <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen furnishing</td>
+                                    <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                        {property.kitchenFurnishing.type === 'modular' && <p>Modular</p>}
+                                        {property.kitchenFurnishing.type === 'semi-furnished' && <p>Semi furnished</p>}
+                                        {property.kitchenFurnishing.type === 'unfurnished' && <p> Unfurnished</p>}
+                                        {property.kitchenFurnishing.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200"> {property.kitchenFurnishing.details}</p>}
+                                    </td>
+                                </tr>}
 
                             {/*Kitchen appliances */}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.kitchenAppliances && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen appliances</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                     <p>{property.kitchenAppliances.available ? 'Yes' : 'No'}</p>
-                                    {property.kitchenAppliances.available && property.kitchenAppliances.details.trim() && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.kitchenAppliances.details}</p>}
+                                    {property.kitchenAppliances.available && property.kitchenAppliances.details && property.kitchenAppliances.details.trim() && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.kitchenAppliances.details}</p>}
                                 </td>
                             </tr>}
 
                             {/*Washroom fitting */}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.washroomFitting && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Washroom fitting</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {property.washroomFitting.standard && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
-                                    {property.washroomFitting.premium && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Premium</p>}
-                                    {property.washroomFitting.luxurious && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Luxurious</p>}
+                                    {property.washroomFitting === 'standard' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
+                                    {property.washroomFitting === 'premium' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Premium</p>}
+                                    {property.washroomFitting === 'luxurious' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Luxurious</p>}
                                 </td>
                             </tr>}
 
                             {/*Electrical fitting */}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.electricalFitting && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Electrical fitting</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {property.electricalFitting.standard && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
-                                    {property.electricalFitting.premium && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Premium</p>}
-                                    {property.electricalFitting.luxurious && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Luxurious</p>}
+                                    {property.electricalFitting === 'standard' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
+                                    {property.electricalFitting === 'premium' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Premium</p>}
+                                    {property.electricalFitting === 'luxurious' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Luxurious</p>}
                                 </td>
                             </tr>}
 
@@ -379,7 +490,7 @@ function ReviewResidentialProperty(props) {
                             </tr>}
 
                             {/*roof type */}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.roofTypeArray && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Roof type</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                     {property.roofTypeArray.map(type => {
@@ -389,17 +500,18 @@ function ReviewResidentialProperty(props) {
                             </tr>}
 
                             {/*wall type */}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
-                                <td className="pt-4 pb-4 text-lg font-semibold text-center">Wall type</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {property.wallTypeArray.map(type => {
-                                        return <p key={type}>{type}</p>
-                                    })}
-                                </td>
-                            </tr>}
+                            {property.wallTypeArray && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') &&
+                                <tr className="border-2 border-gray-300">
+                                    <td className="pt-4 pb-4 text-lg font-semibold text-center">Wall type</td>
+                                    <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                        {property.wallTypeArray.map(type => {
+                                            return <p key={type}>{type}</p>
+                                        })}
+                                    </td>
+                                </tr>}
 
                             {/* Window type*/}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.windowTypeArray && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Window type</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                     <div className="flex flex-col">
@@ -411,7 +523,7 @@ function ReviewResidentialProperty(props) {
                             </tr>}
 
                             {/* safety system*/}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && property.safetySystemArray.length > 0 && <tr className="border-2 border-gray-300">
+                            {property.safetySystemArray && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && property.safetySystemArray.length > 0 && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Safety system</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                     {property.safetySystemArray.map(type => {
@@ -421,11 +533,11 @@ function ReviewResidentialProperty(props) {
                             </tr>}
 
                             {/* Garden*/}
-                            {(property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
+                            {property.garden && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Garden</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                     <p>{property.garden.available ? 'Yes' : 'No'}</p>
-                                    {property.garden.details.trim() && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.garden.details.trim()}</p>}
+                                    {property.garden.details && property.garden.details.trim() && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{property.garden.details.trim()}</p>}
                                 </td>
                             </tr>}
 
@@ -483,7 +595,7 @@ function ReviewResidentialProperty(props) {
                             </tr>}
 
                             {/*Contract images*/}
-                            {property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-300">
+                            {property.contractImagesUrl && property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                     {property.contractImagesUrl.map(image => {

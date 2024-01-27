@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState, useCallback } from "react"
-import AlertModal from "../AlertModal";
+import AlertModal from "../../../AlertModal";
 import { useNavigate } from "react-router-dom";
 
 type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
-import AlertModal from "../AlertModal"
-import Spinner from "../Spinner"
+import AlertModal from "../../../AlertModal"
+import Spinner from "../../../Spinner"
 import { useNavigate } from "react-router-dom"
 
 type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
@@ -116,6 +116,11 @@ interface PropertyDataType {
     conditionOfProperty?: ConditionOfPropertyType
 }
 
+interface FinalPropertyDataType extends PropertyDataType {
+    propertyImagesUrl: string[],
+    contractImagesUrl: string[] | null,
+}
+
 interface PropsType {
     propertyData: PropertyDataType,
     residentialLandImages: ImageType[],
@@ -129,11 +134,6 @@ interface AlertType {
     alertType: 'success' | 'warning' | null,
     alertMessage: string | null,
     routeTo: string | null
-}
-
-interface FinalPropertyDataType extends PropertyDataType {
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
 }
 
 //The component is used to review the residential proeprty before it is saved in the database

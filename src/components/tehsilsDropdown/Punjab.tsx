@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import { amritsarTehsils, barnalaTehsils, bathindaTehsils, faridkotTehsils, fatehgarhSahibTehsils, fazilkaTehsils, ferozepurTehsils, gurdaspurTehsils, hoshiarpurTehsils, jalandharTehsils, kapurthalaTehsils, ludhianaTehsils, malerkotlaTehsils, mogaTehsils, mansaTehsils, sriMuktsarSahibTehsils, pathankotTehsils, patialaTehsils, rupNagarTehsils, sasNagarTehsils, sbsNagarTehsils, sangrurTehsils, tarnTaranTehsils } from '../../../utils/tehsilsAndDistricts/tehsils/punjabTehsils'
-import { capitalizeFirstLetterOfAString } from '../../../utils/stringUtilityFunctions'
+import { amritsarTehsils, barnalaTehsils, bathindaTehsils, faridkotTehsils, fatehgarhSahibTehsils, fazilkaTehsils, ferozepurTehsils, gurdaspurTehsils, hoshiarpurTehsils, jalandharTehsils, kapurthalaTehsils, ludhianaTehsils, malerkotlaTehsils, mogaTehsils, mansaTehsils, sriMuktsarSahibTehsils, pathankotTehsils, patialaTehsils, rupNagarTehsils, sasNagarTehsils, sbsNagarTehsils, sangrurTehsils, tarnTaranTehsils } from '../../utils/tehsilsAndDistricts/tehsils/punjabTehsils'
+import { capitalizeFirstLetterOfAString } from '../../utils/stringUtilityFunctions'
 
 //This component is a dropdown for tehsils in punjab
 const PunjabTehsilsDropdown: React.FC<{ district: string }> = ({ district }) => {
