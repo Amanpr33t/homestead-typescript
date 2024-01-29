@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Fragment, useEffect, useCallback, useState } from "react"
+import React, { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import AlertModal from "../AlertModal"
-import {  capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
+import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
 
-function ListOfPendingPropertyReevaluations() {
-    const authToken = localStorage.getItem("homestead-field-agent-authToken")
+const ListOfPendingPropertyReevaluations = () => {
+    const authToken= localStorage.getItem("homestead-field-agent-authToken")
     const navigate = useNavigate()
 
     useEffect(() => {

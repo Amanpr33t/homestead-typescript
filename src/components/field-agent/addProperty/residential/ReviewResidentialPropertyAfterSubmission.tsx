@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal"
-import Spinner from "../../../Spinner"
 import { useNavigate } from "react-router-dom"
 
 type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
@@ -270,14 +269,14 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
             })
             return
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate,propertyData])
 
     //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
         if (propertyImagesUrl.length === residentialLandImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
         }
-    }, [propertyImagesUrl, contractImagesUrl, residentialLandImages.length, , contractImages.length, saveDetailsToDatabase])
+    }, [propertyImagesUrl, contractImagesUrl, residentialLandImages.length, contractImages.length, saveDetailsToDatabase])
 
     return (
         <Fragment>

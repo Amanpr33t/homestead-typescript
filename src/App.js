@@ -22,6 +22,7 @@ import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
 import ListOfPropertiesToBeEvaluated from './components/propertyEvaluator/ListOfPropertiesToBeEvaluated';
 import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
 import HomePage from './components/HomePage';
+import PropertiesToBeEvaluated from './components/propertyEvaluator/PropertiesToBeEvaluated';
 
 //Components evaluated for property dealer
 import PropertyDealerSignIn from './components/property-dealer/SignIn';
@@ -34,8 +35,7 @@ import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPr
 import ListOfPropertiesAddedByFieldAgent from './components/field-agent/listOfPropertiesAdded/ListOfPropertiesAddedByFieldAgent';
 
 function App() {
-  console.log('here')
-  
+
   return (
     <Fragment>
       <div className="box-border w-full min-h-screen">
@@ -106,7 +106,7 @@ function App() {
               </>}></Route>
               <Route path='commercial-properties' element={<>
                 <NavbarFieldAgent />
-                <ListOfPropertiesAddedByFieldAgent  />
+                <ListOfPropertiesAddedByFieldAgent />
               </>}></Route>
               <Route path='residential-properties' element={<>
                 <NavbarFieldAgent />
@@ -129,7 +129,19 @@ function App() {
               <NavbarPropertyEvaluator />
               <PropertyEvaluatorSignIn />
             </>}></Route>
-            <Route path='list-of-pending-evaluations' element={<>
+            <Route path='properties-pending-for-evaluation' element={<>
+              <PropertiesToBeEvaluated />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='commercial-properties-to-be-evaluated' element={<>
+              <ListOfPropertiesToBeEvaluated />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='agricultural-properties-to-be-evaluated' element={<>
+              <ListOfPropertiesToBeEvaluated />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='residential-properties-to-be-evaluated' element={<>
               <ListOfPropertiesToBeEvaluated />
               <NavbarPropertyEvaluator />
             </>}></Route>

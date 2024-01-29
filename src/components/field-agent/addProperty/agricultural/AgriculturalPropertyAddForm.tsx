@@ -169,7 +169,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const [roadType, setRoadType] = useState<RoadType>() //Type of road selected
     const [roadDetails, setRoadDetails] = useState<string>('') //Details of the type of road
     const [roadError, setRoadError] = useState<boolean>(false) //state is true if no road type is selected
-    const roadOptions = ['Unpaved road', 'Village road', 'District road', 'State highway', 'National highway']
+    const roadOptions = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
 
     const [isLegalRestrictions, setIsLegalRestrictions] = useState<boolean | null>(null) //The state is true if the user clicks on yes option. It is false if user clicks on no option. It is null if no option is selected
     const [legalRestrictionError, setLegalRestrictionError] = useState<boolean>(false) //if no option is elected by user, this state is true
@@ -337,7 +337,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         if (isReservoir === null ||
             (isReservoir && !typeOfReservoir.length) ||
             (isReservoir && typeOfReservoir.length && typeOfReservoir.includes('private') && (!capacityOfPrivateReservoir || !unitOfCapacityForPrivateReservoir))) {
-            console.log('here')
+            return errorFunction()
+        }
+        if (!cropArray.length) {
             return errorFunction()
         }
 

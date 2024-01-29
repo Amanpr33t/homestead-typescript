@@ -216,7 +216,7 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
             })
             return
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate,propertyData])
 
     //The code inside the useEffect hook is triggered when the images have been successfully uploaded
     useEffect(() => {

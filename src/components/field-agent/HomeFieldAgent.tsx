@@ -180,7 +180,7 @@ const HomeFieldAgent: React.FC = () => {
                     <div className={`w-full bg-white rounded pt-6 pb-6 ${requestsDropdown || alert.isAlertModal ? 'blur' : ''}`} >
                         <div className="flex flex-row gap-3 w-full place-content-center">
                             <button
-                                className="bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8 w-fit"
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 h-8 w-fit"
                                 onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
                                     event.stopPropagation()
                                     navigate('/field-agent/add-property', { replace: true })
@@ -189,7 +189,7 @@ const HomeFieldAgent: React.FC = () => {
                             </button>
                             <Link
                                 to='/field-agent/add-property-dealer'
-                                className="bg-blue-500 text-white font-medium rounded pl-2 pr-2 pt-1 h-8 w-fit" >
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-1 h-8 w-fit" >
                                 Add Property Dealer
                             </Link>
                         </div>

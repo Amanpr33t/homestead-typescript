@@ -364,10 +364,6 @@ const CommercialPropertyAddForm: React.FC = () => {
             },
             shopPropertyType: selectedPropertyType
         }
-        console.log({
-            ...finalPropertyData,
-            ...shopSpecificData
-        })
 
         if (commercialPropertyType === 'shop') {
             setPropertyData({
@@ -504,7 +500,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                                 setBuiltupSelectedOption(e.target.value as BuiltUpType)
                                                             }
                                                         }} />
-                                                    <label htmlFor="built-up-option">{option}</label>
+                                                    <label htmlFor={option}>{option}</label>
                                                 </div>
                                             })}
                                         </div>}

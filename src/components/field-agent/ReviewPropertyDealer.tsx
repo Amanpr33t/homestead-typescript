@@ -80,7 +80,7 @@ const ReviewPropertyDealer: React.FC<PropsType> = ({ dealerId, hideReviewPage })
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate, dealerId])
 
     useEffect(() => {
         fetchDealerDetails()

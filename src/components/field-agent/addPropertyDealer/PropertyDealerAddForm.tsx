@@ -14,11 +14,6 @@ interface AlertType {
     routeTo: string | null
 }
 
-interface ImageType {
-    file: string;
-    upload: File;
-}
-
 interface AddressType {
     addressId: number,
     flatPlotHouseNumber: string,

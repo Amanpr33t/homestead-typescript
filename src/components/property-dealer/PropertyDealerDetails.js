@@ -275,7 +275,7 @@ function PropertyDealerDetails() {
             })
             return
         }
-    }, [authToken])
+    }, [authToken,navigate])
 
     useEffect(() => {
         fetchDealerDetails()

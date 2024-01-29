@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState } from "react"
 import AlertModal from "../../AlertModal";
-import Spinner from "../../Spinner";
 import { useNavigate } from "react-router-dom";
 
 interface AlertType {

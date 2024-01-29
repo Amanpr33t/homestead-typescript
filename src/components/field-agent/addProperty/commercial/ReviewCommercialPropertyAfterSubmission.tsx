@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal";
-import Spinner from "../../../Spinner";
 import { useNavigate } from "react-router-dom";
 
 type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
@@ -222,14 +221,14 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
             })
             return
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate, propertyData])
 
     //The code in the useEffect hook is executed when the images are sucessfully uploaded
     useEffect(() => {
         if (propertyImagesUrl.length === commercialPropertyImages.length && contractImagesUrl.length === contractImages.length) {
             saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
         }
-    }, [propertyImagesUrl, contractImagesUrl, commercialPropertyImages.length, , contractImages.length, saveDetailsToDatabase])
+    }, [propertyImagesUrl, contractImagesUrl, commercialPropertyImages.length, contractImages.length, saveDetailsToDatabase])
 
     return (
         <Fragment>

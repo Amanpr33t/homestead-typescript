@@ -646,7 +646,6 @@ const ResidentialPropertyAddForm: React.FC = () => {
     }
 
     if (!propertyDealerId || !residentialPropertyType) {
-      console.log(1)
       return
     }
 
