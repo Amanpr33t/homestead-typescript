@@ -2,6 +2,8 @@ import { ChangeEvent, Fragment, useState } from "react"
 import AlertModal from '../AlertModal'
 import Spinner from "../Spinner"
 import { useNavigate } from "react-router-dom"
+import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
+import { MdDiversity1 } from "react-icons/md"
 
 type LocationType = 'rural' | 'sub-urban' | 'urban' | 'mixed-use' | 'industrial'
 type LocationStatusType = 'posh' | 'premium' | 'popular' | 'ordinary' | 'low income'
@@ -70,19 +72,19 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
     const [incompleteDetailItem, setIncompleteDetailItem] = useState<string>('')//a single detail item 
     const [isInformationInCompleteDetailsError, setIsInformationInCompleteDetailsError] = useState(false)//it is true if isInformationInCompleteDetails state is an empty array
 
-    const [typeOfLocation, setTypeOfLocation] = useState<LocationType>() //stores th type of location
+    const [typeOfLocation, setTypeOfLocation] = useState<LocationType | null>(null) //stores th type of location
     const [typeOfLocationError, setTypeOfLocationError] = useState<boolean>(false) //set to true if type of location is not selected
     const typesOfLocationArray: LocationType[] = ['rural', 'sub-urban', 'urban', 'mixed-use', 'industrial'] //option for type of location
 
-    const [locationStatus, setLocationStatus] = useState<LocationStatusType>() //stores location of status
+    const [locationStatus, setLocationStatus] = useState<LocationStatusType | null>(null) //stores location of status
     const [locationStatusError, setLocationStatusError] = useState<boolean>(false) //set to true if location status is null, otherwise is set to true
     const typesOfPropertyStatusArray: LocationStatusType[] = ['posh', 'premium', 'popular', 'ordinary', 'low income'] //options for property status
 
-    const [conditionOfConstruction, setConditionOfConstruction] = useState<ConstructionType>() //condition of constucted property
+    const [conditionOfConstruction, setConditionOfConstruction] = useState<ConstructionType | null>() //condition of constucted property
     const [conditionOfConstructionError, setConditionOfConstructionError] = useState<boolean>(false) //Is set to true if conditionOfConstruction state is null, otherwise is set to false
     const conditionOfConstructionArray: ConstructionType[] = ['newly built', 'ready to move', 'needs renovation', 'needs repair'] //Options for construction of property
 
-    const [qualityOfConstructionRating, setQualityOfConstructionRating] = useState<number>() //Rating for quality of construction
+    const [qualityOfConstructionRating, setQualityOfConstructionRating] = useState<number | ''>('') //Rating for quality of construction
     const [qualityOfConstructionRatingError, setQualityOfConstructionRatingError] = useState<boolean>(false) //Is set to true if qualityOfConstructionRating state is null, otherwise is set to false
 
     const [fairValueOfProperty, setFairValueOfProperty] = useState<number | ''>('') //Fair value of property in number
@@ -176,6 +178,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
 
         let evaluationData: EvaluationDataType
         if (isInformationComplete) {
+            //if information provided by field agentis complete
             evaluationData = {
                 areDetailsComplete: true,
                 typeOfLocation: typeOfLocation as LocationType,
@@ -191,6 +194,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                 evaluatedAt: new Date(),
             }
         } else {
+            //information provided by field agent is incorrect
             evaluationData = {
                 areDetailsComplete: false,
                 incompletePropertyDetails: isInformationInCompleteDetails,
@@ -198,16 +202,9 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
             }
         }
 
-        let url
-        if (isInformationComplete) {
-            url = `${process.env.REACT_APP_BACKEND_URL}/property-evaluator/successfulEvaluationOfData?propertyType=${propertyType}&propertyId=${propertyId}`
-        } else {
-            url = `${process.env.REACT_APP_BACKEND_URL}/property-evaluator/sentToFieldAgentForReevaluation?propertyType=${propertyType}&propertyId=${propertyId}`
-        }
-
         try {
             setSpinner(true)
-            const response = await fetch(url, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/evaluateProperty?propertyType=${propertyType}&propertyId=${propertyId}&isInformationComplete=${isInformationComplete ? 'true' : 'false'}`, {
                 method: 'POST',
                 body: JSON.stringify(evaluationData),
                 headers: {
@@ -263,26 +260,26 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                         })
                     }} />}
 
-            <div className={`z-40 w-full h-full max-h-screen fixed top-0 pt-24 pb-10  bg-transparent flex justify-center ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideEvaluationForm}>
+            <div className={` z-40 w-full max-h-screen fixed top-0 pt-24 pb-10  bg-transparent flex justify-center ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideEvaluationForm}>
 
-                <div className="relative w-10/12 sm:w-9/12 md:w-7/12 h-full bg-gray-200 rounded-md overflow-y-auto flex flex-col place-items-center pl-2 pr-2 md:pl-0 md:pr-0" onClick={e => e.stopPropagation()}>
+                <div className="relative w-10/12 sm:w-9/12 md:w-7/12 bg-gray-200 rounded-md overflow-y-auto flex flex-col place-items-center px-2  md:px-0" onClick={e => e.stopPropagation()}>
 
-                    <div className="absolute -top-1.5 right-0">
+                    <div className="absolute top-1 right-2 ">
                         {/*button to hide evaluation form*/}
-                        <button className="text-2xl font-bold p-1 text-gray-600" onClick={hideEvaluationForm}>X</button>
+                        <button className="text-3xl font-bold p-1 text-gray-600" onClick={hideEvaluationForm}>X</button>
                     </div>
 
-                    <div className="w-full mt-8 mb-4">
+                    <div className="w-full mt-3">
                         <p className="text-2xl font-semibold text-center ">Property Evaluation Form</p>
                     </div>
 
-                    <form className="w-8/12 h-fit  flex flex-col rounded" onSubmit={formSubmit}>
+                    <form className="w-8/12 flex flex-col rounded mt-3" onSubmit={formSubmit}>
 
                         {/*two radio button to know whether the information is complete or not*/}
-                        <div className="p-2  flex flex-col  py-3">
+                        <div className="px-2 flex flex-col py-3">
                             {isInformationCompleteError && <p className="text-red-500 w-full text-left">Select an option</p>}
                             {/*Radio buttons to know if the information is complete or not information complete?*/}
-                            <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
+                            <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16">
                                 <p className="text-xl font-semibold text-gray-500 mb-2">Is the information complete ?</p>
                                 <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                                     <div className="flex flex-row h-fit">
@@ -295,6 +292,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                 setIsInformationCompleteError(false)
                                                 setIsInformationInCompleteDetails([])
+                                                setIsInformationInCompleteDetailsError(false)
                                                 setIncompleteDetailItem('')
                                                 if (e.target.checked) {
                                                     setIsInformationComplete(true)
@@ -313,7 +311,21 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                 setFairValueOfProperty('')
                                                 setFiveYearProjectionPercentageNumber('')
+                                                setTypeOfLocation(null)
+                                                setLocationStatus(null)
+                                                setQualityOfConstructionRating('')
+                                                setFiveYearProjectionPriceIncrease(null)
+                                                setConditionOfConstruction(null)
+
+                                                //reset all error states
                                                 setIsInformationCompleteError(false)
+                                                setTypeOfLocationError(false)
+                                                setLocationStatusError(false)
+                                                setConditionOfConstructionError(false)
+                                                setQualityOfConstructionRatingError(false)
+                                                setFairValueOfPropertyError(false)
+                                                setFiveYearProjectionPercentageNumberError(false)
+                                                setFiveYearProjectionError(false)
                                                 if (e.target.checked) {
                                                     setIsInformationComplete(false)
                                                 }
@@ -325,9 +337,11 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                         </div>
 
                         {/*This jsx is shown if the information is incomplete*/}
-                        {isInformationComplete === false && <>
-                            <div className="w-full flex flex-col">
+                        {isInformationComplete === false &&
+                            <div className="px-2 flex flex-col">
                                 {isInformationInCompleteDetailsError && <p className="text-red-500">Add details regarding incomplete information</p>}
+
+                                {/*textarea and a button where evaluator can put incomplete details*/}
                                 <div className="flex flex-row w-full">
                                     <textarea
                                         className="w-full h-24 resize-none border border-gray-300 p-2 focus:outline-none focus:border-blue-500"
@@ -350,34 +364,37 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                             }
                                         }}>+</button>
                                 </div>
+
                                 <div className="flex flex-row place-content-center">
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <p className="">You can add a maximum of 10 detail points</p>
                                 </div>
-                            </div>
-                            {isInformationInCompleteDetails.length > 0 && isInformationInCompleteDetails.map(detail => {
-                                let indexToRemove: number = index - 1
-                                return <div key={Math.random()} className="w-full flex flex-row place-content-between mt-2 bg-white">
-                                    <div className="flex flex-row gap-2">
-                                        <p className="font-semibold pl-1">{index++}.</p>
-                                        <p>{detail}</p>
+
+                                {/*a list showing all the details added by evaluator */}
+                                {isInformationInCompleteDetails.length > 0 && isInformationInCompleteDetails.map(detail => {
+                                    let indexToRemove: number = index - 1
+                                    return <div key={Math.random()} className="w-full flex flex-row place-content-between mt-2 bg-white">
+                                        <div className="flex flex-row gap-2">
+                                            <p className="font-semibold pl-1">{index++}.</p>
+                                            <p>{detail}</p>
+                                        </div>
+                                        <div className="flex justify-center items-center h-full">
+                                            <button
+                                                type="button"
+                                                className="bg-red-500 text-white font-semibold text-xl h-fit px-2"
+                                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                                                    e.stopPropagation()
+                                                    const filteredArray = isInformationInCompleteDetails.filter(item => item !== isInformationInCompleteDetails[indexToRemove])
+                                                    setIsInformationInCompleteDetails(filteredArray)
+                                                }}
+                                            >
+                                                X
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="flex justify-center items-center h-full">
-                                        <button
-                                            type="button"
-                                            className="bg-red-500 text-white font-semibold text-xl h-fit px-2"
-                                            onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                                                e.stopPropagation()
-                                                const filteredArray = isInformationInCompleteDetails.filter(item => item !== isInformationInCompleteDetails[indexToRemove])
-                                                setIsInformationInCompleteDetails(filteredArray)
-                                            }}
-                                        >
-                                            X
-                                        </button>
-                                    </div>
-                                </div>
-                            })}
-                        </>}
+
+                                })}
+                            </div>}
 
                         {/*This jsx is shown if the information is complete*/}
                         {isInformationComplete && <>
@@ -401,7 +418,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                                             setTypeOfLocation(e.target.value as LocationType)
                                                         }
                                                     }} />
-                                                <label htmlFor={'location' + type}>{type}</label>
+                                                <label htmlFor={'location' + type}>{capitalizeFirstLetterOfAString(type)}</label>
                                             </div>
                                         })}
                                     </div>
@@ -409,7 +426,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                             </div>
 
                             {/*property status */}
-                            <div className="p-2  flex flex-col py-3">
+                            <div className="px-2 flex flex-col py-3">
                                 {locationStatusError && <p className="text-red-500">Select an option</p>}
                                 <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
                                     <p className="text-xl font-semibold text-gray-500 mb-2">Location status</p>
@@ -428,7 +445,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                                             setLocationStatus(e.target.value as LocationStatusType)
                                                         }
                                                     }} />
-                                                <label htmlFor={'status' + type}>{type}</label>
+                                                <label htmlFor={'status' + type}>{capitalizeFirstLetterOfAString(type)}</label>
                                             </div>
                                         })}
 
@@ -441,7 +458,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                             {propertyType !== 'agricultural' &&
                                 ((propertyType === 'residential' && residentialPropertyType !== 'plot') ||
                                     (propertyType === 'commercial' && isBuiltUpProperty)) &&
-                                <div className="p-2  flex flex-col py-3">
+                                <div className="px-2 flex flex-col py-3">
                                     {conditionOfConstructionError && <p className="text-red-500">Select an option</p>}
                                     <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
                                         <p className="text-xl font-semibold text-gray-500 mb-2">Condtion of construction</p>
@@ -460,7 +477,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                                                 setConditionOfConstruction(e.target.value as ConstructionType)
                                                             }
                                                         }} />
-                                                    <label htmlFor={'construction' + type}>{type}</label>
+                                                    <label htmlFor={'construction' + type}>{capitalizeFirstLetterOfAString(type)}</label>
                                                 </div>
                                             })}
 
@@ -472,7 +489,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                             {propertyType !== 'agricultural' &&
                                 ((propertyType === 'residential' && residentialPropertyType !== 'plot') ||
                                     (propertyType === 'commercial' && isBuiltUpProperty)) &&
-                                <div className="p-2  flex flex-col py-3">
+                                <div className="px-2 flex flex-col py-3">
                                     {qualityOfConstructionRatingError && <p className="text-red-500">Select a rating</p>}
                                     <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
                                         <p className="text-xl font-semibold text-gray-500 mb-2">Quality of construction</p>
@@ -493,7 +510,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                 </div>}
 
                             {/*fair value of property*/}
-                            <div className="flex flex-col p-2 py-3 ">
+                            <div className="px-2 flex flex-col py-3 ">
                                 {fairValueOfPropertyError && <p className="text-red-500 -mt-1">Provide a price</p>}
                                 <div className="flex flex-row gap-5 sm:gap-16">
                                     <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="fair-value">Fair value (Rs)</label>
@@ -517,12 +534,12 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                             </div>
 
                             {/*five year projection*/}
-                            <div className="p-2 flex flex-col py-3">
+                            <div className="px-2 flex flex-col py-3">
                                 {fiveYearProjectionError && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Five year projection of property</p>
-                                    <div className="flex flex-col  gap-4 pt-1 pr-4 sm:pr-0">
-                                        <div className="flex flex-row h-fit">
+                                <div className="flex flex-col gap-2 ">
+                                    <p className=" text-xl font-semibold text-gray-500 ">Five year projection of property prices</p>
+                                    <div className="ml-20 flex flex-col gap-2">
+                                        <div className="flex flex-row">
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
@@ -539,8 +556,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                                 }} />
                                             <label htmlFor="increase">Prices might increase</label>
                                         </div>
-
-                                        <div className="flex flex-row h-fit">
+                                        <div className="flex flex-row">
                                             <input
                                                 className=" mr-1 cursor-pointer"
                                                 type="radio"
@@ -559,41 +575,43 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                {fiveYearProjectionPriceIncrease !== null &&
-                                    <>
-                                        {fiveYearProjectionPercentageNumberError && <p className="text-red-500">Provide a percentage</p>}
-                                        <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                                            <p className="text-xl font-semibold text-gray-500 mb-2">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
-                                            <div className="flex flex-row gap-1 pt-1 pr-4 sm:pr-0">
-                                                <input
-                                                    id="projection-percentage"
-                                                    type="number"
-                                                    name='projection-percentage'
-                                                    className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-20 text-center h-fit`}
-                                                    value={fiveYearProjectionPercentageNumber}
-                                                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                        if (+e.target.value.trim() === 0) {
-                                                            setFiveYearProjectionPercentageNumber('')
-                                                        } else if (+e.target.value.trim() >= 0 && +e.target.value.trim() <= 100) {
-                                                            setFiveYearProjectionError(false)
-                                                            setFiveYearProjectionPercentageNumber(+e.target.value.trim())
-                                                            setFiveYearProjectionPercentageNumberError(false)
-                                                        }
-                                                    }} />
-                                                <p className="text-lg font-semibold">%</p>
-                                            </div>
-                                        </div>
-                                    </>
-                                }
                             </div>
+
+                            {/*input element to get percentage number*/}
+                            {fiveYearProjectionPriceIncrease !== null &&
+                                <div className="px-2 flex flex-col py-3">
+                                    {fiveYearProjectionPercentageNumberError && <p className="text-red-500">Provide a percentage</p>}
+                                    <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
+                                        <p className="text-xl font-semibold text-gray-500 mb-2">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
+                                        <div className="flex flex-row gap-1 pt-1 pr-4 sm:pr-0">
+                                            <input
+                                                id="projection-percentage"
+                                                type="number"
+                                                name='projection-percentage'
+                                                className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-20 text-center h-fit`}
+                                                value={fiveYearProjectionPercentageNumber}
+                                                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                                    if (+e.target.value.trim() === 0) {
+                                                        setFiveYearProjectionPercentageNumber('')
+                                                    } else if (+e.target.value.trim() >= 0 && +e.target.value.trim() <= 100) {
+                                                        setFiveYearProjectionError(false)
+                                                        setFiveYearProjectionPercentageNumber(+e.target.value.trim())
+                                                        setFiveYearProjectionPercentageNumberError(false)
+                                                    }
+                                                }} />
+                                            <p className="text-lg font-semibold">%</p>
+                                        </div>
+                                    </div>
+                                </div>}
 
                         </>}
 
+
                         {isInformationComplete !== null &&
-                            <div className="w-full h-12 flex justify-center mt-4">
+                            <div className="w-full h-12 flex justify-center mt-7 px-2">
                                 <button
                                     type="submit"
-                                    className="w-fit bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1 "
+                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1 cursor-pointer"
                                     disabled={spinner || alert.isAlertModal}>
                                     {spinner ? (
                                         <div className="spinner absolute border-t-4 border-white border-solid rounded-full h-6 w-6 animate-spin"></div>

@@ -4,21 +4,28 @@ import { FaHome } from "react-icons/fa"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
 
+interface AlertType {
+    isAlertModal: boolean,
+    alertType: 'success' | 'warning' | null,
+    alertMessage: string | null
+    routeTo: string | null
+}
+
 //This component is the navigation bar
-function NavbarPropertyEvaluator() {
+const NavbarPropertyEvaluator: React.FC = () => {
     const navigate = useNavigate()
-    const [alert, setAlert] = useState({
+    const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
-        alertType: '',
-        alertMessage: '',
+        alertType: null,
+        alertMessage: null,
         routeTo: null
     })
 
-    const [isSpinner, setIsSpinner] = useState(false)
-    const authToken = localStorage.getItem("homestead-property-evaluator-authToken")
+    const [spinner, setSpinner] = useState<boolean>(false)
+    const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
 
     const logoutFunction = async () => {
-        setIsSpinner(true)
+        setSpinner(true)
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/logout`, {
                 method: 'PATCH',
@@ -32,14 +39,14 @@ function NavbarPropertyEvaluator() {
             }
             const data = await response.json()
             if (data.status === 'ok' || data.status === 'invalid_authentication') {
-                setIsSpinner(false)
+                setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
         } catch (error) {
-            setIsSpinner(false)
+            setSpinner(false)
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -51,14 +58,15 @@ function NavbarPropertyEvaluator() {
 
     return (
         <Fragment>
-             {/*The code bolow is used to show an alert modal to the user */}
-             {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType}  alertModalRemover={() => setAlert({
+            {/*The code bolow is used to show an alert modal to the user */}
+            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} alertModalRemover={() => setAlert({
                 isAlertModal: false,
-                alertType: '',
-                alertMessage: ''
+                alertType: null,
+                alertMessage: null,
+                routeTo:null
             })} />}
 
-            {isSpinner && <Spinner />}
+            {spinner && <Spinner />}
 
             <div className='fixed z-40 top-0 w-full'>
                 <nav className=" flex flex-col w-full bg-white" >

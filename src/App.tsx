@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 
 //Components imported for field agent
 import HomeFieldAgent from "./components/field-agent/HomeFieldAgent";
@@ -33,8 +33,13 @@ import PropertyDealerDetails from './components/property-dealer/PropertyDealerDe
 import CustomerNotifications from './components/property-dealer/CustomerNotifications';
 import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded';
 import ListOfPropertiesAddedByFieldAgent from './components/field-agent/listOfPropertiesAdded/ListOfPropertiesAddedByFieldAgent';
+import PendingPropertyReevaluations from './components/field-agent/reevaluateProperty/PendingPropertyReevaluations';
+import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
+import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/ReevaluateCommercialProperty';
 
-function App() {
+
+
+const App: React.FC = () => {
 
   return (
     <Fragment>
@@ -46,6 +51,7 @@ function App() {
 
           {/*Routes for field agent */}
           <Route path='/field-agent/*'>
+
             <Route path='' element={<>
               <NavbarFieldAgent />
               <HomeFieldAgent />
@@ -58,22 +64,39 @@ function App() {
               <NavbarFieldAgent />
               <PropertyDealerAddForm />
             </>}></Route>
-            <Route path='list-of-pending-property-reevaluations' element={<>
-              <NavbarFieldAgent />
-              <ListOfPendingPropertyReevaluations />
-            </>}></Route>
             <Route path='list-of-property-dealers-added-by-field-agent' element={<>
               <NavbarFieldAgent />
               <ListOfAllPropertyDealersAddedByFieldAgent />
             </>
             }></Route>
-            <Route path='reevaluate-property' element={<>
-              <NavbarFieldAgent />
-              <ReevaluateProperty />
-            </>
-            }></Route>
 
-            {/*routes to add new property */}
+            {/**routes to reevaluate proeprty details */}
+            <Route path='reevaluate-property/*' >
+              <Route path='' element={<>
+                <NavbarFieldAgent />
+                <PendingPropertyReevaluations />
+              </>
+              }></Route>
+              <Route path='commercial' element={<>
+                <NavbarFieldAgent />
+                < ReevaluateCommercialProperty />
+              </>
+              }></Route>
+              <Route path='commercial-properties' element={<>
+                <NavbarFieldAgent />
+                <ListOfPropertiesToBeReevaluated />
+              </>}></Route>
+              <Route path='agricultural-properties' element={<>
+                <NavbarFieldAgent />
+                <ListOfPropertiesToBeReevaluated />
+              </>}></Route>
+              <Route path='residential-properties' element={<>
+                <NavbarFieldAgent />
+                <ListOfPropertiesToBeReevaluated />
+              </>}></Route>
+            </Route>
+
+            {/*routes to add property */}
             <Route path='add-property/*' >
               <Route path='' element={<>
                 <AddProperty />
@@ -94,7 +117,7 @@ function App() {
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
-            {/*routes to get properties previously added */}
+            {/*Routes to see properties added */}
             <Route path='properties-added/*' >
               <Route path='' element={<>
                 <NavbarFieldAgent />
@@ -112,6 +135,7 @@ function App() {
                 <NavbarFieldAgent />
                 <ListOfPropertiesAddedByFieldAgent />
               </>}></Route>
+
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 

@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal"
 import { useNavigate } from "react-router-dom"
+import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 
 type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
@@ -269,7 +270,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
             })
             return
         }
-    }, [authToken, navigate,propertyData])
+    }, [authToken, navigate, propertyData])
 
     //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
@@ -361,8 +362,9 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Water supply</td>
                             <td className=" pt-4 pb-4 flex flex-col place-items-center">
                                 <p>{propertyData.waterSupply.available ? 'Yes' : 'No'}</p>
-                                {propertyData.waterSupply.available && propertyData.waterSupply.twentyFourHours && <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is available</p>}
-                                {propertyData.waterSupply.available && !propertyData.waterSupply.twentyFourHours && <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is not available</p>}
+                                {propertyData.waterSupply.available && propertyData.waterSupply.twentyFourHours ?
+                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is available</p> :
+                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is not available</p>}
                             </td>
                         </tr>
 
@@ -559,10 +561,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Furnishing</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {propertyData.furnishing.type === 'fully-furnished' && <p>Fully furnished</p>}
-                                    {propertyData.furnishing.type === 'semi-furnished' && <p>Semi furnished</p>}
-                                    {propertyData.furnishing.type === 'unfurnished' && <p> Unfurnished</p>}
-                                    {propertyData.furnishing.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200"> {propertyData.furnishing.details}</p>}
+                                    <p>{capitalizeFirstLetterOfAString(propertyData.furnishing.type)}</p>
                                 </td>
                             </tr>}
 
@@ -571,10 +570,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen furnishing</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {propertyData.kitchenFurnishing.type === 'modular' && <p>Modular</p>}
-                                    {propertyData.kitchenFurnishing.type === 'semi-furnished' && <p>Semi furnished</p>}
-                                    {propertyData.kitchenFurnishing.type === 'unfurnished' && <p> Unfurnished</p>}
-                                    {propertyData.kitchenFurnishing.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200"> {propertyData.kitchenFurnishing.details}</p>}
+                                    <p>{capitalizeFirstLetterOfAString(propertyData.kitchenFurnishing.type)}</p>
                                 </td>
                             </tr>}
 
@@ -590,24 +586,20 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                             </tr>}
 
                         {/*Washroom fitting */}
-                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
+                        {propertyData.washroomFitting && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Washroom fitting</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {propertyData.washroomFitting === 'standard' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
-                                    {propertyData.washroomFitting === 'premium' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Premium</p>}
-                                    {propertyData.washroomFitting === 'luxurious' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Luxurious</p>}
+                                    <p className="pt-4 pb-4 text-center flex flex-col gap-2">{capitalizeFirstLetterOfAString(propertyData.washroomFitting)}</p>
                                 </td>
                             </tr>}
 
                         {/*Electrical fitting */}
-                        {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
+                        {propertyData.electricalFitting && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Electrical fitting</td>
                                 <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    {propertyData.electricalFitting === 'standard' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Standard</p>}
-                                    {propertyData.electricalFitting === 'premium' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Premium</p>}
-                                    {propertyData.electricalFitting === 'luxurious' && <p className="pt-4 pb-4 text-center flex flex-col gap-2">Luxurious</p>}
+                                    <p className="pt-4 pb-4 text-center flex flex-col gap-2">{capitalizeFirstLetterOfAString(propertyData.electricalFitting)}</p>
                                 </td>
                             </tr>}
 

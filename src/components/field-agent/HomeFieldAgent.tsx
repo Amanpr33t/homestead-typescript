@@ -31,7 +31,16 @@ const HomeFieldAgent: React.FC = () => {
 
     const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState<number>(0) //Number of properties added by the field agent
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState<number>(0) //number of property dealers added by the field agent
-    const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState<number>(0) //number of pending requests for property reevaluation
+
+    const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState<{
+        agricultural: number,
+        residential: number,
+        commercial: number
+    }>({
+        agricultural: 0,
+        residential: 0,
+        commercial: 0
+    }) //number of pending requests for property reevaluation
 
     const [requestsDropdown, setRequestsDropdown] = useState<boolean>(false) //If true, a request dropdown will be shown to the user
 
@@ -42,7 +51,7 @@ const HomeFieldAgent: React.FC = () => {
     const fetchNumberOfPendingRequestsForPropertyReevaluation = useCallback(async () => {
         try {
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPendingPequestsForReevaluationOfProperty`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPropertiesPendingToBeReevaluated`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +64,11 @@ const HomeFieldAgent: React.FC = () => {
             const data = await response.json()
             if (data.status === 'ok') {
                 setSpinner(false)
-                setPendingRequestForPropertyReevaluation(data.numberOfPendingPropertyReevaluations)
+                setPendingRequestForPropertyReevaluation({
+                    agricultural: data.agricultural,
+                    residential: data.residential,
+                    commercial: data.commercial
+                })
                 return
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
@@ -146,9 +159,9 @@ const HomeFieldAgent: React.FC = () => {
                             <p className="w-40">Pending visits to add a property dealer</p>
                         </div>
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100"
-                            onClick={() => pendingRequestsForPropertyReevaluation ? navigate('/field-agent/list-of-pending-property-reevaluations', { replace: true }) : null}>
-                            <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
-                            <p className="w-40">Pending requests to reconsider to details of a property</p>
+                            onClick={() => pendingRequestsForPropertyReevaluation ? navigate(`/field-agent/reevaluate-property?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) : null}>
+                            <p className="text-5xl">{pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential}</p>
+                            <p className="w-40">Pending requests to reconsider details of a property</p>
                         </div>
                     </div>
 
@@ -168,8 +181,8 @@ const HomeFieldAgent: React.FC = () => {
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property dealer</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => navigate('/field-agent/list-of-pending-property-reevaluations', { replace: true })}>
-                                    <p className="text-5xl">{pendingRequestsForPropertyReevaluation}</p>
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation ? navigate(`/field-agent/reevaluate-property?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) : null}>
+                                    <p className="text-5xl">{pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential}</p>
                                     <p className="w-40">Pending requests to reconsider details of a property</p>
                                 </div>
                             </div>}
