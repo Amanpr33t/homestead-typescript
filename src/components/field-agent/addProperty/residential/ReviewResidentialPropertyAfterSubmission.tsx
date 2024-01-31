@@ -184,7 +184,6 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setPropertyImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
                     setPropertyImagesUrl(images => [
@@ -205,13 +204,14 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setContractImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
                     setContractImagesUrl(images => [...images, data.secure_url])
                 }
             })
         } catch (error) {
+            setContractImagesUrl([])
+            setPropertyImagesUrl([])
             setSpinner(false)
             setAlert({
                 isAlertModal: true,

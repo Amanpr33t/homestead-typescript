@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { Fragment, ReactNode } from "react";
+import { Fragment } from "react";
 
 //Components imported for field agent
 import HomeFieldAgent from "./components/field-agent/HomeFieldAgent";
@@ -12,8 +12,6 @@ import AddProperty from "./components/field-agent/addProperty/AddProperty";
 import PropertiesAddedByFieldAgent from "./components/field-agent/listOfPropertiesAdded/PropertiesAddedByFieldAgent";
 import CommercialPropertyAddForm from "./components/field-agent/addProperty/commercial/CommercialPropertyAddForm";
 import ResidentialPropertyAddForm from "./components/field-agent/addProperty/residential/ResidentialPropertyAddForm";
-import ListOfPendingPropertyReevaluations from './components/field-agent/ListOfPendingPropertyReevaluations';
-import ReevaluateProperty from './components/field-agent/ReevaluateProperty';
 
 //Components imported for property evaluator
 import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
@@ -35,7 +33,7 @@ import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPr
 import ListOfPropertiesAddedByFieldAgent from './components/field-agent/listOfPropertiesAdded/ListOfPropertiesAddedByFieldAgent';
 import PendingPropertyReevaluations from './components/field-agent/reevaluateProperty/PendingPropertyReevaluations';
 import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
-import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/ReevaluateCommercialProperty';
+import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/commercial/ReevaluateCommercialProperty';
 
 
 

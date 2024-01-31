@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
 
 interface PropertyDataType {
-    addedByPropertyDealer: string,
     commercialPropertyType: string,
     landSize: {
         totalArea: {
@@ -73,11 +72,13 @@ interface ImageType {
 }
 
 interface PropsType {
+    propertyId: string,
     propertyData: PropertyDataType,
     commercialPropertyImages: ImageType[],
     contractImages: ImageType[],
     propertyDataReset: () => void,
-    firmName: string
+    fetchedPropertyImagesUrl: string[],
+    fetchedContractImagesUrl: string[]
 }
 
 interface AlertType {
@@ -88,14 +89,15 @@ interface AlertType {
 }
 
 //The component is used to review the details of a commercial proeprty before they are sent to the server
-const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => {
+const ReviewReevaluatedCommercialProperty: React.FC<PropsType> = (props) => {
     const {
+        propertyId,
         propertyData,
         propertyDataReset,
-        firmName,
         commercialPropertyImages,
-        contractImages
-    } = props
+        contractImages,
+        fetchedPropertyImagesUrl,
+        fetchedContractImagesUrl } = props
 
     const navigate = useNavigate()
 
@@ -119,12 +121,12 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
     //The function is used to upload images to the database
     const uploadImages = async () => {
         try {
+            setPropertyImagesUrl([])
+            setContractImagesUrl([])
             const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
             if (!cloudinaryCloudName) {
                 throw new Error('Some error occured')
             }
-            setPropertyImagesUrl([])
-            setContractImagesUrl([])
             setSpinner(true)
             commercialPropertyImages.length && commercialPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
@@ -163,8 +165,8 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
                 }
             })
         } catch (error) {
-            setContractImagesUrl([])
-            setPropertyImagesUrl([])
+            setPropertyImagesUrl(fetchedPropertyImagesUrl)
+            setContractImagesUrl(fetchedContractImagesUrl || [])
             setSpinner(false)
             setAlert({
                 isAlertModal: true,
@@ -179,13 +181,13 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
     //The function is used to storre data to the database
     const saveDetailsToDatabase = useCallback(async (propertyImagesUrl: string[], contractImagesUrl: string[]) => {
         const finalPropertyData: FinalPropertyDataType = {
-            propertyImagesUrl,
-            contractImagesUrl: contractImagesUrl.length ? contractImagesUrl : null,
+            propertyImagesUrl: [...propertyImagesUrl, ...fetchedPropertyImagesUrl],
+            contractImagesUrl: [...contractImagesUrl, ...fetchedContractImagesUrl].length ? [...contractImagesUrl, ...fetchedContractImagesUrl] : null,
             ...propertyData
         }
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addCommercialProperty`, {
-                method: 'POST',
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/updateReevaluatedPropertyData?type=commercial&id=${propertyId}`, {
+                method: 'PATCH',
                 body: JSON.stringify(finalPropertyData),
                 headers: {
                     'Content-Type': 'application/json',
@@ -221,14 +223,17 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
             })
             return
         }
-    }, [authToken, navigate, propertyData])
+    }, [authToken, navigate, propertyData, fetchedContractImagesUrl, fetchedPropertyImagesUrl, propertyId])
 
     //The code in the useEffect hook is executed when the images are sucessfully uploaded
     useEffect(() => {
-        if (propertyImagesUrl.length === commercialPropertyImages.length && contractImagesUrl.length === contractImages.length) {
+        if (!commercialPropertyImages.length && !contractImages.length) {
+            return
+        }
+        if (commercialPropertyImages.length === propertyImagesUrl.length && contractImages.length === contractImagesUrl.length) {
             saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
         }
-    }, [propertyImagesUrl, contractImagesUrl, commercialPropertyImages.length, contractImages.length, saveDetailsToDatabase])
+    }, [commercialPropertyImages.length, contractImages.length, propertyImagesUrl.length, contractImagesUrl.length, propertyImagesUrl, contractImagesUrl, saveDetailsToDatabase])
 
     return (
         <Fragment>
@@ -253,6 +258,7 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
                 <button
                     type='button'
                     className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
+                    disabled={spinner}
                     onClick={() => {
                         propertyDataReset()
                     }}>
@@ -274,12 +280,6 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
                         </tr>
                     </thead>
                     <tbody>
-
-                        {/*Firm name */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                            <td className=" pt-4 pb-4 text-center">{firmName}</td>
-                        </tr>
 
                         {/*Property type */}
                         <tr className="border-2 border-gray-300">
@@ -464,6 +464,13 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
+                                {fetchedPropertyImagesUrl.map(image => {
+                                    return <img
+                                        key={Math.random()}
+                                        className='w-40 h-auto border border-gray-500'
+                                        src={image}
+                                        alt="" />;
+                                })}
                                 {commercialPropertyImages.map(image => {
                                     return <img
                                         key={Math.random()}
@@ -479,6 +486,13 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
+                                    {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
+                                        return <img
+                                            key={Math.random()}
+                                            className='w-40 h-auto border border-gray-500'
+                                            src={image}
+                                            alt="" />
+                                    })}
                                     {contractImages.map(image => {
                                         return <img
                                             key={Math.random()}
@@ -497,7 +511,14 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
                         type='button'
                         className={`px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pt-0.5 h-8 flex flex-row place-content-center gap-1 ${spinner ? 'w-20' : ''}`}
                         disabled={spinner || alert.isAlertModal}
-                        onClick={uploadImages}>
+                        onClick={async () => {
+                            if (commercialPropertyImages.length || contractImages.length) {
+                                await uploadImages()
+                            } else {
+                                await saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
+                            }
+                        }}
+                    >
                         {spinner ? (
                             <div className="spinner absolute border-t-4 border-white border-solid rounded-full h-6 w-6 animate-spin"></div>
                         ) : (
@@ -519,4 +540,4 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
         </Fragment >
     )
 }
-export default ReviewCommercialPropertyAfterSubmission
+export default ReviewReevaluatedCommercialProperty

@@ -1,0 +1,38 @@
+import { Fragment } from "react"
+
+interface DetailsProps {
+    details: string[],
+    detailsModalRemover: () => void
+}
+//this component is an alert modal
+const ReevaluationDetailsModal: React.FC<DetailsProps> = ({ details, detailsModalRemover }) => {
+    let index: number = 0
+    return (
+        <Fragment>
+            <div className="fixed z-50 top-16 pt-12 bg-transparent h-screen w-full flex justify-center " onClick={detailsModalRemover}>
+                <div className="relative w-11/12 sm:w-6/12 h-fit rounded shadow bg-white py-4" onClick={e => e.stopPropagation()}>
+                    <button type="button" className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={detailsModalRemover}>
+                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span className="sr-only">Close modal</span>
+                    </button>
+                    <p className="text-center text-2xl font-semibold text-gray-500">Reevaluation details</p>
+                    <div className="flex flex-col p-6">
+                        {details.map(detail => {
+                            index++
+                            return <div key={Math.random()} className="flex flex-row gap-2">
+                                <p className="font-bold">{index}.</p>
+                                <p >{detail}</p>
+                            </div>
+                        })}
+                    </div>
+                    <div className="flex justify-center">
+                        <button data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" onClick={detailsModalRemover}>Ok</button>
+                    </div>
+                </div>
+            </div>
+        </Fragment>
+    )
+}
+export default ReevaluationDetailsModal

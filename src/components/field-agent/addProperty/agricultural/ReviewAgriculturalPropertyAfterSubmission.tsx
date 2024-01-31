@@ -121,7 +121,6 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setPropertyImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
                     setPropertyImagesUrl(images => [
@@ -142,7 +141,6 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
                 })
                 const data = await response.json()
                 if (data && data.error) {
-                    setContractImagesUrl([])
                     throw new Error('Some error occured')
                 } else {
                     setContractImagesUrl(images => [
@@ -152,6 +150,8 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
                 }
             })
         } catch (error) {
+            setContractImagesUrl([])
+            setPropertyImagesUrl([])
             setSpinner(false)
             setAlert({
                 isAlertModal: true,
@@ -216,7 +216,7 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
             })
             return
         }
-    }, [authToken, navigate,propertyData])
+    }, [authToken, navigate, propertyData])
 
     //The code inside the useEffect hook is triggered when the images have been successfully uploaded
     useEffect(() => {

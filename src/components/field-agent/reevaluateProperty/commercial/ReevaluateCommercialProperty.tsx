@@ -1,11 +1,12 @@
 import { Fragment, useState, useEffect, ChangeEvent, FormEvent, useCallback } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import AlertModal from "../../AlertModal"
-import { punjabDistricts } from "../../../utils/tehsilsAndDistricts/districts"
-import PunjabTehsilsDropdown from "../../tehsilsDropdown/Punjab"
-import ReviewCommercialPropertyAfterSubmission from "../addProperty/commercial/ReviewCommercialPropertyAfterSubmission"
-import { capitalizeFirstLetterOfAString } from "../../../utils/stringUtilityFunctions"
-import Spinner from "../../Spinner"
+import AlertModal from "../../../AlertModal"
+import { punjabDistricts } from "../../../../utils/tehsilsAndDistricts/districts"
+import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
+import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
+import Spinner from "../../../Spinner"
+import ReviewReevaluatedCommercialProperty from "./ReviewReevaluatedCommercialProperty"
+import ReevaluationDetailsModal from "../ReevaluationDetailsModal"
 
 const arrayOfNumbers = (from: number, to: number) => {
     if (from === 0) {
@@ -32,8 +33,6 @@ interface ImageType {
 type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
 
 interface PropertyDataType {
-    //propertyImagesUrl?: string[],
-    //contractImagesUrl?: string[] | null,
     commercialPropertyType: string,
     landSize: {
         totalArea: {
@@ -90,6 +89,15 @@ interface PropertyDataType {
     shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'
 }
 
+interface FetchedPropertyDataType extends PropertyDataType {
+    _id: string,
+    propertyImagesUrl: string[],
+    contractImagesUrl: string[] | null,
+    evaluationData: {
+        incompletePropertyDetails: string[] | null
+    }
+}
+
 //Component is used to add a commercial proerty
 const ReevaluateCommercialProperty: React.FC = () => {
     const navigate = useNavigate()
@@ -102,7 +110,9 @@ const ReevaluateCommercialProperty: React.FC = () => {
         }
     }, [authToken, navigate])
 
-    const [fetchedPropertyData, setFetchedPropertyData] = useState<PropertyDataType | null>(null)
+    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)
+
+    const [showDetailsModal, setShowDetailsModal] = useState<boolean>(true)
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
@@ -137,8 +147,10 @@ const ReevaluateCommercialProperty: React.FC = () => {
 
     const [commercialPropertyImages, setCommercialPropertyImages] = useState<ImageType[]>([])
     const [commercialPropertyImageError, setCommercialPropertyImageError] = useState<boolean>(false)
+    const [fetchedPropertyImagesUrl, setFetchedPropertyImagesUrl] = useState<string[]>([])
 
     const [contractImages, setContractImages] = useState<ImageType[]>([])
+    const [fetchedContractImagesUrl, setFetchedContractImagesUrl] = useState<string[]>([])
 
     const [numberOfOwners, setNumberOfOwners] = useState<number>(1)
 
@@ -155,6 +167,30 @@ const ReevaluateCommercialProperty: React.FC = () => {
     const propertyTypeOptions = ['booth', 'shop', 'showroom', 'retail-space', 'other']
     const [propertyTypeError, setPropertyTypeError] = useState<boolean>(false)
     const [selectedPropertyType, setSelectedPropertyType] = useState<'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'>()
+
+    const [numberOfFloorsWithoutBasement, setNumberOfFloorsWithoutBasement] = useState<number>(1)
+    const [numberOfBasementFloors, setNumberOfBasementFloors] = useState<number>(0)
+
+    const [lockInPeriodMonths, setLockInPeriodMonths] = useState<number>(0)
+    const [lockInPeriodYears, setLockInPeriodYears] = useState<number>(0)
+
+    const [leasePeriodMonths, setLeasePeriodMonths] = useState<number>(0)
+    const [leasePeriodYears, setLeasePeriodYears] = useState<number>(0)
+
+    const [remarks, setRemarks] = useState<string>('')
+
+    const [widthOfRoadFacingMetre, setWidthOfRoadFacingMetre] = useState<number | ''>('')
+    const [widthOfRoadFacingFeet, setWidthOfRoadFacingFeet] = useState<number | ''>('')
+
+    const [isEmptyProperty, setIsEmptyProperty] = useState<boolean>()
+    const [builtUpProperty, setBuiltUpProperty] = useState<boolean>()
+    const [stateOfPropertyError, setStateOfPropertyError] = useState<boolean>(false)
+    const [builtUpSelectedOption, setBuiltupSelectedOption] = useState<BuiltUpType>()
+    const builtUpPropertyOptions = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
+
+    const states = ['chandigarh', 'punjab']
+
+    const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
     useEffect(() => {
         if (fetchedPropertyData) {
@@ -181,32 +217,18 @@ const ReevaluateCommercialProperty: React.FC = () => {
             setLockInPeriodYears(fetchedPropertyData.lockInPeriod?.years || 0)
             setLeasePeriodMonths(fetchedPropertyData.leasePeriod?.months || 0)
             setLeasePeriodYears(fetchedPropertyData.leasePeriod?.years || 0)
+            setRemarks(fetchedPropertyData.remarks || '')
+            setIsEmptyProperty(fetchedPropertyData.stateOfProperty.empty)
+            setBuiltUpProperty(fetchedPropertyData.stateOfProperty.builtUp)
+            if (fetchedPropertyData.stateOfProperty.builtUpPropertyType) {
+                setBuiltupSelectedOption(fetchedPropertyData.stateOfProperty.builtUpPropertyType)
+            }
+            setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            if (fetchedPropertyData.contractImagesUrl?.length) {
+                setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
+            }
         }
     }, [fetchedPropertyData])
-
-    const [numberOfFloorsWithoutBasement, setNumberOfFloorsWithoutBasement] = useState<number>(1)
-    const [numberOfBasementFloors, setNumberOfBasementFloors] = useState<number>(0)
-
-    const [lockInPeriodMonths, setLockInPeriodMonths] = useState<number>(0)
-    const [lockInPeriodYears, setLockInPeriodYears] = useState<number>(0)
-
-    const [leasePeriodMonths, setLeasePeriodMonths] = useState<number>(0)
-    const [leasePeriodYears, setLeasePeriodYears] = useState<number>(0)
-
-    const [remarks, setRemarks] = useState<string>('')
-
-    const [widthOfRoadFacingMetre, setWidthOfRoadFacingMetre] = useState<number | ''>('')
-    const [widthOfRoadFacingFeet, setWidthOfRoadFacingFeet] = useState<number | ''>('')
-
-    const [isEmptyProperty, setIsEmptyProperty] = useState<boolean>()
-    const [builtUpProperty, setBuiltUpProperty] = useState<boolean>()
-    const [stateOfPropertyError, setStateOfPropertyError] = useState<boolean>(false)
-    const [builtUpSelectedOption, setBuiltupSelectedOption] = useState<BuiltUpType>()
-    const builtUpPropertyOptions = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
-
-    const states = ['chandigarh', 'punjab']
-
-    const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
     //This function is used to get proeprty details
     const getPropertyDetails = useCallback(async () => {
@@ -279,7 +301,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
     }
 
     const errorCheckingBeforeSubmit = () => {
-        if (!commercialPropertyImages.length) {
+        if (commercialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             setCommercialPropertyImageError(true)
         }
 
@@ -334,7 +356,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
             })
             return
         }
-        if (!commercialPropertyImages.length) {
+        if (commercialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
         if (!district.trim() || !state.trim()) {
@@ -456,19 +478,27 @@ const ReevaluateCommercialProperty: React.FC = () => {
                     <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
                 </div>}
 
-            {/*propertyData &&
-                <ReviewCommercialPropertyAfterSubmission
+            {!error && !spinner && propertyData &&
+                <ReviewReevaluatedCommercialProperty
+                    propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
-                    commercialPropertyImages={commercialPropertyImages}
                     contractImages={contractImages}
-                    propertyDataReset={() => setPropertyData(null)}
-                firmName={propertyDealerFirmName as string} />*/}
+                    commercialPropertyImages={commercialPropertyImages}
+                    fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
+                    fetchedContractImagesUrl={fetchedContractImagesUrl}
+                    propertyDataReset={() => setPropertyData(null)} />}
 
-            {!spinner &&
-                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+            {!error && !spinner &&
+                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDetailsModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Home button */}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+                    <div className='fixed flex flex-row gap-2 w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+                        <button
+                            type='button'
+                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
+                            onClick={() => navigate('/field-agent/reevaluate-property/commercial-properties', { replace: true })}>
+                            Back
+                        </button>
                         <button
                             type='button'
                             className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
@@ -477,9 +507,17 @@ const ReevaluateCommercialProperty: React.FC = () => {
                         </button>
                     </div>
 
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-semibold z-10">Add a commercial property by filling the form</p>
+                    <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
+                        <p className=" text-xl font-semibold mb-2">Reevaluate the commercial property</p>
+                        <button
+                            type='button'
+                            className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                            onClick={() =>setShowDetailsModal(true)}>
+                            Click here to see reevaluation details
+                        </button>
+                    </div>
 
-                    <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen mt-52 sm:mt-44 md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {/* Property type*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
@@ -506,6 +544,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                 id="built-up"
                                                 name="state"
                                                 value="built-up"
+                                                checked={builtUpProperty === true}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setStateOfPropertyError(false)
                                                     if (e.target.checked) {
@@ -523,6 +562,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                 id="empty"
                                                 name="state"
                                                 value="empty"
+                                                checked={isEmptyProperty === true}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setStateOfPropertyError(false)
                                                     if (e.target.checked) {
@@ -547,6 +587,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                         id={option}
                                                         name="built-up-option"
                                                         value={option}
+                                                        checked={builtUpSelectedOption === option}
                                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                             setStateOfPropertyError(false)
                                                             if (e.target.checked) {
@@ -696,6 +737,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                     id={type}
                                                     name='property-type'
                                                     value={type}
+                                                    checked={selectedPropertyType === type}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                         setPropertyTypeError(false)
                                                         if (e.target.checked) {
@@ -866,9 +908,27 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                     name='image'
                                     onChange={contractImageHandler} />
                             </div>
-                            {contractImages.length !== 0 &&
-                                <div className='flex flex-wrap justify-center gap-5 p-5'>
-                                    {contractImages.map(image => {
+                            <div className='flex flex-wrap justify-center gap-5 p-5'>
+                                {fetchedContractImagesUrl && fetchedContractImagesUrl.length !== 0 && fetchedContractImagesUrl.map(url => {
+                                    return <div
+                                        key={Math.random()}
+                                        className='relative w-fit'>
+                                        <img
+                                            className='relative w-auto h-60'
+                                            src={url}
+                                            alt="" />
+                                        <div
+                                            className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
+                                            onClick={() => {
+                                                const updatedState = fetchedContractImagesUrl.filter(item => item !== url)
+                                                setFetchedContractImagesUrl(updatedState)
+                                            }}>
+                                            X
+                                        </div>
+                                    </div>
+                                })}
+                                {contractImages.length !== 0 &&
+                                    contractImages.map(image => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit'>
@@ -886,7 +946,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                             </div>
                                         </div>
                                     })}
-                                </div>}
+                            </div>
                         </div>
 
                         {/*location */}
@@ -1153,6 +1213,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                             id="yes"
                                             name="restrictions"
                                             value="yes"
+                                            checked={isLegalRestrictions === true}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 setLegalRestrictionDetails('')
                                                 setLegalRestrictionDetailsError(false)
@@ -1173,6 +1234,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                             id="no"
                                             name="restrictions"
                                             value="no"
+                                            checked={isLegalRestrictions === false}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 setLegalRestrictionDetails('')
                                                 setLegalRestrictionDetailsError(false)
@@ -1274,9 +1336,28 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                     name='image'
                                     onChange={commercialPropertyImageHandler} />
                             </div>
-                            {commercialPropertyImages.length !== 0 &&
-                                <div className='flex flex-wrap justify-center gap-5 p-5'>
-                                    {commercialPropertyImages.map(image => {
+                            <div className='flex flex-wrap justify-center gap-5 p-5'>
+                                {fetchedPropertyImagesUrl.length !== 0 &&
+                                    fetchedPropertyImagesUrl.map(url => {
+                                        return <div
+                                            key={Math.random()}
+                                            className='relative w-fit bg-blue-300'>
+                                            <img
+                                                className='relative w-auto h-60'
+                                                src={url}
+                                                alt="" />
+                                            <div
+                                                className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
+                                                onClick={() => {
+                                                    const updatedState = fetchedPropertyImagesUrl.filter(item => item !== url)
+                                                    setFetchedPropertyImagesUrl(updatedState)
+                                                }}>
+                                                X
+                                            </div>
+                                        </div>
+                                    })}
+                                {commercialPropertyImages.length !== 0 &&
+                                    commercialPropertyImages.map(image => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit bg-blue-300'>
@@ -1294,7 +1375,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                             </div>
                                         </div>
                                     })}
-                                </div>}
+                            </div>
                         </div>
 
                         {/*remarks*/}
@@ -1326,6 +1407,13 @@ const ReevaluateCommercialProperty: React.FC = () => {
                         </div>
                     </form>
                 </div >}
+
+            {!error && !spinner && !propertyData && showDetailsModal && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
+                <ReevaluationDetailsModal
+                    details={fetchedPropertyData.evaluationData.incompletePropertyDetails}
+                    detailsModalRemover={() => setShowDetailsModal(false)}
+                />}
+
         </Fragment >
     )
 }
