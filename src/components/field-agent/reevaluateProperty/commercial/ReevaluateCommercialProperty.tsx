@@ -125,6 +125,11 @@ const ReevaluateCommercialProperty: React.FC = () => {
 
     const queryParams = new URLSearchParams(location.search)
     const propertyId: string | null = queryParams.get('propertyId')
+    useEffect(() => {
+        if (!propertyId) {
+            navigate('/field-agent')
+        }
+    }, [propertyId, navigate])
 
     const commercialPropertyType: string | null = fetchedPropertyData && fetchedPropertyData?.commercialPropertyType
 
@@ -512,7 +517,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                         <button
                             type='button'
                             className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() =>setShowDetailsModal(true)}>
+                            onClick={() => setShowDetailsModal(true)}>
                             Click here to see reevaluation details
                         </button>
                     </div>

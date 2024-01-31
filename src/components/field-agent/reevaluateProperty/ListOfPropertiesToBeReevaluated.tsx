@@ -131,7 +131,6 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                 </div>}
 
             {<div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${error || initialLoad ? 'bg-white' : 'bg-gray-100'}`}>
-                <Link to='/field-agent/properties-pending-for-evaluation' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded mr-2" >Back</Link>
                 <Link to='/field-agent' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded" >Home</Link>
                 {pendingPropertyEvaluations && !error &&
                     <div className="w-full flex justify-center mt-3">
@@ -163,7 +162,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                                 )}</p>
                             </div>
                             <div className="w-full flex justify-center ">
-                                <Link to={`/field-agent/reevaluate-property/${property.propertyType}?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
+                                <Link to={`/field-agent/reevaluate-property/${property.propertyType}?propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
                             </div>
                         </div>
                     })}

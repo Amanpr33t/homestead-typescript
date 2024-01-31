@@ -223,8 +223,6 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
         }
     }
 
-    console.log(propertyData)
-
     //function is used to save proeprty details to the database
     const saveDetailsToDatabase = useCallback(async (propertyImagesUrl: string[], contractImagesUrl: string[]) => {
         const finalPropertyData: FinalPropertyDataType = {

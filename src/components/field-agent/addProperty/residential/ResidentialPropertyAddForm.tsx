@@ -474,11 +474,15 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       setStoreRoomError(true)
     }
-
+    console.log(residentialPropertyType, servantRoom, servantWashroom)
+    console.log(11)
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
+      console.log(12)
       if (servantRoom === null) {
+        console.log(13)
         setServantRoomError(true)
       } else if (servantRoom && servantWashroom === null) {
+        console.log(14)
         setServantWashroomError(true)
       }
     }
@@ -584,7 +588,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
         routeTo: null
       })
     }
-
+    console.log(residentialPropertyType,servantRoom,servantWashroom)
     if (!propertyTitle.trim() || countWordsInAString(propertyTitle.trim()) > 30) {
       return errorFunction()
     } else if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
@@ -758,8 +762,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (!residentialPropertyType) {
       return
     }
-    
-    if ( residentialPropertyType.toLowerCase() === 'plot') {
+
+    if (residentialPropertyType.toLowerCase() === 'plot') {
       setPropertyData(finalPropertyData)
     } else if (residentialPropertyType.toLowerCase() === 'house') {
       setPropertyData({
@@ -1839,25 +1843,28 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     <p className="text-xl font-semibold text-gray-500 mb-2">Servant washroom</p>
                   </div>
                   <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                    <div className="flex flex-row h-fit">
-                      <input className="mr-1 cursor-pointer" type="radio" id="servant-washroom-yes" name="servant-washroom" onChange={e => {
-                        if (e.target.checked) {
-                          setServantWashroom(true)
-                          setServantWashroomError(false)
-                        }
-                      }} />
-                      <label htmlFor="servant-washroom-yes">Yes</label>
-                    </div>
-
-                    <div className="flex flex-row h-fit">
-                      <input className=" mr-1 cursor-pointer" type="radio" id="servant-room-no" name="servant-washroom" onChange={e => {
-                        if (e.target.checked) {
-                          setServantWashroom(false)
-                          setServantWashroomError(false)
-                        }
-                      }} />
-                      <label htmlFor="servant-room-no">No</label>
-                    </div>
+                    {['servant-washroom-yes', 'servant-washroom-no'].map(type => {
+                      return <div
+                        key={type}
+                        className="flex flex-row h-fit">
+                        <input
+                          className="mr-1 cursor-pointer"
+                          type="radio"
+                          id={type}
+                          name="servant-room"
+                          onChange={e => {
+                            if (e.target.checked) {
+                              if (type === 'servant-room-yes') {
+                                setServantWashroom(true)
+                              } else {
+                                setServantWashroom(false)
+                              }
+                              setServantWashroomError(false)
+                            }
+                          }} />
+                        <label htmlFor={type}>{type === 'servant-washroom-yes' ? 'Yes' : 'No'}</label>
+                      </div>
+                    })}
                   </div>
                 </div>}
               </div>}

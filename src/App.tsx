@@ -34,6 +34,7 @@ import ListOfPropertiesAddedByFieldAgent from './components/field-agent/listOfPr
 import PendingPropertyReevaluations from './components/field-agent/reevaluateProperty/PendingPropertyReevaluations';
 import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
 import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/commercial/ReevaluateCommercialProperty';
+import ReevaluateResidentialProperty from './components/field-agent/reevaluateProperty/residential/ReevaluateResidentialProperty';
 
 
 
@@ -80,6 +81,11 @@ const App: React.FC = () => {
                 < ReevaluateCommercialProperty />
               </>
               }></Route>
+              <Route path='residential' element={<>
+                <NavbarFieldAgent />
+                < ReevaluateResidentialProperty />
+              </>
+              }></Route>
               <Route path='commercial-properties' element={<>
                 <NavbarFieldAgent />
                 <ListOfPropertiesToBeReevaluated />
@@ -92,6 +98,8 @@ const App: React.FC = () => {
                 <NavbarFieldAgent />
                 <ListOfPropertiesToBeReevaluated />
               </>}></Route>
+              <Route path='*' element={<Navigate replace to='/field-agent' />}>
+            </Route>
             </Route>
 
             {/*routes to add property */}
@@ -133,7 +141,6 @@ const App: React.FC = () => {
                 <NavbarFieldAgent />
                 <ListOfPropertiesAddedByFieldAgent />
               </>}></Route>
-
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
