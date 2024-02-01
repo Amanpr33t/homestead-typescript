@@ -35,6 +35,7 @@ import PendingPropertyReevaluations from './components/field-agent/reevaluatePro
 import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
 import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/commercial/ReevaluateCommercialProperty';
 import ReevaluateResidentialProperty from './components/field-agent/reevaluateProperty/residential/ReevaluateResidentialProperty';
+import ReevaluateAgriculturalProperty from './components/field-agent/reevaluateProperty/agricultural/ReevaluateAgriculturalProperty';
 
 
 
@@ -84,6 +85,11 @@ const App: React.FC = () => {
               <Route path='residential' element={<>
                 <NavbarFieldAgent />
                 < ReevaluateResidentialProperty />
+              </>
+              }></Route>
+              <Route path='agricultural' element={<>
+                <NavbarFieldAgent />
+                < ReevaluateAgriculturalProperty />
               </>
               }></Route>
               <Route path='commercial-properties' element={<>

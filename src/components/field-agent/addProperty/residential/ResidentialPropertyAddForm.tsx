@@ -9,7 +9,7 @@ import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
 import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../../../utils/stringUtilityFunctions"
 
-type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
+type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
 type RoofType = 'standard' | 'pop work' | 'down ceiling'
 type WindowType = 'standard' | 'wood' | 'premium material'
@@ -104,10 +104,7 @@ interface DataCommonToHouseAndFlatType {
   numberOfCarParkingSpaces: number,
   numberOfBalconies: number,
   storeRoom: boolean,
-  servantRoom: {
-    room: boolean,
-    washroom: boolean | null
-  },
+  servantRoom: boolean,
   furnishing: {
     type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
     details: string | null
@@ -249,8 +246,6 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
   const [servantRoom, setServantRoom] = useState<boolean | null>(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
   const [servantRoomError, setServantRoomError] = useState<boolean>(false) //If servantRoom is null, this is set to true
-  const [servantWashroom, setServantWashroom] = useState<boolean | null>(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
-  const [servantWashroomError, setServantWashroomError] = useState<boolean>(false) //If servantWashroom is null, this is set to true
 
   const [furnishing, setFurnishing] = useState<'fully-furnished' | 'semi-furnished' | 'unfurnished'>()//It stores a value when a radio button is clicked
   const [furnishingError, setFurnishingError] = useState<boolean>(false) //If furnishing is null, this is set to true
@@ -474,17 +469,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       setStoreRoomError(true)
     }
-    console.log(residentialPropertyType, servantRoom, servantWashroom)
-    console.log(11)
-    if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
-      console.log(12)
-      if (servantRoom === null) {
-        console.log(13)
+    if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot'&&servantRoom === null) {
         setServantRoomError(true)
-      } else if (servantRoom && servantWashroom === null) {
-        console.log(14)
-        setServantWashroomError(true)
-      }
     }
 
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
@@ -588,7 +574,6 @@ const ResidentialPropertyAddForm: React.FC = () => {
         routeTo: null
       })
     }
-    console.log(residentialPropertyType,servantRoom,servantWashroom)
     if (!propertyTitle.trim() || countWordsInAString(propertyTitle.trim()) > 30) {
       return errorFunction()
     } else if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
@@ -615,7 +600,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null ) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && countWordsInAString(furnishingDetails.trim()) > 150))) {
       return errorFunction()
@@ -726,10 +711,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       numberOfCarParkingSpaces,
       numberOfBalconies,
       storeRoom: storeRoom as boolean,
-      servantRoom: {
-        room: servantRoom as boolean,
-        washroom: servantWashroom
-      },
+      servantRoom:servantRoom as boolean,
       furnishing: {
         type: furnishing as 'fully-furnished' | 'semi-furnished' | 'unfurnished',
         details: furnishingDetails.trim() || null
@@ -1805,7 +1787,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {/*servant room*/}
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="p-2  flex flex-col pb-5 pt-5 ">
-                {(servantRoomError || servantWashroomError) && <p className="text-red-500">Select an option</p>}
+                {servantRoomError  && <p className="text-red-500">Select an option</p>}
                 <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
                   <div className="flex flex-row gap-0.5">
                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -1836,37 +1818,6 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     })}
                   </div>
                 </div>
-
-                {servantRoom && <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
-                  <div className="flex flex-row gap-0.5">
-                    <p className="h-4 text-2xl text-red-500">*</p>
-                    <p className="text-xl font-semibold text-gray-500 mb-2">Servant washroom</p>
-                  </div>
-                  <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                    {['servant-washroom-yes', 'servant-washroom-no'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
-                        <input
-                          className="mr-1 cursor-pointer"
-                          type="radio"
-                          id={type}
-                          name="servant-room"
-                          onChange={e => {
-                            if (e.target.checked) {
-                              if (type === 'servant-room-yes') {
-                                setServantWashroom(true)
-                              } else {
-                                setServantWashroom(false)
-                              }
-                              setServantWashroomError(false)
-                            }
-                          }} />
-                        <label htmlFor={type}>{type === 'servant-washroom-yes' ? 'Yes' : 'No'}</label>
-                      </div>
-                    })}
-                  </div>
-                </div>}
               </div>}
 
             {/*Furnishing */}

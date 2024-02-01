@@ -6,6 +6,9 @@ import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
 import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../../../utils/stringUtilityFunctions"
+import { FaEdit } from "react-icons/fa";
+import ReevaluationDetailsModal from "../ReevaluationDetailsModal"
+import ReviewReevaluatedResidentialProperty from "./ReviewReevaluatedResidentialProperty"
 
 type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
@@ -101,10 +104,7 @@ interface DataCommonToHouseAndFlatType {
     numberOfCarParkingSpaces: number,
     numberOfBalconies: number,
     storeRoom: boolean,
-    servantRoom: {
-        room: boolean,
-        washroom: boolean | null
-    },
+    servantRoom: boolean,
     furnishing: {
         type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
         details: string | null
@@ -170,6 +170,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
     const [showDetailsModal, setShowDetailsModal] = useState<boolean>(true)
+    const [editForm, setEditForm] = useState<boolean>(false)
 
     const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
@@ -257,8 +258,6 @@ const ReevaluateResidentialProperty: React.FC = () => {
 
     const [servantRoom, setServantRoom] = useState<boolean | null>(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
     const [servantRoomError, setServantRoomError] = useState<boolean>(false) //If servantRoom is null, this is set to true
-    const [servantWashroom, setServantWashroom] = useState<boolean | null>(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
-    const [servantWashroomError, setServantWashroomError] = useState<boolean>(false) //If servantWashroom is null, this is set to true
 
     const [furnishing, setFurnishing] = useState<'fully-furnished' | 'semi-furnished' | 'unfurnished'>()//It stores a value when a radio button is clicked
     const [furnishingError, setFurnishingError] = useState<boolean>(false) //If furnishing is null, this is set to true
@@ -334,10 +333,12 @@ const ReevaluateResidentialProperty: React.FC = () => {
 
     //The states below are for the uploading property images
     const [residentialLandImageFileError, setResidentialLandImageFileError] = useState<boolean>(false)
-    const [residentialLandImages, setResidentialLandImages] = useState<ImageType[]>([])
+    const [residentialPropertyImages, setResidentialPropertyImages] = useState<ImageType[]>([])
+    const [fetchedPropertyImagesUrl, setFetchedPropertyImagesUrl] = useState<string[]>([])
 
-    //The states below are for uploading contract images
     const [contractImages, setContractImages] = useState<ImageType[]>([])
+    const [fetchedContractImagesUrl, setFetchedContractImagesUrl] = useState<string[]>([])
+
 
     const residentialPropertyType = fetchedPropertyData?.residentialPropertyType
 
@@ -357,8 +358,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                 setNumberOfCarParkingSpaces(fetchedPropertyData.numberOfCarParkingSpaces)
                 setNumberOfBalconies(fetchedPropertyData.numberOfBalconies)
                 setStoreRoom(fetchedPropertyData.storeRoom)
-                setServantRoom(fetchedPropertyData.servantRoom.room)
-                setServantWashroom(fetchedPropertyData.servantRoom.washroom)
+                setServantRoom(fetchedPropertyData.servantRoom)
                 setFurnishing(fetchedPropertyData.furnishing.type)
                 setFurnishingDetails(fetchedPropertyData.furnishing.details || '')
                 setKitchenFurnishing(fetchedPropertyData.kitchenFurnishing.type)
@@ -415,8 +415,12 @@ const ReevaluateResidentialProperty: React.FC = () => {
             setCity(fetchedPropertyData.location.name.city || '')
             setTehsil(fetchedPropertyData.location.name.tehsil || '')
             setVillage(fetchedPropertyData.location.name.village || '')
+            setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            if (fetchedPropertyData.contractImagesUrl?.length) {
+                setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
+            }
         }
-    }, [fetchedPropertyData])
+    }, [fetchedPropertyData,residentialPropertyType])
 
     //This function is used to get proeprty details
     const getPropertyDetails = useCallback(async () => {
@@ -456,7 +460,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setResidentialLandImageFileError(false);
-            setResidentialLandImages((array) => [
+            setResidentialPropertyImages((array) => [
                 ...array,
                 {
                     file: URL.createObjectURL(selectedFile),
@@ -490,6 +494,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
 
     //The function is used to throw errors if the user has given incomplete data
     const errorCheckingBeforeSubmit = () => {
+        if (residentialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+            setResidentialLandImageFileError(true)
+        }
         if (!propertyTitle.trim()) {
             setPropertyTitleErrorMessage('Provide a title')
         } else if (countWordsInAString(propertyTitle.trim()) > 30) {
@@ -564,7 +571,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
             setAreaTypeError(true)
         }
 
-        if (!residentialLandImages.length) {
+        if (!residentialPropertyImages.length) {
             setResidentialLandImageFileError(true)
         }
 
@@ -591,12 +598,8 @@ const ReevaluateResidentialProperty: React.FC = () => {
             setStoreRoomError(true)
         }
 
-        if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
-            if (servantRoom === null) {
-                setServantRoomError(true)
-            } else if (servantRoom && servantWashroom === null) {
-                setServantWashroomError(true)
-            }
+        if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
+            setServantRoomError(true)
         }
 
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
@@ -680,10 +683,6 @@ const ReevaluateResidentialProperty: React.FC = () => {
             setStateError(true)
         }
 
-        if (!residentialLandImages.length) {
-            setResidentialLandImageFileError(true)
-        }
-
     }
 
     //The function is triggered when the user submits the form
@@ -700,7 +699,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                 routeTo: null
             })
         }
-
+        if (residentialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+            return errorFunction()
+        }
         if (!propertyTitle.trim() || countWordsInAString(propertyTitle.trim()) > 30) {
             return errorFunction()
         } else if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
@@ -727,7 +728,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (servantRoom === null || (servantRoom && servantWashroom === null))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null ) {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && countWordsInAString(furnishingDetails.trim()) > 150))) {
             return errorFunction()
@@ -756,8 +757,6 @@ const ReevaluateResidentialProperty: React.FC = () => {
         } else if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
             return errorFunction()
         } else if (!district.trim() && !state.trim()) {
-            return errorFunction()
-        } else if (!residentialLandImages.length) {
             return errorFunction()
         }
 
@@ -837,10 +836,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
             numberOfCarParkingSpaces,
             numberOfBalconies,
             storeRoom: storeRoom as boolean,
-            servantRoom: {
-                room: servantRoom as boolean,
-                washroom: servantWashroom
-            },
+            servantRoom:servantRoom as boolean,
             furnishing: {
                 type: furnishing as 'fully-furnished' | 'semi-furnished' | 'unfurnished',
                 details: furnishingDetails.trim() || null
@@ -1026,23 +1022,6 @@ const ReevaluateResidentialProperty: React.FC = () => {
         }
     }
 
-    const servantWashroomCheckedFunction = (type: 'servant-washroom-yes' | 'servant-washroom-no') => {
-        if (type === 'servant-washroom-yes') {
-            if (servantWashroom) {
-                return true
-            } else {
-                return false
-            }
-        }
-        if (type === 'servant-washroom-no') {
-            if (servantWashroom) {
-                return false
-            } else {
-                return true
-            }
-        }
-    }
-
     const kitchenAppliancesCheckedFunction = (type: "kitchen-appliances-yes" | "kitchen-appliances-no") => {
         if (type === 'kitchen-appliances-yes') {
             if (kitchenAppliances) {
@@ -1093,43 +1072,66 @@ const ReevaluateResidentialProperty: React.FC = () => {
             }
         }
     }
-    console.log(isDeclareFixedPrice, isRangeOfPrice)
+
     return (
         <Fragment>
-            {spinner && !propertyData && <Spinner />}
+            {spinner && !error && <Spinner />}
 
-            {alert.isAlertModal &&
-                <AlertModal
-                    message={alert.alertMessage}
-                    type={alert.alertType}
-                    routeTo={alert.routeTo}
-                    alertModalRemover={() => {
-                        setAlert({
-                            isAlertModal: false,
-                            alertType: null,
-                            alertMessage: null,
-                            routeTo: null
-                        })
-                    }} />}
+            {alert.isAlertModal && <AlertModal
+                message={alert.alertMessage}
+                type={alert.alertType}
+                routeTo={alert.routeTo}
+                alertModalRemover={() => {
+                    setAlert({
+                        isAlertModal: false,
+                        alertType: null,
+                        alertMessage: null,
+                        routeTo: null
+                    })
+                }} />}
 
+            {/*This message is shown when an error occurs while fetching data */}
+            {error && !spinner &&
+                <div className="fixed top-36 w-full flex flex-col place-items-center">
+                    <p>Some error occured</p>
+                    <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
+                </div>}
 
-            {!spinner &&
-                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+            {!error && !spinner &&
+                <div className={`pt-56 sm:pt-44 px-2 mb-10 md:px-0w-full flex flex-col place-items-center ${alert.isAlertModal || showDetailsModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Home button*/}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+                    {!propertyData && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-red-500 sm:bg-transparent'>
                         <button
                             type='button'
                             className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
                             onClick={() => navigate('/field-agent', { replace: true })}>
                             Home
                         </button>
-                    </div>
+                    </div>}
 
                     {/*Heading */}
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white text-xl font-semibold z-10">Reevaluate residential property</p>
+                    {!propertyData && <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
+                        <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
+                        <button
+                            type='button'
+                            className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setShowDetailsModal(true)
+                            }}>
+                            Click here to see reevaluation details
+                        </button>
+                    </div>}
 
-                    <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen  md:w-10/12 lg:w-8/12  h-fit pt-1 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+
+                        {!editForm && <div className=" w-full flex justify-center">
+                            <FaEdit className="text-3xl text-gray-500 hover:text-gray-700 cursor-pointer font-bold" onClick={e => {
+                                e.stopPropagation()
+                                setEditForm(true)
+                            }} />
+                        </div>}
 
                         {/*Type of sale */}
                         {residentialPropertyType && residentialPropertyType.toLowerCase() === 'house' &&
@@ -1150,6 +1152,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     id={type}
                                                     checked={type === "house-for-sale" ? typeOfSale?.houseForSale : typeOfSale?.floorForSale}
                                                     name="type-of-sale"
+                                                    disabled={editForm}
                                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                         if (e.target.checked) {
                                                             setTypeOfSaleError(false)
@@ -1195,7 +1198,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     </label>
                                 </div>
 
-                                <textarea
+                                {!editForm && <p>{propertyTitle}</p>}
+
+                                {editForm && <textarea
                                     className={`border-2 ${propertyTitleErrorMessage.trim() ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`}
                                     id="property-title"
                                     rows={5}
@@ -1211,7 +1216,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             setPropertyTitleErrorMessage('')
                                             setPropertyTitle(e.target.value)
                                         }
-                                    }} />
+                                    }} />}
                             </div>
                         </div>
 
@@ -1226,7 +1231,8 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     Property details
                                 </label>
 
-                                <textarea
+                                {!editForm && <p>{propertyDetail}</p>}
+                                {editForm && <textarea
                                     className={`border-2 ${propertyDetailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`} id="property-detail"
                                     rows={5}
                                     name="property-detail"
@@ -1241,7 +1247,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             setPropertyDetailError(false)
                                             setPropertyDetail(e.target.value)
                                         }
-                                    }} />
+                                    }} />}
                             </div>
                         </div>
 
@@ -1261,6 +1267,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             type="radio"
                                             id="fixed-price"
                                             name="price"
+                                            disabled={!editForm}
                                             checked={isDeclareFixedPrice}
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                 if (e.target.checked) {
@@ -1284,6 +1291,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 id="fixed-price-number"
                                                 type="number"
                                                 name='fixed-price-number'
+                                                disabled={!editForm}
                                                 className={`border-2 ${fixedPriceError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`}
                                                 placeholder="Number"
                                                 value={fixedPrice}
@@ -1302,8 +1310,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             className=" mr-1 cursor-pointer"
                                             type="radio"
                                             id="range-of-price"
+                                            disabled={!editForm}
                                             name="price"
-                                            checked={!isDeclareFixedPrice}
+                                            checked={isRangeOfPrice}
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                 if (e.target.checked) {
                                                     setPriceErrorMessage('')
@@ -1327,6 +1336,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 <input
                                                     id="range-of-price-number-1"
                                                     type="number"
+                                                    disabled={!editForm}
                                                     name='range-of-price-number-1'
                                                     className={`border-2 ${rangeOfPriceFromError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`}
                                                     placeholder="Number"
@@ -1347,6 +1357,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     id="range-of-price-number-2"
                                                     type="number"
                                                     name='range-of-price-number-2'
+                                                    disabled={!editForm}
                                                     className={`border-2 ${rangeOfPriceToError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`}
                                                     placeholder="Number"
                                                     value={rangeOfPriceTo}
@@ -1380,6 +1391,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
+                                                disabled={!editForm}
                                                 id={type}
                                                 checked={waterSupplyCheckedFunction(type as "water-supply-yes" | "water-supply-no")}
                                                 name="water-supply"
@@ -1416,6 +1428,8 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     className="mr-1 cursor-pointer"
                                                     type="radio"
                                                     id={type}
+                                                    disabled={!editForm}
+                                                    checked={twentyHoursWaterSupplyCheckedFunction(type as 'water-supply-twenty-four-hours-yes' | 'water-supply-twenty-four-hours-no')}
                                                     name="water-supply-twenty-four-hours"
                                                     onChange={e => {
                                                         if (e.target.checked) {
@@ -1452,6 +1466,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
                                                 id={type}
+                                                disabled={!editForm}
                                                 checked={electricityConnectionCheckedFunction(type as "electricity-connection-yes" | "electricity-connection-no")}
                                                 name="electricity-connection"
                                                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -1488,6 +1503,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
+                                                disabled={!editForm}
                                                 id={type}
                                                 checked={sewageSystemCheckedFunction(type as "sewage-system-yes" | "sewage-system-no")}
                                                 name="sewage-system"
@@ -1529,6 +1545,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 id={type}
                                                 checked={cableTvCheckedFunction(type as 'cable-tv-yes' | 'cable-tv-no')}
                                                 name="cable-tv"
+                                                disabled={!editForm}
                                                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                     if (e.target.checked) {
                                                         if (type === 'cable-tv-yes') {
@@ -1562,6 +1579,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             className="flex flex-row h-fit">
                                             <input
                                                 className="mr-1 cursor-pointer"
+                                                disabled={!editForm}
                                                 type="radio"
                                                 id={type}
                                                 checked={internetCheckedFunction(type as 'internet-yes' | 'internet-no')}
@@ -1605,6 +1623,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         type="number"
                                         id="grocery-store"
                                         name="grocery-store"
+                                        disabled={!editForm}
                                         className={`border-2 ${distanceFromGroceryStoreError ? 'border-red-500' : 'border-gray-500'} border-gray-500 w-12 text-center p-1 rounded`}
                                         autoComplete="new-password"
                                         value={distanceFromGroceryStore}
@@ -1627,6 +1646,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     </label>
                                     <input
                                         type="number"
+                                        disabled={!editForm}
                                         id="restaurant-cafe"
                                         name="restaurant-cafe"
                                         className={`border-2 ${distanceFromRestaurantCafeError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`}
@@ -1651,6 +1671,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     </label>
                                     <input
                                         type="number"
+                                        disabled={!editForm}
                                         id="exrecise-area"
                                         name="exrecise-area"
                                         className={`border-2 ${distanceFromExerciseAreaError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`}
@@ -1677,6 +1698,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         type="number"
                                         id="school"
                                         name="school"
+                                        disabled={!editForm}
                                         className={`border-2 ${distanceFromSchoolError ? 'border-red-500' : 'border-gray-500'} w-12 text-center p-1 rounded`}
                                         autoComplete="new-password"
                                         value={distanceFromSchool}
@@ -1700,6 +1722,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <input
                                         type="number"
                                         id="hospital"
+                                        disabled={!editForm}
                                         name="hospital"
                                         className={`border-2 ${distanceFromHospitalError ? 'border-red-500' : 'border-gray-500'} w-12 text-center ml-1 p-1 rounded`}
                                         autoComplete="new-password"
@@ -1735,6 +1758,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 type="radio"
                                                 id={'area-' + type}
                                                 checked={areaType === type}
+                                                disabled={!editForm}
                                                 name="area-type"
                                                 value={type}
                                                 onChange={e => {
@@ -1763,6 +1787,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="floors"
                                         id="floors"
+                                        disabled={!editForm}
                                         value={numberOfFloors}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setNumberOfFloors(+e.target.value)
@@ -1794,6 +1819,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             id="total-area-metre"
                                             type="number"
                                             name='total-area-metre'
+                                            disabled={!editForm}
                                             className={`border-2 ${totalAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
                                             value={totalAreaMetreSquare}
@@ -1813,6 +1839,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         <input
                                             id="total-area-gajj"
                                             type="number"
+                                            disabled={!editForm}
                                             name='total-area-gajj'
                                             className={`border-2 ${totalAreaGajjError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
@@ -1849,6 +1876,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             name='covered-area-metre'
                                             className={`border-2 ${coveredAreaMetreSquareError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
+                                            disabled={!editForm}
                                             value={coveredAreaMetreSquare}
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                 if (+e.target.value.trim() > 0) {
@@ -1867,6 +1895,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             id="covered-area-gajj"
                                             type="number"
                                             name='covered-area-gajj'
+                                            disabled={!editForm}
                                             className={`border-2 ${coveredAreaGajjError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
                                             value={coveredAreaGajj}
@@ -1897,6 +1926,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center" name="number-of-rooms"
                                         id="number-of-rooms"
                                         value={numberOfLivingRooms}
+                                        disabled={!editForm}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setNumberOfLivingRooms(+e.target.value)
                                         }}>
@@ -1922,6 +1952,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <select
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="number-of-bedrooms"
+                                        disabled={!editForm}
                                         id="number-of-bedrooms"
                                         value={numberOfBedrooms}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -1949,6 +1980,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="number-of-office-rooms"
                                         id="number-of-office-rooms"
+                                        disabled={!editForm}
                                         value={numberOfOfficeRooms}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setNumberOfOfficeRooms(+e.target.value)
@@ -1975,6 +2007,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <select
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="number-of-washrooms"
+                                        disabled={!editForm}
                                         id="number-of-washrooms"
                                         value={numberOfWashrooms}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -2002,6 +2035,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <select
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="number-of-kitchen"
+                                        disabled={!editForm}
                                         id="number-of-kitchen"
                                         value={numberOfKitchen}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -2029,6 +2063,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <select
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="number-of-car-parkings"
+                                        disabled={!editForm}
                                         id="number-of-car-parkings"
                                         value={numberOfCarParkingSpaces}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -2057,6 +2092,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                         name="number-of-balconies"
                                         id="number-of-balconies"
+                                        disabled={!editForm}
                                         value={numberOfBalconies}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setNumberOfBalconies(+e.target.value)
@@ -2088,6 +2124,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 className="flex flex-row h-fit">
                                                 <input
                                                     className="mr-1 cursor-pointer"
+                                                    disabled={!editForm}
                                                     type="radio"
                                                     id={type}
                                                     checked={storeRoomCheckedFunction(type as 'store-room-yes' | 'store-room-no')}
@@ -2112,7 +2149,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                         {/*servant room*/}
                         {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
                             <div className="p-2  flex flex-col pb-5 pt-5 ">
-                                {(servantRoomError || servantWashroomError) && <p className="text-red-500">Select an option</p>}
+                                {servantRoomError && <p className="text-red-500">Select an option</p>}
                                 <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
@@ -2128,6 +2165,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     type="radio"
                                                     id={type}
                                                     checked={servantRoomCheckedFunction(type as 'servant-room-yes' | 'servant-room-no')}
+                                                    disabled={!editForm}
                                                     name="servant-room"
                                                     onChange={e => {
                                                         if (e.target.checked) {
@@ -2144,41 +2182,6 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         })}
                                     </div>
                                 </div>
-
-                                {servantRoom && <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
-                                    <div className="flex flex-row gap-0.5">
-                                        <p className="h-4 text-2xl text-red-500">*</p>
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">Servant washroom</p>
-                                    </div>
-
-                                    <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                                        <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
-                                            {['servant-washroom-yes', 'servant-washroom-no'].map(type => {
-                                                return <div
-                                                    key={type}
-                                                    className="flex flex-row h-fit">
-                                                    <input
-                                                        className="mr-1 cursor-pointer"
-                                                        type="radio"
-                                                        id={'washroom' + type}
-                                                        checked={servantWashroomCheckedFunction(type as 'servant-washroom-yes' | 'servant-washroom-no')}
-                                                        name="servant-room"
-                                                        onChange={e => {
-                                                            if (e.target.checked) {
-                                                                if (type === 'servant-room-yes') {
-                                                                    setServantWashroom(true)
-                                                                } else {
-                                                                    setServantWashroom(false)
-                                                                }
-                                                                setServantWashroomError(false)
-                                                            }
-                                                        }} />
-                                                    <label htmlFor={'washroom' + type}>{type === 'servant-washroom-yes' ? 'Yes' : 'No'}</label>
-                                                </div>
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>}
                             </div>}
 
                         {/*Furnishing */}
@@ -2200,6 +2203,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     className="mr-1 cursor-pointer"
                                                     type="radio"
                                                     id={'house-' + type}
+                                                    disabled={!editForm}
                                                     name="furnishing"
                                                     checked={type === furnishing}
                                                     onClick={() => {
@@ -2217,13 +2221,14 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {furnishing && (furnishing === 'semi-furnished' || furnishing === 'fully-furnished') &&
+                                {furnishing && (furnishing === 'semi-furnished' || furnishing === 'fully-furnished') && editForm &&
                                     <div className="text-center">
                                         <textarea
                                             className={`border-2 ${furnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`}
                                             id="furnishing-details"
                                             name="furnishing-details"
                                             autoCorrect="on"
+                                            disabled={!editForm}
                                             autoComplete="new-password"
                                             placeholder="Add details about furnishing (optional)"
                                             value={furnishingDetails}
@@ -2238,6 +2243,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             }} />
                                         {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
                                     </div>}
+                                {furnishing && (furnishing === 'semi-furnished' || furnishing === 'fully-furnished') && !editForm && <div className="w-full flex justify-center mt-2">
+                                    <p className="w-11/12 sm:w-96 bg-white p-2">{furnishingDetails}</p>
+                                </div>}
                             </div>}
 
                         {/*Kitchen furnishing */}
@@ -2250,7 +2258,6 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen furnishing</p>
                                     </div>
                                     <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
-
                                         {['modular', 'semi-furnished', 'unfurnished'].map(type => {
                                             return <div
                                                 key={type}
@@ -2260,6 +2267,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     type="radio"
                                                     id={'kitchen-' + type}
                                                     name="kitchen-furnishing"
+                                                    disabled={!editForm}
                                                     checked={type === kitchenFurnishing}
                                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                         setKitchenFurnishingDetails('')
@@ -2276,7 +2284,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {kitchenFurnishing && (kitchenFurnishing === 'semi-furnished' || kitchenFurnishing === 'modular') &&
+                                {kitchenFurnishing && (kitchenFurnishing === 'semi-furnished' || kitchenFurnishing === 'modular') && editForm &&
                                     <div className="text-center">
                                         <textarea
                                             className={`border-2 ${kitchenFurnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`}
@@ -2297,6 +2305,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             }} />
                                         {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
                                     </div>}
+                                {kitchenFurnishing && (kitchenFurnishing === 'semi-furnished' || kitchenFurnishing === 'modular') && !editForm && <div className="w-full flex justify-center mt-2">
+                                    <p className="w-11/12 sm:w-96 bg-white p-2">{kitchenFurnishingDetails}</p>
+                                </div>}
                             </div>}
 
                         {/*kitchen appliances */}
@@ -2315,6 +2326,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
+                                                disabled={!editForm}
                                                 id={type}
                                                 name="kitchen-appliances"
                                                 checked={kitchenAppliancesCheckedFunction(type as "kitchen-appliances-yes" | "kitchen-appliances-no")}
@@ -2336,7 +2348,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                 </div>
                             </div>
 
-                            {kitchenAppliances &&
+                            {kitchenAppliances && editForm &&
                                 <div className="text-center">
                                     <textarea
                                         className={`border-2 ${kitchenAppliancesDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
@@ -2357,6 +2369,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         }} />
                                     {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
                                 </div>}
+                            {kitchenAppliances && !editForm && <div className="w-full flex justify-center mt-2">
+                                <p className="w-11/12 sm:w-96 bg-white p-2">{kitchenAppliancesDetails}</p>
+                            </div>}
                         </div>}
 
                         {/*washroom fitting*/}
@@ -2379,6 +2394,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     className="mr-1 cursor-pointer"
                                                     type="radio"
                                                     id={'washroom-' + type}
+                                                    disabled={!editForm}
                                                     checked={type === washroomFitting}
                                                     name="washroom-fitting"
                                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -2413,6 +2429,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 <input
                                                     className="mr-1 cursor-pointer"
                                                     type="radio"
+                                                    disabled={!editForm}
                                                     id={'electrical-' + type}
                                                     name="electrical-fitting"
                                                     checked={type === electricalFitting}
@@ -2447,6 +2464,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 <input
                                                     className="mr-1 cursor-pointer"
                                                     type="checkbox"
+                                                    disabled={!editForm}
                                                     checked={flooringTypeArray.includes(type as 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles')}
                                                     id={'flooring-' + type}
                                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -2489,6 +2507,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 className="flex flex-row h-fit">
                                                 <input
                                                     className="mr-1 cursor-pointer"
+                                                    disabled={!editForm}
                                                     type="checkbox"
                                                     id={'roof-' + type}
                                                     checked={roofTypeArray.includes(type as 'standard' | 'pop work' | 'down ceiling')}
@@ -2534,6 +2553,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                     className="mr-1 cursor-pointer"
                                                     type="checkbox"
                                                     id={'wall-' + type}
+                                                    disabled={!editForm}
                                                     checked={wallTypeArray.includes(type as 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work')}
                                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                         if (e.target.checked) {
@@ -2575,6 +2595,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="checkbox"
+                                                disabled={!editForm}
                                                 id={'window-' + type}
                                                 checked={windowTypeArray.includes(type as 'standard' | 'wood' | 'premium material')}
                                                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -2612,6 +2633,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="checkbox"
+                                                disabled={!editForm}
                                                 id={'safety-' + type}
                                                 checked={safetySystemArray.includes(type as 'cctv' | 'glass break siren' | 'entry sensor' | 'motion sensor' | 'panic button' | 'keypad' | 'keyfob' | 'smoke detector' | 'co detector' | 'water sprinkler' | 'doorbell camera')}
                                                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -2646,6 +2668,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             className="flex flex-row h-fit">
                                             <input
                                                 className="mr-1 cursor-pointer"
+                                                disabled={!editForm}
                                                 type="radio"
                                                 id={type}
                                                 name="garden"
@@ -2668,7 +2691,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                 </div>
                             </div>
 
-                            {garden &&
+                            {garden && editForm &&
                                 <div className="text-center">
                                     <textarea
                                         className={`border-2 ${gardenDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
@@ -2687,8 +2710,11 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 setGardenDetailsError(false)
                                             }
                                         }} />
-                                    {gardenDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
+                                    {gardenDetailsError && <div className="w-full flex justify-center mt-2">
+                                        <p className="w-11/12 sm:w-96 bg-white p-2">{gardenDetails}</p>
+                                    </div>}
                                 </div>}
+                            {garden && !editForm && <p>{gardenDetails}</p>}
                         </div>}
 
                         {/*age of construction*/}
@@ -2705,6 +2731,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         <input
                                             id="total-area-metre"
                                             type="number"
+                                            disabled={!editForm}
                                             name='total-area-metre'
                                             className={`border-2 ${ageOfConstructionError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-16 text-center`}
                                             placeholder="Size"
@@ -2741,6 +2768,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 <input
                                                     className="mr-1 cursor-pointer"
                                                     type="radio"
+                                                    disabled={!editForm}
                                                     id={'condition-' + option}
                                                     name="condition-of-property"
                                                     checked={conditionOfProperty === option}
@@ -2769,6 +2797,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                     name="owners"
                                     id="owners"
+                                    disabled={!editForm}
                                     value={numberOfOwners}
                                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                         setNumberOfOwners(+e.target.value)
@@ -2799,6 +2828,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
+                                                disabled={!editForm}
                                                 id={type}
                                                 checked={legalRestrictionCheckedFunction(type as 'legal-restrictions-yes' | 'legal-restrictions-no')}
                                                 name="restrictions"
@@ -2820,7 +2850,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                 </div>
                             </div>
 
-                            {isLegalRestrictions &&
+                            {isLegalRestrictions && editForm &&
                                 <div className="text-center">
                                     <textarea
                                         className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
@@ -2836,6 +2866,9 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}
+                            {isLegalRestrictions && !editForm && <div className="w-full flex justify-center mt-2">
+                                <p className="w-11/12 sm:w-96 bg-white p-2">{legalRestrictionDetails}</p>
+                            </div>}
                         </div>
 
                         {/*Property taxes*/}
@@ -2847,6 +2880,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     id="proeprty-taxes"
                                     type="number"
                                     name='proeprty-taxes'
+                                    disabled={!editForm}
                                     className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-28 `}
                                     value={propertyTaxes}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -2867,6 +2901,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                 <input
                                     id="home-owners-fees"
                                     type="number"
+                                    disabled={!editForm}
                                     name='home-owners-fees'
                                     className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-28 `}
                                     value={homeOwnersAssociationFees}
@@ -2900,6 +2935,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <input
                                         type="text"
                                         id="village"
+                                        disabled={!editForm}
                                         name="village"
                                         className='border-2 border-gray-500  p-1 rounded'
                                         autoComplete="new-password"
@@ -2919,6 +2955,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                     <input
                                         type="text"
                                         id="city"
+                                        disabled={!editForm}
                                         name="city"
                                         className='border-2 border-gray-500 p-1 rounded'
                                         autoComplete="new-password"
@@ -2942,6 +2979,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className={`border-2 ${stateError ? 'border-red-500' : 'border-gray-500'}  p-1 rounded`}
                                         name="state"
                                         id="state"
+                                        disabled={!editForm}
                                         value={state}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setStateError(false)
@@ -2980,8 +3018,8 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className={`border-2 ${districtError ? 'border-red-500' : 'border-gray-500'}  p-1 rounded`}
                                         name="district"
                                         id="district"
+                                        disabled={editForm === false || !state}
                                         value={district}
-                                        disabled={state ? false : true}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setDistrictError(false)
                                             setDistrict(e.target.value)
@@ -3018,7 +3056,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                         className='border-2 border-gray-500 p-1 rounded'
                                         name="state"
                                         id="state"
-                                        disabled={state && district ? false : true}
+                                        disabled={editForm === false || !state || !district}
                                         value={tehsil}
                                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setTehsil(e.target.value)
@@ -3052,33 +3090,52 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                 <input
                                     type="file"
                                     id="contract-image"
+                                    disabled={!editForm}
                                     className='text-transparent'
                                     placeholder="image"
                                     accept="image/png, image/jpeg"
                                     name='image'
                                     onChange={contractImageHandler} />
                             </div>
-                            {contractImages.length !== 0 &&
-                                <div className='flex flex-wrap justify-center gap-5 p-5'>
-                                    {contractImages.map(image => {
+                            <div className='flex flex-wrap justify-center gap-5 p-5'>
+                                {fetchedContractImagesUrl && fetchedContractImagesUrl.length !== 0 && fetchedContractImagesUrl.map(url => {
+                                    return <div
+                                        key={Math.random()}
+                                        className='relative w-fit'>
+                                        <img
+                                            className='relative w-auto h-60'
+                                            src={url}
+                                            alt="" />
+                                        {editForm && <div
+                                            className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
+                                            onClick={() => {
+                                                const updatedState = fetchedContractImagesUrl.filter(item => item !== url)
+                                                setFetchedContractImagesUrl(updatedState)
+                                            }}>
+                                            X
+                                        </div>}
+                                    </div>
+                                })}
+                                {contractImages.length !== 0 &&
+                                    contractImages.map(image => {
                                         return <div
                                             key={Math.random()}
-                                            className='relative w-fit bg-blue-300'>
+                                            className='relative w-fit'>
                                             <img
                                                 className='relative w-auto h-60'
                                                 src={image.file}
                                                 alt="" />
-                                            <div
+                                            {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
                                                     const updatedState = contractImages.filter(item => item.file !== image.file)
                                                     setContractImages(updatedState)
                                                 }}>
                                                 X
-                                            </div>
+                                            </div>}
                                         </div>
                                     })}
-                                </div>}
+                            </div>
                         </div>
 
                         {/*images */}
@@ -3096,14 +3153,34 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                 <input
                                     type="file"
                                     className='text-transparent'
+                                    disabled={!editForm}
                                     placeholder="image"
                                     accept="image/png, image/jpeg"
                                     name='image'
                                     onChange={residentialLandImageHandler} />
                             </div>
-                            {residentialLandImages.length !== 0 &&
-                                <div className='flex flex-wrap justify-center gap-5 p-5'>
-                                    {residentialLandImages.map(image => {
+                            <div className='flex flex-wrap justify-center gap-5 p-5'>
+                                {fetchedPropertyImagesUrl.length !== 0 &&
+                                    fetchedPropertyImagesUrl.map(url => {
+                                        return <div
+                                            key={Math.random()}
+                                            className='relative w-fit bg-blue-300'>
+                                            <img
+                                                className='relative w-auto h-60'
+                                                src={url}
+                                                alt="" />
+                                            {editForm && <div
+                                                className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
+                                                onClick={() => {
+                                                    const updatedState = fetchedPropertyImagesUrl.filter(item => item !== url)
+                                                    setFetchedPropertyImagesUrl(updatedState)
+                                                }}>
+                                                X
+                                            </div>}
+                                        </div>
+                                    })}
+                                {residentialPropertyImages.length !== 0 &&
+                                    residentialPropertyImages.map(image => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit bg-blue-300'>
@@ -3111,29 +3188,45 @@ const ReevaluateResidentialProperty: React.FC = () => {
                                                 className='relative w-auto h-60'
                                                 src={image.file}
                                                 alt="" />
-                                            <div
+                                            {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
-                                                    const updatedState = residentialLandImages.filter(item => item.file !== image.file)
-                                                    setResidentialLandImages(updatedState)
+                                                    const updatedState = residentialPropertyImages.filter(item => item.file !== image.file)
+                                                    setResidentialPropertyImages(updatedState)
                                                 }}>
                                                 X
-                                            </div>
+                                            </div>}
                                         </div>
                                     })}
-                                </div>}
+                            </div>
                         </div>
 
-                        <div className="flex justify-center mt-4 p-2">
+                        {editForm && <div className="flex justify-center mt-4 p-2">
                             <button
                                 type='submit'
                                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">
                                 Save
                             </button>
-                        </div>
+                        </div>}
 
                     </form>
                 </div >}
+
+            {!error && !spinner && propertyData &&
+                <ReviewReevaluatedResidentialProperty
+                    propertyId={fetchedPropertyData?._id as string}
+                    propertyData={propertyData}
+                    contractImages={contractImages}
+                    residentialPropertyImages={residentialPropertyImages}
+                    fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
+                    fetchedContractImagesUrl={fetchedContractImagesUrl}
+                    propertyDataReset={() => setPropertyData(null)} />}
+
+            {!error && !spinner && !propertyData && showDetailsModal && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
+                <ReevaluationDetailsModal
+                    details={fetchedPropertyData.evaluationData.incompletePropertyDetails}
+                    detailsModalRemover={() => setShowDetailsModal(false)}
+                />}
         </Fragment >
     )
 }

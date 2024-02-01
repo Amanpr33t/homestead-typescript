@@ -513,7 +513,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                     </div>
 
                     <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
-                        <p className=" text-xl font-semibold mb-2">Reevaluate the commercial property</p>
+                        <p className=" text-xl font-semibold mb-2">Reevaluate commercial property</p>
                         <button
                             type='button'
                             className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
@@ -549,7 +549,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                 id="built-up"
                                                 name="state"
                                                 value="built-up"
-                                                checked={builtUpProperty === true}
+                                                checked={builtUpProperty === true }
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setStateOfPropertyError(false)
                                                     if (e.target.checked) {
@@ -567,7 +567,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                 id="empty"
                                                 name="state"
                                                 value="empty"
-                                                checked={isEmptyProperty === true}
+                                                checked={isEmptyProperty === true }
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setStateOfPropertyError(false)
                                                     if (e.target.checked) {
@@ -592,7 +592,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                         id={option}
                                                         name="built-up-option"
                                                         value={option}
-                                                        checked={builtUpSelectedOption === option}
+                                                        checked={builtUpSelectedOption === option }
                                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                             setStateOfPropertyError(false)
                                                             if (e.target.checked) {
@@ -1218,7 +1218,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                             id="yes"
                                             name="restrictions"
                                             value="yes"
-                                            checked={isLegalRestrictions === true}
+                                            checked={isLegalRestrictions===true }
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 setLegalRestrictionDetails('')
                                                 setLegalRestrictionDetailsError(false)

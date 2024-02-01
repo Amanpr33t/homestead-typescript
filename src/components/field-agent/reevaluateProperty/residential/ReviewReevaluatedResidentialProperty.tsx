@@ -22,7 +22,6 @@ interface ImageType {
 
 interface PropertyDataType {
     //data common to flat, house and plot property type
-    addedByPropertyDealer: string,
     residentialPropertyType: string,
     title: string,
     details: string | null,
@@ -85,7 +84,10 @@ interface PropertyDataType {
     numberOfCarParkingSpaces?: number,
     numberOfBalconies?: number,
     storeRoom?: boolean,
-    servantRoom?: boolean,
+    servantRoom?: {
+        room: boolean,
+        washroom: boolean | null
+    },
     furnishing?: {
         type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
         details: string | null
@@ -119,11 +121,13 @@ interface FinalPropertyDataType extends PropertyDataType {
 }
 
 interface PropsType {
+    propertyId: string,
     propertyData: PropertyDataType,
-    residentialLandImages: ImageType[],
+    residentialPropertyImages: ImageType[],
     contractImages: ImageType[],
     propertyDataReset: () => void,
-    firmName: string
+    fetchedPropertyImagesUrl: string[],
+    fetchedContractImagesUrl: string[]
 }
 
 interface AlertType {
@@ -134,13 +138,15 @@ interface AlertType {
 }
 
 //The component is used to review the residential proeprty before it is saved in the database
-const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) => {
+const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
     const {
+        propertyId,
         propertyData,
         propertyDataReset,
-        firmName,
-        residentialLandImages,
-        contractImages } = props
+        residentialPropertyImages,
+        contractImages,
+        fetchedPropertyImagesUrl,
+        fetchedContractImagesUrl } = props
 
     const navigate = useNavigate()
 
@@ -162,15 +168,16 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
     const uploadImages = async () => {
+        console.log('upload images')
         try {
+            setPropertyImagesUrl([])
+            setContractImagesUrl([])
             const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
             if (!cloudinaryCloudName) {
                 throw new Error('Some error occured')
             }
-            setPropertyImagesUrl([])
-            setContractImagesUrl([])
             setSpinner(true)
-            residentialLandImages.length && residentialLandImages.forEach(async (image) => {
+            residentialPropertyImages.length && residentialPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
@@ -207,8 +214,8 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 }
             })
         } catch (error) {
-            setContractImagesUrl([])
-            setPropertyImagesUrl([])
+            setPropertyImagesUrl(fetchedPropertyImagesUrl)
+            setContractImagesUrl(fetchedContractImagesUrl || [])
             setSpinner(false)
             setAlert({
                 isAlertModal: true,
@@ -220,16 +227,16 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
         }
     }
 
-    //function is used to save proeprty details to the database
     const saveDetailsToDatabase = useCallback(async (propertyImagesUrl: string[], contractImagesUrl: string[]) => {
+        console.log('database')
         const finalPropertyData: FinalPropertyDataType = {
-            propertyImagesUrl,
-            contractImagesUrl: contractImagesUrl.length ? contractImagesUrl : null,
+            propertyImagesUrl: [...propertyImagesUrl, ...fetchedPropertyImagesUrl],
+            contractImagesUrl: [...contractImagesUrl, ...fetchedContractImagesUrl].length ? [...contractImagesUrl, ...fetchedContractImagesUrl] : null,
             ...propertyData
         }
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addResidentialProperty`, {
-                method: 'POST',
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/updateReevaluatedPropertyData?type=residential&id=${propertyId}`, {
+                method: 'PATCH',
                 body: JSON.stringify(finalPropertyData),
                 headers: {
                     'Content-Type': 'application/json',
@@ -245,7 +252,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 setAlert({
                     isAlertModal: true,
                     alertType: 'success',
-                    alertMessage: 'Property has been added successfully',
+                    alertMessage: 'Property has been reevaluated successfully',
                     routeTo: '/field-agent'
                 })
             } else if (data.status === 'invalid_authentication') {
@@ -265,14 +272,17 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
             })
             return
         }
-    }, [authToken, navigate, propertyData])
+    }, [authToken, navigate, propertyData, fetchedContractImagesUrl, fetchedPropertyImagesUrl, propertyId])
 
     //The code inside the useEffect hook is executed when the images have been uploaded successfully
     useEffect(() => {
-        if (propertyImagesUrl.length === residentialLandImages.length && contractImagesUrl.length === contractImages.length) {
+        if (!residentialPropertyImages.length && !contractImages.length) {
+            return
+        }
+        if (residentialPropertyImages.length === propertyImagesUrl.length && contractImages.length === contractImagesUrl.length) {
             saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
         }
-    }, [propertyImagesUrl, contractImagesUrl, residentialLandImages.length, contractImages.length, saveDetailsToDatabase])
+    }, [residentialPropertyImages.length, contractImages.length, propertyImagesUrl.length, contractImagesUrl.length, propertyImagesUrl, contractImagesUrl, saveDetailsToDatabase])
 
     return (
         <Fragment>
@@ -293,9 +303,17 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                     }} />}
 
             <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
-                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 " onClick={() => {
-                    propertyDataReset()
-                }}>Back</button>
+
+                {/*Back button */}
+                <button
+                    type='button'
+                    className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
+                    disabled={spinner}
+                    onClick={() => {
+                        propertyDataReset()
+                    }}>
+                    Back
+                </button>
 
                 <div className="w-full flex justify-center pb-4">
                     <p className="text-2xl font-semibold text-center">Review the details</p>
@@ -309,12 +327,6 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         </tr>
                     </thead>
                     <tbody>
-
-                        {/*firm name */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
-                            <td className=" pt-4 pb-4 text-center">{firmName}</td>
-                        </tr>
 
                         {/*proeprty type */}
                         <tr className="border-2 border-gray-300">
@@ -541,7 +553,14 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {propertyData.servantRoom && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant room</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.servantRoom ? 'Yes' : 'No'}</td>
+                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.servantRoom.room ? 'Yes' : 'No'}</td>
+                            </tr>}
+
+                        {/* Servant washroom*/}
+                        {propertyData.servantRoom && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
+                            <tr className="border-2 border-gray-300">
+                                <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant washroom</td>
+                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.servantRoom.washroom ? 'Yes' : 'No'}</td>
                             </tr>}
 
                         {/*Furnishing*/}
@@ -707,12 +726,19 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
-                                {residentialLandImages.map(image => {
+                                {fetchedPropertyImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto'
+                                        className='w-40 h-auto border border-gray-500'
+                                        src={image}
+                                        alt="" />;
+                                })}
+                                {residentialPropertyImages.map(image => {
+                                    return <img
+                                        key={Math.random()}
+                                        className='w-40 h-auto border border-gray-500'
                                         src={image.file}
-                                        alt="" />
+                                        alt="" />;
                                 })}
                             </td>
                         </tr>
@@ -721,10 +747,17 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {contractImages.length > 0 && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
+                                {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
+                                    return <img
+                                        key={Math.random()}
+                                        className='w-40 h-auto border border-gray-500'
+                                        src={image}
+                                        alt="" />
+                                })}
                                 {contractImages.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto'
+                                        className='w-40 h-auto border border-gray-500'
                                         src={image.file}
                                         alt="" />
                                 })}
@@ -739,7 +772,14 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         type='button'
                         className={`px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pt-0.5 h-8 flex flex-row place-content-center gap-1 ${spinner ? 'w-20' : ''}`}
                         disabled={spinner || alert.isAlertModal}
-                        onClick={uploadImages}>
+                        onClick={async () => {
+                            if (residentialPropertyImages.length || contractImages.length) {
+                                await uploadImages()
+                            } else {
+                                await saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
+                            }
+                        }}
+                    >
                         {spinner ? (
                             <div className="spinner absolute border-t-4 border-white border-solid rounded-full h-6 w-6 animate-spin"></div>
                         ) : (
@@ -761,4 +801,4 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
         </Fragment >
     )
 }
-export default ReviewResidentialPropertyAfterSubmission
+export default ReviewReevaluatedResidentialProperty

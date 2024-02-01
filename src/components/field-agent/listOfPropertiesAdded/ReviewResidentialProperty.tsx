@@ -7,7 +7,7 @@ interface PropsType {
     hideReviewPage: () => void
 }
 
-type FlooringType = 'cemented' | 'marble' | 'lxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
+type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
 type RoofType = 'standard' | 'pop work' | 'down ceiling'
 type WindowType = 'standard' | 'wood' | 'premium material'
@@ -86,10 +86,7 @@ interface PropertyType {
     numberOfCarParkingSpaces?: number,
     numberOfBalconies?: number,
     storeRoom?: boolean,
-    servantRoom?: {
-        room: boolean,
-        washroom: boolean | null
-    },
+    servantRoom?: boolean,
     furnishing?: {
         type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
         details: string | null
@@ -417,13 +414,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId, hideReview
                             {/*Servant room */}
                             {property.servantRoom && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant room</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{property.servantRoom.room ? 'Yes' : 'No'}</td>
-                            </tr>}
-
-                            {/* Servant washroom*/}
-                            {property.servantRoom && (property.residentialPropertyType.toLowerCase() === 'flat' || property.residentialPropertyType.toLowerCase() === 'house') && <tr className="border-2 border-gray-300">
-                                <td className="pt-4 pb-4 text-lg font-semibold text-center">Servant washroom</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{property.servantRoom.washroom ? 'Yes' : 'No'}</td>
+                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{property.servantRoom ? 'Yes' : 'No'}</td>
                             </tr>}
 
                             {/*Furnishing*/}
