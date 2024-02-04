@@ -1,11 +1,19 @@
 import { Fragment } from "react"
 
 interface DetailsProps {
-    details: string[],
-    detailsModalRemover: () => void
+    reevaluationDetails: string[],
+    detailsModalRemover: () => void,
+    showDealerDetails: boolean,
+    showReevaluationDetails: boolean,
+    dealerInfo: {
+        propertyDealerName: string,
+        firmName: string,
+        email: string,
+        contactNumber: number
+    }
 }
 //this component is an alert modal
-const ReevaluationDetailsModal: React.FC<DetailsProps> = ({ details, detailsModalRemover }) => {
+const ReevaluationDetailsModal: React.FC<DetailsProps> = ({ reevaluationDetails, detailsModalRemover, showDealerDetails, showReevaluationDetails, dealerInfo }) => {
     let index: number = 0
     return (
         <Fragment>
@@ -17,16 +25,39 @@ const ReevaluationDetailsModal: React.FC<DetailsProps> = ({ details, detailsModa
                         </svg>
                         <span className="sr-only">Close modal</span>
                     </button>
-                    <p className="text-center text-2xl font-semibold text-gray-500">Reevaluation details</p>
-                    <div className="flex flex-col p-6">
-                        {details.map(detail => {
-                            index++
-                            return <div key={Math.random()} className="flex flex-row gap-2">
-                                <p className="font-bold">{index}.</p>
-                                <p >{detail}</p>
+                    {showReevaluationDetails && <>
+                        <p className="text-center text-2xl font-semibold text-gray-500">Reevaluation details</p>
+                        <div className="flex flex-col p-6">
+                            {reevaluationDetails.map(detail => {
+                                index++
+                                return <div key={Math.random()} className="flex flex-row gap-2">
+                                    <p className="font-bold">{index}.</p>
+                                    <p >{detail}</p>
+                                </div>
+                            })}
+                        </div>
+                    </>}
+                    {showDealerDetails && <>
+                        <p className="text-center text-2xl font-semibold text-gray-500">Property dealer contact information</p>
+                        <div className="flex flex-col gap-2 p-6">
+                            <div className="flex flex-row gap-2">
+                                <p className="font-semibold text-lg">Firm name:</p>
+                                <p className="text-lg">{dealerInfo.firmName}</p>
                             </div>
-                        })}
-                    </div>
+                            <div className="flex flex-row gap-2">
+                                <p className="font-semibold text-lg">Dealer name:</p>
+                                <p className="text-lg">{dealerInfo.propertyDealerName}</p>
+                            </div>
+                            <div className="flex flex-row gap-2">
+                                <p className="font-semibold text-lg">Email:</p>
+                                <p className="text-lg">{dealerInfo.email}</p>
+                            </div>
+                            <div className="flex flex-row gap-2">
+                                <p className="font-semibold text-lg">Contact number:</p>
+                                <p className="text-lg">{dealerInfo.contactNumber}</p>
+                            </div>
+                        </div>
+                    </>}
                     <div className="flex justify-center">
                         <button data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" onClick={detailsModalRemover}>Ok</button>
                     </div>

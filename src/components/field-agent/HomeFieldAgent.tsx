@@ -47,11 +47,12 @@ const HomeFieldAgent: React.FC = () => {
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
 
-    //This function is used to fetch data about properties which are to be reevaluated by the field agent
-    const fetchNumberOfPendingRequestsForPropertyReevaluation = useCallback(async () => {
+    //The function is used to fetch the number of properties and property dealers added by the field agent
+    const fetchDataForHomePage = useCallback(async () => {
         try {
+            setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPropertiesPendingToBeReevaluated`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/dataForFieldAgentHomePage`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,59 +65,29 @@ const HomeFieldAgent: React.FC = () => {
             const data = await response.json()
             if (data.status === 'ok') {
                 setSpinner(false)
+                setNumberOfPropertyDealersAdded(data.numberOfPropertyDealersAdded)
+                setNumberOfPropertiesAdded(data.numberOfPropertiesAdded.agricultural+data.numberOfPropertiesAdded.commercial+data.numberOfPropertiesAdded.residential)
                 setPendingRequestForPropertyReevaluation({
-                    agricultural: data.agricultural,
-                    residential: data.residential,
-                    commercial: data.commercial
+                    agricultural: data.pendingPropertyReevaluations.agricultural,
+                    residential: data.pendingPropertyReevaluations.residential,
+                    commercial: data.pendingPropertyReevaluations.commercial
                 })
-                return
             } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
             }
         } catch (error) {
+            console.log(error)
             setError(true)
             setSpinner(false)
         }
     }, [authToken, navigate])
 
-    //The function is used to fetch the number of properties and property dealers added by the field agent
-    const fetchPropertiesAndPropertyDealersAddedByFieldAgent = useCallback(async () => {
-        try {
-            setSpinner(true)
-            setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/numberOfPropertyDealersAndPropertiesAddedByFieldAgent`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'ok') {
-                setNumberOfPropertyDealersAdded(data.propertyDealersAddedByFieldAgent)
-                setNumberOfPropertiesAdded(data.propertiesAddedByfieldAgent)
-                await fetchNumberOfPendingRequestsForPropertyReevaluation()
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
-            }
-        } catch (error) {
-            setError(true)
-            setSpinner(false)
-        }
-    }, [authToken, navigate, fetchNumberOfPendingRequestsForPropertyReevaluation])
-
     useEffect(() => {
         if (authToken) {
-            fetchPropertiesAndPropertyDealersAddedByFieldAgent()
+            fetchDataForHomePage()
         }
-    }, [authToken, fetchPropertiesAndPropertyDealersAddedByFieldAgent])
+    }, [authToken, fetchDataForHomePage])
 
 
     return (
@@ -139,7 +110,7 @@ const HomeFieldAgent: React.FC = () => {
             {/*This message is shown when an error occurs while fetching data */}
             {error && !spinner && <div className="fixed top-36 w-full flex flex-col place-items-center">
                 <p>Some error occured</p>
-                <p className="text-red-500 cursor-pointer" onClick={fetchPropertiesAndPropertyDealersAddedByFieldAgent}>Try again</p>
+                <p className="text-red-500 cursor-pointer" onClick={fetchDataForHomePage}>Try again</p>
             </div>}
 
             {!spinner && !alert.isAlertModal && !error &&

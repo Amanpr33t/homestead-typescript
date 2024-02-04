@@ -169,8 +169,16 @@ const ReevaluateResidentialProperty: React.FC = () => {
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
-    const [showDetailsModal, setShowDetailsModal] = useState<boolean>(true)
+    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)
+    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)
     const [editForm, setEditForm] = useState<boolean>(false)
+
+    const [dealerInfo, setDealerInfo] = useState<{
+        propertyDealerName: string,
+        firmName: string,
+        email: string,
+        contactNumber: number
+    } | null>(null)
 
     const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
@@ -420,14 +428,14 @@ const ReevaluateResidentialProperty: React.FC = () => {
                 setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
             }
         }
-    }, [fetchedPropertyData,residentialPropertyType])
+    }, [fetchedPropertyData, residentialPropertyType])
 
     //This function is used to get proeprty details
     const getPropertyDetails = useCallback(async () => {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/getPropertyData?id=${propertyId}&type=residential`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/getPropertyData?id=${propertyId}&type=residential&dealerInfo=true`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -445,6 +453,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setFetchedPropertyData(data.propertyData)
+                setDealerInfo(data.dealerInfo)
             }
         } catch (error) {
             setError(true)
@@ -728,7 +737,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null ) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && countWordsInAString(furnishingDetails.trim()) > 150))) {
             return errorFunction()
@@ -836,7 +845,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
             numberOfCarParkingSpaces,
             numberOfBalconies,
             storeRoom: storeRoom as boolean,
-            servantRoom:servantRoom as boolean,
+            servantRoom: servantRoom as boolean,
             furnishing: {
                 type: furnishing as 'fully-furnished' | 'semi-furnished' | 'unfurnished',
                 details: furnishingDetails.trim() || null
@@ -1098,7 +1107,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                 </div>}
 
             {!error && !spinner &&
-                <div className={`pt-56 sm:pt-44 px-2 mb-10 md:px-0w-full flex flex-col place-items-center ${alert.isAlertModal || showDetailsModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+                <div className={`pt-56 sm:pt-44 px-2 mb-10 md:px-0w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Home button*/}
                     {!propertyData && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-red-500 sm:bg-transparent'>
@@ -1113,15 +1122,28 @@ const ReevaluateResidentialProperty: React.FC = () => {
                     {/*Heading */}
                     {!propertyData && <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
                         <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
-                        <button
-                            type='button'
-                            className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                setShowDetailsModal(true)
-                            }}>
-                            Click here to see reevaluation details
-                        </button>
+                        <div className="w-full flex flex-row place-content-center gap-5">
+                            <button
+                                type='button'
+                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setShowDealerDetails(false)
+                                    setShowReevaluationDetails(true)
+                                }}>
+                                Reevaluation details
+                            </button>
+                            <button
+                                type='button'
+                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setShowDealerDetails(true)
+                                    setShowReevaluationDetails(false)
+                                }}>
+                                Contact property dealer
+                            </button>
+                        </div>
                     </div>}
 
                     <form className="w-full min-h-screen  md:w-10/12 lg:w-8/12  h-fit pt-1 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
@@ -3222,10 +3244,21 @@ const ReevaluateResidentialProperty: React.FC = () => {
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
                     propertyDataReset={() => setPropertyData(null)} />}
 
-            {!error && !spinner && !propertyData && showDetailsModal && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
                 <ReevaluationDetailsModal
-                    details={fetchedPropertyData.evaluationData.incompletePropertyDetails}
-                    detailsModalRemover={() => setShowDetailsModal(false)}
+                    showDealerDetails={showDealerDetails}
+                    showReevaluationDetails={showReevaluationDetails}
+                    reevaluationDetails={fetchedPropertyData.evaluationData.incompletePropertyDetails}
+                    dealerInfo={dealerInfo as {
+                        propertyDealerName: string,
+                        firmName: string,
+                        email: string,
+                        contactNumber: number
+                    }}
+                    detailsModalRemover={() => {
+                        setShowDealerDetails(false)
+                        setShowReevaluationDetails(false)
+                    }}
                 />}
         </Fragment >
     )
