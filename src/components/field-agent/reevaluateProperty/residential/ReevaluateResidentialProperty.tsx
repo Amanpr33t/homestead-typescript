@@ -169,10 +169,10 @@ const ReevaluateResidentialProperty: React.FC = () => {
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
-    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)
-    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)
     const [editForm, setEditForm] = useState<boolean>(false)
 
+    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)
+    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)
     const [dealerInfo, setDealerInfo] = useState<{
         propertyDealerName: string,
         firmName: string,
