@@ -1110,7 +1110,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                 <div className={`pt-56 sm:pt-44 px-2 mb-10 md:px-0w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Home button*/}
-                    {!propertyData && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-red-500 sm:bg-transparent'>
+                    {!propertyData && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                         <button
                             type='button'
                             className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
@@ -1146,7 +1146,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                         </div>
                     </div>}
 
-                    <form className="w-full min-h-screen  md:w-10/12 lg:w-8/12  h-fit pt-1 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen mt-52 sm:mt-44 md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {!editForm && <div className=" w-full flex justify-center">
                             <FaEdit className="text-3xl text-gray-500 hover:text-gray-700 cursor-pointer font-bold" onClick={e => {

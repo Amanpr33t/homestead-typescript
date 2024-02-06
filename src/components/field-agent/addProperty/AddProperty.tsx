@@ -54,8 +54,9 @@ const AddProperty: React.FC = () => {
                     />}
 
                 {propertyDealer &&
+                   
                     <div className="top-32 fixed w-full h-screen flex justify-center z-20">
-
+                        {/*It shows different property types which can be selected by the user*/}
                         <div
                             className="rounded border-2 shadow-2xl bg-white p-2 h-fit"
                             onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../../Spinner"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../../utils/stringUtilityFunctions"
-import { formatDate } from "../../../utils/dateFunctions"
+import { formatDate, getDaysDifference } from "../../../utils/dateFunctions"
 import ReactPaginate from "react-paginate"
 
 interface LocationType {
@@ -20,7 +20,7 @@ interface PropertyDataType {
     _id: string,
     propertyType: 'agricultural' | 'commercial' | 'residential',
     location: LocationType,
-    sentBackTofieldAgentForReevaluationByEvaluator: {
+    sentBackTofieldAgentForReevaluation: {
         date: string
     }
 }
@@ -98,6 +98,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
+                console.log(data)
                 if (!data.pendingPropertyEvaluations.length) {
                     return navigate('/field-agent', { replace: true })
                 }
@@ -119,6 +120,16 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
         fetchPendingPropertyReevaluations()
     }, [fetchPendingPropertyReevaluations])
 
+    const dayDiffernceColorSetter = (days: number): string => {
+        if (days < 1) {
+            return 'text-green-500'
+        } else if (days < 2) {
+            return 'text-orange-500'
+        } else {
+            return 'text-red-500'
+        }
+    }
+
     return (
         <Fragment>
 
@@ -134,7 +145,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                 <Link to='/field-agent' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded" >Home</Link>
                 {pendingPropertyEvaluations && !error &&
                     <div className="w-full flex justify-center mt-3">
-                        <p className="text-xl font-bold">{pendingPropertyEvaluations.length} property evaluations are pending</p>
+                        <p className="text-xl font-semibold">{pendingPropertyEvaluations.length} property evaluations are pending</p>
                     </div>}
             </div>}
 
@@ -144,7 +155,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                     {pendingPropertyEvaluations && pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
                         index++
                         return <div key={property._id
-                        } className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
+                        } className="h-fit flex flex-col gap-4 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
                             <div className="w-full flex flex-row gap-3 ">
                                 <p className="text-gray-500 text-lg font-semibold">{index})</p>
                                 <div className="flex flex-col gap-1">
@@ -156,10 +167,15 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-row gap-4">
-                                <p className="font-medium text-gray-500">Request date:</p>
-                                <p>{formatDate(property.sentBackTofieldAgentForReevaluationByEvaluator.date
-                                )}</p>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex flex-row gap-2">
+                                    <p className="font-medium text-gray-500">Request date:</p>
+                                    <p>{formatDate(property.sentBackTofieldAgentForReevaluation.date
+                                    )}</p>
+                                </div>
+                                <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentBackTofieldAgentForReevaluation.date))}`}>
+                                    Received {getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)>0?`${getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)} days ago`:'today'}
+                                </p>
                             </div>
                             <div className="w-full flex justify-center ">
                                 <Link to={`/field-agent/reevaluate-property/${property.propertyType}?propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>

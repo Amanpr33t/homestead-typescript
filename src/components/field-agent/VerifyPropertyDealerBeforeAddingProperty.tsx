@@ -177,6 +177,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
             <div className={`w-full h-screen pt-32 flex  justify-center ${alert.isAlertModal ? 'blur-sm' : ''}`} >
 
                 {showOtpModal &&
+                    //A form that is used to get OTP from user
                     <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={verifyOtp}>
                         <p className="text-lg font-bold text-center mb-3">A one-time-password has been sent to dealer's email. It will be valid for 10 minutes. </p>
                         <input
@@ -206,6 +207,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                     </form>}
 
                 {!showOtpModal &&
+                    //A form used to get email or contact number or dealerID from user
                     <form className="w-full sm:w-96 p-4 mr-1.5 ml-1.5 flex flex-col bg-white rounded border-2 shadow-2xl h-fit" onSubmit={formSubmit}>
 
                         <p className="text-lg font-bold text-center mb-3">Provide email or contact number or dealer Id of the property dealer</p>
@@ -275,7 +277,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                             <button
                                 type="submit"
                                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1"
-                                disabled={spinner||alert.isAlertModal}>
+                                disabled={spinner || alert.isAlertModal}>
                                 {spinner ? (
                                     <div className="spinner absolute border-t-4 border-white border-solid rounded-full h-6 w-6 animate-spin"></div>
                                 ) : (

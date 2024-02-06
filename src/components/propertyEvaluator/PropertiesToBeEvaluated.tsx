@@ -67,7 +67,8 @@ const PropertiesToBeEvaluated: React.FC = () => {
 
     return (
         <Fragment>
-            <Link to='/property-evaluator' className="fixed top-20 left-4 bg-green-500 hover:bg-green-600 text-white font-medium rounded p-1 h-fit w-fit">Home</Link>
+
+            <Link to='/property-evaluator' className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30">Home</Link>
 
             {spinner && !error && <Spinner />}
 

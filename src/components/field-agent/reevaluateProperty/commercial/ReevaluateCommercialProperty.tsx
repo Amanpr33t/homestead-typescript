@@ -502,16 +502,10 @@ const ReevaluateCommercialProperty: React.FC = () => {
                     propertyDataReset={() => setPropertyData(null)} />}
 
             {!error && !spinner &&
-                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Home button */}
-                    <div className='fixed flex flex-row gap-2 w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent/reevaluate-property/commercial-properties', { replace: true })}>
-                            Back
-                        </button>
+                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
                         <button
                             type='button'
                             className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
@@ -574,7 +568,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                 id="built-up"
                                                 name="state"
                                                 value="built-up"
-                                                checked={builtUpProperty === true }
+                                                checked={builtUpProperty === true}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setStateOfPropertyError(false)
                                                     if (e.target.checked) {
@@ -592,7 +586,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                 id="empty"
                                                 name="state"
                                                 value="empty"
-                                                checked={isEmptyProperty === true }
+                                                checked={isEmptyProperty === true}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setStateOfPropertyError(false)
                                                     if (e.target.checked) {
@@ -617,7 +611,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                                         id={option}
                                                         name="built-up-option"
                                                         value={option}
-                                                        checked={builtUpSelectedOption === option }
+                                                        checked={builtUpSelectedOption === option}
                                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                             setStateOfPropertyError(false)
                                                             if (e.target.checked) {
@@ -1243,7 +1237,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                                             id="yes"
                                             name="restrictions"
                                             value="yes"
-                                            checked={isLegalRestrictions===true }
+                                            checked={isLegalRestrictions === true}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 setLegalRestrictionDetails('')
                                                 setLegalRestrictionDetailsError(false)
@@ -1438,7 +1432,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                     </form>
                 </div >}
 
-                {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
                 <ReevaluationDetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}

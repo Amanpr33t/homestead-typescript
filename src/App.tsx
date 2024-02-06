@@ -6,12 +6,15 @@ import HomeFieldAgent from "./components/field-agent/HomeFieldAgent";
 import NavbarFieldAgent from "./components/field-agent/NavbarFieldAgent"
 import PropertyDealerAddForm from "./components/field-agent/addPropertyDealer/PropertyDealerAddForm";
 import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
-import ListOfAllPropertyDealersAddedByFieldAgent from "./components/field-agent/ListOfAllPropertyDealersAddedByFieldAgent";
 import AgriculturalPropertyAddForm from "./components/field-agent/addProperty/agricultural/AgriculturalPropertyAddForm";
-import AddProperty from "./components/field-agent/addProperty/AddProperty";
-import PropertiesAddedByFieldAgent from "./components/field-agent/listOfPropertiesAdded/PropertiesAddedByFieldAgent";
 import CommercialPropertyAddForm from "./components/field-agent/addProperty/commercial/CommercialPropertyAddForm";
 import ResidentialPropertyAddForm from "./components/field-agent/addProperty/residential/ResidentialPropertyAddForm";
+import PendingPropertyReevaluations from './components/field-agent/reevaluateProperty/PendingPropertyReevaluations';
+import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
+import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/commercial/ReevaluateCommercialProperty';
+import ReevaluateResidentialProperty from './components/field-agent/reevaluateProperty/residential/ReevaluateResidentialProperty';
+import ReevaluateAgriculturalProperty from './components/field-agent/reevaluateProperty/agricultural/ReevaluateAgriculturalProperty';
+import AddProperty from './components/field-agent/addProperty/AddProperty';
 
 //Components imported for property evaluator
 import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
@@ -22,22 +25,19 @@ import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
 import HomePage from './components/HomePage';
 import PropertiesToBeEvaluated from './components/propertyEvaluator/PropertiesToBeEvaluated';
 
-//Components evaluated for property dealer
+//Components imported for property dealer
 import PropertyDealerSignIn from './components/property-dealer/SignIn';
 import NavbarPropertyDealer from './components/property-dealer/Navbar';
 import PropertyDealerHomePage from './components/property-dealer/HomePage';
 import PropertyDealerSignUp from './components/property-dealer/SignUp';
 import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
 import CustomerNotifications from './components/property-dealer/CustomerNotifications';
-import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded';
-import ListOfPropertiesAddedByFieldAgent from './components/field-agent/listOfPropertiesAdded/ListOfPropertiesAddedByFieldAgent';
-import PendingPropertyReevaluations from './components/field-agent/reevaluateProperty/PendingPropertyReevaluations';
-import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
-import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/commercial/ReevaluateCommercialProperty';
-import ReevaluateResidentialProperty from './components/field-agent/reevaluateProperty/residential/ReevaluateResidentialProperty';
-import ReevaluateAgriculturalProperty from './components/field-agent/reevaluateProperty/agricultural/ReevaluateAgriculturalProperty';
+import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded'
 
-
+//components imported for city manager
+import NavbarCityManager from './components/city-manager/Navbar';
+import CityManagerSignIn from './components/city-manager/SignIn';
+import CityManagerHomePage from './components/city-manager/HomePage';
 
 const App: React.FC = () => {
 
@@ -64,11 +64,6 @@ const App: React.FC = () => {
               <NavbarFieldAgent />
               <PropertyDealerAddForm />
             </>}></Route>
-            <Route path='list-of-property-dealers-added-by-field-agent' element={<>
-              <NavbarFieldAgent />
-              <ListOfAllPropertyDealersAddedByFieldAgent />
-            </>
-            }></Route>
 
             {/**routes to reevaluate proeprty details */}
             <Route path='reevaluate-property/*' >
@@ -129,27 +124,6 @@ const App: React.FC = () => {
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
-            {/*Routes to see properties added */}
-            <Route path='properties-added/*' >
-              <Route path='' element={<>
-                <NavbarFieldAgent />
-                <PropertiesAddedByFieldAgent />
-              </>}></Route>
-              <Route path='agricultural-properties' element={<>
-                <NavbarFieldAgent />
-                <ListOfPropertiesAddedByFieldAgent />
-              </>}></Route>
-              <Route path='commercial-properties' element={<>
-                <NavbarFieldAgent />
-                <ListOfPropertiesAddedByFieldAgent />
-              </>}></Route>
-              <Route path='residential-properties' element={<>
-                <NavbarFieldAgent />
-                <ListOfPropertiesAddedByFieldAgent />
-              </>}></Route>
-              <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
-            </Route>
-
             <Route path='*' element={<Navigate replace to='/field-agent' />}>
             </Route>
           </Route>
@@ -185,6 +159,20 @@ const App: React.FC = () => {
               <EvaluateProperty />
             </>}></Route>}
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
+            </Route>
+          </Route>
+
+           {/*Routes for city manager */}
+           <Route path='/city-manager/*'>
+            <Route path='' element={<>
+              <NavbarCityManager />
+              <CityManagerHomePage />
+            </>}></Route>
+            <Route path='signIn' element={<>
+              <NavbarCityManager />
+              <CityManagerSignIn />
+            </>}></Route>
+            <Route path='*' element={<Navigate replace to='/city-manager' />}>
             </Route>
           </Route>
 

@@ -5,9 +5,10 @@ const formatDate = (dateString: string): string => {
   return formattedDate; // For e.g. 12 Jan, 2024
 };
 
-function getDaysDifference(date2: Date): number {
+function getDaysDifference(inputDate: string): number {
   // Convert both dates to milliseconds
   const date1: Date = new Date();
+  const date2: Date = new Date(inputDate)
   const date1Milliseconds: number = date1.getTime();
   const date2Milliseconds: number = date2.getTime();
 

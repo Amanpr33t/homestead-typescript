@@ -90,8 +90,6 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const propertyDealerLogoUrl: string | null = queryParams.get('logoUrl') ?? null; //we get the proeprty dealer logo url from query params
     const propertyDealerFirmName: string | null = queryParams.get('firmName') ?? null; //we get the proeprty dealer firm name from query params
 
-    const [spinner, setSpinner] = useState<boolean>(true)
-
     useEffect(() => {
         //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName is not available, we route to the field agent home page
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName) {
@@ -107,6 +105,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         alertMessage: null,
         routeTo: null
     })
+    const [spinner, setSpinner] = useState<boolean>(true)
 
     const [landSize, setLandSize] = useState<string | number>() //Land size in number
     const [landSizeUnit, setLandSizeUnit] = useState<'metre-square' | 'acre' | ''>('') //Unit of land size
@@ -124,9 +123,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
     const [agriculturalLandImageError, setAgriculturalLandImageError] = useState<boolean>(false) //Error will be true if agriculturalLandImageError array is empty
 
-    const [agriculturalLandImages, setAgriculturalLandImages] = useState<ImageType[]>([])
+    const [agriculturalLandImages, setAgriculturalLandImages] = useState<ImageType[]>([]) //An array that stores the property images stored by the user
 
-    const [contractImages, setContractImages] = useState<ImageType[]>([])
+    const [contractImages, setContractImages] = useState<ImageType[]>([])//An array that stores the contract images stored by the user
 
     const [numberOfOwners, setNumberOfOwners] = useState<number>(1)
 
@@ -184,6 +183,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
     //This function is triggered when the user selects a proeprty image
     const agriculturalLandImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (agriculturalLandImages.length >= 20) {
+            return
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setAgriculturalLandImageError(false);
@@ -203,6 +205,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (contractImages.length >= 20) {
+            return
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -721,8 +726,10 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
-                                        onChange={e => {
-                                            setLandSizeDetails(e.target.value)
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setLandSizeDetails(e.target.value)
+                                            }
                                         }} />
                                 </div>
                             </div>
@@ -766,9 +773,11 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Words"
                                         value={priceDemandedWords}
-                                        onChange={e => {
-                                            setPriceDemandedWordsError(false)
-                                            setPriceDemandedWords(e.target.value)
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setPriceDemandedWordsError(false)
+                                                setPriceDemandedWords(e.target.value)
+                                            }
                                         }} />
                                 </div>
                             </div>
@@ -1284,7 +1293,11 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         autoCorrect="on"
                                         autoComplete="new-password"
                                         placeholder="Add details about road here (optional)"
-                                        onChange={e => setRoadDetails(e.target.value)} />
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setRoadDetails(e.target.value)
+                                            }
+                                        }} />
                                 </div>
                             </div>
                         </div>
@@ -1345,9 +1358,11 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
-                                        onChange={e => {
-                                            setLegalRestrictionDetailsError(false)
-                                            setLegalRestrictionDetails(e.target.value.trim())
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setLegalRestrictionDetailsError(false)
+                                                setLegalRestrictionDetails(e.target.value.trim())
+                                            }
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}

@@ -10,6 +10,7 @@ const HomePage: React.FC = () => {
                 <Link to='/field-agent' className="bg-blue-500 h-fit text-white p-2 rounded">Field agent</Link>
                 <Link to='/property-evaluator' className="bg-blue-500 h-fit text-white p-2 rounded">Property evaluator</Link>
                 <Link to='/property-dealer' className="bg-blue-500 h-fit text-white p-2 rounded">Property dealer</Link>
+                <Link to='/city-manager' className="bg-blue-500 h-fit text-white p-2 rounded">City manager</Link>
             </div>
         </Fragment>
     )

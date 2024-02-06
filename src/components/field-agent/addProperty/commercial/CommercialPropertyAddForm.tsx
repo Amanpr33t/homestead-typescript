@@ -7,6 +7,7 @@ import ReviewCommercialPropertyAfterSubmission from "./ReviewCommercialPropertyA
 import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 
 const arrayOfNumbers = (from: number, to: number) => {
+    //This function return an array of numbers
     if (from === 0) {
         return Array.apply(null, Array(to))
             .map(function (y, i) { return i })
@@ -107,6 +108,12 @@ const CommercialPropertyAddForm: React.FC = () => {
     const commercialPropertyType: string | null = queryParams.get('propertyType') //We get commercial property type from the query params 
 
     const [spinner, setSpinner] = useState<boolean>(true)
+    const [alert, setAlert] = useState<AlertType>({
+        isAlertModal: false,
+        alertType: null,
+        alertMessage: null,
+        routeTo: null
+    })
 
     useEffect(() => {
         //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName or commercialPropertyType is not available, the user is routed to the field-agent home page
@@ -116,13 +123,6 @@ const CommercialPropertyAddForm: React.FC = () => {
             setSpinner(false)
         }
     }, [propertyDealerId, propertyDealerLogoUrl, propertyDealerFirmName, commercialPropertyType, navigate])
-
-    const [alert, setAlert] = useState<AlertType>({
-        isAlertModal: false,
-        alertType: null,
-        alertMessage: null,
-        routeTo: null
-    })
 
     const [totalAreaSquareFeet, setTotalAreaSquareFeet] = useState<number | ''>('')
     const [coveredAreaSquareFeet, setCoveredAreaSquareFeet] = useState<number | ''>('')
@@ -187,6 +187,9 @@ const CommercialPropertyAddForm: React.FC = () => {
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
     const commercialPropertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (commercialPropertyImages.length >= 20) {
+            return
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setCommercialPropertyImageError(false);
@@ -206,6 +209,9 @@ const CommercialPropertyAddForm: React.FC = () => {
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (contractImages.length >= 20) {
+            return
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -618,8 +624,10 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
-                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                            setLandSizeDetails(e.target.value)
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setLandSizeDetails(e.target.value)
+                                            }
                                         }} />
                                 </div>
                             </div>
@@ -1076,9 +1084,11 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Words"
                                         value={priceDemandedWords}
-                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                            setPriceDemandedWordsError(false)
-                                            setPriceDemandedWords(e.target.value)
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setPriceDemandedWordsError(false)
+                                                setPriceDemandedWords(e.target.value)
+                                            }
                                         }} />
                                 </div>
                             </div>
@@ -1144,9 +1154,11 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
-                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                            setLegalRestrictionDetailsError(false)
-                                            setLegalRestrictionDetails(e.target.value)
+                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                            if (e.target.value.trim().length <= 500) {
+                                                setLegalRestrictionDetailsError(false)
+                                                setLegalRestrictionDetails(e.target.value)
+                                            }
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}
@@ -1259,8 +1271,10 @@ const CommercialPropertyAddForm: React.FC = () => {
                                 autoComplete="new-password"
                                 placeholder="Add remarks regarding property"
                                 value={remarks}
-                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                    setRemarks(e.target.value)
+                                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                    if (e.target.value.trim().length <= 500) {
+                                        setRemarks(e.target.value)
+                                    }
                                 }} />
                         </div>
 

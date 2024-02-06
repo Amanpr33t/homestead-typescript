@@ -22,7 +22,15 @@ const PendingPropertyReevaluations: React.FC = () => {
 
     return (
         <Fragment>
-            <Link to='/field-agent' className="fixed top-20 left-4 bg-green-500 hover:bg-green-600 text-white font-medium rounded p-1 h-fit w-fit">Home</Link>
+            {/*Home button */}
+            <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
+                <button
+                    type='button'
+                    className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
+                    onClick={() => navigate('/field-agent', { replace: true })}>
+                    Home
+                </button>
+            </div>
 
             <div className=" w-full flex flex-col gap-10 place-items-center pt-16">
                 <div className="pt-16 flex justify-center w-full">

@@ -137,7 +137,7 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                 <div className={`${showEvaluationForm ? 'blur' : ''}`}>
 
                     <div className="w-full mt-28 bg-white z-20 mb-4">
-                        <p className="text-2xl font-bold text-center">Agricultural property details</p>
+                        <p className="text-2xl font-semibold text-center">Agricultural property details</p>
                     </div>
 
                     <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >

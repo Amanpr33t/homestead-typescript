@@ -292,10 +292,18 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         })
                     }} />}
 
-            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
-                <button type='button' className="fixed top-16 mt-2 left-2  bg-green-500 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 " onClick={() => {
+            {/*Back button */}
+            <button
+                type='button'
+                className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
+                disabled={spinner || alert.isAlertModal}
+                onClick={() => {
                     propertyDataReset()
-                }}>Back</button>
+                }}>
+                Back
+            </button>
+
+            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
 
                 <div className="w-full flex justify-center pb-4">
                     <p className="text-2xl font-semibold text-center">Review the details</p>

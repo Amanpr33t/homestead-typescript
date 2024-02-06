@@ -29,6 +29,8 @@ const HomeFieldAgent: React.FC = () => {
         routeTo: null
     })
 
+    const [numberOfPropertiesApprovedByCityManager, setNumberOfPropertiesApprovedByCityManager] = useState<number>(0)
+
     const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState<number>(0) //Number of properties added by the field agent
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState<number>(0) //number of property dealers added by the field agent
 
@@ -65,8 +67,9 @@ const HomeFieldAgent: React.FC = () => {
             const data = await response.json()
             if (data.status === 'ok') {
                 setSpinner(false)
+                setNumberOfPropertiesApprovedByCityManager(data.numberOfPropertiesApprovedByCityManager)
                 setNumberOfPropertyDealersAdded(data.numberOfPropertyDealersAdded)
-                setNumberOfPropertiesAdded(data.numberOfPropertiesAdded.agricultural+data.numberOfPropertiesAdded.commercial+data.numberOfPropertiesAdded.residential)
+                setNumberOfPropertiesAdded(data.numberOfPropertiesAdded)
                 setPendingRequestForPropertyReevaluation({
                     agricultural: data.pendingPropertyReevaluations.agricultural,
                     residential: data.pendingPropertyReevaluations.residential,
@@ -108,10 +111,11 @@ const HomeFieldAgent: React.FC = () => {
                 }} />}
 
             {/*This message is shown when an error occurs while fetching data */}
-            {error && !spinner && <div className="fixed top-36 w-full flex flex-col place-items-center">
-                <p>Some error occured</p>
-                <p className="text-red-500 cursor-pointer" onClick={fetchDataForHomePage}>Try again</p>
-            </div>}
+            {error && !spinner &&
+                <div className="fixed top-36 w-full flex flex-col place-items-center">
+                    <p>Some error occured</p>
+                    <p className="text-red-500 cursor-pointer" onClick={fetchDataForHomePage}>Try again</p>
+                </div>}
 
             {!spinner && !alert.isAlertModal && !error &&
                 <div className='relative flex flex-col md:flex-row pt-32 md:pt-20 pb-4 pl-2 sm:pl-6 md:pl-8 lg:pl-28 pr-2 sm:pr-6 md:pr-8 lg:pr-28 gap-4 bg-slate-100 min-h-screen ' onClick={() => {
@@ -177,18 +181,21 @@ const HomeFieldAgent: React.FC = () => {
                                 Add Property Dealer
                             </Link>
                         </div>
-                        <div className="flex flex-col sm:flex-row  gap-3 w-full place-items-center sm:place-content-center mt-10">
-                            <div
-                                className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100"
-                                onClick={() => numberOfPropertiesAdded ? navigate('/field-agent/properties-added', { replace: true }) : null}>
-                                <p className="text-5xl text-green-800">{numberOfPropertiesAdded}</p>
-                                <p className="w-36">properties have been added by you</p>
-                            </div>
-                            <div
-                                className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100"
-                                onClick={() => numberOfPropertyDealersAdded ? navigate('/field-agent/list-of-property-dealers-added-by-field-agent', { replace: true }) : null}>
-                                <p className="text-5xl text-green-800">{numberOfPropertyDealersAdded}</p>
+                        <div className="flex flex-col sm:flex-row  gap-5 w-full place-items-center sm:place-content-center mt-10">
+                            <div className="flex flex-row border border-gray-400 gap-2 p-1  rounded h-fit">
+                                <p className="text-5xl text-green-600">{numberOfPropertyDealersAdded}</p>
                                 <p className="w-40">property dealers have been added by you</p>
+                            </div>
+
+                            <div className="flex flex-col border border-gray-400 gap-5 p-1  rounded h-fit">
+                                <div className="flex flex-row gap-3">
+                                    <p className="text-5xl text-gray-500">{numberOfPropertiesAdded}</p>
+                                    <p className="w-40">properties have been added by you</p>
+                                </div>
+                                <div className="flex flex-row gap-3">
+                                    <p className="text-5xl text-green-600">{numberOfPropertiesApprovedByCityManager}</p>
+                                    <p className="w-40">properties added by you have been approved by city manager</p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../Spinner"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
-import { formatDate } from "../../utils/dateFunctions"
+import { formatDate, getDaysDifference } from "../../utils/dateFunctions"
 import ReactPaginate from "react-paginate"
 
 interface LocationType {
@@ -119,6 +119,16 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
         fetchPendingPropertyEvaluations()
     }, [fetchPendingPropertyEvaluations])
 
+    const dayDiffernceColorSetter = (days: number): string => {
+        if (days < 1) {
+            return 'text-green-500'
+        } else if (days < 2) {
+            return 'text-orange-500'
+        } else {
+            return 'text-red-500'
+        }
+    }
+
     return (
         <Fragment>
 
@@ -157,11 +167,17 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-row gap-4">
-                                <p className="font-medium text-gray-500">Request date:</p>
-                                <p>{formatDate(property.sentToEvaluatorByFieldAgentForEvaluation.date
-                                )}</p>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex flex-row gap-2">
+                                    <p className="font-medium text-gray-500">Request date:</p>
+                                    <p>{formatDate(property.sentToEvaluatorByFieldAgentForEvaluation.date
+                                    )}</p>
+                                </div>
+                                <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date))}`}>
+                                    Received {getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)>0?`${getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)} days ago`:'today'}
+                                </p>
                             </div>
+
                             <div className="w-full flex justify-center ">
                                 <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
                             </div>

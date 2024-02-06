@@ -260,9 +260,9 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                         })
                     }} />}
 
-            <div className={` z-40 w-full max-h-screen fixed top-0 pt-24 pb-10  bg-transparent flex justify-center ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideEvaluationForm}>
+            <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideEvaluationForm}>
 
-                <div className="relative w-10/12 sm:w-9/12 md:w-7/12 bg-gray-200 rounded-md overflow-y-auto flex flex-col place-items-center px-2  md:px-0" onClick={e => e.stopPropagation()}>
+                <div className="mt-24 mb-10 relative max-h-screen w-10/12 sm:w-9/12 md:w-7/12 bg-gray-200 rounded-md overflow-y-auto flex flex-col place-items-center px-2  md:px-0" onClick={e => e.stopPropagation()}>
 
                     <div className="absolute top-1 right-2 ">
                         {/*button to hide evaluation form*/}

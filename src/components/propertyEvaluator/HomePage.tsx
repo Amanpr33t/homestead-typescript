@@ -31,8 +31,8 @@ const PropertyEvaluatorHomePage: React.FC = () => {
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
 
-    const [propertiesSuccessfullyEvaluated, setPropertiesSuccessfullyEvaluated] = useState<number>(0) //number of properties successfully evaluated by the proeprty evaluator
-    const [propertiesSentToFieldAgentForReconsideration, setPropertiesSentToFieldAgentForReconsideration] = useState<number>(0) //Properties sent to the field agent for reconsideration of the field agent
+    const [propertiesApprovedByCityManager, setPropertiesApprovedByCityManager] = useState<number>(0)
+    const [propertiesEvaluated, setPropertiesEvaluated] = useState<number>(0) //number of properties successfully evaluated by the proeprty evaluator
     const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState<number>(0)//Number of pending proeprty evaluations
 
     //The function is used to fetch data regarding properties evaluated by the property evaluator
@@ -54,8 +54,7 @@ const PropertyEvaluatorHomePage: React.FC = () => {
             if (data.status === 'ok') {
                 console.log(data)
                 setSpinner(false)
-                setPropertiesSuccessfullyEvaluated(data.propertiesSuccessfullyEvaluated)
-                setPropertiesSentToFieldAgentForReconsideration(data.propertiesSentToFieldAgentForReconsideration)
+                setPropertiesEvaluated(data.numberOfPropertiesEvaluated)
                 setPendingPropertyEvaluations(data.pendingPropertyEvaluations)
                 return
             } else if (data.status === 'invalid_authentication') {
@@ -101,22 +100,24 @@ const PropertyEvaluatorHomePage: React.FC = () => {
 
                     <div className={`flex flex-col gap-10 w-full bg-white rounded pt-6 pb-6 h-full`} >
 
-                        <div className="flex justify-center">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit w-fit  hover:bg-sky-100" onClick={() => pendingPropertyEvaluations > 0 ? navigate('/property-evaluator/properties-pending-for-evaluation', { replace: true }) : null}>
-                                <p className="text-5xl text-green-800">{pendingPropertyEvaluations}</p>
-                                <p className="w-40">property evaluation requests are pending</p>
+                        <div className="flex justify-center px-2">
+                            <div className="flex flex-row bg-slate-200 border border-gray-400 gap-2 px-2 py-1 cursor-pointer rounded h-fit w-fit  hover:bg-slate-100" onClick={() => pendingPropertyEvaluations > 0 ? navigate('/property-evaluator/properties-pending-for-evaluation', { replace: true }) : null}>
+                                <p className="text-5xl text-orange-600">{pendingPropertyEvaluations}</p>
+                                <p className="sm:w-60">property evaluation requests are pending</p>
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row  gap-10 w-full place-items-center sm:place-content-center">
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1 rounded h-fit " >
-                                <p className="text-5xl text-green-800">{propertiesSuccessfullyEvaluated}</p>
-                                <p className="w-36">properties have been successfully evaluated by you</p>
-                            </div>
+                        <div className="flex flex-col sm:flex-row  gap-10 w-full place-items-center sm:place-content-center px-2">
+                            <div className="flex flex-col border border-gray-400 gap-5 p-2 rounded">
+                                <div className="flex flex-row gap-2" >
+                                    <p className="text-5xl text-gray-600">{propertiesEvaluated}</p>
+                                    <p className="sm:w-60">properties have been evaluated by you</p>
+                                </div>
 
-                            <div className="flex flex-row border border-gray-400 gap-2 p-1  rounded h-fit " >
-                                <p className="text-5xl text-green-800">{propertiesSentToFieldAgentForReconsideration}</p>
-                                <p className="w-40">properties have been sent to field agent for reconsideration</p>
+                                <div className="flex flex-row gap-2" >
+                                    <p className="text-5xl text-green-600">{propertiesApprovedByCityManager}</p>
+                                    <p className="sm:w-60">properties have been approved by city manager</p>
+                                </div>
                             </div>
                         </div>
 

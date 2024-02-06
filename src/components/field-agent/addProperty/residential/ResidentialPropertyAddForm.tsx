@@ -7,7 +7,7 @@ import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import ReviewResidentialPropertyAfterSubmission from "./ReviewResidentialPropertyAfterSubmission"
 import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
-import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../../../utils/stringUtilityFunctions"
+import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 
 type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
@@ -151,8 +151,6 @@ const ResidentialPropertyAddForm: React.FC = () => {
   const propertyDealerFirmName: string | null = queryParams.get('firmName') ?? null; //we get the proeprty dealer firm name from query params
   const residentialPropertyType: string | null = queryParams.get('propertyType') //We get residential property type from the query params
 
-  const [spinner, setSpinner] = useState<boolean>(true)
-
   useEffect(() => {
     //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName or residentialPropertyType is not available, the user is routed to the field-agent home page
     if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && residentialPropertyType.toLowerCase() !== 'flat' && residentialPropertyType.toLowerCase() !== 'house')) {
@@ -162,6 +160,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     }
   }, [propertyDealerId, propertyDealerLogoUrl, propertyDealerFirmName, residentialPropertyType, navigate])
 
+  const [spinner, setSpinner] = useState<boolean>(true)
   const [alert, setAlert] = useState<AlertType>({
     isAlertModal: false,
     alertType: null,
@@ -332,6 +331,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
   //This function is triggered when the user selects a proeprty image
   const residentialLandImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    if (residentialLandImages.length >= 20) {
+      return
+    }
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setResidentialLandImageFileError(false);
@@ -351,6 +353,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
   //This function is triggered when the user selects a contract image
   const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    if (contractImages.length >= 20) {
+      return
+    }
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setContractImages((array) => [
@@ -371,11 +376,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
   const errorCheckingBeforeSubmit = () => {
     if (!propertyTitle.trim()) {
       setPropertyTitleErrorMessage('Provide a title')
-    } else if (countWordsInAString(propertyTitle.trim()) > 30) {
+    } else if (propertyTitle.trim().length > 150) {
       setPropertyTitleErrorMessage('Title should be less than 30 words')
     }
 
-    if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
+    if (propertyDetail.trim() && propertyDetail.trim().length > 500) {
       setPropertyDetailError(true)
     }
 
@@ -469,14 +474,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       setStoreRoomError(true)
     }
-    if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot'&&servantRoom === null) {
-        setServantRoomError(true)
+    if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
+      setServantRoomError(true)
     }
 
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (!furnishing) {
         setFurnishingError(true)
-      } else if (furnishing && countWordsInAString(furnishingDetails.trim()) > 150) {
+      } else if (furnishing && furnishingDetails.trim().length > 500) {
         setFurnishingDetailsError(true)
       }
     }
@@ -484,7 +489,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (!kitchenFurnishing) {
         setKitchenFurnishingError(true)
-      } else if (kitchenFurnishing && countWordsInAString(kitchenFurnishingDetails.trim()) > 150) {
+      } else if (kitchenFurnishing && kitchenFurnishingDetails.trim().length > 500) {
         setKitchenFurnishingDetailsError(true)
       }
     }
@@ -492,7 +497,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (kitchenAppliances === null) {
         setKitchenAppliancesError(true)
-      } else if (kitchenAppliances && countWordsInAString(kitchenAppliancesDetails.trim()) > 50) {
+      } else if (kitchenAppliances && kitchenAppliancesDetails.trim().length > 500) {
         setKitchenAppliancesDetailsError(true)
       }
     }
@@ -524,7 +529,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (garden === null) {
         setGardenError(true)
-      } else if (garden && countWordsInAString(gardenDetails.trim()) > 50) {
+      } else if (garden && gardenDetails.trim().length > 500) {
         setGardenDetailsError(true)
       }
     }
@@ -574,9 +579,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
         routeTo: null
       })
     }
-    if (!propertyTitle.trim() || countWordsInAString(propertyTitle.trim()) > 30) {
+    if (!propertyTitle.trim() || propertyTitle.trim().length > 150) {
       return errorFunction()
-    } else if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
+    } else if (propertyDetail.trim() && propertyDetail.trim().length > 500) {
       return errorFunction()
     } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
       return errorFunction()
@@ -600,13 +605,13 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && storeRoom === null) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null ) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && countWordsInAString(furnishingDetails.trim()) > 150))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && furnishingDetails.trim().length > 500))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && countWordsInAString(kitchenFurnishingDetails.trim()) > 150))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && kitchenFurnishingDetails.trim().length > 500))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && countWordsInAString(kitchenAppliancesDetails.trim()) > 50))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && kitchenAppliancesDetails.trim().length > 500))) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
       return errorFunction()
@@ -620,7 +625,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && countWordsInAString(gardenDetails.trim()) > 50))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && gardenDetails.trim().length > 500))) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
       return errorFunction()
@@ -711,7 +716,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       numberOfCarParkingSpaces,
       numberOfBalconies,
       storeRoom: storeRoom as boolean,
-      servantRoom:servantRoom as boolean,
+      servantRoom: servantRoom as boolean,
       furnishing: {
         type: furnishing as 'fully-furnished' | 'semi-furnished' | 'unfurnished',
         details: furnishingDetails.trim() || null
@@ -888,12 +893,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   autoComplete="new-password"
                   value={propertyTitle}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    if (e.target.value.trim().length > 150) {
-                      setPropertyTitle(e.target.value.trim())
-                      setPropertyTitleErrorMessage('Title should be less than 150 characters')
-                    } else {
+                    if (e.target.value.trim().length <= 150) {
                       setPropertyTitleErrorMessage('')
                       setPropertyTitle(e.target.value)
+                    } else {
+                      setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
                     }
                   }} />
               </div>
@@ -918,12 +922,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   autoComplete="new-password"
                   value={propertyDetail}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    if (e.target.value.trim().length > 500) {
-                      setPropertyDetail(e.target.value.trim())
-                      setPropertyDetailError(true)
-                    } else {
+                    if (e.target.value.trim().length <= 500) {
                       setPropertyDetailError(false)
                       setPropertyDetail(e.target.value)
+                    } else {
+                      setPropertyDetailError(true)
                     }
                   }} />
               </div>
@@ -1787,7 +1790,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {/*servant room*/}
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="p-2  flex flex-col pb-5 pt-5 ">
-                {servantRoomError  && <p className="text-red-500">Select an option</p>}
+                {servantRoomError && <p className="text-red-500">Select an option</p>}
                 <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 ">
                   <div className="flex flex-row gap-0.5">
                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -1866,15 +1869,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Add details about furnishing (optional)"
                       value={furnishingDetails}
                       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                        if (countWordsInAString(furnishingDetails.trim()) > 150) {
-                          setFurnishingDetailsError(true)
-                          setFurnishingDetails(e.target.value.trim())
-                        } else {
+                        if (furnishingDetails.trim().length <= 500) {
                           setFurnishingDetails(e.target.value)
                           setFurnishingDetailsError(false)
+                        } else {
+                          setFurnishingDetailsError(true)
                         }
                       }} />
-                    {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
+                    {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                   </div>}
               </div>}
 
@@ -1924,15 +1926,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Add details about furnishing (optional)"
                       value={kitchenFurnishingDetails}
                       onChange={e => {
-                        if (countWordsInAString(kitchenFurnishingDetails.trim()) > 150) {
-                          setKitchenFurnishingDetailsError(true)
-                          setKitchenFurnishingDetails(e.target.value.trim())
-                        } else {
+                        if (kitchenFurnishingDetails.trim().length <= 500) {
                           setKitchenFurnishingDetails(e.target.value)
                           setKitchenFurnishingDetailsError(false)
+                        } else {
+                          setKitchenFurnishingDetailsError(true)
                         }
                       }} />
-                    {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
+                    {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                   </div>}
               </div>}
 
@@ -1983,15 +1984,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about kitchen appliances (optional)"
                     value={kitchenAppliancesDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (countWordsInAString(kitchenAppliancesDetails.trim()) > 50) {
+                      if (kitchenAppliancesDetails.trim().length >= 500) {
                         setKitchenAppliancesDetailsError(true)
-                        setKitchenAppliancesDetails(e.target.value.trim())
                       } else {
                         setKitchenAppliancesDetails(e.target.value)
                         setKitchenAppliancesDetailsError(false)
                       }
                     }} />
-                  {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
+                  {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                 </div>}
             </div>}
 
@@ -2307,15 +2307,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about garden (optional)"
                     value={gardenDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (countWordsInAString(gardenDetails.trim()) > 50) {
+                      if (gardenDetails.trim().length >= 500) {
                         setGardenDetailsError(true)
-                        setGardenDetails(e.target.value.trim())
                       } else {
                         setGardenDetails(e.target.value)
                         setGardenDetailsError(false)
                       }
                     }} />
-                  {gardenDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
+                  {gardenDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                 </div>}
             </div>}
 
@@ -2457,8 +2456,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about restrictions"
                     value={legalRestrictionDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      setLegalRestrictionDetailsError(false)
-                      setLegalRestrictionDetails(e.target.value)
+                      if (e.target.value.trim().length <= 500) {
+                        setLegalRestrictionDetailsError(false)
+                        setLegalRestrictionDetails(e.target.value)
+                      }
                     }} />
                   {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                 </div>}
