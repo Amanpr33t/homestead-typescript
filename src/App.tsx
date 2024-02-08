@@ -38,6 +38,8 @@ import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPr
 import NavbarCityManager from './components/city-manager/Navbar';
 import CityManagerSignIn from './components/city-manager/SignIn';
 import CityManagerHomePage from './components/city-manager/HomePage';
+import PropertiesPendingForApproval from './components/city-manager/PropertiesPendingForApproval';
+import ApproveProperty from './components/city-manager/ApproveProperty';
 
 const App: React.FC = () => {
 
@@ -100,7 +102,7 @@ const App: React.FC = () => {
                 <ListOfPropertiesToBeReevaluated />
               </>}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}>
-            </Route>
+              </Route>
             </Route>
 
             {/*routes to add property */}
@@ -162,8 +164,8 @@ const App: React.FC = () => {
             </Route>
           </Route>
 
-           {/*Routes for city manager */}
-           <Route path='/city-manager/*'>
+          {/*Routes for city manager */}
+          <Route path='/city-manager/*'>
             <Route path='' element={<>
               <NavbarCityManager />
               <CityManagerHomePage />
@@ -171,6 +173,22 @@ const App: React.FC = () => {
             <Route path='signIn' element={<>
               <NavbarCityManager />
               <CityManagerSignIn />
+            </>}></Route>
+            <Route path='agricultural-properties-pending-for-approval' element={<>
+              <NavbarCityManager />
+              <PropertiesPendingForApproval />
+            </>}></Route>
+            <Route path='residential-properties-pending-for-approval' element={<>
+              <NavbarCityManager />
+              <PropertiesPendingForApproval />
+            </>}></Route>
+            <Route path='commercial-properties-pending-for-approval' element={<>
+              <NavbarCityManager />
+              <PropertiesPendingForApproval />
+            </>}></Route>
+            <Route path='approve-property' element={<>
+              <NavbarCityManager />
+              <ApproveProperty />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/city-manager' />}>
             </Route>

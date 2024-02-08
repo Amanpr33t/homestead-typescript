@@ -78,8 +78,8 @@ interface FetchedPropertyDataType extends PropertyDataType {
     _id: string,
     propertyImagesUrl: string[],
     contractImagesUrl: string[] | null,
-    evaluationData: {
-        incompletePropertyDetails: string[] | null
+    sentBackTofieldAgentForReevaluation: {
+        details: string[]
     }
 }
 
@@ -229,6 +229,8 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
             setCapacityOfPrivateReservoir(fetchedPropertyData.reservoir.capacityOfPrivateReservoir || '')
             if (fetchedPropertyData.reservoir.isReservoir) {
                 setIsReservoir(true)
+            } else if (fetchedPropertyData.reservoir.isReservoir === false) {
+                setIsReservoir(false)
             }
             if (fetchedPropertyData.reservoir.type) {
                 setTypeOfReservoir(fetchedPropertyData.reservoir.type)
@@ -529,7 +531,7 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
                 </div>}
 
             {!error && !spinner &&
-                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ||showDealerDetails || showReevaluationDetails  ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Home button */}
                     <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
@@ -845,18 +847,19 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
                                             id="land-size"
                                             type="number"
                                             name='land-size'
-                                            disabled={!editForm}
                                             className={`border-2 ${landSizeError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
-                                            value={landSize}
-                                            onChange={e => {
-                                                if (+e.target.value !== 0) {
-                                                    setLandSizeError(false)
-                                                    setLandSize(+e.target.value)
+                                            value={landSize || ''}
+                                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                                const size = +e.target.value;
+                                                if (!isNaN(size) && size > 0) {
+                                                    setLandSizeError(false);
+                                                    setLandSize(size);
                                                 } else {
-                                                    setLandSize('')
+                                                    setLandSize('');
                                                 }
-                                            }} />
+                                            }}
+                                        />
                                         <select
                                             className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit`}
                                             name="unit-dropdown"
@@ -1214,7 +1217,7 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
                                                     type="radio" id="yes-reservoir"
                                                     name="reservoir"
                                                     disabled={!editForm}
-                                                    checked={isReservoir === true}
+                                                    checked={isReservoir === true ? true : false}
                                                     onChange={e => {
                                                         setReservoirError(false)
                                                         setTypeOfReservoirError(false)
@@ -1339,7 +1342,7 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
                                             id="no-reservoir"
                                             name="reservoir"
                                             disabled={!editForm}
-                                            checked={isReservoir === false}
+                                            checked={isReservoir === false ? true : false}
                                             onChange={e => {
                                                 setReservoirError(false)
                                                 setTypeOfReservoirError(false)
@@ -1635,11 +1638,11 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
                     </form>
                 </div >}
 
-                {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
                 <ReevaluationDetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}
-                    reevaluationDetails={fetchedPropertyData.evaluationData.incompletePropertyDetails}
+                    reevaluationDetails={fetchedPropertyData.sentBackTofieldAgentForReevaluation.details}
                     dealerInfo={dealerInfo as {
                         propertyDealerName: string,
                         firmName: string,

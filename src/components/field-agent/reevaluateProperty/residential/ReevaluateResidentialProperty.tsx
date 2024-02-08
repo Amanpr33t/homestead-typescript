@@ -136,8 +136,8 @@ interface FetchedPropertyDataType extends PropertyDataType, HouseSpecificDataTyp
     _id: string,
     propertyImagesUrl: string[],
     contractImagesUrl: string[] | null,
-    evaluationData: {
-        incompletePropertyDetails: string[] | null
+    sentBackTofieldAgentForReevaluation: {
+        details: string[]
     }
 }
 
@@ -3244,11 +3244,11 @@ const ReevaluateResidentialProperty: React.FC = () => {
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
                     propertyDataReset={() => setPropertyData(null)} />}
 
-            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.evaluationData.incompletePropertyDetails &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
                 <ReevaluationDetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}
-                    reevaluationDetails={fetchedPropertyData.evaluationData.incompletePropertyDetails}
+                    reevaluationDetails={fetchedPropertyData.sentBackTofieldAgentForReevaluation.details}
                     dealerInfo={dealerInfo as {
                         propertyDealerName: string,
                         firmName: string,

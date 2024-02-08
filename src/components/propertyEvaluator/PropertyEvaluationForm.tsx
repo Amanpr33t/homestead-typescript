@@ -1,9 +1,7 @@
 import { ChangeEvent, Fragment, useState } from "react"
 import AlertModal from '../AlertModal'
-import Spinner from "../Spinner"
 import { useNavigate } from "react-router-dom"
 import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
-import { MdDiversity1 } from "react-icons/md"
 
 type LocationType = 'rural' | 'sub-urban' | 'urban' | 'mixed-use' | 'industrial'
 type LocationStatusType = 'posh' | 'premium' | 'popular' | 'ordinary' | 'low income'
@@ -26,8 +24,7 @@ interface AlertType {
 }
 
 interface EvaluationDataType {
-    areDetailsComplete: boolean,
-    incompletePropertyDetails?: string[] | null,
+    incompletePropertyDetails?:string[],
     typeOfLocation?: LocationType | null,
     locationStatus?: LocationStatusType | null,
     fairValueOfProperty?: number | null,
@@ -38,7 +35,7 @@ interface EvaluationDataType {
     },
     conditionOfConstruction?: ConstructionType | null,
     qualityOfConstructionRating?: number | null,
-    evaluatedAt: Date,
+    evaluatedAt?: Date,
 }
 
 //This component is a form used to evaluate a property
@@ -180,7 +177,6 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
         if (isInformationComplete) {
             //if information provided by field agentis complete
             evaluationData = {
-                areDetailsComplete: true,
                 typeOfLocation: typeOfLocation as LocationType,
                 locationStatus: locationStatus as LocationStatusType,
                 fairValueOfProperty: fairValueOfProperty as number,
@@ -196,9 +192,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
         } else {
             //information provided by field agent is incorrect
             evaluationData = {
-                areDetailsComplete: false,
-                incompletePropertyDetails: isInformationInCompleteDetails,
-                evaluatedAt: new Date(),
+                incompletePropertyDetails: isInformationInCompleteDetails
             }
         }
 

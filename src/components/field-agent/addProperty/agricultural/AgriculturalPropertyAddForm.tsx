@@ -695,15 +695,17 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             name='land-size'
                                             className={`border-2 ${landSizeError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
-                                            value={landSize}
-                                            onChange={e => {
-                                                if (+e.target.value !== 0) {
-                                                    setLandSizeError(false)
-                                                    setLandSize(+e.target.value)
+                                            value={landSize || ''}
+                                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                                const size = +e.target.value;
+                                                if (!isNaN(size) && size > 0) {
+                                                    setLandSizeError(false);
+                                                    setLandSize(size);
                                                 } else {
-                                                    setLandSize('')
+                                                    setLandSize('');
                                                 }
-                                            }} />
+                                            }}
+                                        />
                                         <select
                                             className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit`}
                                             name="unit-dropdown"

@@ -135,11 +135,13 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
                 formData.append('cloud_name', cloudinaryCloudName)
+                console.log()
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}}/image/upload`, {
                     method: 'post',
                     body: formData
                 })
                 const data = await response.json()
+                console.log(data)
                 if (data && data.error) {
                     throw new Error('Some error occured')
                 } else {

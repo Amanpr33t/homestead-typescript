@@ -1,0 +1,47 @@
+import { useNavigate } from "react-router-dom"
+import { Fragment, useEffect } from "react"
+import ReviewCommercialProperty from "./ReviewCommercialProperty"
+import ReviewAgriculturalProperty from "./ReviewAgriculturalProperty"
+import ReviewResidentialProperty from "./ReviewResidentialProperty"
+
+//This component is used to fetch the property to be evaluated and property details are passed as props to other components
+const ApproveProperty: React.FC = () => {
+    const navigate = useNavigate()
+    const authToken: string | null = localStorage.getItem("homestead-city-manager-authToken") //This variable stores the authToken present in local storage
+
+    // Get the query parameters from the URL
+    const queryParams = new URLSearchParams(window.location.search);
+
+    // Get individual query parameters
+    const propertyId: string | null = queryParams.get('propertyId');
+    const propertyType: string | null = queryParams.get('propertyType');
+
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/city-manager/signIn', { replace: true })
+        }
+    }, [authToken, navigate])
+
+    useEffect(() => {
+        if (!propertyId || !propertyType) {
+            navigate('/city-manager', { replace: true })
+        }
+    }, [propertyId, propertyType, navigate])
+
+
+    return (
+        <Fragment>
+
+            {propertyId && propertyType === 'residential' &&
+                <ReviewResidentialProperty propertyId={propertyId} />}
+
+            {propertyId && propertyType === 'commercial' &&
+                <ReviewCommercialProperty propertyId={propertyId} />}
+
+            {propertyId && propertyType === 'agricultural' &&
+                <ReviewAgriculturalProperty propertyId={propertyId} />}
+
+        </Fragment>
+    )
+}
+export default ApproveProperty

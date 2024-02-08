@@ -114,7 +114,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
             setStartingIndex(1)
             setCurrentPage(1)
         }
-    }, [authToken, navigate, currentPage, isAgricultural, isResidential, isCommercial])
+    }, [authToken, navigate, currentPage, isAgricultural, isResidential, isCommercial, initialLoad])
 
     useEffect(() => {
         fetchPendingPropertyReevaluations()
@@ -174,7 +174,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                                     )}</p>
                                 </div>
                                 <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentBackTofieldAgentForReevaluation.date))}`}>
-                                    Received {getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)>0?`${getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)} days ago`:'today'}
+                                    Received {getDaysDifference(property.sentBackTofieldAgentForReevaluation.date) > 0 ? `${getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)} days ago` : 'today'}
                                 </p>
                             </div>
                             <div className="w-full flex justify-center ">
