@@ -7,8 +7,8 @@ import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
 import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../../../utils/stringUtilityFunctions"
 import { FaEdit } from "react-icons/fa";
-import ReevaluationDetailsModal from "../ReevaluationDetailsModal"
-import ReviewReevaluatedResidentialProperty from "./ReviewReevaluatedResidentialProperty"
+import DetailsModal from "../DetailsModal"
+import ReviewReconsideredResidentialPropertyDetails from "./ReviewReconsideredResidentialPropertyDetails"
 
 type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
@@ -142,7 +142,7 @@ interface FetchedPropertyDataType extends PropertyDataType, HouseSpecificDataTyp
 }
 
 //This component is a form used by a field agent to add a residential property
-const ReevaluateResidentialProperty: React.FC = () => {
+const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
     const navigate = useNavigate()
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
@@ -3235,7 +3235,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                 </div >}
 
             {!error && !spinner && propertyData &&
-                <ReviewReevaluatedResidentialProperty
+                <ReviewReconsideredResidentialPropertyDetails
                     propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
                     contractImages={contractImages}
@@ -3245,7 +3245,7 @@ const ReevaluateResidentialProperty: React.FC = () => {
                     propertyDataReset={() => setPropertyData(null)} />}
 
             {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
-                <ReevaluationDetailsModal
+                <DetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}
                     reevaluationDetails={fetchedPropertyData.sentBackTofieldAgentForReevaluation.details}
@@ -3263,4 +3263,4 @@ const ReevaluateResidentialProperty: React.FC = () => {
         </Fragment >
     )
 }
-export default ReevaluateResidentialProperty
+export default ReconsiderResidentialPropertyDetails

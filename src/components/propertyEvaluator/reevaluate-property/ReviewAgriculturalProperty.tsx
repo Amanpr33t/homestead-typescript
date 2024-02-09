@@ -1,7 +1,8 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import PropertyEvaluationForm from "./PropertyEvaluationForm"
-import Spinner from "../Spinner"
+import Spinner from "../../Spinner"
+import PropertyReevaluationForm from "./PropertyReevaluationForm"
+import ReevaluationDetailsModal from "./ReevaluationDetailsModal"
 
 type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
 type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
@@ -64,13 +65,31 @@ interface PropertyType {
         details: string | null,
     },
     nearbyTown: string | null,
+    sentToEvaluatorByCityManagerForReevaluation: {
+        details: string[]
+    },
+    evaluationData: {
+        typeOfLocation: string | null,
+        locationStatus: string | null,
+        fairValueOfProperty: number | null,
+        fiveYearProjectionOfPrices: {
+            increase: boolean | null,
+            decrease: boolean | null,
+            percentageIncreaseOrDecrease: number | null,
+        },
+        conditionOfConstruction: string | null,
+        qualityOfConstructionRating: number | null,
+        evaluatedAt?: Date,
+    }
 }
 
-//This component is used to show property data. It also passes property data as props to PropertyEvaluationForm component 
+//This component is used to show property data. It also passes property data as props to PropertyReevaluationForm component 
 const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
     const navigate = useNavigate()
 
-    const [showEvaluationForm, setShowEvaluationForm] = useState(false) //If set to true, PropertyEvaluationForm component will be shown to the user
+    const [showReevaluationForm, setShowReevaluationForm] = useState<boolean>(false) //If set to true, PropertyReevaluationForm component will be shown to the user
+
+    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true) //If set to true, PropertyReevaluationForm component will be shown to the user
 
     const [property, setProperty] = useState<PropertyType | null>(null)
 
@@ -128,16 +147,54 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                     <button className="text-red-500" onClick={fetchSelectedProperty}>Try again</button>
                 </div>}
 
-            <div className={`${showEvaluationForm ? 'blur' : ''} w-full fixed top-16 bg-white pb-2 z-30`}>
+            <div className={`${showReevaluationForm || showReevaluationDetails ? 'blur' : ''} w-full fixed top-16 bg-white sm:bg-transparent pb-2 z-30`}>
                 <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator/agricultural-properties-to-be-evaluated')}>Back</button>
                 <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
             </div>
 
-            {property && !spinner && !error &&
-                <div className={`${showEvaluationForm ? 'blur' : ''}`}>
+            {property && showReevaluationForm &&
+                <PropertyReevaluationForm
+                    showReevaluationForm={showReevaluationForm}
+                    hideReevaluationForm={() => setShowReevaluationForm(false)}
+                    propertyType='agricultural'
+                    propertyId={property._id}
+                    oldEvaluationData={property.evaluationData} />
+            }
 
-                    <div className="w-full mt-28 bg-white z-20 mb-4">
+            {showReevaluationDetails && property && property.sentToEvaluatorByCityManagerForReevaluation.details &&
+                <ReevaluationDetailsModal
+                    reevaluationDetails={property?.sentToEvaluatorByCityManagerForReevaluation.details}
+                    detailsModalRemover={() => setShowReevaluationDetails(false)}
+                />}
+
+            {property && !spinner && !error &&
+                <div className={`${showReevaluationDetails || showReevaluationForm ? 'blur' : ''}`}>
+
+                    <div className="w-full mt-28 sm:mt-20 bg-white z-20 mb-3">
                         <p className="text-2xl font-semibold text-center">Agricultural property details</p>
+                    </div>
+
+                    <div className="px-2 w-full flex flex-row place-content-center gap-2 mb-3">
+                        <button
+                            type='button'
+                            className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setShowReevaluationDetails(true)
+                                setShowReevaluationForm(false)
+                            }}>
+                            Show reevaluation details
+                        </button>
+                        <button
+                            type='button'
+                            className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setShowReevaluationDetails(false)
+                                setShowReevaluationForm(true)
+                            }}>
+                            Edit reevaluation details
+                        </button>
                     </div>
 
                     <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
@@ -302,19 +359,9 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                             </tbody>
                         </table>
                     </div>
-
-                    <div className="w-full -mt-4 mb-6 flex justify-center ">
-                        <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
-                    </div>
                 </div>}
 
-            {property &&
-                <PropertyEvaluationForm
-                    showEvaluationForm={showEvaluationForm}
-                    hideEvaluationForm={() => setShowEvaluationForm(false)}
-                    propertyType='agricultural'
-                    propertyId={property._id}/>
-            }
+
         </Fragment >
     )
 }

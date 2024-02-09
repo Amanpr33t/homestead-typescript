@@ -14,6 +14,7 @@ interface AlertType {
 //The component shows the home page of the field agent
 const HomeFieldAgent: React.FC = () => {
     const navigate = useNavigate()
+
     const authToken: null | string = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
@@ -28,10 +29,13 @@ const HomeFieldAgent: React.FC = () => {
         alertMessage: null,
         routeTo: null
     })
+    const [spinner, setSpinner] = useState<boolean>(true)
+    const [error, setError] = useState<boolean>(false)
 
-    const [numberOfPropertiesApprovedByCityManager, setNumberOfPropertiesApprovedByCityManager] = useState<number>(0)
+    const [numberOfPropertiesApprovedByCityManager, setNumberOfPropertiesApprovedByCityManager] = useState<number>(0)//number of propertes that approved by city manager
 
     const [numberOfPropertiesAdded, setNumberOfPropertiesAdded] = useState<number>(0) //Number of properties added by the field agent
+
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState<number>(0) //number of property dealers added by the field agent
 
     const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState<{
@@ -46,15 +50,12 @@ const HomeFieldAgent: React.FC = () => {
 
     const [requestsDropdown, setRequestsDropdown] = useState<boolean>(false) //If true, a request dropdown will be shown to the user
 
-    const [spinner, setSpinner] = useState<boolean>(true)
-    const [error, setError] = useState<boolean>(false)
-
     //The function is used to fetch the number of properties and property dealers added by the field agent
     const fetchDataForHomePage = useCallback(async () => {
         try {
             setSpinner(true)
             setError(false)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/dataForFieldAgentHomePage`, {
+            const response = await fetch(`http://localhost:3011/field-agent/dataForFieldAgentHomePage`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +81,6 @@ const HomeFieldAgent: React.FC = () => {
                 navigate('/field-agent/signIn', { replace: true })
             }
         } catch (error) {
-            console.log(error)
             setError(true)
             setSpinner(false)
         }
@@ -122,7 +122,7 @@ const HomeFieldAgent: React.FC = () => {
                     setRequestsDropdown(false)
                 }}>
 
-                    {/*This div will only be shown for screeen with width larger than 768px */}
+                    {/*This div  will only be shown for screeen with width larger than 768px */}
                     <div className="hidden md:flex flex-col w-96 h-fit bg-white gap-2 p-3 rounded">
                         <p className="text-2xl font-bold text-center mb-2">Pending Requests</p>
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded  hover:bg-sky-100">
@@ -134,13 +134,15 @@ const HomeFieldAgent: React.FC = () => {
                             <p className="w-40">Pending visits to add a property dealer</p>
                         </div>
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100"
-                            onClick={() => pendingRequestsForPropertyReevaluation ? navigate(`/field-agent/reevaluate-property?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) : null}>
+                            onClick={() => pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential > 0 ?
+                                navigate(`/field-agent/reconsider-property-details?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) :
+                                null}>
                             <p className="text-5xl">{pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential}</p>
                             <p className="w-40">Pending requests to reconsider details of a property</p>
                         </div>
                     </div>
 
-                    {/*This div will only be shown for screeen with width smaller than 768px */}
+                    {/*This div is a dropdown which will only be shown for screeen with width smaller than 768px */}
                     <div className={`fixed md:hidden top-16 w-full z-10 ${requestsDropdown ? 'h-screen' : 'h-fit'}`}>
                         <div className="relative mt-3.5 border border-gray-400 w-fit p-1 cursor-pointer bg-white" onClick={(event: React.MouseEvent<HTMLDivElement>) => {
                             event.stopPropagation()
@@ -156,7 +158,9 @@ const HomeFieldAgent: React.FC = () => {
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property dealer</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation ? navigate(`/field-agent/reevaluate-property?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) : null}>
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential > 0 ?
+                                    navigate(`/field-agent/reconsider-property-details?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) :
+                                    null}>
                                     <p className="text-5xl">{pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential}</p>
                                     <p className="w-40">Pending requests to reconsider details of a property</p>
                                 </div>
@@ -164,23 +168,21 @@ const HomeFieldAgent: React.FC = () => {
                         </div>
                     </div>
 
-
                     <div className={`w-full bg-white rounded pt-6 pb-6 ${requestsDropdown || alert.isAlertModal ? 'blur' : ''}`} >
+                
                         <div className="flex flex-row gap-3 w-full place-content-center">
-                            <button
-                                className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 h-8 w-fit"
-                                onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                                    event.stopPropagation()
-                                    navigate('/field-agent/add-property', { replace: true })
-                                }}>
+                            <Link
+                                to='/field-agent/add-property'
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-1 h-8 w-fit" >
                                 Add Property
-                            </button>
+                            </Link>
                             <Link
                                 to='/field-agent/add-property-dealer'
                                 className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-1 h-8 w-fit" >
                                 Add Property Dealer
                             </Link>
                         </div>
+
                         <div className="flex flex-col sm:flex-row  gap-5 w-full place-items-center sm:place-content-center mt-10">
                             <div className="flex flex-row border border-gray-400 gap-2 p-1  rounded h-fit">
                                 <p className="text-5xl text-green-600">{numberOfPropertyDealersAdded}</p>

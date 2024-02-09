@@ -12,6 +12,7 @@ type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highw
 type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
 type ReservoirType = 'public' | 'private'
 type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
+type StateType = 'chandigarh' | 'punjab'
 
 interface PropertyDataType {
     addedByPropertyDealer: string,
@@ -121,8 +122,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const [tehsil, setTehsil] = useState<string>('')
     const [village, setVillage] = useState<string>('')
 
-    const [agriculturalLandImageError, setAgriculturalLandImageError] = useState<boolean>(false) //Error will be true if agriculturalLandImageError array is empty
-
+    const [agriculturalLandImageError, setAgriculturalLandImageError] = useState<boolean>(false) //Error will be true if agriculturalLandImages array is empty
     const [agriculturalLandImages, setAgriculturalLandImages] = useState<ImageType[]>([]) //An array that stores the property images stored by the user
 
     const [contractImages, setContractImages] = useState<ImageType[]>([])//An array that stores the contract images stored by the user
@@ -153,7 +153,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const [capacityOfReservoirError, setCapacityOfReservoirError] = useState<boolean>(false) //If capacity of private reservoir is not provided, this state becomes true
     const [unitOfCapacityReservoirError, setUnitOfCapacityReservoirError] = useState<boolean>(false) //If capacity of private reservoir is not provided, this state becomes false
 
-    const irrigationSystemOptions = ['sprinkler', 'drip', 'underground pipeline']
+    const irrigationSystemOptions: IrrigationSystemType[] = ['sprinkler', 'drip', 'underground pipeline']
     const [irrigationSystemArray, setIrrigationSystemArray] = useState<IrrigationSystemType[]>([]) //This array contains all the irrigation system options selected by user
 
     const [priceDemandedNumber, setPriceDemandedNumber] = useState<number | ''>('') //Price in numbers
@@ -161,14 +161,14 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const [priceDemandedWords, setPriceDemandedWords] = useState<string>('') //price in words
     const [priceDemandedWordsError, setPriceDemandedWordsError] = useState<boolean>(false) //This state is true if not price in words is provided
 
-    const cropOptions = ['rice', 'wheat', 'maize', 'cotton']
+    const cropOptions: CropTypeArray[] = ['rice', 'wheat', 'maize', 'cotton']
     const [cropArray, setCropArray] = useState<CropTypeArray[]>([]) //Array contans the crop selected by user
     const [cropError, setCropError] = useState<boolean>(false) //state will be true if the cropArray is empty
 
-    const [roadType, setRoadType] = useState<RoadType>() //Type of road selected
+    const [roadType, setRoadType] = useState<RoadType | null>(null) //Type of road selected
     const [roadDetails, setRoadDetails] = useState<string>('') //Details of the type of road
     const [roadError, setRoadError] = useState<boolean>(false) //state is true if no road type is selected
-    const roadOptions = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
+    const roadOptions: RoadType[] = ['unpaved road', 'village road', 'district road', 'state highway', 'national highway']
 
     const [isLegalRestrictions, setIsLegalRestrictions] = useState<boolean | null>(null) //The state is true if the user clicks on yes option. It is false if user clicks on no option. It is null if no option is selected
     const [legalRestrictionError, setLegalRestrictionError] = useState<boolean>(false) //if no option is elected by user, this state is true
@@ -177,7 +177,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
     const [nearbyTown, setNearbyTown] = useState<string>('')
 
-    const states = ['chandigarh', 'punjab']
+    const states: StateType[] = ['chandigarh', 'punjab']
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>() //contains final property data added by user
 
@@ -404,16 +404,21 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         <Fragment>
             {spinner && !propertyData && <Spinner />}
 
-            {alert.isAlertModal && <AlertModal message={alert.alertMessage} type={alert.alertType} routeTo={alert.routeTo} alertModalRemover={() => {
-                setAlert({
-                    isAlertModal: false,
-                    alertType: null,
-                    alertMessage: null,
-                    routeTo: null
-                })
-            }} />}
+            {alert.isAlertModal &&
+                <AlertModal
+                    message={alert.alertMessage}
+                    type={alert.alertType}
+                    routeTo={alert.routeTo}
+                    alertModalRemover={() => {
+                        setAlert({
+                            isAlertModal: false,
+                            alertType: null,
+                            alertMessage: null,
+                            routeTo: null
+                        })
+                    }} />}
 
-            {/*Once proeprty data is available, property data with be shown in a table in ReviewAgriculturalPropertyAfterSubmission component */}
+            {/*Once property data is available, property data with be shown in a table in ReviewAgriculturalPropertyAfterSubmission component */}
             {propertyData &&
                 <ReviewAgriculturalPropertyAfterSubmission
                     propertyData={propertyData}
@@ -435,13 +440,13 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                         </button>
                     </div>
 
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white text-xl font-semibold z-10">Add an agricultural property by filling the form</p>
+                    <p className="mt-28 sm:mt-20 w-full text-center  pl-4 pr-4 pb-4  text-xl font-semibold">Add an agricultural property by filling the form</p>
 
-                    <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen  md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {/*property dealer firm name and logo */}
                         <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
-                            <p className="text-3xl font-bold text-gray-500 w-fit text-center">{propertyDealerFirmName}</p>
+                            <p className="text-2xl font-bold text-gray-500 w-fit text-center">asdasdas da sdasdasdas dasd asda</p>
                             {propertyDealerLogoUrl &&
                                 <img
                                     className="w-20 h-auto "
@@ -467,7 +472,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                     onChange={contractImageHandler}
                                 />
                             </div>
-                            {contractImages.length !== 0 &&
+                            {contractImages.length > 0 &&
                                 <div className='flex flex-wrap justify-center gap-5 p-5'>
                                     {contractImages.map(image => {
                                         return <div key={Math.random()} className='relative w-fit bg-blue-300'>
@@ -499,11 +504,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
                                 {/*village */}
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="village">
-                                        Village
-                                    </label>
+                                    <label className="text-gray-500 font-semibold" htmlFor="village">Village</label>
                                     <input
                                         type="text"
                                         id="village"
@@ -511,7 +512,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         className='border-2 border-gray-500  p-1 rounded'
                                         autoComplete="new-password"
                                         value={village}
-                                        onChange={e => {
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                             setVillage(e.target.value)
                                         }} />
                                 </div>
@@ -530,7 +531,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         className='border-2 border-gray-500 p-1 rounded'
                                         autoComplete="new-password"
                                         value={city}
-                                        onChange={e => {
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                             setCity(e.target.value)
                                         }} />
                                 </div>
@@ -539,11 +540,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                 <div className="flex flex-col w-full">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
-                                        <label
-                                            className="text-gray-500 font-semibold"
-                                            htmlFor="state">
-                                            State
-                                        </label>
+                                        <label className="text-gray-500 font-semibold" htmlFor="state">State</label>
                                     </div>
                                     <select
                                         className={`border-2 ${stateError ? 'border-red-500' : 'border-gray-500'}  p-1 rounded`}
@@ -585,7 +582,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         id="district"
                                         value={district}
                                         disabled={state ? false : true}
-                                        onChange={e => {
+                                        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                             setDistrictError(false)
                                             setDistrict(e.target.value)
                                             setTehsil('')
@@ -633,11 +630,6 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             disabled>
                                             Select a tehsil
                                         </option>
-                                        {state === 'chandigarh' && district === 'chandigarh' &&
-                                            <option
-                                                value='chandigarh'>
-                                                Chandigarh
-                                            </option>}
                                         {state === 'punjab' && <PunjabTehsilsDropdown district={district} />}
                                     </select>
                                 </div>
@@ -647,25 +639,19 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                         {/* Number of owners*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                                <label
-                                    className="text-xl font-semibold text-gray-500"
-                                    htmlFor="owners">
-                                    Number of owners
-                                </label>
+                                <label className="text-xl font-semibold text-gray-500" htmlFor="owners">Number of owners</label>
                                 <select
                                     className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                     name="owners"
                                     id="owners"
                                     value={numberOfOwners}
-                                    onChange={e => {
+                                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                         const selectedValue = parseInt(e.target.value, 10);
                                         setNumberOfOwners(isNaN(selectedValue) ? 1 : selectedValue);
 
                                     }}>
                                     {generateNumberArray(1, 10).map(number =>
-                                        <option
-                                            key={number}
-                                            value={number}>
+                                        <option key={number} value={number}>
                                             {number}
                                         </option>)}
                                 </select>
@@ -680,9 +666,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                             <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <label
-                                        className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                                        htmlFor="size">
+                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="size">
                                         Land size
                                     </label>
                                 </div>
@@ -711,7 +695,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             name="unit-dropdown"
                                             id="unit-dropdown"
                                             value={landSizeUnit}
-                                            onChange={e => {
+                                            onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                                 setLandSizeUnitError(false)
                                                 setLandSizeUnit(e.target.value as 'metre-square' | 'acre')
                                             }}>
@@ -743,9 +727,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                             <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <label
-                                        className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                                        htmlFor="size">
+                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="size">
                                         Price (Rs)
                                     </label>
                                 </div>
@@ -758,8 +740,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         className={`border-2 ${priceDemandedNumberError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`}
                                         placeholder="Number"
                                         value={priceDemandedNumber}
-                                        onChange={e => {
-                                            if (+e.target.value !== 0) {
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                            if (+e.target.value > 0) {
                                                 setPriceDemandedNumberError(false)
                                                 setPriceDemandedNumber(+e.target.value)
                                             } else {
@@ -815,10 +797,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                         setNewCanal('')
                                                     }
                                                 }} />
-                                            <label
-                                                htmlFor="canal">
-                                                Canal
-                                            </label>
+                                            <label htmlFor="canal">Canal</label>
                                         </div>
                                         {isCanal &&
                                             <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0">
@@ -1013,8 +992,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                                     className={`w-28 border ${tubewellDepthError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password"
                                                                     value={newTubewell}
                                                                     onChange={e => {
-                                                                        if (e.target.value.trim()) {
-                                                                            setNewTubewell(+e.target.value.trim())
+                                                                        if (+e.target.value > 0) {
+                                                                            setNewTubewell(+e.target.value)
                                                                             setTubewellDepthError(false)
                                                                         } else {
                                                                             setNewTubewell('')
@@ -1054,7 +1033,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             <div className="flex flex-row">
                                                 <input
                                                     className="mr-1 cursor-pointer"
-                                                    type="radio" id="yes-reservoir"
+                                                    type="radio"
+                                                    id="yes-reservoir"
                                                     name="reservoir"
                                                     onChange={e => {
                                                         setReservoirError(false)
@@ -1125,7 +1105,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                             <p className="font-semibold mb-1">Capacity of private reservoir</p>
                                                             <div className="flex flex-row gap-1">
                                                                 <input
-                                                                    id="resercoir-capacity"
+                                                                    id="reservoir-capacity"
                                                                     type="number"
                                                                     name='reservoir-capacity'
                                                                     className={`border-2 ${capacityOfReservoirError ? 'border-red-400' : 'border-gray-400'} border-gray-400 rounded bg-white w-24 p-1`}
@@ -1133,7 +1113,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                                     placeholder="Capacity"
                                                                     value={capacityOfPrivateReservoir}
                                                                     onChange={e => {
-                                                                        if (+e.target.value !== 0) {
+                                                                        if (+e.target.value > 0) {
                                                                             setCapacityOfReservoirError(false)
                                                                             setCapacityOfPrivateReservoir(+e.target.value)
                                                                         } else {
@@ -1149,9 +1129,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                                         setUnitOfCapacityReservoirError(false)
                                                                         setUnitOfCapacityForPrivateReservoir(e.target.value as 'litre' | 'cusec')
                                                                     }}>
-                                                                    <option
-                                                                        value=''
-                                                                        disabled>
+                                                                    <option value='' disabled>
                                                                         Select a unit
                                                                     </option>
                                                                     <option value='cusec'>Cusec</option>
@@ -1317,9 +1295,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         <input
                                             className="mr-1 cursor-pointer"
                                             type="radio"
-                                            id="yes"
+                                            id="legal-restrictions-yes"
                                             name="restrictions"
-                                            value="yes"
                                             onChange={e => {
                                                 setLegalRestrictionDetails('')
                                                 setLegalRestrictionDetailsError(false)
@@ -1328,16 +1305,15 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                     setIsLegalRestrictions(true)
                                                 }
                                             }} />
-                                        <label htmlFor="yes">Yes</label>
+                                        <label htmlFor="legal-restrictions-yes">Yes</label>
                                     </div>
 
                                     <div className="flex flex-row h-fit">
                                         <input
                                             className=" mr-1 cursor-pointer"
                                             type="radio"
-                                            id="no"
+                                            id="legal-restrictions-no"
                                             name="restrictions"
-                                            value="no"
                                             onChange={e => {
                                                 setLegalRestrictionDetails('')
                                                 setLegalRestrictionDetailsError(false)
@@ -1346,7 +1322,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                     setIsLegalRestrictions(false)
                                                 }
                                             }} />
-                                        <label htmlFor="no">No</label>
+                                        <label htmlFor="legal-restrictions-no">No</label>
                                     </div>
                                 </div>
                             </div>

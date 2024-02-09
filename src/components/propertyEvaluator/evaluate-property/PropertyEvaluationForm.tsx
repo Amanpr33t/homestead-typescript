@@ -1,7 +1,7 @@
 import { ChangeEvent, Fragment, useState } from "react"
-import AlertModal from '../AlertModal'
+import AlertModal from "../../AlertModal"
 import { useNavigate } from "react-router-dom"
-import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
+import { capitalizeFirstLetterOfAString } from "../../../utils/stringUtilityFunctions"
 
 type LocationType = 'rural' | 'sub-urban' | 'urban' | 'mixed-use' | 'industrial'
 type LocationStatusType = 'posh' | 'premium' | 'popular' | 'ordinary' | 'low income'

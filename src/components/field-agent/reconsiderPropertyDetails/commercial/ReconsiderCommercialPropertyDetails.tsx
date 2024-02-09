@@ -5,8 +5,8 @@ import { punjabDistricts } from "../../../../utils/tehsilsAndDistricts/districts
 import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 import Spinner from "../../../Spinner"
-import ReviewReevaluatedCommercialProperty from "./ReviewReevaluatedCommercialProperty"
-import ReevaluationDetailsModal from "../ReevaluationDetailsModal"
+import ReviewReconsideredCommercialPropertyDetails from "./ReviewReconsideredCommercialPropertyDetails"
+import DetailsModal from "../DetailsModal"
 
 const arrayOfNumbers = (from: number, to: number) => {
     if (from === 0) {
@@ -99,7 +99,7 @@ interface FetchedPropertyDataType extends PropertyDataType {
 }
 
 //Component is used to add a commercial proerty
-const ReevaluateCommercialProperty: React.FC = () => {
+const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
@@ -492,7 +492,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                 </div>}
 
             {!error && !spinner && propertyData &&
-                <ReviewReevaluatedCommercialProperty
+                <ReviewReconsideredCommercialPropertyDetails
                     propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
                     contractImages={contractImages}
@@ -1433,7 +1433,7 @@ const ReevaluateCommercialProperty: React.FC = () => {
                 </div >}
 
             {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
-                <ReevaluationDetailsModal
+                <DetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}
                     reevaluationDetails={fetchedPropertyData.sentBackTofieldAgentForReevaluation.details}
@@ -1452,4 +1452,4 @@ const ReevaluateCommercialProperty: React.FC = () => {
         </Fragment >
     )
 }
-export default ReevaluateCommercialProperty
+export default ReconsiderCommercialPropertyDetails

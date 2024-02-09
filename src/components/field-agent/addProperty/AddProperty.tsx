@@ -1,4 +1,3 @@
-
 import React, { Fragment, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import VerifyPropertyDealerBeforeAddingProperty from "../VerifyPropertyDealerBeforeAddingProperty"
@@ -26,7 +25,7 @@ const AddProperty: React.FC = () => {
 
     const [commericialPropertyType, setCommercialPropertyType] = useState<'shop' | 'industrial' | null>(null) //Type of commercial property chosen
 
-    const [residentialPropertyType, setResidentialPropertyType] = useState<'house' | 'plot' | 'flat' | null>() //Type of residential property chosen
+    const [residentialPropertyType, setResidentialPropertyType] = useState<'house' | 'plot' | 'flat' | null>(null) //Type of residential property chosen
 
     //The function is used to set the dealer
     const propertyDealerSetterFunction = (dealer: dealerType) => {
@@ -54,13 +53,13 @@ const AddProperty: React.FC = () => {
                     />}
 
                 {propertyDealer &&
-                   
+
                     <div className="top-32 fixed w-full h-screen flex justify-center z-20">
                         {/*It shows different property types which can be selected by the user*/}
                         <div
-                            className="rounded border-2 shadow-2xl bg-white p-2 h-fit"
+                            className="rounded border-2 shadow-2xl bg-white h-fit px-5 py-3 w-72"
                             onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
-                            <p className="w-full text-center font-semibold mb-2">Select a property type</p>
+                            <p className="w-full text-center text-lg font-semibold mb-2">Select a property type</p>
                             <div className="mb-1">
                                 <input
                                     className="mr-1"
@@ -178,16 +177,19 @@ const AddProperty: React.FC = () => {
                                 </div>}
                             </div>
 
-                            <div className=" w-full flex justify-center">
-                                <button type='button' className="bg-blue-500 text-white font-medium rounded p-1 w-fit" onClick={() => {
-                                    if (selectedPropertyType === 'agricultural') {
-                                        navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`, { replace: true })
-                                    } else if (selectedPropertyType === 'commercial' && commericialPropertyType) {
-                                        navigate(`/field-agent/add-property/commercial?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${commericialPropertyType}`, { replace: true })
-                                    } else if (selectedPropertyType === 'residential' && residentialPropertyType) {
-                                        navigate(`/field-agent/add-property/residential?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${residentialPropertyType}`, { replace: true })
-                                    }
-                                }}>Select</button>
+                            <div className=" w-full flex justify-center mt-2">
+                                <button
+                                    type='button'
+                                    className="bg-blue-500 text-white font-medium rounded p-1 w-full"
+                                    onClick={() => {
+                                        if (selectedPropertyType === 'agricultural') {
+                                            navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`, { replace: true })
+                                        } else if (selectedPropertyType === 'commercial' && commericialPropertyType) {
+                                            navigate(`/field-agent/add-property/commercial?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${commericialPropertyType}`, { replace: true })
+                                        } else if (selectedPropertyType === 'residential' && residentialPropertyType) {
+                                            navigate(`/field-agent/add-property/residential?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${residentialPropertyType}`, { replace: true })
+                                        }
+                                    }}>Select</button>
                             </div>
                         </div>
                     </div>}

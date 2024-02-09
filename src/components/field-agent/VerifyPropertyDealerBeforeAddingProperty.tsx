@@ -24,7 +24,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
     const [email, setEmail] = useState<string>('') //email of the proeprty dealer
     const [emailValid, setEmailValid] = useState<boolean>(true) //it is false if the email is not in valid format
 
-    const [contactNumber, setContactNumber] = useState<string | number>('') //contact number of the proeprty dealer
+    const [contactNumber, setContactNumber] = useState<string | number>('') //contact number of the property dealer
 
     const [dealerId, setDealerId] = useState<string>('') //dealerID of the proerty dealer
 
@@ -212,11 +212,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
 
                         <p className="text-lg font-bold text-center mb-3">Provide email or contact number or dealer Id of the property dealer</p>
 
-                        <label
-                            className="text-lg font-semibold mb-1 text-gray-600"
-                            htmlFor="email">
-                            Email
-                        </label>
+                        <label className="text-lg font-semibold mb-1 text-gray-600" htmlFor="email">Email</label>
                         <input
                             type="email"
                             id="email"
@@ -234,11 +230,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
 
                         <p className="text-center text-xl font-semibold mb-3 mt-3">Or</p>
 
-                        <label
-                            className="text-lg font-semibold mb-0.5 text-gray-600"
-                            htmlFor="dealerId">
-                            Dealer Id
-                        </label>
+                        <label className="text-lg font-semibold mb-0.5 text-gray-600" htmlFor="dealerId">Dealer Id  </label>
                         <input
                             type="text"
                             className='border-2 border-gray-400  p-1 rounded'
@@ -254,11 +246,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
 
                         <p className="text-center text-xl font-semibold mb-3 mt-3">Or</p>
 
-                        <label
-                            className="text-lg font-semibold mb-0.5 text-gray-600"
-                            htmlFor="contactNumber">
-                            Contact number
-                        </label>
+                        <label className="text-lg font-semibold mb-0.5 text-gray-600" htmlFor="contactNumber">Contact number</label>
                         <input
                             type="tel"
                             className='border-2 border-gray-400  p-1 rounded'
@@ -273,7 +261,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                                 setDealerId('')
                             }} />
 
-                        <div className="w-full flex justify-center mt-4">
+                        <div className="w-full flex justify-center mt-6">
                             <button
                                 type="submit"
                                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1"

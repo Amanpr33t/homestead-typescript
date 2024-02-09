@@ -2,19 +2,29 @@ import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal";
 import { useNavigate } from "react-router-dom";
 
-type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
-type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
-type ReservoirType = 'public' | 'private'
-type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
+type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
 
 interface PropertyDataType {
+    commercialPropertyType: string,
     landSize: {
-        size: number,
-        unit: 'metre-square' | 'acre',
+        totalArea: {
+            metreSquare: number,
+            squareFeet: number
+        },
+        coveredArea: {
+            metreSquare: number,
+            squareFeet: number
+        },
         details: string | null,
+    },
+    stateOfProperty: {
+        empty: boolean,
+        builtUp: boolean,
+        builtUpPropertyType: BuiltUpType | null
     },
     location: {
         name: {
+            plotNumber: number | null,
             village: string | null,
             city: string | null,
             tehsil: string | null,
@@ -23,35 +33,32 @@ interface PropertyDataType {
         }
     },
     numberOfOwners: number,
-    waterSource: {
-        canal: string[] | null,
-        river: string[] | null,
-        tubewells: {
-            numberOfTubewells: number,
-            depth: number[] | null
-        }
+    floors: {
+        floorsWithoutBasement: number,
+        basementFloors: number
     },
-    reservoir: {
-        isReservoir: boolean,
-        type: ReservoirType[] | null,
-        capacityOfPrivateReservoir: number | null,
-        unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
+    widthOfRoadFacing: {
+        feet: number,
+        metre: number
     },
-    irrigationSystem: IrrigationSystemType[] | null,
     priceDemanded: {
         number: number,
         words: string
-    },
-    crops: CropTypeArray[],
-    road: {
-        type: RoadType,
-        details: string | null,
     },
     legalRestrictions: {
         isLegalRestrictions: boolean,
         details: string | null,
     },
-    nearbyTown: string | null,
+    remarks: string | null,
+    lockInPeriod?: {
+        years: number | null,
+        months: number | null
+    },
+    leasePeriod?: {
+        years: number | null,
+        months: number | null
+    },
+    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'
 }
 
 interface FinalPropertyDataType extends PropertyDataType {
@@ -67,7 +74,7 @@ interface ImageType {
 interface PropsType {
     propertyId: string,
     propertyData: PropertyDataType,
-    agriculturalPropertyImages: ImageType[],
+    commercialPropertyImages: ImageType[],
     contractImages: ImageType[],
     propertyDataReset: () => void,
     fetchedPropertyImagesUrl: string[],
@@ -82,12 +89,12 @@ interface AlertType {
 }
 
 //The component is used to review the details of a commercial proeprty before they are sent to the server
-const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
+const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) => {
     const {
         propertyId,
         propertyData,
         propertyDataReset,
-        agriculturalPropertyImages,
+        commercialPropertyImages,
         contractImages,
         fetchedPropertyImagesUrl,
         fetchedContractImagesUrl } = props
@@ -121,7 +128,7 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                 throw new Error('Some error occured')
             }
             setSpinner(true)
-            agriculturalPropertyImages.length && agriculturalPropertyImages.forEach(async (image) => {
+            commercialPropertyImages.length && commercialPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
@@ -179,7 +186,7 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
             ...propertyData
         }
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/updateReevaluatedPropertyData?type=agricultural&id=${propertyId}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/updateReevaluatedPropertyData?type=commercial&id=${propertyId}`, {
                 method: 'PATCH',
                 body: JSON.stringify(finalPropertyData),
                 headers: {
@@ -220,13 +227,13 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
 
     //The code in the useEffect hook is executed when the images are sucessfully uploaded
     useEffect(() => {
-        if (!agriculturalPropertyImages.length && !contractImages.length) {
+        if (!commercialPropertyImages.length && !contractImages.length) {
             return
         }
-        if (agriculturalPropertyImages.length === propertyImagesUrl.length && contractImages.length === contractImagesUrl.length) {
+        if (commercialPropertyImages.length === propertyImagesUrl.length && contractImages.length === contractImagesUrl.length) {
             saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
         }
-    }, [agriculturalPropertyImages.length, contractImages.length, propertyImagesUrl.length, contractImagesUrl.length, propertyImagesUrl, contractImagesUrl, saveDetailsToDatabase])
+    }, [commercialPropertyImages.length, contractImages.length, propertyImagesUrl.length, contractImagesUrl.length, propertyImagesUrl, contractImagesUrl, saveDetailsToDatabase])
 
     return (
         <Fragment>
@@ -274,31 +281,122 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                     </thead>
                     <tbody>
 
-                        {/*land size details */}
+                        {/*Property type */}
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Property type</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.commercialPropertyType === 'industrial' ? 'Industrial/Institutional' : 'Shop/Showroom/Booth'}</td>
+                        </tr>
+
+                        {/* shop type*/}
+                        {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Shop type</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.shopPropertyType}</td>
+                        </tr>}
+
+                        {/*state of property*/}
+                        {propertyData.commercialPropertyType === 'industrial' ?
+                            <tr className="border-2 border-gray-300">
+                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">State of property</td>
+                                <td className=" pt-4 pb-4 text-center">
+                                    {propertyData.stateOfProperty.empty ?
+                                        'Empty' :
+                                        `${propertyData.stateOfProperty.builtUpPropertyType === 'other' ?
+                                            'Built-up' :
+                                            `Built-up (${propertyData.stateOfProperty.builtUpPropertyType})`}
+                                        `}
+                                </td>
+                            </tr> :
+                            <tr className="border-2 border-gray-300">
+                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">State of property</td>
+                                <td className=" pt-4 pb-4 text-center">
+                                    {propertyData.stateOfProperty.empty ? 'Empty' : 'Built-up'}
+                                </td>
+                            </tr>}
+
+                        {/* land size*/}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
                             <td className="pt-4 pb-4 text-center">
-                                <p>{propertyData.landSize.size} {propertyData.landSize.unit}</p>
-                                {propertyData.landSize.details && <p> {propertyData.landSize.details}</p>}
+                                <div className="flex flex-row place-content-center gap-1 sm:gap-5 mb-4 pr-0.5 pl-0.5">
+                                    <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
+                                        <p className="w-full text-center font-semibold">Total area</p>
+                                        <p>{propertyData.landSize.totalArea.metreSquare} metre square</p>
+                                        <p>{propertyData.landSize.totalArea.squareFeet} square feet</p>
+                                    </div>
+                                    <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
+                                        <p className="w-full text-center font-semibold">Covered area</p>
+                                        <p>{propertyData.landSize.coveredArea.metreSquare} metre square</p>
+                                        <p>{propertyData.landSize.coveredArea.squareFeet} square feet</p>
+                                    </div>
+                                </div>
+                                {propertyData.landSize.details && <p>{propertyData.landSize.details}</p>}
                             </td>
                         </tr>
 
-                        {/*location */}
+                        {/*Number of floors excluding basement*/}
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Floors (excluding basement)</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.floors.floorsWithoutBasement}</td>
+                        </tr>
+
+                        {/*Basement floors */}
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Basement floors</td>
+                            <td className=" pt-4 pb-4 text-center">{propertyData.floors.basementFloors}</td>
+                        </tr>
+
+                        {/* lease period*/}
+                        {propertyData.commercialPropertyType === 'shop' &&
+                            propertyData.leasePeriod &&
+                            (propertyData.leasePeriod.years !== 0 || propertyData.leasePeriod.months !== 0) &&
+                            <tr className="border-2 border-gray-300">
+                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
+                                <td className=" pt-4 pb-4 text-center">
+                                    <div className="flex flex-col">
+                                        {propertyData.leasePeriod.years !== 0 && <p>{propertyData.leasePeriod.years} years</p>}
+                                        {propertyData.leasePeriod.months !== 0 && <p>{propertyData.leasePeriod.months} months</p>}
+                                    </div>
+                                </td>
+                            </tr>}
+
+                        {/*lockin period */}
+                        {propertyData.commercialPropertyType === 'shop' &&
+                            propertyData.lockInPeriod &&
+                            (propertyData.lockInPeriod.years !== 0 || propertyData.lockInPeriod.months !== 0) &&
+                            <tr className="border-2 border-gray-300">
+                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
+                                <td className=" pt-4 pb-4 text-center">
+                                    <div className="flex flex-col">
+                                        {propertyData.lockInPeriod.years !== 0 && <p>{propertyData.lockInPeriod.years} years</p>}
+                                        {propertyData.lockInPeriod.months !== 0 && <p>{propertyData.lockInPeriod.months} months</p>}
+                                    </div>
+                                </td>
+                            </tr>}
+
+                        {/*Location*/}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Location</td>
                             <td className="pt-4 pb-4 flex flex-col gap-1 place-items-center">
-                                {propertyData.location.name.village && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">Village:</p>
-                                    <p>{propertyData.location.name.village}</p>
-                                </div>}
-                                {propertyData.location.name.city && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">City:</p>
-                                    <p>{propertyData.location.name.city}</p>
-                                </div>}
-                                {propertyData.location.name.tehsil && <div className="flex flex-row gap-2">
-                                    <h2 className="font-semibold">Tehsil:</h2>
-                                    <p>{propertyData.location.name.tehsil}</p>
-                                </div>}
+                                {propertyData.location.name.plotNumber &&
+                                    <div className="flex flex-row gap-2">
+                                        <p className="font-semibold">Plot number:</p>
+                                        <p>{propertyData.location.name.plotNumber}</p>
+                                    </div>}
+                                {propertyData.location.name.village &&
+                                    <div className="flex flex-row gap-2">
+                                        <p className="font-semibold">Village:</p>
+                                        <p>{propertyData.location.name.village}</p>
+                                    </div>}
+                                {propertyData.location.name.city &&
+                                    <div className="flex flex-row gap-2">
+                                        <p className="font-semibold">City:</p>
+                                        <p>{propertyData.location.name.city}</p>
+                                    </div>}
+                                {propertyData.location.name.tehsil &&
+                                    <div className="flex flex-row gap-2">
+                                        <h2 className="font-semibold">Tehsil:</h2>
+                                        <p>{propertyData.location.name.tehsil}</p>
+                                    </div>}
                                 <div className=" flex flex-row gap-2">
                                     <p className="font-semibold">District:</p>
                                     <p>{propertyData.location.name.district}</p>
@@ -310,81 +408,26 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                             </td>
                         </tr>
 
-                        {/*number of owners */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Number of owners</td>
-                            <td className="pt-4 pb-4 text-center" >{propertyData.numberOfOwners}</td>
-                        </tr>
-
-                        {/*water source details */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Water Source</td>
-                            <td className="flex flex-col gap-2 place-items-center pt-4 pb-4 text-center">
-                                {propertyData.waterSource.canal && propertyData.waterSource.canal.length > 0 && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">Canal:</p>
-                                    <div className="flex flex-col">
-                                        {propertyData.waterSource.canal.map(canal => {
-                                            return <p key={Math.random()}>{canal}</p>
-                                        })}
-                                    </div>
-                                </div>}
-                                {propertyData.waterSource.river && propertyData.waterSource.river.length > 0 && <div className="flex flex-row gap-2">
-                                    <p className="font-semibold">River:</p>
-                                    <div className="flex flex-col">
-                                        {propertyData.waterSource.river.map(river => {
-                                            return <p key={Math.random()}>{river}</p>
-                                        })}
-                                    </div>
-                                </div>}
-                                {propertyData.waterSource.tubewells.depth && propertyData.waterSource.tubewells.depth.length > 0 &&
-                                    <div className="flex flex-row gap-2">
-                                        <p className="font-semibold">Tubewell Depth:</p>
-                                        <div className="flex flex-col">
-                                            {propertyData.waterSource.tubewells.depth.map(depth => {
-                                                return <p key={Math.random()}>{depth} feet</p>
-                                            })}
-                                        </div>
-                                    </div>}
-                            </td>
-                        </tr>
-
-                        {/*reservoir */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Reservoir</td>
-                            <td className="flex flex-row place-content-center gap-2 flex-wrap pt-4 pb-4 text-center">
-                                {!propertyData.reservoir.isReservoir &&
-                                    <p>No</p>
-                                }
-                                {propertyData.reservoir.isReservoir &&
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex flex-row gap-2">
-                                            <p className="font-semibold">Type of Reservoir:</p>
-                                            {propertyData.reservoir.type && propertyData.reservoir.type.map(type => {
-                                                return <p key={Math.random()}>{type}</p>
-                                            })}
-                                        </div>
-                                        {propertyData.reservoir.type && propertyData.reservoir.type.includes('private') &&
-                                            <div className="flex flex-row gap-2">
-                                                <p className="font-semibold">Capacity:</p>
-                                                <p>{propertyData.reservoir.capacityOfPrivateReservoir} {propertyData.reservoir.unitOfCapacityForPrivateReservoir}</p>
-                                            </div>
-                                        }
-                                    </div>}
-                            </td>
-
-                            {/*irrigation system */}
-                        </tr>
-                        {propertyData.irrigationSystem && propertyData.irrigationSystem.length > 0 &&
+                        {/* Road width*/}
+                        {propertyData.widthOfRoadFacing.metre !== 0 &&
+                            propertyData.widthOfRoadFacing.feet !== 0 &&
                             <tr className="border-2 border-gray-300">
-                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Irrigation System</td>
-                                <td className="flex flex-col place-items-center gap-0.5 flex-wrap pt-4 pb-4 text-center">
-                                    {propertyData.irrigationSystem.map(system => {
-                                        return <p key={Math.random()}>{system}</p>
-                                    })}
+                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road width</td>
+                                <td className=" pt-4 pb-4 text-center">
+                                    <div className="flex flex-col place-items-center">
+                                        <p>{propertyData.widthOfRoadFacing.feet}   feet</p>
+                                        <p>{propertyData.widthOfRoadFacing.metre}  metre</p>
+                                    </div>
                                 </td>
                             </tr>}
 
-                        {/*price */}
+                        {/* Number of owners*/}
+                        <tr className="border-2 border-gray-300">
+                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Number of owners</td>
+                            <td className="pt-4 pb-4 text-center">{propertyData.numberOfOwners}</td>
+                        </tr>
+
+                        {/*Price */}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
@@ -396,49 +439,30 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                             </td>
                         </tr>
 
-                        {/*crops */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Crops</td>
-                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-0.5">
-                                {propertyData.crops.map(crop => {
-                                    return <p key={Math.random()}>{crop}</p>
-                                })}
-                            </td>
-                        </tr>
-
-                        {/*road type */}
-                        <tr className="border-2 border-gray-300">
-                            <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road type</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                <p>{propertyData.road.type}</p>
-                                {propertyData.road.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.road.details}</p>}
-                            </td>
-                        </tr>
-
-                        {/*legal restrictions */}
+                        {/*Legal restrictions */}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
                             <td className="pt-4 pb-4 text-center flex flex-col gap-2">
                                 {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
-                                {propertyData.legalRestrictions.isLegalRestrictions && <>
-                                    <p>Yes</p>
-                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
-                                </>}
+                                {propertyData.legalRestrictions.isLegalRestrictions &&
+                                    <>
+                                        <p>Yes</p>
+                                        <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
+                                    </>
+                                }
                             </td>
                         </tr>
 
-                        {/*nearby town */}
-                        {propertyData.nearbyTown && propertyData.nearbyTown.trim() &&
+                        {/* Remarks*/}
+                        {propertyData.remarks &&
                             <tr className="border-2 border-gray-300">
-                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Nearby town</td>
-                                <td className="pt-4 pb-4 text-center">
-                                    <p>{propertyData.nearbyTown}</p>
-                                </td>
+                                <td className=" pt-4 pb-4 text-lg font-semibold text-center">Remarks</td>
+                                <td className=" pt-4 pb-4 text-center">{propertyData.remarks}</td>
                             </tr>}
 
-                        {/*Land images */}
+                        {/*Property images */}
                         <tr className="border-2 border-gray-300">
-                            <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
+                            <td className="pt-4 pb-4 text-lg font-semibold text-center">Property images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                 {fetchedPropertyImagesUrl.map(image => {
                                     return <img
@@ -447,7 +471,7 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                                         src={image}
                                         alt="" />;
                                 })}
-                                {agriculturalPropertyImages.map(image => {
+                                {commercialPropertyImages.map(image => {
                                     return <img
                                         key={Math.random()}
                                         className='w-40 h-auto border border-gray-500'
@@ -457,7 +481,7 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                             </td>
                         </tr>
 
-                        {/*contract images */}
+                        {/* contract images*/}
                         {contractImages.length > 0 &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
@@ -478,6 +502,7 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                                     })}
                                 </td>
                             </tr>}
+
                     </tbody>
                 </table>
 
@@ -487,7 +512,7 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
                         className={`px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pt-0.5 h-8 flex flex-row place-content-center gap-1 ${spinner ? 'w-20' : ''}`}
                         disabled={spinner || alert.isAlertModal}
                         onClick={async () => {
-                            if (agriculturalPropertyImages.length || contractImages.length) {
+                            if (commercialPropertyImages.length || contractImages.length) {
                                 await uploadImages()
                             } else {
                                 await saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
@@ -515,4 +540,4 @@ const ReviewReevaluatedAgriculturalProperty: React.FC<PropsType> = (props) => {
         </Fragment >
     )
 }
-export default ReviewReevaluatedAgriculturalProperty
+export default ReviewReconsiderdCommercialPropertyDetails

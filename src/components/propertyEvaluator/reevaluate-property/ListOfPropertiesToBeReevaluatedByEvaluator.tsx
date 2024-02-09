@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
-import Spinner from "../Spinner"
-import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions"
-import { formatDate, getDaysDifference } from "../../utils/dateFunctions"
+import Spinner from "../../Spinner"
+import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../../utils/stringUtilityFunctions"
+import { formatDate, getDaysDifference } from "../../../utils/dateFunctions"
 import ReactPaginate from "react-paginate"
 
 interface LocationType {
@@ -20,13 +20,13 @@ interface PropertyDataType {
     _id: string,
     propertyType: 'agricultural' | 'commercial' | 'residential',
     location: LocationType,
-    sentToEvaluatorByFieldAgentForEvaluation: {
+    sentToEvaluatorByCityManagerForReevaluation: {
         date: string
     }
 }
 
 //This component shows list of proerties pending for evaluation by field agent
-const ListOfPropertiesToBeEvaluated: React.FC = () => {
+const ListOfPropertiesToBeReevaluatedByEvaluator: React.FC = () => {
     const navigate = useNavigate()
     const authToken: null | string = localStorage.getItem("homestead-property-evaluator-authToken") //This variable stores the authToken present in local storage
 
@@ -55,7 +55,7 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
     const [startingIndex, setStartingIndex] = useState<number>(1) //It is updated every a new page is selected by the user
     let index: number = startingIndex - 1 //Used to give serial numbers to propertiess
 
-    const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState<[PropertyDataType] | null>(null) //Information regarding pending property evaluations
+    const [pendingPropertyReevaluations, setPendingPropertyReevaluations] = useState<[PropertyDataType] | null>(null) //Information regarding pending property evaluations
 
     useEffect(() => {
         if (!authToken) {
@@ -72,7 +72,7 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
     };
 
     //The function is used to fetch properties pending for evaluation by evaluator
-    const fetchPendingPropertyEvaluations = useCallback(async () => {
+    const fetchPendingPropertyReevaluations = useCallback(async () => {
         let type
         if (isResidential) {
             type = 'residential'
@@ -82,7 +82,7 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
             type = 'agricultural'
         }
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/propertiesPendingToBeEvaluated?type=${type}&page=${currentPage}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/propertiesPendingToBeReevaluated?type=${type}&page=${currentPage}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,11 +98,11 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
             } else if (data.status === 'ok') {
-                if (!data.pendingPropertyEvaluations.length) {
+                if (!data.pendingPropertyReevaluations.length) {
                     return navigate('/property-evaluator', { replace: true })
                 }
                 setError(false)
-                setPendingPropertyEvaluations(data.pendingPropertyEvaluations)
+                setPendingPropertyReevaluations(data.pendingPropertyReevaluations)
                 setTotalPages(data.totalPages)
                 if (initialLoad) {
                     setInitialLoad(false)
@@ -116,8 +116,8 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
     }, [authToken, navigate, currentPage, isAgricultural, isResidential, isCommercial, initialLoad])
 
     useEffect(() => {
-        fetchPendingPropertyEvaluations()
-    }, [fetchPendingPropertyEvaluations])
+        fetchPendingPropertyReevaluations()
+    }, [fetchPendingPropertyReevaluations])
 
     const dayDiffernceColorSetter = (days: number): string => {
         if (days < 1) {
@@ -137,22 +137,22 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
             {error &&
                 <div className="fixed top-36 w-full flex flex-col place-items-center">
                     <p>Some error occured</p>
-                    <p className="text-red-500 cursor-pointer" onClick={fetchPendingPropertyEvaluations}>Try again</p>
+                    <p className="text-red-500 cursor-pointer" onClick={fetchPendingPropertyReevaluations}>Try again</p>
                 </div>}
 
             <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${error || initialLoad ? 'bg-white' : 'bg-gray-100'}`}>
-                <Link to='/property-evaluator/properties-pending-for-evaluation' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded mr-2" >Back</Link>
+                <Link to='/property-evaluator/properties-pending-for-reevaluation' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded mr-2" >Back</Link>
                 <Link to='/property-evaluator' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded" >Home</Link>
-                {pendingPropertyEvaluations && !error &&
+                {pendingPropertyReevaluations && !error &&
                     <div className="w-full flex justify-center mt-3">
-                        <p className="text-xl font-bold">{pendingPropertyEvaluations.length} property evaluations are pending</p>
+                        <p className="text-xl font-bold">{pendingPropertyReevaluations.length} property reevaluations are pending</p>
                     </div>}
             </div>
 
             {!error && !initialLoad &&
                 <div className='pt-40 pb-10 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
 
-                    {pendingPropertyEvaluations && pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
+                    {pendingPropertyReevaluations && pendingPropertyReevaluations.length > 0 && pendingPropertyReevaluations.map(property => {
                         index++
                         return <div key={property._id
                         } className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
@@ -170,16 +170,16 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
                             <div className="flex flex-col gap-1">
                                 <div className="flex flex-row gap-2">
                                     <p className="font-medium text-gray-500">Request date:</p>
-                                    <p>{formatDate(property.sentToEvaluatorByFieldAgentForEvaluation.date
+                                    <p>{formatDate(property.sentToEvaluatorByCityManagerForReevaluation.date
                                     )}</p>
                                 </div>
-                                <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date))}`}>
-                                    Received {getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)>0?`${getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)} days ago`:'today'}
+                                <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentToEvaluatorByCityManagerForReevaluation.date))}`}>
+                                    Received {getDaysDifference(property.sentToEvaluatorByCityManagerForReevaluation.date)>0?`${getDaysDifference(property.sentToEvaluatorByCityManagerForReevaluation.date)} days ago`:'today'}
                                 </p>
                             </div>
 
                             <div className="w-full flex justify-center ">
-                                <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
+                                <Link to={`/property-evaluator/reevaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
                             </div>
                         </div>
                     })}
@@ -201,4 +201,4 @@ const ListOfPropertiesToBeEvaluated: React.FC = () => {
         </Fragment >
     )
 }
-export default ListOfPropertiesToBeEvaluated
+export default ListOfPropertiesToBeReevaluatedByEvaluator

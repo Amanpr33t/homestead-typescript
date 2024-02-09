@@ -9,21 +9,24 @@ import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
 import AgriculturalPropertyAddForm from "./components/field-agent/addProperty/agricultural/AgriculturalPropertyAddForm";
 import CommercialPropertyAddForm from "./components/field-agent/addProperty/commercial/CommercialPropertyAddForm";
 import ResidentialPropertyAddForm from "./components/field-agent/addProperty/residential/ResidentialPropertyAddForm";
-import PendingPropertyReevaluations from './components/field-agent/reevaluateProperty/PendingPropertyReevaluations';
-import ListOfPropertiesToBeReevaluated from './components/field-agent/reevaluateProperty/ListOfPropertiesToBeReevaluated';
-import ReevaluateCommercialProperty from './components/field-agent/reevaluateProperty/commercial/ReevaluateCommercialProperty';
-import ReevaluateResidentialProperty from './components/field-agent/reevaluateProperty/residential/ReevaluateResidentialProperty';
-import ReevaluateAgriculturalProperty from './components/field-agent/reevaluateProperty/agricultural/ReevaluateAgriculturalProperty';
+import PropertiesToBeReconsidered from './components/field-agent/reconsiderPropertyDetails/PropertiesToBeReconsidered';
+import ListOfPropertiesToBeReconsidered from './components/field-agent/reconsiderPropertyDetails/ListOfPropertiesToBeReconsidered';
+import ReconsiderCommercialPropertyDetails from './components/field-agent/reconsiderPropertyDetails/commercial/ReconsiderCommercialPropertyDetails';
+import ReconsiderResidentialPropertyDetails from './components/field-agent/reconsiderPropertyDetails/residential/ReconsiderResidentialPropertyDetails';
+import ReconsiderAgriculturalPropertyDetails from './components/field-agent/reconsiderPropertyDetails/agricultural/ReconsiderAgriculturalPropertyDetails';
 import AddProperty from './components/field-agent/addProperty/AddProperty';
 
 //Components imported for property evaluator
 import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
 import PropertyEvaluatorHomePage from "./components/propertyEvaluator/HomePage";
 import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
-import ListOfPropertiesToBeEvaluated from './components/propertyEvaluator/ListOfPropertiesToBeEvaluated';
-import EvaluateProperty from './components/propertyEvaluator/EvaluateProperty';
+import EvaluateProperty from './components/propertyEvaluator/evaluate-property/EvaluateProperty';
 import HomePage from './components/HomePage';
-import PropertiesToBeEvaluated from './components/propertyEvaluator/PropertiesToBeEvaluated';
+import PropertiesToBeEvaluated from './components/propertyEvaluator/evaluate-property/PropertiesToBeEvaluated';
+import PropertiesToBeReevaluated from './components/propertyEvaluator/reevaluate-property/PropertiesToBeReevaluated';
+import ListOfPropertiesToBeEvaluatedByEvaluator from './components/propertyEvaluator/evaluate-property/ListOfPropertiesToBeEvaluatedByEvaluator';
+import ListOfPropertiesToBeReevaluatedByEvaluator from './components/propertyEvaluator/reevaluate-property/ListOfPropertiesToBeReevaluatedByEvaluator';
+import ReevaluateProperty from './components/propertyEvaluator/reevaluate-property/ReevaluateProperty';
 
 //Components imported for property dealer
 import PropertyDealerSignIn from './components/property-dealer/SignIn';
@@ -67,39 +70,39 @@ const App: React.FC = () => {
               <PropertyDealerAddForm />
             </>}></Route>
 
-            {/**routes to reevaluate proeprty details */}
-            <Route path='reevaluate-property/*' >
+            {/**routes to reconsider property details */}
+            <Route path='reconsider-property-details/*' >
               <Route path='' element={<>
                 <NavbarFieldAgent />
-                <PendingPropertyReevaluations />
+                <PropertiesToBeReconsidered />
               </>
               }></Route>
               <Route path='commercial' element={<>
                 <NavbarFieldAgent />
-                < ReevaluateCommercialProperty />
+                < ReconsiderCommercialPropertyDetails />
               </>
               }></Route>
               <Route path='residential' element={<>
                 <NavbarFieldAgent />
-                < ReevaluateResidentialProperty />
+                < ReconsiderResidentialPropertyDetails />
               </>
               }></Route>
               <Route path='agricultural' element={<>
                 <NavbarFieldAgent />
-                < ReevaluateAgriculturalProperty />
+                < ReconsiderAgriculturalPropertyDetails />
               </>
               }></Route>
               <Route path='commercial-properties' element={<>
                 <NavbarFieldAgent />
-                <ListOfPropertiesToBeReevaluated />
+                <ListOfPropertiesToBeReconsidered />
               </>}></Route>
               <Route path='agricultural-properties' element={<>
                 <NavbarFieldAgent />
-                <ListOfPropertiesToBeReevaluated />
+                <ListOfPropertiesToBeReconsidered />
               </>}></Route>
               <Route path='residential-properties' element={<>
                 <NavbarFieldAgent />
-                <ListOfPropertiesToBeReevaluated />
+                <ListOfPropertiesToBeReconsidered />
               </>}></Route>
               <Route path='*' element={<Navigate replace to='/field-agent' />}>
               </Route>
@@ -145,21 +148,43 @@ const App: React.FC = () => {
               <NavbarPropertyEvaluator />
             </>}></Route>
             <Route path='commercial-properties-to-be-evaluated' element={<>
-              <ListOfPropertiesToBeEvaluated />
+              <ListOfPropertiesToBeEvaluatedByEvaluator />
               <NavbarPropertyEvaluator />
             </>}></Route>
             <Route path='agricultural-properties-to-be-evaluated' element={<>
-              <ListOfPropertiesToBeEvaluated />
+              <ListOfPropertiesToBeEvaluatedByEvaluator />
               <NavbarPropertyEvaluator />
             </>}></Route>
             <Route path='residential-properties-to-be-evaluated' element={<>
-              <ListOfPropertiesToBeEvaluated />
+              <ListOfPropertiesToBeEvaluatedByEvaluator />
               <NavbarPropertyEvaluator />
             </>}></Route>
-            {<Route path='evaluate-property' element={<>
+
+            <Route path='properties-pending-for-reevaluation' element={<>
+              <PropertiesToBeReevaluated />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='commercial-properties-to-be-reevaluated' element={<>
+              <ListOfPropertiesToBeReevaluatedByEvaluator/>
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='agricultural-properties-to-be-reevaluated' element={<>
+              <ListOfPropertiesToBeReevaluatedByEvaluator />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='residential-properties-to-be-reevaluated' element={<>
+              <ListOfPropertiesToBeReevaluatedByEvaluator />
+              <NavbarPropertyEvaluator />
+            </>}></Route>
+            <Route path='reevaluate-property' element={<>
+              <NavbarPropertyEvaluator />
+              < ReevaluateProperty/>
+            </>}></Route>
+
+            <Route path='evaluate-property' element={<>
               <NavbarPropertyEvaluator />
               <EvaluateProperty />
-            </>}></Route>}
+            </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
             </Route>
           </Route>

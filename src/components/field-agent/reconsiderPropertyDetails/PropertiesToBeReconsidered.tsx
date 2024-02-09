@@ -1,8 +1,8 @@
-import {  useNavigate } from "react-router-dom"
-import React, { Fragment,  useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import React, { Fragment, useEffect } from "react"
 
 //This component shows three buttons used to fetch properties pending for evaluation
-const PendingPropertyReevaluations: React.FC = () => {
+const PropertiesToBeReconsidered: React.FC = () => {
     const navigate = useNavigate()
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
@@ -58,4 +58,4 @@ const PendingPropertyReevaluations: React.FC = () => {
         </Fragment>
     )
 }
-export default PendingPropertyReevaluations
+export default PropertiesToBeReconsidered

@@ -26,7 +26,7 @@ interface PropertyDataType {
 }
 
 //This component shows list of proerties pending for evaluation by field agent
-const ListOfPropertiesToBeReevaluated: React.FC = () => {
+const ListOfPropertiesToBeReconsidered: React.FC = () => {
     const navigate = useNavigate()
 
     const authToken: null | string = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
@@ -178,7 +178,7 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
                                 </p>
                             </div>
                             <div className="w-full flex justify-center ">
-                                <Link to={`/field-agent/reevaluate-property/${property.propertyType}?propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
+                                <Link to={`/field-agent/reconsider-property-details/${property.propertyType}?propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
                             </div>
                         </div>
                     })}
@@ -200,4 +200,4 @@ const ListOfPropertiesToBeReevaluated: React.FC = () => {
         </Fragment >
     )
 }
-export default ListOfPropertiesToBeReevaluated
+export default ListOfPropertiesToBeReconsidered

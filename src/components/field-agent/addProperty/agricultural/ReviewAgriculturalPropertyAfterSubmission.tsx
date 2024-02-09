@@ -79,7 +79,13 @@ interface AlertType {
 
 //This component is used to review the property dealer data submitted
 const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) => {
-    const { propertyData, propertyDataReset, firmName, agriculturalLandImages, contractImages } = props
+    const {
+        propertyData,
+        propertyDataReset,
+        firmName,
+        agriculturalLandImages,
+        contractImages
+    } = props
     const navigate = useNavigate()
 
     const [spinner, setSpinner] = useState<boolean>(false)
@@ -111,6 +117,7 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
             setContractImagesUrl([])
             setSpinner(true)
             agriculturalLandImages.length && agriculturalLandImages.forEach(async (image) => {
+                //upload property images
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
@@ -120,17 +127,18 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
                     body: formData
                 })
                 const data = await response.json()
-                if (data && data.error) {
-                    throw new Error('Some error occured')
-                } else {
+                if (data && !data.error) {
                     setPropertyImagesUrl(images => [
                         ...images,
                         data.secure_url
                     ])
+                } else if (data && data.erro) {
+                    throw new Error('Some error occured')
                 }
             })
 
             contractImages.length && contractImages.forEach(async (image) => {
+                //upload contract images
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
@@ -141,14 +149,13 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
                     body: formData
                 })
                 const data = await response.json()
-                console.log(data)
-                if (data && data.error) {
-                    throw new Error('Some error occured')
-                } else {
+                if (data && !data.error) {
                     setContractImagesUrl(images => [
                         ...images,
                         data.secure_url
                     ])
+                } else if (data && data.erro) {
+                    throw new Error('Some error occured')
                 }
             })
         } catch (error) {

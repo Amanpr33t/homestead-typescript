@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import React, { Fragment, useCallback, useEffect, useState } from "react"
-import Spinner from "../Spinner"
+import Spinner from "../../Spinner"
 
 //This component shows three buttons used to fetch properties pending for evaluation
 const PropertiesToBeEvaluated: React.FC = () => {

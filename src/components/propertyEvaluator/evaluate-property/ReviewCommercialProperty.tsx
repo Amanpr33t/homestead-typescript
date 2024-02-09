@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import PropertyEvaluationForm from "./PropertyEvaluationForm"
-import Spinner from "../Spinner"
+import Spinner from "../../Spinner"
 
 interface PropsType {
     propertyId: string
@@ -220,7 +220,7 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                                     </td>
                                 </tr>}
 
-                                {property.commercialPropertyType === 'shop'&&property.lockInPeriod && (property.lockInPeriod.years !== 0 || property.lockInPeriod.months !== 0) && <tr className="border-2 border-gray-300">
+                                {property.commercialPropertyType === 'shop' && property.lockInPeriod && (property.lockInPeriod.years !== 0 || property.lockInPeriod.months !== 0) && <tr className="border-2 border-gray-300">
                                     <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
                                     <td className=" pt-4 pb-4 text-center">
                                         <div className="flex flex-col">
@@ -309,7 +309,7 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                                         })}
                                     </td>
                                 </tr>
-                                {property.contractImagesUrl&&property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
+                                {property.contractImagesUrl && property.contractImagesUrl.length > 0 && <tr className="border-2 border-gray-200">
                                     <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract Images</td>
                                     <td className="pt-2 pb-2 flex justify-center flex-wrap gap-2">
                                         {property.contractImagesUrl.map(image => {
@@ -331,7 +331,9 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                     showEvaluationForm={showEvaluationForm}
                     hideEvaluationForm={() => setShowEvaluationForm(false)}
                     propertyType='commercial'
-                    propertyId={property._id} />
+                    propertyId={property._id}
+                    isBuiltUpProperty={property.stateOfProperty.builtUp}
+                />
             }
 
         </Fragment >

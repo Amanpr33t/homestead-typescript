@@ -1,8 +1,8 @@
 import { Fragment, useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import PropertyEvaluationForm from "./PropertyEvaluationForm"
-import Spinner from "../Spinner"
-import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions"
+import Spinner from "../../Spinner"
+import { capitalizeFirstLetterOfAString } from "../../../utils/stringUtilityFunctions"
 
 type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
@@ -25,7 +25,7 @@ interface PropertyType {
     propertyImagesUrl: string[],
     contractImagesUrl: string[] | null,
     addedByPropertyDealer: string,
-    residentialPropertyType: string,
+    residentialPropertyType: 'plot'|'flat'|'house',
     title: string,
     details: string | null,
     price: {
@@ -606,7 +606,8 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
                     showEvaluationForm={showEvaluationForm}
                     hideEvaluationForm={() => setShowEvaluationForm(false)}
                     propertyType='residential'
-                    propertyId={property._id} />
+                    propertyId={property._id}
+                    residentialPropertyType={property.residentialPropertyType}/>
             }
 
         </Fragment >

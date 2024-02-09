@@ -6,9 +6,9 @@ import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
 import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
-import ReevaluationDetailsModal from "../ReevaluationDetailsModal"
+import ReevaluationDetailsModal from "../DetailsModal"
 import { FaEdit } from "react-icons/fa"
-import ReviewReevaluatedAgriculturalProperty from "./ReviewReevaluatedAgriculturalProperty"
+import ReviewReconsideredAgriculturalPropertyDetails from "./ReviewReconsideredAgriculturalPropertyDetails"
 
 type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
 type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
@@ -84,7 +84,7 @@ interface FetchedPropertyDataType extends PropertyDataType {
 }
 
 //This component is a form used by a field agent to add an agricultural property
-const ReevaluateAgriculturalProperty: React.FC = () => {
+const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
@@ -1656,7 +1656,7 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
                 />}
 
             {!error && !spinner && propertyData &&
-                <ReviewReevaluatedAgriculturalProperty
+                <ReviewReconsideredAgriculturalPropertyDetails
                     propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
                     contractImages={contractImages}
@@ -1667,4 +1667,4 @@ const ReevaluateAgriculturalProperty: React.FC = () => {
         </Fragment >
     )
 }
-export default ReevaluateAgriculturalProperty
+export default ReconsiderAgriculturalPropertyDetails
