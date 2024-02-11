@@ -161,12 +161,17 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
+    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
+    useEffect(() => {
+        if (!cloudinaryCloudName) {
+            navigate('/field-agent')
+        }
+    }, [cloudinaryCloudName, navigate])
+
+    console.log(propertyData.kitchenFurnishing)
+
     const uploadImages = async () => {
         try {
-            const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-            if (!cloudinaryCloudName) {
-                throw new Error('Some error occured')
-            }
             setPropertyImagesUrl([])
             setContractImagesUrl([])
             setSpinner(true)
@@ -174,7 +179,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -194,7 +199,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -312,7 +317,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                 <table className="w-full sm:w-10/12 md:w-9/12 lg:w-7/12 table-auto" onClick={e => e.stopPropagation()}>
                     <thead >
                         <tr className="bg-gray-200 border-2 border-gray-300">
-                            <th className="w-28 text-xl pt-4 pb-4 sm:w-80">Field</th>
+                            <th className="w-28 text-xl pt-4 pb-4 sm:w-48">Field</th>
                             <th className="text-xl ">Data</th>
                         </tr>
                     </thead>
@@ -339,7 +344,9 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {/*details */}
                         {propertyData.details && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Details</td>
-                            <td className=" pt-4 pb-4 pr-2 pl-2 text-center">{propertyData.details}</td>
+                            <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                                <p>{propertyData.details}</p>
+                            </td>
                         </tr>}
 
                         {/*type of sale */}
@@ -366,8 +373,8 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                             <td className=" pt-4 pb-4 flex flex-col place-items-center">
                                 <p>{propertyData.waterSupply.available ? 'Yes' : 'No'}</p>
                                 {propertyData.waterSupply.available && propertyData.waterSupply.twentyFourHours ?
-                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is available</p> :
-                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is not available</p>}
+                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center p-1">24 hours water supply is available</p> :
+                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center p-1">24 hours water supply is not available</p>}
                             </td>
                         </tr>
 
@@ -458,11 +465,11 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {/*Legal restrictions */}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
+                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
+                                {!propertyData.legalRestrictions.isLegalRestrictions && <p className="text-center ">No</p>}
                                 {propertyData.legalRestrictions.isLegalRestrictions && <>
-                                    <p>Yes</p>
-                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center">{propertyData.legalRestrictions.details}</p>
+                                    <p className="text-center ">Yes</p>
+                                    <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.legalRestrictions.details}</p>
                                 </>}
                             </td>
                         </tr>
@@ -471,49 +478,49 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {propertyData.propertyTaxes &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Property taxes per year</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">Rs. {propertyData.propertyTaxes}</td>
+                                <td className="pt-4 pb-4 text-center">Rs. {propertyData.propertyTaxes}</td>
                             </tr>}
 
                         {/*Home owners association fees per year */}
                         {propertyData.homeOwnersAssociationFees &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Home owners association fees per year</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">Rs. {propertyData.homeOwnersAssociationFees}</td>
+                                <td className="pt-4 pb-4 text-center ">Rs. {propertyData.homeOwnersAssociationFees}</td>
                             </tr>}
 
                         {/*Number of floors */}
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of floors</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfFloors}</td>
+                                <td className="pt-4 pb-4 text-center">{propertyData.numberOfFloors}</td>
                             </tr>}
 
                         {/*Number of living rooms */}
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of living rooms</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfLivingRooms}</td>
+                                <td className="pt-4 pb-4 text-center ">{propertyData.numberOfLivingRooms}</td>
                             </tr>}
 
                         {/*Number of bedrooms */}
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of bedrooms</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfBedrooms}</td>
+                                <td className="pt-4 pb-4 text-center ">{propertyData.numberOfBedrooms}</td>
                             </tr>}
 
                         {/*Number of office rooms */}
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of office rooms</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfOfficeRooms}</td>
+                                <td className="pt-4 pb-4 text-center ">{propertyData.numberOfOfficeRooms}</td>
                             </tr>}
 
                         {/*Number of washrooms */}
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of washrooms</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfWashrooms}</td>
+                                <td className="pt-4 pb-4 text-center ">{propertyData.numberOfWashrooms}</td>
                             </tr>}
 
                         {/*Number of kitchens */}
@@ -527,7 +534,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Number of car parkings</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">{propertyData.numberOfCarParkingSpaces}</td>
+                                <td className="pt-4 pb-4 text-center">{propertyData.numberOfCarParkingSpaces}</td>
                             </tr>}
 
                         {/* Number of balconies*/}
@@ -556,8 +563,12 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {propertyData.furnishing && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Furnishing</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{capitalizeFirstLetterOfAString(propertyData.furnishing.type)}</p>
+                                <td className="pt-4 pb-4 flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.furnishing.type}</p>
+                                    {propertyData.furnishing.details &&
+                                        <div className="flex justify-center">
+                                            <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.furnishing.details}</p>
+                                        </div>}
                                 </td>
                             </tr>}
 
@@ -565,8 +576,12 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {propertyData.kitchenFurnishing && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen furnishing</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{capitalizeFirstLetterOfAString(propertyData.kitchenFurnishing.type)}</p>
+                                <td className="pt-4 pb-4 flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.kitchenFurnishing.type}</p>
+                                    {propertyData.kitchenFurnishing.details &&
+                                        <div className="flex justify-center">
+                                            <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.kitchenFurnishing.details}</p>
+                                        </div>}
                                 </td>
                             </tr>}
 
@@ -574,10 +589,12 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {propertyData.kitchenAppliances && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen appliances</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{propertyData.kitchenAppliances.available ? 'Yes' : 'No'}</p>
+                                <td className="pt-4 pb-4 flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.kitchenAppliances.available ? 'Yes' : 'No'}</p>
                                     {propertyData.kitchenAppliances.available && propertyData.kitchenAppliances.details && propertyData.kitchenAppliances.details.trim() &&
-                                        <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.kitchenAppliances.details}</p>}
+                                        <div className="flex justify-center">
+                                            <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.kitchenAppliances.details}</p>
+                                        </div>}
                                 </td>
                             </tr>}
 
@@ -660,9 +677,11 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {propertyData.garden && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Garden</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{propertyData.garden.available ? 'Yes' : 'No'}</p>
-                                    {propertyData.garden.details && propertyData.garden.details.trim() && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.garden.details.trim()}</p>}
+                                <td className="pt-4 pb-4 flex flex-col gap-2">
+                                    <p className="text-center ">{propertyData.garden.available ? 'Yes' : 'No'}</p>
+                                    {propertyData.garden.details && propertyData.garden.details.trim() && <div className="flex justify-center">
+                                        <p className="p-1 mx-2 sm:mx-5 bg-gray-200 w-fit">{propertyData.garden.details.trim()}</p>
+                                    </div>}
                                 </td>
                             </tr>}
 
@@ -670,7 +689,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Age of construction</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                <td className="pt-4 pb-4 text-center ">
                                     <p>{propertyData.ageOfConstruction} years</p>
                                 </td>
                             </tr>}
@@ -679,7 +698,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         {(propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Condition of property</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                                <td className="pt-4 pb-4 text-center ">
                                     <p>{propertyData.conditionOfProperty}</p>
                                 </td>
                             </tr>}

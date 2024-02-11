@@ -131,7 +131,6 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
-            console.log(data)
             if (data.status === 'ok') {
                 setSpinner(false)
                 setAlert({
@@ -148,7 +147,6 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
                 throw new Error('Some error occured')
             }
         } catch (error) {
-            console.log(error)
             setSpinner(false)
             setAlert({
                 isAlertModal: true,

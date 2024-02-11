@@ -171,6 +171,7 @@ const PropertyDealerAddForm: React.FC = () => {
         setPostalCode('')
         setCity('')
         setState('')
+        setDistrict('')
     }
 
     //This function is used to check if the email provided by the user is already present in the database
@@ -376,10 +377,10 @@ const PropertyDealerAddForm: React.FC = () => {
                     </div>
 
                     {/*heading */}
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-semibold">Add a property dealer by filling the form</p>
+                    <p className="w-full text-center mt-28 sm:mt-20 pl-4 pr-4 pb-4  bg-white  text-xl font-semibold">Add a property dealer by filling the form</p>
                 </>}
 
-                <form className="w-full mt-40 sm:mt-36 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                <form className="w-full sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit p-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                     {/*Firm name */}
                     <div className="flex flex-col mb-1.5 ">
@@ -433,9 +434,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                 setExperience(+e.target.value)
                             }}>
                             {generateNumberArray(0, 50).map(number =>
-                                <option
-                                    key={number}
-                                    value={number}>
+                                <option key={number} value={number}>
                                     {number}
                                 </option>)}
                         </select>
@@ -448,7 +447,6 @@ const PropertyDealerAddForm: React.FC = () => {
                             <p className="text-red-500 -mt-1">Provide atleast one address</p>}
 
                         <div className="flex flex-col pl-6 pr-6 gap-2">
-
                             {/*Flat number */}
                             <div className="flex flex-col">
                                 <div className="flex flex-row gap-0.5">
@@ -578,9 +576,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                     }}>
                                     <option className="font-semibold" value="" disabled>Select a state</option>
                                     {states.map(state => {
-                                        return <option
-                                            key={state}
-                                            value={state}>
+                                        return <option key={state} value={state}>
                                             {capitalizeFirstLetterOfAString(state)}
                                         </option>
                                     })}
@@ -608,9 +604,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                     {state.toLowerCase() === 'chandigarh' && <option value="chandigarh">Chandigarh</option>}
                                     {state.toLowerCase() === 'punjab' &&
                                         punjabDistricts.map(district => {
-                                            return <option
-                                                key={district}
-                                                value={district}>
+                                            return <option key={district} value={district}>
                                                 {capitalizeFirstLetterOfAString(district)}
                                             </option>
                                         })}
@@ -620,7 +614,12 @@ const PropertyDealerAddForm: React.FC = () => {
 
                             <div className="w-full flex justify-center">
                                 {/*button to add addressess */}
-                                <button type="button" className="bg-green-400 text-white font-medium rounded pl-2 pr-2 h-8" onClick={addAddress}>Add Address</button>
+                                <button
+                                    type="button"
+                                    className="bg-green-400 hover:bg-green-500  text-white font-medium rounded pl-2 pr-2 h-8"
+                                    onClick={addAddress}>
+                                    Add Address
+                                </button>
                             </div>
 
                             <div className="w-full text-center flex flex-row flex-wrap place-content-center gap-2 mt-2">
@@ -630,7 +629,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                         <p >{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
                                         <p>Pincode: {address.postalCode}</p>
                                         <button
-                                            className="bg-red-400 text-white font-medium rounded pl-2 pr-2 mb-2 mt-2"
+                                            className="bg-red-400 hover:bg-red-500 text-white font-medium rounded pl-2 pr-2 mb-2 mt-2"
                                             onClick={() => {
                                                 const updatedAddressArray = addressArray.filter(item => item.addressId !== address.addressId)
                                                 setAddressArray(updatedAddressArray)

@@ -427,18 +427,16 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                     propertyDataReset={() => setPropertyData(null)}
                     firmName={propertyDealerFirmName as string} />}
 
+            {/*Home button */}
+            {!propertyData && <button
+                type='button'
+                className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-20"
+                onClick={() => navigate('/field-agent', { replace: true })}>
+                Home
+            </button>}
+
             {!spinner &&
                 <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
-
-                    {/*Home button */}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent', { replace: true })}>
-                            Home
-                        </button>
-                    </div>
 
                     <p className="mt-28 sm:mt-20 w-full text-center  pl-4 pr-4 pb-4  text-xl font-semibold">Add an agricultural property by filling the form</p>
 
@@ -557,7 +555,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             className="text-gray-500 font-semibold"
                                             value=""
                                             disabled>
-                                            Select a state:
+                                            Select a state
                                         </option>
                                         {states.map(state => {
                                             return <option
@@ -691,7 +689,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             }}
                                         />
                                         <select
-                                            className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit`}
+                                            className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit w-28`}
                                             name="unit-dropdown"
                                             id="unit-dropdown"
                                             value={landSizeUnit}
@@ -713,9 +711,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
+                                            if (e.target.value.trim().length < 500) {
                                                 setLandSizeDetails(e.target.value)
-                                            }
+                                            }   
                                         }} />
                                 </div>
                             </div>
@@ -749,7 +747,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             }
                                         }} />
                                     <textarea
-                                        className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`}
+                                        className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-52 sm:w-80 resize-none`}
                                         id="price-words"
                                         rows={3}
                                         name="price-words"
@@ -758,7 +756,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         placeholder="Words"
                                         value={priceDemandedWords}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
+                                            if (e.target.value.trim().length < 150) {
                                                 setPriceDemandedWordsError(false)
                                                 setPriceDemandedWords(e.target.value)
                                             }
@@ -772,13 +770,13 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                             {waterSourceError && <p className="text-red-500">Select atleast one water source</p>}
                             {(canalNameError || riverNameError || tubewellDepthError) && <p className="text-red-500">Provide information regarding water sources</p>}
 
-                            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
+                            <div className="flex flex-col md:flex-row md:gap-10 gap-3 ">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <p className="text-xl font-semibold text-gray-500">Water source</p>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-1">
+                                <div className="flex flex-col md:flex-row  gap-2 md:gap-4 mt-1 ml-5 md:ml-0">
                                     <div className="flex flex-col">
                                         <div>
                                             <input
@@ -800,7 +798,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             <label htmlFor="canal">Canal</label>
                                         </div>
                                         {isCanal &&
-                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0">
+                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0 w-fit">
                                                 <thead>
                                                     <tr className="border border-gray-300">
                                                         <th className="pl-1 pr-1">Canal name</th>
@@ -812,7 +810,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                             key={Math.random()}
                                                             className="border border-gray-300">
                                                             <td className="pt-1 pb-1 flex flex-row">
-                                                                <p className="w-full">{canal}</p>
+                                                                <p className="w-full px-1">{canal}</p>
                                                                 <button
                                                                     type='button'
                                                                     className="pl-1.5 pr-1.5 bg-red-400 text-white text-xl font-semibold"
@@ -879,7 +877,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             <label htmlFor="river">River</label>
                                         </div>
                                         {isRiver &&
-                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0">
+                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0 w-fit">
                                                 <thead>
                                                     <tr className="border border-gray-300">
                                                         <th className="pl-1 pr-1">River name</th>
@@ -891,7 +889,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                             key={Math.random()}
                                                             className="border border-gray-300">
                                                             <td className="pt-1 pb-1 flex flex-row">
-                                                                <p className="w-full">{river}</p>
+                                                                <p className="w-full px-1">{river}</p>
                                                                 <button
                                                                     type='button'
                                                                     className="pl-1.5 pr-1.5 bg-red-400 text-white text-xl font-semibold"
@@ -989,7 +987,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                                                     type="number"
                                                                     id="depth"
                                                                     name="depth"
-                                                                    className={`w-28 border ${tubewellDepthError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1`} autoComplete="new-password"
+                                                                    className={`w-28 border ${tubewellDepthError ? 'border-red-500' : 'border-gray-500'} border-gray-500 pl-1 pr-1 text-center`} autoComplete="new-password"
                                                                     value={newTubewell}
                                                                     onChange={e => {
                                                                         if (+e.target.value > 0) {
@@ -1271,6 +1269,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         id="road-remark"
                                         name="road-remark"
                                         autoCorrect="on"
+                                        value={roadDetails}
                                         autoComplete="new-password"
                                         placeholder="Add details about road here (optional)"
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -1337,9 +1336,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
+                                            if (e.target.value.trim().length < 500) {
                                                 setLegalRestrictionDetailsError(false)
-                                                setLegalRestrictionDetails(e.target.value.trim())
+                                                setLegalRestrictionDetails(e.target.value)
                                             }
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}

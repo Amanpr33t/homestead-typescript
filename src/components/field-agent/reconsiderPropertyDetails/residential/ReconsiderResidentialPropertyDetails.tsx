@@ -5,7 +5,7 @@ import { punjabDistricts } from '../../../../utils/tehsilsAndDistricts/districts
 import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
-import { capitalizeFirstLetterOfAString, countWordsInAString } from "../../../../utils/stringUtilityFunctions"
+import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
 import { FaEdit } from "react-icons/fa";
 import DetailsModal from "../DetailsModal"
 import ReviewReconsideredResidentialPropertyDetails from "./ReviewReconsideredResidentialPropertyDetails"
@@ -508,11 +508,11 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         }
         if (!propertyTitle.trim()) {
             setPropertyTitleErrorMessage('Provide a title')
-        } else if (countWordsInAString(propertyTitle.trim()) > 30) {
-            setPropertyTitleErrorMessage('Title should be less than 30 words')
+        } else if (propertyTitle.trim().length >= 150) {
+            setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
         }
 
-        if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
+        if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
             setPropertyDetailError(true)
         }
 
@@ -614,7 +614,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (!furnishing) {
                 setFurnishingError(true)
-            } else if (furnishing && countWordsInAString(furnishingDetails.trim()) > 150) {
+            } else if (furnishing && furnishingDetails.trim().length >= 500) {
                 setFurnishingDetailsError(true)
             }
         }
@@ -622,7 +622,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (!kitchenFurnishing) {
                 setKitchenFurnishingError(true)
-            } else if (kitchenFurnishing && countWordsInAString(kitchenFurnishingDetails.trim()) > 150) {
+            } else if (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500) {
                 setKitchenFurnishingDetailsError(true)
             }
         }
@@ -630,7 +630,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (kitchenAppliances === null) {
                 setKitchenAppliancesError(true)
-            } else if (kitchenAppliances && countWordsInAString(kitchenAppliancesDetails.trim()) > 50) {
+            } else if (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500) {
                 setKitchenAppliancesDetailsError(true)
             }
         }
@@ -662,7 +662,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (garden === null) {
                 setGardenError(true)
-            } else if (garden && countWordsInAString(gardenDetails.trim()) > 50) {
+            } else if (garden && gardenDetails.trim().length >= 500) {
                 setGardenDetailsError(true)
             }
         }
@@ -711,9 +711,9 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
-        if (!propertyTitle.trim() || countWordsInAString(propertyTitle.trim()) > 30) {
+        if (!propertyTitle.trim() || propertyTitle.trim().length >= 150) {
             return errorFunction()
-        } else if (propertyDetail.trim() && countWordsInAString(propertyDetail.trim()) > 150) {
+        } else if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
             return errorFunction()
         } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
             return errorFunction()
@@ -739,11 +739,11 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && countWordsInAString(furnishingDetails.trim()) > 150))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && furnishingDetails.trim().length >= 500))) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && countWordsInAString(kitchenFurnishingDetails.trim()) > 150))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500))) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && countWordsInAString(kitchenAppliancesDetails.trim()) > 50))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500))) {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
             return errorFunction()
@@ -757,7 +757,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && countWordsInAString(gardenDetails.trim()) > 50))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && gardenDetails.trim().length >= 500))) {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
             return errorFunction()
@@ -1106,47 +1106,46 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                     <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
                 </div>}
 
-            {!error && !spinner &&
-                <div className={`pt-56 sm:pt-44 px-2 mb-10 md:px-0w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
+            {/*Home button */}
+            {!propertyData && <button
+                type='button'
+                className={` ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-30`}
+                onClick={() => navigate('/field-agent', { replace: true })}>
+                Home
+            </button>}
 
-                    {/*Home button*/}
-                    {!propertyData && <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent', { replace: true })}>
-                            Home
-                        </button>
-                    </div>}
+            {!error && !spinner &&
+                <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
                     {/*Heading */}
-                    {!propertyData && <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
-                        <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
-                        <div className="w-full flex flex-row place-content-center gap-5">
-                            <button
-                                type='button'
-                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    setShowDealerDetails(false)
-                                    setShowReevaluationDetails(true)
-                                }}>
-                                Reevaluation details
-                            </button>
-                            <button
-                                type='button'
-                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    setShowDealerDetails(true)
-                                    setShowReevaluationDetails(false)
-                                }}>
-                                Contact property dealer
-                            </button>
-                        </div>
-                    </div>}
+                    {!propertyData &&
+                        <div className="mt-28 sm:mt-20 w-full text-center pl-4 pr-4 pb-4 bg-white">
+                            <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
+                            <div className="w-full flex flex-row place-content-center gap-5">
+                                <button
+                                    type='button'
+                                    className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded px-2 py-1 h-fit"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setShowDealerDetails(false)
+                                        setShowReevaluationDetails(true)
+                                    }}>
+                                    Reevaluation details
+                                </button>
+                                <button
+                                    type='button'
+                                    className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded px-2 py-1 h-fit"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setShowDealerDetails(true)
+                                        setShowReevaluationDetails(false)
+                                    }}>
+                                    Contact property dealer
+                                </button>
+                            </div>
+                        </div>}
 
-                    <form className="w-full min-h-screen mt-52 sm:mt-44 md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {!editForm && <div className=" w-full flex justify-center">
                             <FaEdit className="text-3xl text-gray-500 hover:text-gray-700 cursor-pointer font-bold" onClick={e => {
@@ -1210,7 +1209,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                             {propertyTitleErrorMessage.trim() &&
                                 <p className="text-red-500 -mt-1">{propertyTitleErrorMessage.trim()}</p>}
-                            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+                            <div className="flex flex-col sm:flex-row  sm:gap-10">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <label
@@ -1220,7 +1219,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     </label>
                                 </div>
 
-                                {!editForm && <p>{propertyTitle}</p>}
+                                {!editForm && <p className="p-1">{propertyTitle}</p>}
 
                                 {editForm && <textarea
                                     className={`border-2 ${propertyTitleErrorMessage.trim() ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`}
@@ -1231,12 +1230,11 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     autoComplete="new-password"
                                     value={propertyTitle}
                                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                        if (e.target.value.trim().length > 150) {
-                                            setPropertyTitle(e.target.value.trim())
-                                            setPropertyTitleErrorMessage('Title should be less than 150 characters')
-                                        } else {
+                                        if (e.target.value.trim().length < 150) {
                                             setPropertyTitleErrorMessage('')
                                             setPropertyTitle(e.target.value)
+                                        } else {
+                                            setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
                                         }
                                     }} />}
                             </div>
@@ -1246,14 +1244,14 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                         <div className="flex flex-col p-2 pb-5 pt-5 ">
                             {propertyDetailError &&
                                 <p className="text-red-500 -mt-1">Details should be less than 500 characters</p>}
-                            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+                            <div className="flex flex-col sm:flex-row sm:gap-10">
                                 <label
                                     className="text-xl font-semibold text-gray-500 whitespace-nowrap"
                                     htmlFor="property-detail">
                                     Property details
                                 </label>
 
-                                {!editForm && <p>{propertyDetail}</p>}
+                                {!editForm && <p className="p-1 rounded">{propertyDetail}</p>}
                                 {editForm && <textarea
                                     className={`border-2 ${propertyDetailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`} id="property-detail"
                                     rows={5}
@@ -1262,12 +1260,11 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     autoComplete="new-password"
                                     value={propertyDetail}
                                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                        if (e.target.value.trim().length > 500) {
-                                            setPropertyDetail(e.target.value.trim())
-                                            setPropertyDetailError(true)
-                                        } else {
+                                        if (e.target.value.trim().length < 500) {
                                             setPropertyDetailError(false)
                                             setPropertyDetail(e.target.value)
+                                        } else {
+                                            setPropertyDetailError(true)
                                         }
                                     }} />}
                             </div>
@@ -1319,6 +1316,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                                 value={fixedPrice}
                                                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                     if (+e.target.value.trim() > 0) {
+                                                        setFixedPriceError(false)
                                                         setPriceErrorMessage('')
                                                         setFixedPrice(+e.target.value.trim())
                                                     } else {
@@ -1817,7 +1815,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(1, 10).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -1955,7 +1954,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(1, 10).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -1982,7 +1982,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         }}>
                                         {generateNumberArray(1, 10).map(number => <option
                                             key={number}
-                                            value={number}>
+                                            value={number}
+                                        >
                                             {number}
                                         </option>)}
                                     </select>
@@ -2010,7 +2011,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(0, 9).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -2038,7 +2040,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(1, 10).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -2066,7 +2069,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(1, 10).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -2094,7 +2098,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(0, 9).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -2122,7 +2127,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {generateNumberArray(0, 9).map(number =>
                                             <option
                                                 key={number}
-                                                value={number}>
+                                                value={number}
+                                            >
                                                 {number}
                                             </option>)}
                                     </select>
@@ -2210,7 +2216,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                         {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
                             <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
                                 {furnishingError && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
+
+                                <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
                                         <p className="text-xl font-semibold text-gray-500 mb-2">House Furnishing</p>
@@ -2255,26 +2262,28 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             placeholder="Add details about furnishing (optional)"
                                             value={furnishingDetails}
                                             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                                if (countWordsInAString(furnishingDetails.trim()) > 150) {
-                                                    setFurnishingDetailsError(true)
-                                                    setFurnishingDetails(e.target.value.trim())
-                                                } else {
+                                                if (e.target.value.trim().length < 500) {
                                                     setFurnishingDetails(e.target.value)
                                                     setFurnishingDetailsError(false)
+                                                } else {
+                                                    setFurnishingDetailsError(true)
                                                 }
                                             }} />
-                                        {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
+                                        {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 characters</p>}
                                     </div>}
+
                                 {furnishing && (furnishing === 'semi-furnished' || furnishing === 'fully-furnished') && !editForm && <div className="w-full flex justify-center mt-2">
-                                    <p className="w-11/12 sm:w-96 bg-white p-2">{furnishingDetails}</p>
+                                    <p className="bg-gray-300 p-1 rounded w-11/12 sm:w-8/12">{furnishingDetails}</p>
                                 </div>}
+
                             </div>}
 
                         {/*Kitchen furnishing */}
                         {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
                             <div className="p-2  flex flex-col pb-5 pt-5">
                                 {kitchenFurnishingError && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
+
+                                <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
                                         <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen furnishing</p>
@@ -2317,18 +2326,18 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             placeholder="Add details about furnishing (optional)"
                                             value={kitchenFurnishingDetails}
                                             onChange={e => {
-                                                if (countWordsInAString(kitchenFurnishingDetails.trim()) > 150) {
-                                                    setKitchenFurnishingDetailsError(true)
-                                                    setKitchenFurnishingDetails(e.target.value.trim())
-                                                } else {
+                                                if (e.target.value.trim().length < 500) {
                                                     setKitchenFurnishingDetails(e.target.value)
                                                     setKitchenFurnishingDetailsError(false)
+                                                } else {
+                                                    setKitchenFurnishingDetailsError(true)
                                                 }
                                             }} />
-                                        {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 150 words</p>}
+                                        {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 alpabets</p>}
                                     </div>}
+
                                 {kitchenFurnishing && (kitchenFurnishing === 'semi-furnished' || kitchenFurnishing === 'modular') && !editForm && <div className="w-full flex justify-center mt-2">
-                                    <p className="w-11/12 sm:w-96 bg-white p-2">{kitchenFurnishingDetails}</p>
+                                    <p className="bg-gray-300 p-1 rounded w-11/12 sm:w-8/12">{kitchenFurnishingDetails}</p>
                                 </div>}
                             </div>}
 
@@ -2381,18 +2390,17 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         placeholder="Add details about kitchen appliances (optional)"
                                         value={kitchenAppliancesDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (countWordsInAString(kitchenAppliancesDetails.trim()) > 50) {
-                                                setKitchenAppliancesDetailsError(true)
-                                                setKitchenAppliancesDetails(e.target.value.trim())
-                                            } else {
+                                            if (e.target.value.trim().length < 500) {
                                                 setKitchenAppliancesDetails(e.target.value)
                                                 setKitchenAppliancesDetailsError(false)
+                                            } else {
+                                                setKitchenAppliancesDetailsError(true)
                                             }
                                         }} />
-                                    {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 50 words</p>}
+                                    {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                                 </div>}
                             {kitchenAppliances && !editForm && <div className="w-full flex justify-center mt-2">
-                                <p className="w-11/12 sm:w-96 bg-white p-2">{kitchenAppliancesDetails}</p>
+                                <p className="bg-gray-300 p-1 rounded w-11/12 sm:w-8/12">{kitchenAppliancesDetails}</p>
                             </div>}
                         </div>}
 
@@ -2724,19 +2732,18 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         placeholder="Add details about garden (optional)"
                                         value={gardenDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (countWordsInAString(gardenDetails.trim()) > 50) {
-                                                setGardenDetailsError(true)
-                                                setGardenDetails(e.target.value.trim())
-                                            } else {
+                                            if (e.target.value.trim().length < 500) {
                                                 setGardenDetails(e.target.value)
                                                 setGardenDetailsError(false)
+                                            } else {
+                                                setGardenDetailsError(true)
                                             }
                                         }} />
-                                    {gardenDetailsError && <div className="w-full flex justify-center mt-2">
-                                        <p className="w-11/12 sm:w-96 bg-white p-2">{gardenDetails}</p>
-                                    </div>}
+                                    {gardenDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                                 </div>}
-                            {garden && !editForm && <p>{gardenDetails}</p>}
+                            {garden && !editForm && <div className="flex justify-center">
+                                <p className="bg-gray-300 p-1 rounded w-11/12 sm:w-8/12">{gardenDetails}</p>
+                            </div>}
                         </div>}
 
                         {/*age of construction*/}
@@ -2827,7 +2834,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     {generateNumberArray(1, 10).map(number =>
                                         <option
                                             key={number}
-                                            value={number}>
+                                            value={number}
+                                        >
                                             {number}
                                         </option>)}
                                 </select>
@@ -2883,13 +2891,15 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            setLegalRestrictionDetailsError(false)
-                                            setLegalRestrictionDetails(e.target.value)
+                                            if (e.target.value.trim().length < 500) {
+                                                setLegalRestrictionDetailsError(false)
+                                                setLegalRestrictionDetails(e.target.value)
+                                            }
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}
                             {isLegalRestrictions && !editForm && <div className="w-full flex justify-center mt-2">
-                                <p className="w-11/12 sm:w-96 bg-white p-2">{legalRestrictionDetails}</p>
+                                <p className="bg-gray-300 p-1 rounded w-11/12 sm:w-8/12">{legalRestrictionDetails}</p>
                             </div>}
                         </div>
 
@@ -3018,7 +3028,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         {states.map(state => {
                                             return <option
                                                 key={state}
-                                                value={state}>
+                                                value={state}
+                                            >
                                                 {capitalizeFirstLetterOfAString(state)}
                                             </option>
                                         })}
@@ -3057,7 +3068,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             punjabDistricts.map(district => {
                                                 return <option
                                                     key={district}
-                                                    value={district}>
+                                                    value={district}
+                                                >
                                                     {capitalizeFirstLetterOfAString(district)}
                                                 </option>
                                             })}

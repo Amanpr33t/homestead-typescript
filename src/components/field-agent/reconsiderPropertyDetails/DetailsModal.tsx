@@ -13,8 +13,17 @@ interface DetailsProps {
     }
 }
 //this component is an alert modal
-const DetailsModal: React.FC<DetailsProps> = ({ reevaluationDetails, detailsModalRemover, showDealerDetails, showReevaluationDetails, dealerInfo }) => {
+const DetailsModal: React.FC<DetailsProps> = (props) => {
+    const {
+        reevaluationDetails,
+        detailsModalRemover,
+        showDealerDetails,
+        showReevaluationDetails,
+        dealerInfo
+    } = props
+
     let index: number = 0
+
     return (
         <Fragment>
             <div className="fixed z-50 top-16 pt-12 bg-transparent h-screen w-full flex justify-center " onClick={detailsModalRemover}>
@@ -28,7 +37,7 @@ const DetailsModal: React.FC<DetailsProps> = ({ reevaluationDetails, detailsModa
                     </button>
 
                     {showReevaluationDetails && <>
-                        <p className="text-center text-2xl font-semibold text-gray-500">Reevaluation details</p>
+                        <p className="text-center text-xl font-semibold text-gray-500">Reevaluation details</p>
                         <div className="flex flex-col p-6">
                             {reevaluationDetails.map(detail => {
                                 index++
@@ -41,7 +50,7 @@ const DetailsModal: React.FC<DetailsProps> = ({ reevaluationDetails, detailsModa
                     </>}
 
                     {showDealerDetails && <>
-                        <p className="text-center text-2xl font-semibold text-gray-500">Property dealer contact information</p>
+                        <p className="text-center text-xl font-semibold text-gray-500">Property dealer contact information</p>
                         <div className="flex flex-col gap-2 p-6">
                             <div className="flex flex-row gap-2">
                                 <p className="font-semibold text-lg">Firm name:</p>

@@ -111,33 +111,36 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
+    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
+    useEffect(() => {
+        if (!cloudinaryCloudName) {
+            navigate('/field-agent')
+        }
+    }, [cloudinaryCloudName, navigate])
+
     //The function is used to upload images to the database
     const uploadImages = async () => {
         try {
             setPropertyImagesUrl([])
             setContractImagesUrl([])
-            const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-            if (!cloudinaryCloudName) {
-                throw new Error('Some error occured')
-            }
             setSpinner(true)
             agriculturalPropertyImages.length && agriculturalPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
                 })
                 const data = await response.json()
-                if (data && data.error) {
-                    throw new Error('Some error occured')
-                } else {
+                if (data && data.secure_url) {
                     setPropertyImagesUrl(images => [
                         ...images,
                         data.secure_url
                     ])
+                } else {
+                    throw new Error('Some error occured')
                 }
             })
 
@@ -145,16 +148,16 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
                 })
                 const data = await response.json()
-                if (data && data.error) {
-                    throw new Error('Some error occured')
-                } else {
+                if (data && data.secure_url) {
                     setContractImagesUrl(images => [...images, data.secure_url])
+                } else {
+                    throw new Error('Some error occured')
                 }
             })
         } catch (error) {
@@ -196,7 +199,7 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                 setAlert({
                     isAlertModal: true,
                     alertType: 'success',
-                    alertMessage: 'Property has been reevaluated successfully',
+                    alertMessage: 'Property details have been reconsidered successfully',
                     routeTo: '/field-agent'
                 })
             } else if (data.status === 'invalid_authentication') {
@@ -245,18 +248,18 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                         })
                     }} />}
 
-            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
+            {/*Back button */}
+            {!alert.isAlertModal && <button
+                type='button'
+                className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
+                disabled={spinner}
+                onClick={() => {
+                    propertyDataReset()
+                }}>
+                Back
+            </button>}
 
-                {/*Back button */}
-                <button
-                    type='button'
-                    className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
-                    disabled={spinner}
-                    onClick={() => {
-                        propertyDataReset()
-                    }}>
-                    Back
-                </button>
+            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
 
                 {/*Heading */}
                 <div className="w-full flex justify-center pb-4">
@@ -268,7 +271,7 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                     onClick={(e: React.MouseEvent<HTMLTableElement, MouseEvent>) => e.stopPropagation()}>
                     <thead >
                         <tr className="bg-gray-200 border-2 border-gray-300">
-                            <th className="w-28 text-xl pt-4 pb-4 sm:w-fit">Field</th>
+                            <th className="w-28 text-xl pt-4 pb-4 sm:w-48">Field</th>
                             <th className="text-xl ">Data</th>
                         </tr>
                     </thead>
@@ -277,9 +280,9 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                         {/*land size details */}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
-                            <td className="pt-4 pb-4 text-center">
-                                <p>{propertyData.landSize.size} {propertyData.landSize.unit}</p>
-                                {propertyData.landSize.details && <p> {propertyData.landSize.details}</p>}
+                            <td className="pt-4 pb-4 flex flex-col place-items-center">
+                                <p className="text-center">{propertyData.landSize.size} {propertyData.landSize.unit}</p>
+                                {propertyData.landSize.details && <p className="bg-gray-200 p-1 rounded mt-1 mx-1 w-fit"> {propertyData.landSize.details}</p>}
                             </td>
                         </tr>
 
@@ -387,12 +390,12 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                         {/*price */}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
                                 <div className="flex flex-row place-content-center gap-1">
                                     <p className="font-semibold">Rs.</p>
                                     <p>{propertyData.priceDemanded.number}</p>
                                 </div>
-                                <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.priceDemanded.words}</p>
+                                <p className="w-fit p-1 rounded mx-2 sm:mx-5 bg-gray-200 text-center">{propertyData.priceDemanded.words}</p>
                             </td>
                         </tr>
 
@@ -409,20 +412,20 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                         {/*road type */}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Road type</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
                                 <p>{propertyData.road.type}</p>
-                                {propertyData.road.details && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.road.details}</p>}
+                                {propertyData.road.details && <p className="w-fit p-1 rounded mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.road.details}</p>}
                             </td>
                         </tr>
 
                         {/*legal restrictions */}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
+                            <td className="pt-4 pb-4  flex flex-col place-items-center gap-2">
+                                {!propertyData.legalRestrictions.isLegalRestrictions && <p className="text-center">No</p>}
                                 {propertyData.legalRestrictions.isLegalRestrictions && <>
-                                    <p>Yes</p>
-                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
+                                    <p className="text-center">Yes</p>
+                                    <p className="p-1 rounded mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 w-fit">{propertyData.legalRestrictions.details}</p>
                                 </>}
                             </td>
                         </tr>
@@ -443,14 +446,14 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                                 {fetchedPropertyImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto border border-gray-500'
+                                        className='w-40 h-auto '
                                         src={image}
                                         alt="" />;
                                 })}
                                 {agriculturalPropertyImages.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto border border-gray-500'
+                                        className='w-40 h-auto'
                                         src={image.file}
                                         alt="" />;
                                 })}
@@ -458,21 +461,21 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
                         </tr>
 
                         {/*contract images */}
-                        {contractImages.length > 0 &&
+                        {fetchedContractImagesUrl.length + contractImages.length  &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                     {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
                                         return <img
                                             key={Math.random()}
-                                            className='w-40 h-auto border border-gray-500'
+                                            className='w-40 h-auto'
                                             src={image}
                                             alt="" />
                                     })}
                                     {contractImages.map(image => {
                                         return <img
                                             key={Math.random()}
-                                            className='w-40 h-auto border border-gray-500'
+                                            className='w-40 h-auto'
                                             src={image.file}
                                             alt="" />
                                     })}

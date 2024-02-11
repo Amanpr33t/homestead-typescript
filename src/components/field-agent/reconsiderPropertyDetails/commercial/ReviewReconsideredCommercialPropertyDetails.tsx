@@ -118,21 +118,24 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
+    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
+    useEffect(() => {
+        if (!cloudinaryCloudName) {
+            navigate('/field-agent')
+        }
+    }, [cloudinaryCloudName, navigate])
+
     //The function is used to upload images to the database
     const uploadImages = async () => {
         try {
             setPropertyImagesUrl([])
             setContractImagesUrl([])
-            const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-            if (!cloudinaryCloudName) {
-                throw new Error('Some error occured')
-            }
             setSpinner(true)
             commercialPropertyImages.length && commercialPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -152,7 +155,7 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -203,7 +206,7 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                 setAlert({
                     isAlertModal: true,
                     alertType: 'success',
-                    alertMessage: 'Property has been reevaluated successfully',
+                    alertMessage: 'Property details have been reconsidered successfully',
                     routeTo: '/field-agent'
                 })
             } else if (data.status === 'invalid_authentication') {
@@ -252,18 +255,18 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         })
                     }} />}
 
-            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
+            {/*Back button */}
+            <button
+                type='button'
+                className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 "
+                disabled={spinner}
+                onClick={() => {
+                    propertyDataReset()
+                }}>
+                Back
+            </button>
 
-                {/*Back button */}
-                <button
-                    type='button'
-                    className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
-                    disabled={spinner}
-                    onClick={() => {
-                        propertyDataReset()
-                    }}>
-                    Back
-                </button>
+            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
 
                 {/*Heading */}
                 <div className="w-full flex justify-center pb-4">
@@ -275,7 +278,7 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                     onClick={(e: React.MouseEvent<HTMLTableElement, MouseEvent>) => e.stopPropagation()}>
                     <thead >
                         <tr className="bg-gray-200 border-2 border-gray-300">
-                            <th className="w-28 text-xl pt-4 pb-4 sm:w-fit">Field</th>
+                            <th className="w-28 text-xl pt-4 pb-4 sm:w-48">Field</th>
                             <th className="text-xl ">Data</th>
                         </tr>
                     </thead>
@@ -316,7 +319,7 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         {/* land size*/}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
-                            <td className="pt-4 pb-4 text-center">
+                            <td className="pt-4 pb-4">
                                 <div className="flex flex-row place-content-center gap-1 sm:gap-5 mb-4 pr-0.5 pl-0.5">
                                     <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                         <p className="w-full text-center font-semibold">Total area</p>
@@ -329,7 +332,9 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                                         <p>{propertyData.landSize.coveredArea.squareFeet} square feet</p>
                                     </div>
                                 </div>
-                                {propertyData.landSize.details && <p>{propertyData.landSize.details}</p>}
+                                {propertyData.landSize.details && <div className="flex justify-center">
+                                    <p className="bg-gray-200 p-1 rounded mx-1.5 w-fit">{propertyData.landSize.details}</p>
+                                </div>}
                             </td>
                         </tr>
 
@@ -348,13 +353,13 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         {/* lease period*/}
                         {propertyData.commercialPropertyType === 'shop' &&
                             propertyData.leasePeriod &&
-                            (propertyData.leasePeriod.years !== 0 || propertyData.leasePeriod.months !== 0) &&
+                            (propertyData.leasePeriod.years || propertyData.leasePeriod.months) &&
                             <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lease period</td>
                                 <td className=" pt-4 pb-4 text-center">
                                     <div className="flex flex-col">
-                                        {propertyData.leasePeriod.years !== 0 && <p>{propertyData.leasePeriod.years} years</p>}
-                                        {propertyData.leasePeriod.months !== 0 && <p>{propertyData.leasePeriod.months} months</p>}
+                                        {propertyData.leasePeriod.years && propertyData.leasePeriod.years > 0 && <p>{propertyData.leasePeriod.years} years</p>}
+                                        {propertyData.leasePeriod.months && propertyData.leasePeriod.months > 0 && <p>{propertyData.leasePeriod.months} months</p>}
                                     </div>
                                 </td>
                             </tr>}
@@ -362,13 +367,13 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         {/*lockin period */}
                         {propertyData.commercialPropertyType === 'shop' &&
                             propertyData.lockInPeriod &&
-                            (propertyData.lockInPeriod.years !== 0 || propertyData.lockInPeriod.months !== 0) &&
+                            (propertyData.lockInPeriod.years || propertyData.lockInPeriod.months) &&
                             <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Lock-in period</td>
                                 <td className=" pt-4 pb-4 text-center">
                                     <div className="flex flex-col">
-                                        {propertyData.lockInPeriod.years !== 0 && <p>{propertyData.lockInPeriod.years} years</p>}
-                                        {propertyData.lockInPeriod.months !== 0 && <p>{propertyData.lockInPeriod.months} months</p>}
+                                        {propertyData.lockInPeriod.years && propertyData.lockInPeriod.years > 0 && <p>{propertyData.lockInPeriod.years} years</p>}
+                                        {propertyData.lockInPeriod.months && propertyData.lockInPeriod.months > 0 && <p>{propertyData.lockInPeriod.months} months</p>}
                                     </div>
                                 </td>
                             </tr>}
@@ -430,24 +435,24 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         {/*Price */}
                         <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
+                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
                                 <div className="flex flex-row place-content-center gap-1">
                                     <p className="font-semibold">Rs.</p>
                                     <p>{propertyData.priceDemanded.number}</p>
                                 </div>
-                                <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.priceDemanded.words}</p>
+                                <p className="mx-2 sm:mx-5 bg-gray-200 p-1 w-fit">{propertyData.priceDemanded.words}</p>
                             </td>
                         </tr>
 
                         {/*Legal restrictions */}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
+                            <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
+                                {!propertyData.legalRestrictions.isLegalRestrictions && <p className="text-center">No</p>}
                                 {propertyData.legalRestrictions.isLegalRestrictions &&
                                     <>
-                                        <p>Yes</p>
-                                        <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.legalRestrictions.details}</p>
+                                        <p className="text-center">Yes</p>
+                                        <p className="mx-2 sm:mx-5 bg-gray-200 p-1 w-fit">{propertyData.legalRestrictions.details}</p>
                                     </>
                                 }
                             </td>
@@ -457,7 +462,9 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         {propertyData.remarks &&
                             <tr className="border-2 border-gray-300">
                                 <td className=" pt-4 pb-4 text-lg font-semibold text-center">Remarks</td>
-                                <td className=" pt-4 pb-4 text-center">{propertyData.remarks}</td>
+                                <td className="px-5 py-3 flex justify-center">
+                                    <p>{propertyData.remarks}</p>
+                                </td>
                             </tr>}
 
                         {/*Property images */}
@@ -467,14 +474,14 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                                 {fetchedPropertyImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto border border-gray-500'
+                                        className='w-40 h-auto '
                                         src={image}
                                         alt="" />;
                                 })}
                                 {commercialPropertyImages.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto border border-gray-500'
+                                        className='w-40 h-auto '
                                         src={image.file}
                                         alt="" />;
                                 })}
@@ -482,21 +489,21 @@ const ReviewReconsiderdCommercialPropertyDetails: React.FC<PropsType> = (props) 
                         </tr>
 
                         {/* contract images*/}
-                        {contractImages.length > 0 &&
+                        {fetchedContractImagesUrl.length + contractImages.length &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                                 <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                     {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
                                         return <img
                                             key={Math.random()}
-                                            className='w-40 h-auto border border-gray-500'
+                                            className='w-40 h-auto '
                                             src={image}
                                             alt="" />
                                     })}
                                     {contractImages.map(image => {
                                         return <img
                                             key={Math.random()}
-                                            className='w-40 h-auto border border-gray-500'
+                                            className='w-40 h-auto'
                                             src={image.file}
                                             alt="" />
                                     })}

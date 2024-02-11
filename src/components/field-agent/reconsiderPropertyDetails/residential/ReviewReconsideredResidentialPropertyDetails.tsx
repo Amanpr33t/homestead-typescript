@@ -167,21 +167,24 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
+    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
+    useEffect(() => {
+        if (!cloudinaryCloudName) {
+            navigate('/field-agent')
+        }
+    }, [cloudinaryCloudName, navigate])
+
     const uploadImages = async () => {
         console.log('upload images')
         try {
             setPropertyImagesUrl([])
             setContractImagesUrl([])
-            const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-            if (!cloudinaryCloudName) {
-                throw new Error('Some error occured')
-            }
             setSpinner(true)
             residentialPropertyImages.length && residentialPropertyImages.forEach(async (image) => {
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -201,7 +204,7 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                 const formData = new FormData()
                 formData.append('file', image.upload)
                 formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName)
+                formData.append('cloud_name', cloudinaryCloudName as string)
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
                     method: 'post',
                     body: formData
@@ -252,7 +255,7 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                 setAlert({
                     isAlertModal: true,
                     alertType: 'success',
-                    alertMessage: 'Property has been reevaluated successfully',
+                    alertMessage: 'Property details have been reconsidered successfully',
                     routeTo: '/field-agent'
                 })
             } else if (data.status === 'invalid_authentication') {
@@ -302,18 +305,18 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         })
                     }} />}
 
-            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
+            {/*Back button */}
+            <button
+                type='button'
+                className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
+                disabled={spinner}
+                onClick={() => {
+                    propertyDataReset()
+                }}>
+                Back
+            </button>
 
-                {/*Back button */}
-                <button
-                    type='button'
-                    className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30 "
-                    disabled={spinner}
-                    onClick={() => {
-                        propertyDataReset()
-                    }}>
-                    Back
-                </button>
+            <div className={`pl-1 pr-1 mt-20 mb-10 w-full flex flex-col place-items-center z-20 ${alert.isAlertModal ? 'blur' : ''}`} >
 
                 <div className="w-full flex justify-center pb-4">
                     <p className="text-2xl font-semibold text-center">Review the details</p>
@@ -322,7 +325,7 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                 <table className="w-full sm:w-10/12 md:w-9/12 lg:w-7/12 table-auto" onClick={e => e.stopPropagation()}>
                     <thead >
                         <tr className="bg-gray-200 border-2 border-gray-300">
-                            <th className="w-28 text-xl pt-4 pb-4 sm:w-80">Field</th>
+                            <th className="w-28 text-xl pt-4 pb-4 sm:w-48">Field</th>
                             <th className="text-xl ">Data</th>
                         </tr>
                     </thead>
@@ -343,7 +346,9 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {/*details */}
                         {propertyData.details && <tr className="border-2 border-gray-300">
                             <td className=" pt-4 pb-4 text-lg font-semibold text-center">Details</td>
-                            <td className=" pt-4 pb-4 pr-2 pl-2 text-center">{propertyData.details}</td>
+                            <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                                <p>{propertyData.details}</p>
+                            </td>
                         </tr>}
 
                         {/*type of sale */}
@@ -370,8 +375,8 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                             <td className=" pt-4 pb-4 flex flex-col place-items-center">
                                 <p>{propertyData.waterSupply.available ? 'Yes' : 'No'}</p>
                                 {propertyData.waterSupply.available && propertyData.waterSupply.twentyFourHours ?
-                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is available</p> :
-                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center">24 hours water supply is not available</p>}
+                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center p-1 rounded">24 hours water supply is available</p> :
+                                    <p className="w-fit bg-gray-200 mr-1 ml-1 text-center p-1 rounded p-1">24 hours water supply is not available</p>}
                             </td>
                         </tr>
 
@@ -462,11 +467,11 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {/*Legal restrictions */}
                         <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
-                            <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
+                            <td className="pt-4 pb-4  flex flex-col place-items-center gap-2">
+                                {!propertyData.legalRestrictions.isLegalRestrictions && <p className="text-center">No</p>}
                                 {propertyData.legalRestrictions.isLegalRestrictions && <>
-                                    <p>Yes</p>
-                                    <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 text-center">{propertyData.legalRestrictions.details}</p>
+                                    <p className="text-center">Yes</p>
+                                    <p className="mx-2 sm:mx-5 bg-gray-200 p-1 rounded w-fit">{propertyData.legalRestrictions.details}</p>
                                 </>}
                             </td>
                         </tr>
@@ -475,14 +480,14 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {propertyData.propertyTaxes &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Property taxes per year</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">Rs. {propertyData.propertyTaxes}</td>
+                                <td className="pt-4 pb-4 text-center">Rs. {propertyData.propertyTaxes}</td>
                             </tr>}
 
                         {/*Home owners association fees per year */}
                         {propertyData.homeOwnersAssociationFees &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Home owners association fees per year</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">Rs. {propertyData.homeOwnersAssociationFees}</td>
+                                <td className="pt-4 pb-4 text-center ">Rs. {propertyData.homeOwnersAssociationFees}</td>
                             </tr>}
 
                         {/*Number of floors */}
@@ -567,8 +572,10 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {propertyData.furnishing && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Furnishing</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{capitalizeFirstLetterOfAString(propertyData.furnishing.type)}</p>
+                                <td className="pt-4 pb-4  flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.furnishing.type}</p>
+                                    {propertyData.furnishing.details &&
+                                        <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.furnishing.details}</p>}
                                 </td>
                             </tr>}
 
@@ -576,8 +583,10 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {propertyData.kitchenFurnishing && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen furnishing</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{capitalizeFirstLetterOfAString(propertyData.kitchenFurnishing.type)}</p>
+                                <td className="pt-4 pb-4  flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.kitchenFurnishing.type}</p>
+                                    {propertyData.kitchenFurnishing.details &&
+                                        <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.kitchenFurnishing.details}</p>}
                                 </td>
                             </tr>}
 
@@ -585,10 +594,10 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {propertyData.kitchenAppliances && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Kitchen appliances</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{propertyData.kitchenAppliances.available ? 'Yes' : 'No'}</p>
+                                <td className="pt-4 pb-4  flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.kitchenAppliances.available ? 'Yes' : 'No'}</p>
                                     {propertyData.kitchenAppliances.available && propertyData.kitchenAppliances.details && propertyData.kitchenAppliances.details.trim() &&
-                                        <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.kitchenAppliances.details}</p>}
+                                        <p className="mx-2 sm:mx-5 bg-gray-200 w-fit p-1">{propertyData.kitchenAppliances.details}</p>}
                                 </td>
                             </tr>}
 
@@ -671,9 +680,9 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         {propertyData.garden && (propertyData.residentialPropertyType.toLowerCase() === 'flat' || propertyData.residentialPropertyType.toLowerCase() === 'house') &&
                             <tr className="border-2 border-gray-300">
                                 <td className="pt-4 pb-4 text-lg font-semibold text-center">Garden</td>
-                                <td className="pt-4 pb-4 text-center flex flex-col gap-2">
-                                    <p>{propertyData.garden.available ? 'Yes' : 'No'}</p>
-                                    {propertyData.garden.details && propertyData.garden.details.trim() && <p className="mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200">{propertyData.garden.details.trim()}</p>}
+                                <td className="pt-4 pb-4 flex flex-col gap-2">
+                                    <p className="text-center">{propertyData.garden.available ? 'Yes' : 'No'}</p>
+                                    {propertyData.garden.details && propertyData.garden.details.trim() && <p className="mx-2 sm:mx-5 bg-gray-200 p-1">{propertyData.garden.details.trim()}</p>}
                                 </td>
                             </tr>}
 
@@ -744,7 +753,7 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
                         </tr>
 
                         {/*Contract images*/}
-                        {contractImages.length > 0 && <tr className="border-2 border-gray-300">
+                        {fetchedContractImagesUrl.length + contractImages.length > 0 && <tr className="border-2 border-gray-300">
                             <td className="pt-4 pb-4 text-lg font-semibold text-center">Contract images</td>
                             <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                                 {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {

@@ -15,6 +15,8 @@ type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
 type ReservoirType = 'public' | 'private'
 type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
 
+type StatesType = 'punjab' | 'chandigarh'
+
 interface PropertyDataType {
     landSize: {
         size: number,
@@ -95,10 +97,11 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
         }
     }, [authToken, navigate])
 
-    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)
+    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)//property data fetched
 
-    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)
-    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)
+    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)//If it is true dealer details will be shown to the user
+    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)//If it is true, reevaluation details will be shown to the user
+
     const [dealerInfo, setDealerInfo] = useState<{
         propertyDealerName: string,
         firmName: string,
@@ -106,7 +109,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
         contactNumber: number
     } | null>(null)
 
-    const [editForm, setEditForm] = useState<boolean>(false)
+    const [editForm, setEditForm] = useState<boolean>(false) //If true, user can edit the details of a property
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
@@ -119,14 +122,15 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
     const queryParams = new URLSearchParams(location.search)
     const propertyId: string | null = queryParams.get('propertyId')
+
     useEffect(() => {
         if (!propertyId) {
             navigate('/field-agent')
         }
     }, [propertyId, navigate])
 
-    const [fetchedPropertyImagesUrl, setFetchedPropertyImagesUrl] = useState<string[]>([])
-    const [fetchedContractImagesUrl, setFetchedContractImagesUrl] = useState<string[]>([])
+    const [fetchedPropertyImagesUrl, setFetchedPropertyImagesUrl] = useState<string[]>([])//property images url fetched from database
+    const [fetchedContractImagesUrl, setFetchedContractImagesUrl] = useState<string[]>([])//contract images url fetched from database
 
     const [landSize, setLandSize] = useState<string | number>() //Land size in number
     const [landSizeUnit, setLandSizeUnit] = useState<'metre-square' | 'acre' | ''>('') //Unit of land size
@@ -143,9 +147,9 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     const [village, setVillage] = useState<string>('')
 
     const [agriculturalPropertyImageError, setAgriculturalPropertyImageErrorr] = useState<boolean>(false) //Error will be true if agriculturalPropertyImageError array is empty
-    const [agriculturalPropertyImages, setAgriculturalPropertyImages] = useState<ImageType[]>([])
+    const [agriculturalPropertyImages, setAgriculturalPropertyImages] = useState<ImageType[]>([]) //property images added by the user
 
-    const [contractImages, setContractImages] = useState<ImageType[]>([])
+    const [contractImages, setContractImages] = useState<ImageType[]>([]) //Contract images added by the user
 
     const [numberOfOwners, setNumberOfOwners] = useState<number>(1)
 
@@ -201,6 +205,9 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
         if (fetchedPropertyData) {
             setLandSize(fetchedPropertyData.landSize.size)
             setLandSizeUnit(fetchedPropertyData.landSize.unit)
+            if (fetchedPropertyData.landSize.details) {
+                setLandSizeDetails(fetchedPropertyData.landSize.details)
+            }
             setState(fetchedPropertyData.location.name.state)
             setDistrict(fetchedPropertyData.location.name.district)
             setCity(fetchedPropertyData.location.name.city || '')
@@ -250,12 +257,10 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
             if (fetchedPropertyData.contractImagesUrl?.length) {
                 setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
             }
-
-
         }
     }, [fetchedPropertyData])
 
-    const states = ['chandigarh', 'punjab']
+    const states: StatesType[] = ['chandigarh', 'punjab']
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>() //contains final property data added by user
 
@@ -502,7 +507,6 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
             },
             nearbyTown: nearbyTown.trim() || null,
         }
-
         setPropertyData(finalPropertyData)
     }
 
@@ -530,50 +534,49 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                     <p className="text-red-500 cursor-pointer" onClick={getPropertyDetails}>Try again</p>
                 </div>}
 
+            {/*Home button */}
+            {!propertyData && <button
+                type='button'
+                className={` ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-30`}
+                onClick={() => navigate('/field-agent', { replace: true })}>
+                Home
+            </button>}
+
             {!error && !spinner &&
                 <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
-                    {/*Home button */}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent', { replace: true })}>
-                            Home
-                        </button>
-                    </div>
-
                     {/*Heading */}
-                    {!propertyData && <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
-                        <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
-                        <div className="w-full flex flex-row place-content-center gap-5">
-                            <button
-                                type='button'
-                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    setShowDealerDetails(false)
-                                    setShowReevaluationDetails(true)
-                                }}>
-                                Reevaluation details
-                            </button>
-                            <button
-                                type='button'
-                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    setShowDealerDetails(true)
-                                    setShowReevaluationDetails(false)
-                                }}>
-                                Contact property dealer
-                            </button>
-                        </div>
-                    </div>}
+                    {!propertyData &&
+                        <div className="mt-28 sm:mt-20 w-full text-center pl-4 pr-4 pb-4 bg-white">
+                            <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
+                            <div className="w-full flex flex-row place-content-center gap-5">
+                                <button
+                                    type='button'
+                                    className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded px-2 py-1 h-fit"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setShowDealerDetails(false)
+                                        setShowReevaluationDetails(true)
+                                    }}>
+                                    Reevaluation details
+                                </button>
+                                <button
+                                    type='button'
+                                    className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded px-2 py-1 h-fit"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setShowDealerDetails(true)
+                                        setShowReevaluationDetails(false)
+                                    }}>
+                                    Contact property dealer
+                                </button>
+                            </div>
+                        </div>}
 
-                    <form className="w-full min-h-screen mt-52 sm:mt-44 md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {!editForm && <div className="pt-1 w-full flex justify-center bg-gray-100">
-                            <FaEdit className="text-3xl text-gray-500 hover:text-gray-700 cursor-pointer font-bold" onClick={e => {
+                            <FaEdit className="text-3xl text-orange-400 hover:text-orange-500 cursor-pointer font-bold" onClick={e => {
                                 e.stopPropagation()
                                 setEditForm(true)
                             }} />
@@ -597,45 +600,46 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                     onChange={contractImageHandler}
                                 />
                             </div>
-                            <div className='flex flex-wrap justify-center gap-5 p-5'>
-                                {fetchedContractImagesUrl && fetchedContractImagesUrl.length !== 0 && fetchedContractImagesUrl.map(url => {
-                                    return <div
-                                        key={Math.random()}
-                                        className='relative w-fit'>
-                                        <img
-                                            className='relative w-auto h-60'
-                                            src={url}
-                                            alt="" />
-                                        {editForm && <div
-                                            className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
-                                            onClick={() => {
-                                                const updatedState = fetchedContractImagesUrl.filter(item => item !== url)
-                                                setFetchedContractImagesUrl(updatedState)
-                                            }}>
-                                            X
-                                        </div>}
-                                    </div>
-                                })}
-                                {contractImages.length !== 0 &&
-                                    contractImages.map(image => {
+                            {((fetchedContractImagesUrl && fetchedContractImagesUrl.length !== 0) || contractImages.length !== 0) &&
+                                <div className='flex flex-wrap justify-center gap-5 p-5'>
+                                    {fetchedContractImagesUrl && fetchedContractImagesUrl.length !== 0 && fetchedContractImagesUrl.map(url => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit'>
                                             <img
                                                 className='relative w-auto h-60'
-                                                src={image.file}
+                                                src={url}
                                                 alt="" />
                                             {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
-                                                    const updatedState = contractImages.filter(item => item.file !== image.file)
-                                                    setContractImages(updatedState)
+                                                    const updatedState = fetchedContractImagesUrl.filter(item => item !== url)
+                                                    setFetchedContractImagesUrl(updatedState)
                                                 }}>
                                                 X
                                             </div>}
                                         </div>
                                     })}
-                            </div>
+                                    {contractImages.length !== 0 &&
+                                        contractImages.map(image => {
+                                            return <div
+                                                key={Math.random()}
+                                                className='relative w-fit'>
+                                                <img
+                                                    className='relative w-auto h-60'
+                                                    src={image.file}
+                                                    alt="" />
+                                                {editForm && <div
+                                                    className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
+                                                    onClick={() => {
+                                                        const updatedState = contractImages.filter(item => item.file !== image.file)
+                                                        setContractImages(updatedState)
+                                                    }}>
+                                                    X
+                                                </div>}
+                                            </div>
+                                        })}
+                                </div>}
                         </div>
 
                         {/*location */}
@@ -649,9 +653,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
                                 {/*village */}
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="village">
+                                    <label className="text-gray-500 font-semibold" htmlFor="village">
                                         Village
                                     </label>
                                     <input
@@ -669,9 +671,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
                                 {/*city */}
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="city">
+                                    <label className="text-gray-500 font-semibold" htmlFor="city">
                                         City/Town
                                     </label>
                                     <input
@@ -691,9 +691,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                 <div className="flex flex-col w-full">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
-                                        <label
-                                            className="text-gray-500 font-semibold"
-                                            htmlFor="state">
+                                        <label className="text-gray-500 font-semibold" htmlFor="state">
                                             State
                                         </label>
                                     </div>
@@ -709,16 +707,11 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             setDistrict('')
                                             setTehsil('')
                                         }}>
-                                        <option
-                                            className="text-gray-500 font-semibold"
-                                            value=""
-                                            disabled>
+                                        <option className="text-gray-500 font-semibold" value="" disabled>
                                             Select a state:
                                         </option>
                                         {states.map(state => {
-                                            return <option
-                                                key={state}
-                                                value={state}>
+                                            return <option key={state} value={state}>
                                                 {capitalizeFirstLetterOfAString(state)}
                                             </option>
                                         })}
@@ -743,17 +736,12 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             setDistrict(e.target.value)
                                             setTehsil('')
                                         }}>
-                                        <option
-                                            className="font-semibold"
-                                            value=""
-                                            disabled>
+                                        <option className="font-semibold" value="" disabled>
                                             Select a district
                                         </option>
                                         {state === 'punjab' &&
                                             punjabDistricts.map(district => {
-                                                return <option
-                                                    key={district}
-                                                    value={district}>
+                                                return <option key={district} value={district}>
                                                     {capitalizeFirstLetterOfAString(district)}
                                                 </option>
                                             })}
@@ -765,10 +753,9 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                     {districtError && <p className="text-red-500">Select a district</p>}
                                 </div>
 
+                                {/*tehsil */}
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="state">
+                                    <label className="text-gray-500 font-semibold" htmlFor="state">
                                         Tehsil
                                     </label>
                                     <select
@@ -780,15 +767,11 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         onChange={e => {
                                             setTehsil(e.target.value)
                                         }}>
-                                        <option
-                                            className="font-semibold"
-                                            value=""
-                                            disabled>
+                                        <option className="font-semibold" value="" disabled>
                                             Select a tehsil
                                         </option>
                                         {state === 'chandigarh' && district === 'chandigarh' &&
-                                            <option
-                                                value='chandigarh'>
+                                            <option value='chandigarh'>
                                                 Chandigarh
                                             </option>}
                                         {state === 'punjab' && <PunjabTehsilsDropdown district={district} />}
@@ -800,9 +783,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                         {/* Number of owners*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                                <label
-                                    className="text-xl font-semibold text-gray-500"
-                                    htmlFor="owners">
+                                <label className="text-xl font-semibold text-gray-500" htmlFor="owners">
                                     Number of owners
                                 </label>
                                 <select
@@ -817,9 +798,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
                                     }}>
                                     {generateNumberArray(1, 10).map(number =>
-                                        <option
-                                            key={number}
-                                            value={number}>
+                                        <option key={number} value={number}>
                                             {number}
                                         </option>)}
                                 </select>
@@ -831,12 +810,10 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                             {landSizeError && !landSizeUnitError && <p className="text-red-500 -mt-1">Provide land size</p>}
                             {landSizeError && landSizeUnitError && <p className="text-red-500 -mt-1">Provide land size and unit</p>}
                             {!landSizeError && landSizeUnitError && <p className="text-red-500 -mt-1">Provide a unit</p>}
-                            <div className="flex flex-row gap-5 sm:gap-16">
+                            <div className="flex flex-row gap-3 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <label
-                                        className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                                        htmlFor="size">
+                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="size">
                                         Land size
                                     </label>
                                 </div>
@@ -847,7 +824,8 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             id="land-size"
                                             type="number"
                                             name='land-size'
-                                            className={`border-2 ${landSizeError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
+                                            disabled={!editForm}
+                                            className={`border-2 ${landSizeError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-20`}
                                             placeholder="Size"
                                             value={landSize || ''}
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -861,7 +839,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             }}
                                         />
                                         <select
-                                            className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit`}
+                                            className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit w-32`}
                                             name="unit-dropdown"
                                             disabled={!editForm}
                                             id="unit-dropdown"
@@ -875,7 +853,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             <option value='acre'>Acre</option>
                                         </select>
                                     </div>
-                                    {!editForm && <p>{landSizeDetails}</p>}
+                                    {!editForm && <p className="bg-gray-300 p-1 rounded w-fit">{landSizeDetails}</p>}
                                     {editForm && <textarea
                                         className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none"
                                         id="size"
@@ -885,7 +863,9 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
                                         onChange={e => {
-                                            setLandSizeDetails(e.target.value)
+                                            if (e.target.value.trim().length < 500) {
+                                                setLandSizeDetails(e.target.value)
+                                            }
                                         }} />}
                                 </div>
                             </div>
@@ -921,7 +901,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                                 setPriceDemandedNumber('')
                                             }
                                         }} />
-                                    {!editForm && <p>{priceDemandedWords}</p>}
+                                    {!editForm && <p className="bg-gray-300 p-1 rounded w-fit">{priceDemandedWords}</p>}
                                     {editForm && <textarea
                                         className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`}
                                         id="price-words"
@@ -932,8 +912,10 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         placeholder="Words"
                                         value={priceDemandedWords}
                                         onChange={e => {
-                                            setPriceDemandedWordsError(false)
-                                            setPriceDemandedWords(e.target.value)
+                                            if (e.target.value.trim().length < 150) {
+                                                setPriceDemandedWordsError(false)
+                                                setPriceDemandedWords(e.target.value)
+                                            }
                                         }} />}
                                 </div>
                             </div>
@@ -944,13 +926,13 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                             {waterSourceError && <p className="text-red-500">Select atleast one water source</p>}
                             {(canalNameError || riverNameError || tubewellDepthError) && <p className="text-red-500">Provide information regarding water sources</p>}
 
-                            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
+                            <div className="flex flex-col md:flex-row md:gap-10 gap-3 ">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <p className="text-xl font-semibold text-gray-500">Water source</p>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-1">
+                                <div className="flex flex-col md:flex-row  gap-2 md:gap-4 mt-1 ml-5 md:ml-0">
                                     <div className="flex flex-col">
                                         <div>
                                             <input
@@ -977,7 +959,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             </label>
                                         </div>
                                         {isCanal &&
-                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0">
+                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0 w-fit">
                                                 <thead>
                                                     <tr className="border border-gray-300">
                                                         <th className="pl-1 pr-1">Canal name</th>
@@ -1058,7 +1040,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             <label htmlFor="river">River</label>
                                         </div>
                                         {isRiver &&
-                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0">
+                                            <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0 w-fit">
                                                 <thead>
                                                     <tr className="border border-gray-300">
                                                         <th className="pl-1 pr-1">River name</th>
@@ -1138,7 +1120,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         <label htmlFor="tubewell">Tubewell</label>
                                         <div className="">
                                             {isTubeWell &&
-                                                <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0">
+                                                <table className="table-auto bg-white border border-gray-300 ml-5 sm:ml-0 w-fit">
                                                     <thead>
                                                         <tr className="border border-gray-300">
                                                             <th className="pl-1 pr-1">Depth (feet)</th>
@@ -1317,9 +1299,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                                                         setUnitOfCapacityReservoirError(false)
                                                                         setUnitOfCapacityForPrivateReservoir(e.target.value as 'litre' | 'cusec')
                                                                     }}>
-                                                                    <option
-                                                                        value=''
-                                                                        disabled>
+                                                                    <option value='' disabled>
                                                                         Select a unit
                                                                     </option>
                                                                     <option value='cusec'>Cusec</option>
@@ -1363,13 +1343,13 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
                         {/* irrigation system*/}
                         <div className="p-2 pb-5 pt-5">
-                            <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 ">
+                            <div className="flex flex-row w-28 sm:w-fit gap-10 lg:gap-16 ">
                                 <p className="text-xl font-semibold text-gray-500">Irrigation system</p>
                                 <div className="flex flex-col gap-1.5 mt-1">
                                     {irrigationSystemOptions.map(system => {
-                                        return <div key={system}>
+                                        return <div key={system} className="flex flex-row">
                                             <input
-                                                className="mr-1 cursor-pointer"
+                                                className="mr-1 cursor-pointer wrap"
                                                 type="checkbox"
                                                 id={system}
                                                 name={system}
@@ -1442,7 +1422,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                     </div>
                                     <div className="flex flex-col gap-1.5 mt-1">
                                         {roadOptions.map(road => {
-                                            return <div key={road}>
+                                            return <div key={road} className="flex flex-row">
                                                 <input
                                                     className="mr-1 cursor-pointer"
                                                     type="radio"
@@ -1463,7 +1443,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         })}
                                     </div>
                                 </div>
-                                {!editForm && <p>{roadDetails}</p>}
+                                {!editForm && <p className="bg-gray-300 p-1 rounded w-fit sm:w-60 lg:w-80 h-fit mx-5 sm:mx-0">{roadDetails}</p>}
                                 {editForm && <div className="text-center">
                                     <textarea
                                         className="border-2 border-gray-400 p-1 rounded h-40  w-60 md:w-68 lg:w-80 resize-none"
@@ -1473,7 +1453,11 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         autoComplete="new-password"
                                         value={roadDetails}
                                         placeholder="Add details about road here (optional)"
-                                        onChange={e => setRoadDetails(e.target.value)} />
+                                        onChange={e => {
+                                            if (e.target.value.trim().length <500) {
+                                                setRoadDetails(e.target.value)
+                                            }
+                                        }} />
                                 </div>}
                             </div>
                         </div>
@@ -1539,12 +1523,16 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={e => {
-                                            setLegalRestrictionDetailsError(false)
-                                            setLegalRestrictionDetails(e.target.value.trim())
+                                            if (e.target.value.trim().length < 500) {
+                                                setLegalRestrictionDetailsError(false)
+                                                setLegalRestrictionDetails(e.target.value)
+                                            }
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}
-                            {isLegalRestrictions && !editForm && <p>{legalRestrictionDetails}</p>}
+                            {isLegalRestrictions && !editForm && <div className="w-full flex justify-center">
+                                <p className="bg-gray-300 p-1 rounded mx-5 sm:mx-10 w-fit">{legalRestrictionDetails}</p>
+                            </div>}
                         </div>
 
                         {/*nearby town */}

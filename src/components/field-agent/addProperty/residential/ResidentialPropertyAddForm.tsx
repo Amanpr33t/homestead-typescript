@@ -269,22 +269,22 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
   const [flooringTypeArray, setFlooringTypeArray] = useState<FlooringType[]>([]) //It is null when no checkbox is selected. If checkboxes are selected, The array stores the values of all the checkboxes selected
   const [flooringTypeError, setFlooringTypeError] = useState<boolean>(false) //If flooringTypeArray is null, this is set to true
-  const flooringTypeOptions = ['cemented', 'marble', 'luxurious marble', 'standard tiles', 'premium tiles', 'luxurious tiles']
+  const flooringTypeOptions: FlooringType[] = ['cemented', 'marble', 'luxurious marble', 'standard tiles', 'premium tiles', 'luxurious tiles']
 
   const [roofTypeArray, setRoofTypeArray] = useState<RoofType[]>([]) //It is null when no checkbox is selected. If checkboxes are selected, The array stores the values of all the checkboxes selected
   const [roofTypeError, setRoofTypeError] = useState<boolean>(false) //If roofTypeArray is null, this is set to true
-  const roofTypeOptions = ['standard', 'pop work', 'down ceiling']
+  const roofTypeOptions: RoofType[] = ['standard', 'pop work', 'down ceiling']
 
   const [wallTypeArray, setWallTypeArray] = useState<WallType[]>([])
   const [wallTypeError, setWallTypeError] = useState<boolean>(false)
-  const wallTypeOptions = ['plaster', 'paint', 'premium paint', 'wall paper', 'pvc panelling', 'art work']
+  const wallTypeOptions: WallType[] = ['plaster', 'paint', 'premium paint', 'wall paper', 'pvc panelling', 'art work']
 
   const [windowTypeArray, setWindowTypeArray] = useState<WindowType[]>([]) //It is null when no checkbox is selected. If checkboxes are selected, The array stores the values of all the checkboxes selected
   const [windowTypeError, setWindowTypeError] = useState<boolean>(false) //If windowTypeArray is null, this is set to true
-  const windowTypeOptions = ['standard', 'wood', 'premium material']
+  const windowTypeOptions: WindowType[] = ['standard', 'wood', 'premium material']
 
   const [safetySystemArray, setSafetySystemArray] = useState<SafetySystemType[]>([]) //If checkboxes are selected, The array stores the values of all the checkboxes selected
-  const safetySystemOptions = ['cctv', 'glass break siren', 'entry sensor', 'motion sensor', 'panic button', 'keypad', 'keyfob', 'smoke detector', 'co detector', 'water sprinkler', 'doorbell camera']
+  const safetySystemOptions: SafetySystemType[] = ['cctv', 'glass break siren', 'entry sensor', 'motion sensor', 'panic button', 'keypad', 'keyfob', 'smoke detector', 'co detector', 'water sprinkler', 'doorbell camera']
 
   const [garden, setGarden] = useState<boolean | null>(null)  //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
   const [gardenDetails, setGardenDetails] = useState<string>('') //Details of garden
@@ -296,7 +296,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
   const [conditionOfProperty, setConditionOfProperty] = useState<ConditionOfPropertyType>() //It is null when no radio button is selected, and stores a value when a radio button is clicked
   const [conditionOfPropertyError, setConditionOfPropertyError] = useState<boolean>(false) //if conditionOfProperty state is null, this state is set to true
-  const conditionOfPropertyOptions = ['exceptionally new', 'near to new', 'some signs of agying', 'need some renovations', 'needs complete renovation']
+  const conditionOfPropertyOptions: ConditionOfPropertyType[] = ['exceptionally new', 'near to new', 'some signs of agying', 'need some renovations', 'needs complete renovation']
 
   const [numberOfOwners, setNumberOfOwners] = useState<number>(1)
 
@@ -376,11 +376,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
   const errorCheckingBeforeSubmit = () => {
     if (!propertyTitle.trim()) {
       setPropertyTitleErrorMessage('Provide a title')
-    } else if (propertyTitle.trim().length > 150) {
-      setPropertyTitleErrorMessage('Title should be less than 30 words')
+    } else if (propertyTitle.trim().length >= 150) {
+      setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
     }
 
-    if (propertyDetail.trim() && propertyDetail.trim().length > 500) {
+    if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
       setPropertyDetailError(true)
     }
 
@@ -481,7 +481,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (!furnishing) {
         setFurnishingError(true)
-      } else if (furnishing && furnishingDetails.trim().length > 500) {
+      } else if (furnishing && furnishingDetails.trim().length >= 500) {
         setFurnishingDetailsError(true)
       }
     }
@@ -489,7 +489,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (!kitchenFurnishing) {
         setKitchenFurnishingError(true)
-      } else if (kitchenFurnishing && kitchenFurnishingDetails.trim().length > 500) {
+      } else if (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500) {
         setKitchenFurnishingDetailsError(true)
       }
     }
@@ -497,7 +497,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (kitchenAppliances === null) {
         setKitchenAppliancesError(true)
-      } else if (kitchenAppliances && kitchenAppliancesDetails.trim().length > 500) {
+      } else if (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500) {
         setKitchenAppliancesDetailsError(true)
       }
     }
@@ -529,7 +529,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (garden === null) {
         setGardenError(true)
-      } else if (garden && gardenDetails.trim().length > 500) {
+      } else if (garden && gardenDetails.trim().length >= 500) {
         setGardenDetailsError(true)
       }
     }
@@ -579,9 +579,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
         routeTo: null
       })
     }
-    if (!propertyTitle.trim() || propertyTitle.trim().length > 150) {
+    if (!propertyTitle.trim() || propertyTitle.trim().length >= 150) {
       return errorFunction()
-    } else if (propertyDetail.trim() && propertyDetail.trim().length > 500) {
+    } else if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
       return errorFunction()
     } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
       return errorFunction()
@@ -607,11 +607,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && furnishingDetails.trim().length > 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && furnishingDetails.trim().length >= 500))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && kitchenFurnishingDetails.trim().length > 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && kitchenAppliancesDetails.trim().length > 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500))) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
       return errorFunction()
@@ -625,7 +625,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && gardenDetails.trim().length > 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && gardenDetails.trim().length >= 500))) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
       return errorFunction()
@@ -793,23 +793,21 @@ const ResidentialPropertyAddForm: React.FC = () => {
           propertyDataReset={() => setPropertyData(null)}
           firmName={propertyDealerFirmName as string} />}
 
+      {/*Home button*/}
+      {!propertyData && <button
+        type='button'
+        className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
+        onClick={() => navigate('/field-agent', { replace: true })}>
+        Home
+      </button>}
+
       {!spinner &&
         <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
-          {/*Home button*/}
-          <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-            <button
-              type='button'
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-              onClick={() => navigate('/field-agent', { replace: true })}>
-              Home
-            </button>
-          </div>
-
           {/*Heading */}
-          <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white text-xl font-semibold z-10">Add an residential property by filling the form</p>
+          <p className="w-full text-center mt-28 sm:mt-20 pl-4 pr-4 pb-4  text-xl font-semibold">Add an residential property by filling the form</p>
 
-          <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+          <form className="w-full min-h-screen md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
             {/*dealer name and logo */}
             <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
@@ -877,9 +875,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
                 <div className="flex flex-row gap-0.5">
                   <p className="h-4 text-2xl text-red-500">*</p>
-                  <label
-                    className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                    htmlFor="property-title">
+                  <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-title">
                     Property title
                   </label>
                 </div>
@@ -893,7 +889,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   autoComplete="new-password"
                   value={propertyTitle}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    if (e.target.value.trim().length <= 150) {
+                    if (e.target.value.trim().length < 150) {
                       setPropertyTitleErrorMessage('')
                       setPropertyTitle(e.target.value)
                     } else {
@@ -908,9 +904,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
               {propertyDetailError &&
                 <p className="text-red-500 -mt-1">Details should be less than 500 characters</p>}
               <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
-                <label
-                  className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                  htmlFor="property-detail">
+                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-detail">
                   Property details
                 </label>
 
@@ -922,7 +916,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   autoComplete="new-password"
                   value={propertyDetail}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    if (e.target.value.trim().length <= 500) {
+                    if (e.target.value.trim().length < 500) {
                       setPropertyDetailError(false)
                       setPropertyDetail(e.target.value)
                     } else {
@@ -974,9 +968,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
                         placeholder="Number"
                         value={fixedPrice}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          if (+e.target.value.trim() > 0) {
+                          if (+e.target.value > 0) {
                             setPriceErrorMessage('')
-                            setFixedPrice(+e.target.value.trim())
+                            setFixedPriceError(false)
+                            setFixedPrice(+e.target.value)
                           } else {
                             setFixedPrice('')
                           }
@@ -1017,10 +1012,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
                           placeholder="Number"
                           value={rangeOfPriceFrom}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            if (+e.target.value.trim() > 0) {
+                            if (+e.target.value > 0) {
                               setPriceErrorMessage('')
                               setRangeOfPriceFromError(false)
-                              setRangeOfPriceFrom(+e.target.value.trim())
+                              setRangeOfPriceFrom(+e.target.value)
                             } else {
                               setRangeOfPriceFrom('')
                             }
@@ -1036,10 +1031,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
                           placeholder="Number"
                           value={rangeOfPriceTo}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            if (+e.target.value.trim() > 0) {
+                            if (+e.target.value > 0) {
                               setPriceErrorMessage('')
                               setRangeOfPriceToError(false)
-                              setRangeOfPriceTo(+e.target.value.trim())
+                              setRangeOfPriceTo(+e.target.value)
                             } else {
                               setRangeOfPriceTo('')
                             }
@@ -1276,9 +1271,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*grocery store */}
                 <div className="flex flex-row gap-8 w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="grocery-store">
+                  <label className="text-gray-500 font-semibold" htmlFor="grocery-store">
                     Grocery store (km)
                   </label>
                   <input
@@ -1289,8 +1282,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     autoComplete="new-password"
                     value={distanceFromGroceryStore}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      if (+e.target.value.trim() > 0) {
-                        setDistanceFromGroceryStore(+e.target.value.trim())
+                      if (+e.target.value > 0) {
+                        setDistanceFromGroceryStore(+e.target.value)
                         setDistanceFromGroceryStoreError(false)
                       } else {
                         setDistanceFromGroceryStore('')
@@ -1300,9 +1293,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*Restaurant/cafe */}
                 <div className="flex flex-row gap-3 w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="restaurant-cafe">
+                  <label className="text-gray-500 font-semibold" htmlFor="restaurant-cafe">
                     Restaurant/Cafe (km)
                   </label>
                   <input
@@ -1313,8 +1304,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     autoComplete="new-password"
                     value={distanceFromRestaurantCafe}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      if (+e.target.value.trim() > 0) {
-                        setDistanceFromRestaurantCafe(+e.target.value.trim())
+                      if (+e.target.value > 0) {
+                        setDistanceFromRestaurantCafe(+e.target.value)
                         setDistanceFromRestaurantCafeError(false)
                       } else {
                         setDistanceFromRestaurantCafe('')
@@ -1324,9 +1315,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*Exercise area */}
                 <div className="flex flex-row gap-9 w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="exrecise-area">
+                  <label className="text-gray-500 font-semibold" htmlFor="exrecise-area">
                     Exercise area (km)
                   </label>
                   <input
@@ -1337,8 +1326,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     autoComplete="new-password"
                     value={distanceFromExerciseArea}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      if (+e.target.value.trim() > 0) {
-                        setDistanceFromExerciseArea(+e.target.value.trim())
+                      if (+e.target.value > 0) {
+                        setDistanceFromExerciseArea(+e.target.value)
                         setDistanceFromExerciseAreaError(false)
                       } else {
                         setDistanceFromExerciseArea('')
@@ -1348,9 +1337,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*School */}
                 <div className="flex flex-row gap-20 w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="school">
+                  <label className="text-gray-500 font-semibold" htmlFor="school">
                     School (km)
                   </label>
                   <input
@@ -1361,8 +1348,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     autoComplete="new-password"
                     value={distanceFromSchool}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      if (+e.target.value.trim() > 0) {
-                        setDistanceFromSchool(+e.target.value.trim())
+                      if (+e.target.value > 0) {
+                        setDistanceFromSchool(+e.target.value)
                         setDistanceFromSchoolError(false)
                       } else {
                         setDistanceFromSchool('')
@@ -1372,9 +1359,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*hospital */}
                 <div className="flex flex-row gap-16 w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="hospital">
+                  <label className="text-gray-500 font-semibold" htmlFor="hospital">
                     Hospital (km)
                   </label>
                   <input
@@ -1385,8 +1370,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     autoComplete="new-password"
                     value={distanceFromHospital}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      if (+e.target.value.trim() > 0) {
-                        setDistanceFromHospital(+e.target.value.trim())
+                      if (+e.target.value > 0) {
+                        setDistanceFromHospital(+e.target.value)
                         setDistanceFromHospitalError(false)
                       } else {
                         setDistanceFromHospital('')
@@ -1407,9 +1392,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 </div>
                 <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
                   {areaTypeOptions.map(type => {
-                    return <div
-                      key={type}
-                      className="flex flex-row h-fit">
+                    return <div key={type} className="flex flex-row h-fit">
                       <input
                         className="mr-1 cursor-pointer"
                         type="radio"
@@ -1433,9 +1416,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="owners">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="owners">
                     Number of floors
                   </label>
                   <select
@@ -1447,9 +1428,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfFloors(+e.target.value)
                     }}>
                     {generateNumberArray(1, 10).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1466,8 +1445,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Total area</p>
                 </div>
 
-                {/*metre-square */}
                 <div className="flex flex-col w-full gap-3">
+                  {/*metre-square */}
                   <div className="flex flex-row gap-1 ">
                     <input
                       id="total-area-metre"
@@ -1477,9 +1456,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Size"
                       value={totalAreaMetreSquare}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        if (+e.target.value.trim() > 0) {
+                        if (+e.target.value > 0) {
                           setTotalAreaErrorMetreSquareError(false)
-                          setTotalAreaMetreSquare(+e.target.value.trim())
+                          setTotalAreaMetreSquare(+e.target.value)
                         } else {
                           setTotalAreaMetreSquare('')
                         }
@@ -1497,9 +1476,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Size"
                       value={totalAreaGajj}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        if (+e.target.value.trim() > 0) {
+                        if (+e.target.value > 0) {
                           setTotalAreaGajjError(false)
-                          setTotalAreaGajj(+e.target.value.trim())
+                          setTotalAreaGajj(+e.target.value)
                         } else {
                           setTotalAreaGajj('')
                         }
@@ -1519,8 +1498,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   <p className="text-xl font-semibold text-gray-500 whitespace-nowrap" >Covered area</p>
                 </div>
 
-                {/*metre-square */}
                 <div className="flex flex-col  place-items-center sm:place-items-start gap-3">
+                  {/*metre-square */}
                   <div className="flex flex-row gap-1">
                     <input
                       id="covered-area-metre"
@@ -1530,9 +1509,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Size"
                       value={coveredAreaMetreSquare}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        if (+e.target.value.trim() > 0) {
+                        if (+e.target.value > 0) {
                           setCoveredAreaErrorMetreSquareError(false)
-                          setCoveredAreaMetreSquare(+e.target.value.trim())
+                          setCoveredAreaMetreSquare(+e.target.value)
                         } else {
                           setCoveredAreaMetreSquare('')
                         }
@@ -1550,9 +1529,9 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Size"
                       value={coveredAreaGajj}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        if (+e.target.value.trim() > 0) {
+                        if (+e.target.value > 0) {
                           setCoveredAreaGajjError(false)
-                          setCoveredAreaGajj(+e.target.value.trim())
+                          setCoveredAreaGajj(+e.target.value)
                         } else {
                           setCoveredAreaGajj('')
                         }
@@ -1567,9 +1546,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 ">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-rooms">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-rooms">
                     Number of Living Rooms
                   </label>
                   <select
@@ -1580,9 +1557,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfLivingRooms(+e.target.value)
                     }}>
                     {generateNumberArray(1, 10).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1593,9 +1568,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-bedrooms">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-bedrooms">
                     Number of Bedrooms
                   </label>
                   <select
@@ -1606,9 +1579,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       setNumberOfBedrooms(+e.target.value)
                     }}>
-                    {generateNumberArray(1, 10).map(number => <option
-                      key={number}
-                      value={number}>
+                    {generateNumberArray(1, 10).map(number => <option key={number} value={number}>
                       {number}
                     </option>)}
                   </select>
@@ -1619,9 +1590,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 ">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-office-rooms">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-office-rooms">
                     Number of Office rooms
                   </label>
                   <select
@@ -1633,9 +1602,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfOfficeRooms(+e.target.value)
                     }}>
                     {generateNumberArray(0, 9).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1646,9 +1613,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-washrooms">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-washrooms">
                     Number of Washrooms
                   </label>
                   <select
@@ -1660,9 +1625,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfWashrooms(+e.target.value)
                     }}>
                     {generateNumberArray(1, 10).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1673,9 +1636,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-kitchen">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-kitchen">
                     Number of Kitchens
                   </label>
                   <select
@@ -1687,9 +1648,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfKitchen(+e.target.value)
                     }}>
                     {generateNumberArray(1, 10).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1700,9 +1659,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-car-parkings">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-car-parkings">
                     Number of car parkings
                   </label>
                   <select
@@ -1714,9 +1671,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfCarParkingSpaces(+e.target.value)
                     }}>
                     {generateNumberArray(0, 9).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1727,9 +1682,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="flex flex-col p-2 pb-5 pt-5 ">
                 <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                  <label
-                    className="text-xl font-semibold text-gray-500"
-                    htmlFor="number-of-balconies">
+                  <label className="text-xl font-semibold text-gray-500" htmlFor="number-of-balconies">
                     Number of balconies
                   </label>
                   <select
@@ -1741,9 +1694,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setNumberOfBalconies(+e.target.value)
                     }}>
                     {generateNumberArray(0, 9).map(number =>
-                      <option
-                        key={number}
-                        value={number}>
+                      <option key={number} value={number}>
                         {number}
                       </option>)}
                   </select>
@@ -1762,9 +1713,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                     {['store-room-yes', 'store-room-no'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      return <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -1798,9 +1747,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                     {['servant-room-yes', 'servant-room-no'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      return <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -1827,17 +1774,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
                 {furnishingError && <p className="text-red-500">Select an option</p>}
-                <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
+                <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                   <div className="flex flex-row gap-0.5">
                     <p className="h-4 text-2xl text-red-500">*</p>
                     <p className="text-xl font-semibold text-gray-500 mb-2">House Furnishing</p>
                   </div>
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
-
                     {['fully-furnished', 'semi-furnished', 'unfurnished'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      return <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -1861,7 +1805,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 {furnishing && (furnishing === 'semi-furnished' || furnishing === 'fully-furnished') &&
                   <div className="text-center">
                     <textarea
-                      className={`border-2 ${furnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`}
+                      className={`border-2 ${furnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none mt-3`}
                       id="furnishing-details"
                       name="furnishing-details"
                       autoCorrect="on"
@@ -1869,7 +1813,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Add details about furnishing (optional)"
                       value={furnishingDetails}
                       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                        if (furnishingDetails.trim().length <= 500) {
+                        if (e.target.value.trim().length < 500) {
                           setFurnishingDetails(e.target.value)
                           setFurnishingDetailsError(false)
                         } else {
@@ -1884,7 +1828,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' &&
               <div className="p-2  flex flex-col pb-5 pt-5">
                 {kitchenFurnishingError && <p className="text-red-500">Select an option</p>}
-                <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
+                <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
                   <div className="flex flex-row gap-0.5">
                     <p className="h-4 text-2xl text-red-500">*</p>
                     <p className="text-xl font-semibold text-gray-500 mb-2">Kitchen furnishing</p>
@@ -1892,9 +1836,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
 
                     {['modular', 'semi-furnished', 'unfurnished'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      return <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -1918,7 +1860,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 {kitchenFurnishing && (kitchenFurnishing === 'semi-furnished' || kitchenFurnishing === 'modular') &&
                   <div className="text-center">
                     <textarea
-                      className={`border-2 ${kitchenFurnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none`}
+                      className={`border-2 ${kitchenFurnishingDetailsError ? "border-red-500" : "border-gray-400"}  rounded h-40 w-80 p-1 resize-none mt-3`}
                       id="type-of-kitchen-details"
                       name="type-of-kitchen-details"
                       autoCorrect="on"
@@ -1926,7 +1868,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Add details about furnishing (optional)"
                       value={kitchenFurnishingDetails}
                       onChange={e => {
-                        if (kitchenFurnishingDetails.trim().length <= 500) {
+                        if (e.target.value.trim().length < 500) {
                           setKitchenFurnishingDetails(e.target.value)
                           setKitchenFurnishingDetailsError(false)
                         } else {
@@ -1947,9 +1889,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 </div>
                 <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                   {["kitchen-appliances-yes", "kitchen-appliances-no"].map(type => {
-                    return <div
-                      key={type}
-                      className="flex flex-row h-fit">
+                    return <div key={type} className="flex flex-row h-fit">
                       <input
                         className="mr-1 cursor-pointer"
                         type="radio"
@@ -1976,7 +1916,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
               {kitchenAppliances &&
                 <div className="text-center">
                   <textarea
-                    className={`border-2 ${kitchenAppliancesDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
+                    className={`border-2 ${kitchenAppliancesDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none mt-3`}
                     id="kitchen-appliances-details"
                     name="kitchen-appliances-details"
                     autoCorrect="on"
@@ -1984,7 +1924,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about kitchen appliances (optional)"
                     value={kitchenAppliancesDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (kitchenAppliancesDetails.trim().length >= 500) {
+                      if (e.target.value.trim().length > 500) {
                         setKitchenAppliancesDetailsError(true)
                       } else {
                         setKitchenAppliancesDetails(e.target.value)
@@ -2008,9 +1948,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                     {['standard', 'premium', 'luxurious'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      return <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -2042,9 +1980,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                     {['standard', 'premium', 'luxurious'].map(type => {
-                      return <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      return <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -2075,9 +2011,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                     {flooringTypeOptions.map(type =>
-                      <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="checkbox"
@@ -2117,9 +2051,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                     {roofTypeOptions.map(type =>
-                      <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="checkbox"
@@ -2159,9 +2091,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                     {wallTypeOptions.map(type =>
-                      <div
-                        key={type}
-                        className="flex flex-row h-fit">
+                      <div key={type} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="checkbox"
@@ -2200,9 +2130,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 </div>
                 <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                   {windowTypeOptions.map(type =>
-                    <div
-                      key={type}
-                      className="flex flex-row h-fit">
+                    <div key={type} className="flex flex-row h-fit">
                       <input
                         className="mr-1 cursor-pointer"
                         type="checkbox"
@@ -2236,9 +2164,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 <p className="text-xl font-semibold text-gray-500 mb-2">Safety system</p>
                 <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                   {safetySystemOptions.map(type =>
-                    <div
-                      key={type}
-                      className="flex flex-row h-fit">
+                    <div key={type} className="flex flex-row h-fit">
                       <input
                         className="mr-1 cursor-pointer"
                         type="checkbox"
@@ -2270,9 +2196,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 </div>
                 <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                   {['garden-yes', 'garden-no'].map(type => {
-                    return <div
-                      key={type}
-                      className="flex flex-row h-fit">
+                    return <div key={type} className="flex flex-row h-fit">
                       <input
                         className="mr-1 cursor-pointer"
                         type="radio"
@@ -2299,7 +2223,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
               {garden &&
                 <div className="text-center">
                   <textarea
-                    className={`border-2 ${gardenDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
+                    className={`border-2 ${gardenDetailsError ? 'border-red-500' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none mt-3`}
                     id="garden-details"
                     name="garden-details"
                     autoCorrect="on"
@@ -2307,7 +2231,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about garden (optional)"
                     value={gardenDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (gardenDetails.trim().length >= 500) {
+                      if (e.target.value.trim().length > 500) {
                         setGardenDetailsError(true)
                       } else {
                         setGardenDetails(e.target.value)
@@ -2337,10 +2261,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Size"
                       value={ageOfConstruction}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        if (+e.target.value.trim() > 0 && +e.target.value.trim() <= 100) {
+                        if (+e.target.value > 0 && +e.target.value <= 100) {
                           setAgeOfConstructionError(false)
-                          setAgeOfConstruction(+e.target.value.trim())
-                        } else {
+                          setAgeOfConstruction(+e.target.value)
+                        } else if (+e.target.value === 0) {
                           setAgeOfConstruction('')
                         }
                       }} />
@@ -2362,9 +2286,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
                     {conditionOfPropertyOptions.map(option => {
-                      return <div
-                        key={option}
-                        className="flex flex-row h-fit">
+                      return <div key={option} className="flex flex-row h-fit">
                         <input
                           className="mr-1 cursor-pointer"
                           type="radio"
@@ -2386,9 +2308,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {/* Number of owners*/}
             <div className="flex flex-col p-2 pb-5 pt-5">
               <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                <label
-                  className="text-xl font-semibold text-gray-500"
-                  htmlFor="owners">
+                <label className="text-xl font-semibold text-gray-500" htmlFor="owners">
                   Number of owners
                 </label>
                 <select
@@ -2400,9 +2320,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     setNumberOfOwners(+e.target.value)
                   }}>
                   {generateNumberArray(1, 10).map(number =>
-                    <option
-                      key={number}
-                      value={number}>
+                    <option key={number} value={number}>
                       {number}
                     </option>)}
                 </select>
@@ -2419,9 +2337,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 </div>
                 <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
                   {['legal-restrictions-yes', 'legal-restrictions-no'].map(type => {
-                    return <div
-                      key={type}
-                      className="flex flex-row h-fit">
+                    return <div key={type} className="flex flex-row h-fit">
                       <input
                         className="mr-1 cursor-pointer"
                         type="radio"
@@ -2456,7 +2372,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about restrictions"
                     value={legalRestrictionDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (e.target.value.trim().length <= 500) {
+                      if (e.target.value.trim().length < 500) {
                         setLegalRestrictionDetailsError(false)
                         setLegalRestrictionDetails(e.target.value)
                       }
@@ -2519,9 +2435,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*village */}
                 <div className="flex flex-col w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="village">
+                  <label className="text-gray-500 font-semibold" htmlFor="village">
                     Village
                   </label>
                   <input
@@ -2538,9 +2452,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*city */}
                 <div className="flex flex-col w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="city">
+                  <label className="text-gray-500 font-semibold" htmlFor="city">
                     City/Town
                   </label>
                   <input
@@ -2559,9 +2471,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 <div className="flex flex-col w-full">
                   <div className="flex flex-row gap-0.5">
                     <p className="h-4 text-2xl text-red-500">*</p>
-                    <label
-                      className="text-gray-500 font-semibold"
-                      htmlFor="state">
+                    <label className="text-gray-500 font-semibold" htmlFor="state">
                       State
                     </label>
                   </div>
@@ -2576,16 +2486,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setDistrict('')
                       setTehsil('')
                     }}>
-                    <option
-                      className="text-gray-500 font-semibold"
-                      value=""
-                      disabled>
-                      Select a state:
+                    <option className="text-gray-500 font-semibold" value="" disabled>
+                      Select a state
                     </option>
                     {states.map(state => {
-                      return <option
-                        key={state}
-                        value={state}>
+                      return <option key={state} value={state}>
                         {capitalizeFirstLetterOfAString(state)}
                       </option>
                     })}
@@ -2597,9 +2502,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 <div className="flex flex-col w-full">
                   <div className="flex flex-row gap-0.5">
                     <p className="h-4 text-2xl text-red-500">*</p>
-                    <label
-                      className="text-gray-500 font-semibold"
-                      htmlFor="district">
+                    <label className="text-gray-500 font-semibold" htmlFor="district">
                       District
                     </label>
                   </div>
@@ -2614,17 +2517,12 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       setDistrict(e.target.value)
                       setTehsil('')
                     }}>
-                    <option
-                      className="font-semibold"
-                      value=""
-                      disabled>
+                    <option className="font-semibold" value="" disabled>
                       Select a district
                     </option>
                     {state === 'punjab' &&
                       punjabDistricts.map(district => {
-                        return <option
-                          key={district}
-                          value={district}>
+                        return <option key={district} value={district}>
                           {capitalizeFirstLetterOfAString(district)}
                         </option>
                       })}
@@ -2638,9 +2536,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
                 {/*tehsil */}
                 <div className="flex flex-col w-full">
-                  <label
-                    className="text-gray-500 font-semibold"
-                    htmlFor="state">Tehsil</label>
+                  <label className="text-gray-500 font-semibold" htmlFor="state">Tehsil</label>
                   <select
                     className='border-2 border-gray-500 p-1 rounded'
                     name="state"
@@ -2650,15 +2546,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       setTehsil(e.target.value)
                     }}>
-                    <option
-                      className="font-semibold"
-                      value=""
-                      disabled >
+                    <option className="font-semibold" value="" disabled >
                       Select a tehsil
                     </option>
                     {state === 'chandigarh' && district === 'chandigarh' &&
-                      <option
-                        value='chandigarh'>
+                      <option value='chandigarh'>
                         Chandigarh
                       </option>}
                     {state === 'punjab' && <PunjabTehsilsDropdown
@@ -2671,9 +2563,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
             {/* contract*/}
             <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
               <div className="flex flex-row gap-5">
-                <label
-                  className="text-gray-500 text-xl font-semibold"
-                  htmlFor="contract-image">
+                <label className="text-gray-500 text-xl font-semibold" htmlFor="contract-image">
                   Upload images of contract between seller and dealer (optional)
                 </label>
                 <input
@@ -2688,13 +2578,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
               {contractImages.length !== 0 &&
                 <div className='flex flex-wrap justify-center gap-5 p-5'>
                   {contractImages.map(image => {
-                    return <div
-                      key={Math.random()}
-                      className='relative w-fit bg-blue-300'>
-                      <img
-                        className='relative w-auto h-60'
-                        src={image.file}
-                        alt="" />
+                    return <div key={Math.random()} className='relative w-fit bg-blue-300'>
+                      <img className='relative w-auto h-60' src={image.file} alt="" />
                       <div
                         className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                         onClick={() => {
@@ -2714,9 +2599,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
               <div className="flex flex-row gap-5">
                 <div className="flex flex-row gap-0.5">
                   <p className="h-4 text-2xl text-red-500">*</p>
-                  <label
-                    className="text-gray-500 text-xl font-semibold"
-                    htmlFor="property-image">
+                  <label className="text-gray-500 text-xl font-semibold" htmlFor="property-image">
                     Upload property images
                   </label>
                 </div>
@@ -2731,13 +2614,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
               {residentialLandImages.length !== 0 &&
                 <div className='flex flex-wrap justify-center gap-5 p-5'>
                   {residentialLandImages.map(image => {
-                    return <div
-                      key={Math.random()}
-                      className='relative w-fit bg-blue-300'>
-                      <img
-                        className='relative w-auto h-60'
-                        src={image.file}
-                        alt="" />
+                    return <div key={Math.random()} className='relative w-fit bg-blue-300'>
+                      <img className='relative w-auto h-60' src={image.file} alt="" />
                       <div
                         className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                         onClick={() => {

@@ -29,6 +29,7 @@ interface ImageType {
     upload: File;
 }
 
+type StatesType = 'chandigarh' | 'punjab'
 type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
 
 interface PropertyDataType {
@@ -93,6 +94,7 @@ interface PropertyDataType {
 const CommercialPropertyAddForm: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
+
     const authToken = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
@@ -180,9 +182,9 @@ const CommercialPropertyAddForm: React.FC = () => {
     const [builtUpProperty, setBuiltUpProperty] = useState<boolean>()
     const [stateOfPropertyError, setStateOfPropertyError] = useState<boolean>(false)
     const [builtUpSelectedOption, setBuiltupSelectedOption] = useState<BuiltUpType>()
-    const builtUpPropertyOptions = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
+    const builtUpPropertyOptions: BuiltUpType[] = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
 
-    const states = ['chandigarh', 'punjab']
+    const states: StatesType[] = ['chandigarh', 'punjab']
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
@@ -379,7 +381,6 @@ const CommercialPropertyAddForm: React.FC = () => {
         } else {
             setPropertyData(finalPropertyData)
         }
-
     }
 
     return (
@@ -407,22 +408,20 @@ const CommercialPropertyAddForm: React.FC = () => {
                     propertyDataReset={() => setPropertyData(null)}
                     firmName={propertyDealerFirmName as string} />}
 
+            {/*Home button */}
+            {!propertyData && <button
+                type='button'
+                className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
+                onClick={() => navigate('/field-agent', { replace: true })}>
+                Home
+            </button>}
+
             {!spinner &&
                 <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
-                    {/*Home button */}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent', { replace: true })}>
-                            Home
-                        </button>
-                    </div>
+                    <p className="mt-28 sm:mt-20 w-full text-center pl-4 pr-4 pb-4 bg-white  text-xl font-semibold">Add a commercial property by filling the form</p>
 
-                    <p className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white  text-xl font-semibold z-10">Add a commercial property by filling the form</p>
-
-                    <form className="w-full min-h-screen mt-48 sm:mt-36 md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full min-h-screen  md:w-10/12 lg:w-8/12  h-fit pt-4 pb-4 flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {/*firm name */}
                         <div className="flex flex-col md:flex-row place-items-center md:place-content-center  gap-3 mb-10 ">
@@ -445,13 +444,13 @@ const CommercialPropertyAddForm: React.FC = () => {
                         {/*built-up or empty property */}
                         <div className="p-2  flex flex-col pb-5 pt-5 ">
                             {stateOfPropertyError && <p className="text-red-500">Select an option</p>}
-                            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                                <div className="flex flex-row gap-0.5">
+                            <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16 mb-2">
+                                <div className="flex flex-row gap-0.5 ">
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <p className="text-xl font-semibold text-gray-500 mb-2">State of property</p>
                                 </div>
-                                <div className="flex-col">
-                                    <div className="flex flex-row gap-4 sm:gap-6 pt-1">
+                                <div className="flex flex-col">
+                                    <div className="flex flex-row place-content-center gap-3 sm:gap-6 pt-1">
                                         <div className="flex flex-row h-fit">
                                             <input
                                                 className="mr-1 cursor-pointer"
@@ -488,27 +487,29 @@ const CommercialPropertyAddForm: React.FC = () => {
                                     </div>
 
                                     {commercialPropertyType === 'industrial' && builtUpProperty &&
-                                        <div className="flex flex-col bg-white w-fit p-1 mt-2">
+                                        <div className="flex flex-col place-items-center w-full bg-white w-fit p-1 mt-2">
                                             <p className="font-semibold">Select an option</p>
-                                            {builtUpPropertyOptions.map(option => {
-                                                return <div
-                                                    key={option}
-                                                    className="flex flex-row h-fit ">
-                                                    <input
-                                                        className="mr-1 cursor-pointer"
-                                                        type="radio"
-                                                        id={option}
-                                                        name="built-up-option"
-                                                        value={option}
-                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                            setStateOfPropertyError(false)
-                                                            if (e.target.checked) {
-                                                                setBuiltupSelectedOption(e.target.value as BuiltUpType)
-                                                            }
-                                                        }} />
-                                                    <label htmlFor={option}>{option}</label>
-                                                </div>
-                                            })}
+                                            <div>
+                                                {builtUpPropertyOptions.map(option => {
+                                                    return <div
+                                                        key={option}
+                                                        className="flex flex-row h-fit ">
+                                                        <input
+                                                            className="mr-1 cursor-pointer"
+                                                            type="radio"
+                                                            id={option}
+                                                            name="built-up-option"
+                                                            value={option}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                setStateOfPropertyError(false)
+                                                                if (e.target.checked) {
+                                                                    setBuiltupSelectedOption(e.target.value as BuiltUpType)
+                                                                }
+                                                            }} />
+                                                        <label htmlFor={option}>{option}</label>
+                                                    </div>
+                                                })}
+                                            </div>
                                         </div>}
                                 </div>
                             </div>
@@ -541,9 +542,9 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                     value={totalAreaMetreSquare}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                         setTotalAreaError(false)
-                                                        if (e.target.value.trim() && +e.target.value.trim() !== 0) {
-                                                            setTotalAreaMetreSquare(+e.target.value.trim())
-                                                            setTotalAreaSquareFeet(Number((+e.target.value.trim() * 10.764).toFixed(2)))
+                                                        if (+e.target.value > 0) {
+                                                            setTotalAreaMetreSquare(+e.target.value)
+                                                            setTotalAreaSquareFeet(Number((+e.target.value * 10.764).toFixed(2)))
                                                         } else {
                                                             setTotalAreaSquareFeet('')
                                                             setTotalAreaMetreSquare('')
@@ -561,9 +562,9 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                     value={totalAreaSquareFeet}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                         setTotalAreaError(false)
-                                                        if (e.target.value.trim() && +e.target.value.trim() !== 0) {
-                                                            setTotalAreaSquareFeet(+e.target.value.trim())
-                                                            setTotalAreaMetreSquare(Number((+e.target.value.trim() / 10.764).toFixed(2)))
+                                                        if (+e.target.value > 0) {
+                                                            setTotalAreaSquareFeet(+e.target.value)
+                                                            setTotalAreaMetreSquare(Number((+e.target.value / 10.764).toFixed(2)))
                                                         } else {
                                                             setTotalAreaSquareFeet('')
                                                             setTotalAreaMetreSquare('')
@@ -584,7 +585,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                     value={coveredAreaMetreSquare}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                         setCoveredAreaError(false)
-                                                        if (e.target.value.trim() && +e.target.value.trim() !== 0) {
+                                                        if (+e.target.value > 0) {
                                                             setCoveredAreaMetreSquare(+e.target.value.trim())
                                                             setCoveredAreaSquareFeet(Number((+e.target.value.trim() * 10.764).toFixed(2)))
                                                         } else {
@@ -604,9 +605,9 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                     value={coveredAreaSquareFeet}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                         setCoveredAreaError(false)
-                                                        if (e.target.value.trim() && +e.target.value.trim() !== 0) {
-                                                            setCoveredAreaSquareFeet(+e.target.value.trim())
-                                                            setCoveredAreaMetreSquare(Number((+e.target.value.trim() / 10.764).toFixed(2)))
+                                                        if (+e.target.value > 0) {
+                                                            setCoveredAreaSquareFeet(+e.target.value)
+                                                            setCoveredAreaMetreSquare(Number((+e.target.value / 10.764).toFixed(2)))
                                                         } else {
                                                             setCoveredAreaSquareFeet('')
                                                             setCoveredAreaMetreSquare('')
@@ -625,7 +626,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
+                                            if (e.target.value.trim().length < 500) {
                                                 setLandSizeDetails(e.target.value)
                                             }
                                         }} />
@@ -668,9 +669,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                         {/* Number of floors without basement*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                                <label
-                                    className="text-xl font-semibold text-gray-500"
-                                    htmlFor="floors">
+                                <label className="text-xl font-semibold text-gray-500" htmlFor="floors">
                                     Number of floors (basement excluded)
                                 </label>
                                 <select
@@ -682,9 +681,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         setNumberOfFloorsWithoutBasement(+e.target.value)
                                     }}>
                                     {arrayOfNumbers(1, 50).map(number =>
-                                        <option
-                                            key={number}
-                                            value={number}>
+                                        <option key={number} value={number}>
                                             {number}
                                         </option>)}
                                 </select>
@@ -694,9 +691,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                         {/* Number of basement floors*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 ">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                                <label
-                                    className="text-xl font-semibold text-gray-500"
-                                    htmlFor="basement">
+                                <label className="text-xl font-semibold text-gray-500" htmlFor="basement">
                                     Number of basement floors
                                 </label>
                                 <select
@@ -708,9 +703,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         setNumberOfBasementFloors(+e.target.value)
                                     }}>
                                     {arrayOfNumbers(0, 5).map(number =>
-                                        <option
-                                            key={number}
-                                            value={number}>
+                                        <option key={number} value={number}>
                                             {number}
                                         </option>)}
                                 </select>
@@ -732,9 +725,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                 setLockInPeriodYears(+e.target.value)
                                             }}>
                                             {arrayOfNumbers(0, 21).map(number =>
-                                                <option
-                                                    key={number}
-                                                    value={number}>
+                                                <option key={number} value={number}>
                                                     {number}
                                                 </option>)}
                                         </select>
@@ -750,9 +741,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                 setLockInPeriodMonths(+e.target.value)
                                             }}>
                                             {arrayOfNumbers(0, 12).map(number =>
-                                                <option
-                                                    key={number}
-                                                    value={number}>
+                                                <option key={number} value={number}>
                                                     {number}
                                                 </option>)}
                                         </select>
@@ -776,9 +765,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                 setLeasePeriodYears(+e.target.value)
                                             }}>
                                             {arrayOfNumbers(0, 21).map(number =>
-                                                <option
-                                                    key={number}
-                                                    value={number}>
+                                                <option key={number} value={number}>
                                                     {number}
                                                 </option>)}
                                         </select>
@@ -794,9 +781,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                                 setLeasePeriodMonths(+e.target.value)
                                             }}>
                                             {arrayOfNumbers(0, 12).map(number =>
-                                                <option
-                                                    key={number}
-                                                    value={number}>
+                                                <option key={number} value={number}>
                                                     {number}
                                                 </option>)}
                                         </select>
@@ -808,9 +793,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                         {/* contract*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                             <div className="flex flex-row gap-5">
-                                <label
-                                    className="text-gray-500 text-xl font-semibold"
-                                    htmlFor="image">
+                                <label className="text-gray-500 text-xl font-semibold" htmlFor="image">
                                     Upload images of contract between seller and dealer (optional)
                                 </label>
                                 <input
@@ -854,9 +837,7 @@ const CommercialPropertyAddForm: React.FC = () => {
 
                             <div className="flex flex-col place-self-center w-11/12 gap-2">
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="plot">
+                                    <label className="text-gray-500 font-semibold" htmlFor="plot">
                                         Plot No.
                                     </label>
                                     <input
@@ -874,9 +855,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                 </div>
 
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="village">
+                                    <label className="text-gray-500 font-semibold" htmlFor="village">
                                         Village
                                     </label>
                                     <input
@@ -892,9 +871,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                 </div>
 
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="city">
+                                    <label className="text-gray-500 font-semibold" htmlFor="city">
                                         City/Town
                                     </label>
                                     <input
@@ -911,9 +888,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                 <div className="flex flex-col w-full">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
-                                        <label
-                                            className="text-gray-500 font-semibold"
-                                            htmlFor="state">
+                                        <label className="text-gray-500 font-semibold" htmlFor="state">
                                             State
                                         </label>
                                     </div>
@@ -928,16 +903,11 @@ const CommercialPropertyAddForm: React.FC = () => {
                                             setDistrict('')
                                             setTehsil('')
                                         }}>
-                                        <option
-                                            className="text-gray-500 font-semibold"
-                                            value=""
-                                            disabled>
-                                            Select a state:
+                                        <option className="text-gray-500 font-semibold" value="" disabled>
+                                            Select a state
                                         </option>
                                         {states.map(state => {
-                                            return <option
-                                                key={state}
-                                                value={state}>
+                                            return <option key={state} value={state}>
                                                 {capitalizeFirstLetterOfAString(state)}
                                             </option>
                                         })}
@@ -948,9 +918,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                 <div className="flex flex-col w-full">
                                     <div className="flex flex-row gap-0.5">
                                         <p className="h-4 text-2xl text-red-500">*</p>
-                                        <label
-                                            className="text-gray-500 font-semibold"
-                                            htmlFor="district">
+                                        <label className="text-gray-500 font-semibold" htmlFor="district">
                                             District
                                         </label>
                                     </div>
@@ -965,32 +933,26 @@ const CommercialPropertyAddForm: React.FC = () => {
                                             setDistrict(e.target.value)
                                             setTehsil('')
                                         }}>
-                                        <option
-                                            className="font-semibold"
-                                            value=""
-                                            disabled>
+                                        <option className="font-semibold" value="" disabled>
                                             Select a district
                                         </option>
                                         {state === 'punjab' &&
                                             punjabDistricts.map(district => {
-                                                return <option
-                                                    key={district}
-                                                    value={district}>
+                                                return <option key={district} value={district}>
                                                     {capitalizeFirstLetterOfAString(district)}
                                                 </option>
                                             })}
                                         {state === 'chandigarh' &&
-                                            <option value="chandigarh">
+                                            <option value='chandigarh'>
                                                 Chandigarh
-                                            </option>}
+                                            </option>
+                                        }
                                     </select>
                                     {districtError && <p className="text-red-500">Select a district</p>}
                                 </div>
 
                                 <div className="flex flex-col w-full">
-                                    <label
-                                        className="text-gray-500 font-semibold"
-                                        htmlFor="state">
+                                    <label className="text-gray-500 font-semibold" htmlFor="state">
                                         Tehsil
                                     </label>
                                     <select
@@ -1002,16 +964,9 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                             setTehsil(e.target.value)
                                         }}>
-                                        <option
-                                            className="font-semibold"
-                                            value=""
-                                            disabled>
+                                        <option className="font-semibold" value="" disabled>
                                             Select a tehsil
                                         </option>
-                                        {state === 'chandigarh' && district === 'chandigarh' &&
-                                            <option value='chandigarh'>
-                                                Chandigarh
-                                            </option>}
                                         {state === 'punjab' && <PunjabTehsilsDropdown district={district} />}
                                     </select>
                                 </div>
@@ -1021,9 +976,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                         {/* Number of owners*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
                             <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                                <label
-                                    className="text-xl font-semibold text-gray-500"
-                                    htmlFor="owners">
+                                <label className="text-xl font-semibold text-gray-500" htmlFor="owners">
                                     Number of owners
                                 </label>
                                 <select
@@ -1035,9 +988,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         setNumberOfOwners(+e.target.value)
                                     }}>
                                     {arrayOfNumbers(1, 10).map(number =>
-                                        <option
-                                            key={number}
-                                            value={number}>
+                                        <option key={number} value={number}>
                                             {number}
                                         </option>)}
                                 </select>
@@ -1052,9 +1003,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                             <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <label
-                                        className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                                        htmlFor="size">
+                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="size">
                                         Price (Rs)
                                     </label>
                                 </div>
@@ -1064,7 +1013,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         id="price-number"
                                         type="number"
                                         name='price-number'
-                                        className={`border-2 ${priceDemandedNumberError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`}
+                                        className={`border-2 ${priceDemandedNumberError ? 'border-red-500' : 'border-gray-500'} pl-1 pr-1 rounded bg-white w-40`}
                                         placeholder="Number"
                                         value={priceDemandedNumber}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1076,7 +1025,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                             }
                                         }} />
                                     <textarea
-                                        className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`}
+                                        className={`border-2 ${priceDemandedWordsError ? 'border-red-500' : 'border-gray-500'} p-1 rounded w-48 sm:w-80 resize-none`}
                                         id="price-words"
                                         rows={3}
                                         name="price-words"
@@ -1085,7 +1034,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         placeholder="Words"
                                         value={priceDemandedWords}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
+                                            if (e.target.value.trim().length < 500) {
                                                 setPriceDemandedWordsError(false)
                                                 setPriceDemandedWords(e.target.value)
                                             }
@@ -1147,7 +1096,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                             {isLegalRestrictions &&
                                 <div className="text-center">
                                     <textarea
-                                        className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
+                                        className={`border-2 ${legalRestrictionDetailsError ? 'border-red-500' : 'border-gray-500'} rounded h-40 w-80 p-1 resize-none`}
                                         id="restrictions"
                                         name="restrictions"
                                         autoCorrect="on"
@@ -1155,7 +1104,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
+                                            if (e.target.value.trim().length < 500) {
                                                 setLegalRestrictionDetailsError(false)
                                                 setLegalRestrictionDetails(e.target.value)
                                             }
@@ -1179,9 +1128,9 @@ const CommercialPropertyAddForm: React.FC = () => {
                                             placeholder="Size"
                                             value={widthOfRoadFacingFeet}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                if (e.target.value.trim() && +e.target.value.trim() !== 0) {
-                                                    setWidthOfRoadFacingFeet(+e.target.value.trim())
-                                                    setWidthOfRoadFacingMetre(Number((+e.target.value.trim() / 0.3048).toFixed(2)))
+                                                if (+e.target.value > 0) {
+                                                    setWidthOfRoadFacingFeet(+e.target.value)
+                                                    setWidthOfRoadFacingMetre(Number((+e.target.value / 0.3048).toFixed(2)))
                                                 } else {
                                                     setWidthOfRoadFacingFeet('')
                                                     setWidthOfRoadFacingMetre('')
@@ -1198,9 +1147,9 @@ const CommercialPropertyAddForm: React.FC = () => {
                                             placeholder="Size"
                                             value={widthOfRoadFacingMetre}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                if (e.target.value.trim() && +e.target.value.trim() !== 0) {
-                                                    setWidthOfRoadFacingMetre(+e.target.value.trim())
-                                                    setWidthOfRoadFacingFeet(Number((+e.target.value.trim() * 0.3048).toFixed(2)))
+                                                if (+e.target.value !== 0) {
+                                                    setWidthOfRoadFacingMetre(+e.target.value)
+                                                    setWidthOfRoadFacingFeet(Number((+e.target.value * 0.3048).toFixed(2)))
                                                 } else {
                                                     setWidthOfRoadFacingFeet('')
                                                     setWidthOfRoadFacingMetre('')
@@ -1219,9 +1168,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                             <div className="flex flex-row gap-5">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <label
-                                        className="text-gray-500 text-xl font-semibold w-40"
-                                        htmlFor="image">
+                                    <label className="text-gray-500 text-xl font-semibold w-40" htmlFor="image">
                                         Add property image
                                     </label>
                                 </div>
@@ -1236,13 +1183,8 @@ const CommercialPropertyAddForm: React.FC = () => {
                             {commercialPropertyImages.length !== 0 &&
                                 <div className='flex flex-wrap justify-center gap-5 p-5'>
                                     {commercialPropertyImages.map(image => {
-                                        return <div
-                                            key={Math.random()}
-                                            className='relative w-fit bg-blue-300'>
-                                            <img
-                                                className='relative w-auto h-60'
-                                                src={image.file}
-                                                alt="" />
+                                        return <div key={Math.random()} className='relative w-fit bg-blue-300'>
+                                            <img className='relative w-auto h-60' src={image.file} alt="" />
                                             <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
@@ -1257,10 +1199,8 @@ const CommercialPropertyAddForm: React.FC = () => {
                         </div>
 
                         {/*remarks*/}
-                        <div className="flex flex-row gap-10 p-2 pb-5 pt-5">
-                            <label
-                                className="text-xl font-semibold text-gray-500 whitespace-nowrap"
-                                htmlFor="remarks">
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 px-2 py-5">
+                            <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="remarks">
                                 Remarks
                             </label>
                             <textarea
@@ -1272,7 +1212,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                 placeholder="Add remarks regarding property"
                                 value={remarks}
                                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                    if (e.target.value.trim().length <= 500) {
+                                    if (e.target.value.trim().length < 500) {
                                         setRemarks(e.target.value)
                                     }
                                 }} />

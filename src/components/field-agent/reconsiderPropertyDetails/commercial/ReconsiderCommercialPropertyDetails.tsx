@@ -7,6 +7,7 @@ import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityF
 import Spinner from "../../../Spinner"
 import ReviewReconsideredCommercialPropertyDetails from "./ReviewReconsideredCommercialPropertyDetails"
 import DetailsModal from "../DetailsModal"
+import { FaEdit } from "react-icons/fa"
 
 const arrayOfNumbers = (from: number, to: number) => {
     if (from === 0) {
@@ -17,6 +18,8 @@ const arrayOfNumbers = (from: number, to: number) => {
             .map(function (y, i) { return i + 1 })
     }
 }
+
+type StatesType = 'punjab' | 'chandigarh'
 
 interface AlertType {
     isAlertModal: boolean,
@@ -110,16 +113,18 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
         }
     }, [authToken, navigate])
 
-    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)
+    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)//fetched data of property
 
-    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)
-    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)
+    const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)//if true, dealer details will be shown to the user
+    const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)//if true, reevaluation details will be shown to the user
     const [dealerInfo, setDealerInfo] = useState<{
         propertyDealerName: string,
         firmName: string,
         email: string,
         contactNumber: number
-    } | null>(null)
+    } | null>(null)//store dealer information
+
+    const [editForm, setEditForm] = useState<boolean>(false) //If true, user can edit the details of a property
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
@@ -198,11 +203,11 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const [builtUpProperty, setBuiltUpProperty] = useState<boolean>()
     const [stateOfPropertyError, setStateOfPropertyError] = useState<boolean>(false)
     const [builtUpSelectedOption, setBuiltupSelectedOption] = useState<BuiltUpType>()
-    const builtUpPropertyOptions = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
+    const builtUpPropertyOptions: BuiltUpType[] = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
 
-    const states = ['chandigarh', 'punjab']
+    const states: StatesType[] = ['chandigarh', 'punjab']
 
-    const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
+    const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null) //updated property data after the property data has been updated by the user
 
     useEffect(() => {
         if (fetchedPropertyData) {
@@ -211,6 +216,8 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
             setTotalAreaMetreSquare(fetchedPropertyData.landSize.totalArea.metreSquare)
             setCoveredAreaMetreSquare(fetchedPropertyData.landSize.coveredArea.metreSquare)
             setLandSizeDetails(fetchedPropertyData.landSize.details || '')
+            setWidthOfRoadFacingFeet(fetchedPropertyData.widthOfRoadFacing.feet)
+            setWidthOfRoadFacingMetre(fetchedPropertyData.widthOfRoadFacing.metre)
             setState(fetchedPropertyData.location.name.state)
             setDistrict(fetchedPropertyData.location.name.district)
             setPlotNumber(fetchedPropertyData.location.name.plotNumber || '')
@@ -499,28 +506,26 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                     commercialPropertyImages={commercialPropertyImages}
                     fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
-                    propertyDataReset={() => setPropertyData(null)} />}
+            propertyDataReset={() => setPropertyData(null)} />}
+
+            {/*Home button */}
+            {!propertyData && <button
+                type='button'
+                className={` ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-30`}
+                onClick={() => navigate('/field-agent', { replace: true })}>
+                Home
+            </button>}
 
             {!error && !spinner &&
                 <div className={`pl-2 pr-2 mb-10 md:pl-0 md:pr-0 w-full flex flex-col place-items-center ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} ${propertyData ? 'fixed right-full' : ''}`} >
 
-                    {/*Home button */}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-20 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent', { replace: true })}>
-                            Home
-                        </button>
-                    </div>
-
                     {/*Heading */}
-                    {!propertyData && <div className="fixed w-full text-center top-28 sm:top-16 pl-4 pr-4 pb-4 sm:pt-4 bg-white z-10">
+                    {!propertyData && <div className="mt-28 sm:mt-20 w-full text-center  pl-4 pr-4 pb-4 bg-white">
                         <p className=" text-xl font-semibold mb-2">Reevaluate the residential property</p>
                         <div className="w-full flex flex-row place-content-center gap-5">
                             <button
                                 type='button'
-                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded px-2 py-1 h-fit"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     setShowDealerDetails(false)
@@ -530,7 +535,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                             </button>
                             <button
                                 type='button'
-                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded pl-2 pr-2 h-8"
+                                className="bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded px-2 py-1 h-fit"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     setShowDealerDetails(true)
@@ -541,7 +546,14 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                         </div>
                     </div>}
 
-                    <form className="w-full min-h-screen mt-52 sm:mt-44 md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+                    <form className="w-full md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
+
+                        {!editForm && <div className="pt-1 w-full flex justify-center bg-gray-100">
+                            <FaEdit className="text-3xl text-orange-400 hover:text-orange-500 cursor-pointer font-bold" onClick={e => {
+                                e.stopPropagation()
+                                setEditForm(true)
+                            }} />
+                        </div>}
 
                         {/* Property type*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
@@ -554,18 +566,19 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                         {/*built-up or empty property */}
                         <div className="p-2  flex flex-col pb-5 pt-5 ">
                             {stateOfPropertyError && <p className="text-red-500">Select an option</p>}
-                            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                                <div className="flex flex-row gap-0.5">
+                            <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-16 mb-2">
+                                <div className="flex flex-row gap-0.5 ">
                                     <p className="h-4 text-2xl text-red-500">*</p>
                                     <p className="text-xl font-semibold text-gray-500 mb-2">State of property</p>
                                 </div>
-                                <div className="flex-col">
-                                    <div className="flex flex-row gap-4 sm:gap-6 pt-1">
+                                <div className="flex flex-col">
+                                    <div className="flex flex-row place-content-center gap-3 sm:gap-6 pt-1">
                                         <div className="flex flex-row h-fit">
                                             <input
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
                                                 id="built-up"
+                                                disabled={!editForm}
                                                 name="state"
                                                 value="built-up"
                                                 checked={builtUpProperty === true}
@@ -584,6 +597,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                 className="mr-1 cursor-pointer"
                                                 type="radio"
                                                 id="empty"
+                                                disabled={!editForm}
                                                 name="state"
                                                 value="empty"
                                                 checked={isEmptyProperty === true}
@@ -599,28 +613,31 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     </div>
 
                                     {commercialPropertyType === 'industrial' && builtUpProperty &&
-                                        <div className="flex flex-col bg-white w-fit p-1 mt-2">
+                                        <div className="flex flex-col place-items-center w-full bg-white w-fit p-1 mt-2">
                                             <p className="font-semibold">Select an option</p>
-                                            {builtUpPropertyOptions.map(option => {
-                                                return <div
-                                                    key={option}
-                                                    className="flex flex-row h-fit ">
-                                                    <input
-                                                        className="mr-1 cursor-pointer"
-                                                        type="radio"
-                                                        id={option}
-                                                        name="built-up-option"
-                                                        value={option}
-                                                        checked={builtUpSelectedOption === option}
-                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                            setStateOfPropertyError(false)
-                                                            if (e.target.checked) {
-                                                                setBuiltupSelectedOption(e.target.value as BuiltUpType)
-                                                            }
-                                                        }} />
-                                                    <label htmlFor={option}>{option}</label>
-                                                </div>
-                                            })}
+                                            <div>
+                                                {builtUpPropertyOptions.map(option => {
+                                                    return <div
+                                                        key={option}
+                                                        className="flex flex-row h-fit ">
+                                                        <input
+                                                            className="mr-1 cursor-pointer"
+                                                            type="radio"
+                                                            id={option}
+                                                            name="built-up-option"
+                                                            disabled={!editForm}
+                                                            value={option}
+                                                            checked={builtUpSelectedOption === option}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                setStateOfPropertyError(false)
+                                                                if (e.target.checked) {
+                                                                    setBuiltupSelectedOption(e.target.value as BuiltUpType)
+                                                                }
+                                                            }} />
+                                                        <label htmlFor={option}>{option}</label>
+                                                    </div>
+                                                })}
+                                            </div>
                                         </div>}
                                 </div>
                             </div>
@@ -648,6 +665,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                     id="total-area-metre-square"
                                                     type="number"
                                                     name='total-area-metre-square'
+                                                    disabled={!editForm}
                                                     className={`border-2 ${totalAreaError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-32`}
                                                     placeholder="Size"
                                                     value={totalAreaMetreSquare}
@@ -668,6 +686,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                     id="total-area-square-feet"
                                                     type="number"
                                                     name='total-area-square-feet'
+                                                    disabled={!editForm}
                                                     className={`border-2 ${totalAreaError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-32`}
                                                     placeholder="Size"
                                                     value={totalAreaSquareFeet}
@@ -691,6 +710,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                     id="covered-area-metre-square"
                                                     type="number"
                                                     name='covered-area-metre-square'
+                                                    disabled={!editForm}
                                                     className={`border-2 ${coveredAreaError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-32`}
                                                     placeholder="Size"
                                                     value={coveredAreaMetreSquare}
@@ -711,6 +731,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                     id="coverved-area-square-feet"
                                                     type="number"
                                                     name='covered-area-square-feet'
+                                                    disabled={!editForm}
                                                     className={`border-2 ${coveredAreaError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-32`}
                                                     placeholder="Size"
                                                     value={coveredAreaSquareFeet}
@@ -728,17 +749,21 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <textarea
+                                    {editForm && <textarea
                                         className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none"
                                         id="size-textarea"
                                         name="size-textarea"
                                         autoCorrect="on"
                                         autoComplete="new-password"
+                                        disabled={!editForm}
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                            setLandSizeDetails(e.target.value)
-                                        }} />
+                                            if (e.target.value.trim().length < 500) {
+                                                setLandSizeDetails(e.target.value)
+                                            }
+                                        }} />}
+                                    {!editForm && <p className="mx-1 bg-gray-300 p-1 rounded w-fit">{landSizeDetails}</p>}
                                 </div>
                             </div>
                         </div>
@@ -760,6 +785,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                     type="radio"
                                                     id={type}
                                                     name='property-type'
+                                                    disabled={!editForm}
                                                     value={type}
                                                     checked={selectedPropertyType === type}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -788,6 +814,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center h-fit"
                                     name="floors"
                                     id="floors"
+                                    disabled={!editForm}
                                     value={numberOfFloorsWithoutBasement}
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                         setNumberOfFloorsWithoutBasement(+e.target.value)
@@ -814,6 +841,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center h-fit"
                                     name="basement"
                                     id="basement"
+                                    disabled={!editForm}
                                     value={numberOfBasementFloors}
                                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                         setNumberOfBasementFloors(+e.target.value)
@@ -838,6 +866,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                             name="lock-in-period-years"
                                             id="lock-in-period-years"
+                                            disabled={!editForm}
                                             value={lockInPeriodYears}
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                                 setLockInPeriodYears(+e.target.value)
@@ -856,6 +885,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                             name="lock-in-period-months"
                                             id="lock-in-period-months"
+                                            disabled={!editForm}
                                             value={lockInPeriodMonths}
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                                 setLockInPeriodMonths(+e.target.value)
@@ -881,6 +911,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         <select
                                             className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                             name="lease-years"
+                                            disabled={!editForm}
                                             id="lease-years"
                                             value={leasePeriodYears}
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -900,6 +931,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
                                             name="lease-months"
                                             id="lease-months"
+                                            disabled={!editForm}
                                             value={leasePeriodMonths}
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                                 setLeasePeriodMonths(+e.target.value)
@@ -928,6 +960,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     type="file"
                                     className='text-transparent'
                                     placeholder="image"
+                                    disabled={!editForm}
                                     accept="image/png, image/jpeg"
                                     name='image'
                                     onChange={contractImageHandler} />
@@ -941,14 +974,14 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             className='relative w-auto h-60'
                                             src={url}
                                             alt="" />
-                                        <div
+                                        {editForm && <div
                                             className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                             onClick={() => {
                                                 const updatedState = fetchedContractImagesUrl.filter(item => item !== url)
                                                 setFetchedContractImagesUrl(updatedState)
                                             }}>
                                             X
-                                        </div>
+                                        </div>}
                                     </div>
                                 })}
                                 {contractImages.length !== 0 &&
@@ -960,14 +993,14 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                 className='relative w-auto h-60'
                                                 src={image.file}
                                                 alt="" />
-                                            <div
+                                            {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
                                                     const updatedState = contractImages.filter(item => item.file !== image.file)
                                                     setContractImages(updatedState)
                                                 }}>
                                                 X
-                                            </div>
+                                            </div>}
                                         </div>
                                     })}
                             </div>
@@ -992,6 +1025,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         type="number"
                                         id="plotNumber"
                                         name="plotNumber"
+                                        disabled={!editForm}
                                         className='border-2 border-gray-500  p-1 rounded' autoComplete="new-password"
                                         value={plotNumber}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1012,6 +1046,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         type="text"
                                         id="village"
                                         name="village"
+                                        disabled={!editForm}
                                         className='border-2 border-gray-500  p-1 rounded'
                                         autoComplete="new-password"
                                         value={village}
@@ -1030,6 +1065,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         type="text"
                                         id="city"
                                         name="city"
+                                        disabled={!editForm}
                                         className='border-2 border-gray-500 p-1 rounded' autoComplete="new-password"
                                         value={city}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1050,6 +1086,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         className={`border-2 ${stateError ? 'border-red-500' : 'border-gray-500'}  p-1 rounded`}
                                         name="state"
                                         id="state"
+                                        disabled={!editForm}
                                         value={state}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                             setStateError(false)
@@ -1088,7 +1125,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         name="district"
                                         id="district"
                                         value={district}
-                                        disabled={state ? false : true}
+                                        disabled={state && editForm ? false : true}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                             setDistrictError(false)
                                             setDistrict(e.target.value)
@@ -1126,7 +1163,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         className='border-2 border-gray-500 p-1 rounded'
                                         name="state"
                                         id="state"
-                                        disabled={state && district ? false : true}
+                                        disabled={(state && district) && editForm ? false : true}
                                         value={tehsil}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                             setTehsil(e.target.value)
@@ -1157,6 +1194,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                 </label>
                                 <select
                                     className="border-2 border-gray-400 p-1 rounded cursor-pointer bg-white text-center"
+                                    disabled={!editForm}
                                     name="owners"
                                     id="owners"
                                     value={numberOfOwners}
@@ -1192,6 +1230,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     <input
                                         id="price-number"
                                         type="number"
+                                        disabled={!editForm}
                                         name='price-number'
                                         className={`border-2 ${priceDemandedNumberError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`}
                                         placeholder="Number"
@@ -1204,19 +1243,23 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                 setPriceDemandedNumber('')
                                             }
                                         }} />
-                                    <textarea
+                                    {editForm && <textarea
                                         className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-56 sm:w-80 resize-none`}
                                         id="price-words"
                                         rows={3}
                                         name="price-words"
+                                        disabled={!editForm}
                                         autoCorrect="on"
                                         autoComplete="new-password"
                                         placeholder="Words"
                                         value={priceDemandedWords}
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                            setPriceDemandedWordsError(false)
-                                            setPriceDemandedWords(e.target.value)
-                                        }} />
+                                            if (e.target.value.trim().length < 150) {
+                                                setPriceDemandedWordsError(false)
+                                                setPriceDemandedWords(e.target.value)
+                                            }
+                                        }} />}
+                                    {!editForm && <p className="mx-1 bg-gray-300 p-1 rounded w-fit">{priceDemandedWords}</p>}
                                 </div>
                             </div>
                         </div>
@@ -1235,6 +1278,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             className="mr-1 cursor-pointer"
                                             type="radio"
                                             id="yes"
+                                            disabled={!editForm}
                                             name="restrictions"
                                             value="yes"
                                             checked={isLegalRestrictions === true}
@@ -1257,6 +1301,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             type="radio"
                                             id="no"
                                             name="restrictions"
+                                            disabled={!editForm}
                                             value="no"
                                             checked={isLegalRestrictions === false}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1273,22 +1318,28 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            {isLegalRestrictions &&
-                                <div className="text-center">
+                            {isLegalRestrictions && editForm &&
+                                <div className="flex justify-center">
                                     <textarea
-                                        className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none`}
+                                        className={`border-2 ${legalRestrictionDetailsError ? 'border-red-400' : 'border-gray-400'} rounded h-40 w-80 p-1 resize-none `}
                                         id="restrictions"
                                         name="restrictions"
                                         autoCorrect="on"
+                                        disabled={!editForm}
                                         autoComplete="new-password"
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                            setLegalRestrictionDetailsError(false)
-                                            setLegalRestrictionDetails(e.target.value)
+                                            if (e.target.value.trim().length < 500) {
+                                                setLegalRestrictionDetailsError(false)
+                                                setLegalRestrictionDetails(e.target.value)
+                                            }
                                         }} />
-                                    {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}
+                            {legalRestrictionDetailsError && <p className="text-red-500 text-center">Provide details</p>}
+                            {!editForm && <div className="flex justify-center">
+                                <p className="mx-1 bg-gray-300 p-1 rounded sm:w-8/12">{legalRestrictionDetails}</p>
+                            </div>}
                         </div>
 
                         {/*width of road facing*/}
@@ -1301,6 +1352,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         <input
                                             id="road-facing-feet"
                                             type="number"
+                                            disabled={!editForm}
                                             name='road-facing-feet'
                                             className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-20`}
                                             placeholder="Size"
@@ -1320,6 +1372,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         <input
                                             id="road-facing-metre"
                                             type="number"
+                                            disabled={!editForm}
                                             name='road-facing-metre'
                                             className={`border-2 border-gray-400 pl-1 pr-1 rounded bg-white w-20`}
                                             placeholder="Size"
@@ -1356,6 +1409,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     type="file"
                                     className='text-transparent'
                                     placeholder="image"
+                                    disabled={!editForm}
                                     accept="image/png, image/jpeg"
                                     name='image'
                                     onChange={commercialPropertyImageHandler} />
@@ -1370,14 +1424,14 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                 className='relative w-auto h-60'
                                                 src={url}
                                                 alt="" />
-                                            <div
+                                            {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
                                                     const updatedState = fetchedPropertyImagesUrl.filter(item => item !== url)
                                                     setFetchedPropertyImagesUrl(updatedState)
                                                 }}>
                                                 X
-                                            </div>
+                                            </div>}
                                         </div>
                                     })}
                                 {commercialPropertyImages.length !== 0 &&
@@ -1389,46 +1443,50 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                                 className='relative w-auto h-60'
                                                 src={image.file}
                                                 alt="" />
-                                            <div
+                                            {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
                                                     const updatedState = commercialPropertyImages.filter(item => item.file !== image.file)
                                                     setCommercialPropertyImages(updatedState)
                                                 }}>
                                                 X
-                                            </div>
+                                            </div>}
                                         </div>
                                     })}
                             </div>
                         </div>
 
                         {/*remarks*/}
-                        <div className="flex flex-row gap-10 p-2 pb-5 pt-5">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-10 p-2 pb-5 pt-5">
                             <label
                                 className="text-xl font-semibold text-gray-500 whitespace-nowrap"
                                 htmlFor="remarks">
                                 Remarks
                             </label>
-                            <textarea
+                            {editForm && <textarea
                                 className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none"
                                 id="remarks"
                                 name="remarks"
                                 autoCorrect="on"
+                                disabled={!editForm}
                                 autoComplete="new-password"
                                 placeholder="Add remarks regarding property"
                                 value={remarks}
                                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                    setRemarks(e.target.value)
-                                }} />
+                                    if (e.target.value.trim().length < 500) {
+                                        setRemarks(e.target.value)
+                                    }
+                                }} />}
+                            {!editForm && <p className="mx-1 p-1 rounded">{remarks}</p>}
                         </div>
 
-                        <div className="flex justify-center mt-4 p-2">
+                        {editForm && <div className="flex justify-center mt-4 p-2">
                             <button
                                 type='submit'
                                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pl-2 pr-2 pt-0.5 h-8 flex flex-row place-content-center gap-1">
                                 Save
                             </button>
-                        </div>
+                        </div>}
                     </form>
                 </div >}
 

@@ -51,9 +51,9 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);//stores the number for current page the user is on. Used for pagination
     const [totalPages, setTotalPages] = useState<number>(1);//Total number of pages for pagination
 
-    const [initialLoad, setInitialLoad] = useState(true)
+    const [initialLoad, setInitialLoad] = useState(true)//This state is true when the page is initially loaded. It is set to false when data is fetched initially
 
-    const [startingIndex, setStartingIndex] = useState<number>(1) //It is updated every a new page is selected by the user
+    const [startingIndex, setStartingIndex] = useState<number>(1) //It is updated every time a new page is selected by the user
     let index: number = startingIndex - 1 //Used to give serial numbers to propertiess
 
     const [pendingPropertyEvaluations, setPendingPropertyEvaluations] = useState<[PropertyDataType] | null>(null) //Information regarding pending property evaluations
@@ -98,7 +98,6 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
             } else if (data.status === 'ok') {
-                console.log(data)
                 if (!data.pendingPropertyEvaluations.length) {
                     return navigate('/field-agent', { replace: true })
                 }
@@ -141,60 +140,61 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
                     <p className="text-red-500 cursor-pointer" onClick={fetchPendingPropertyReevaluations}>Try again</p>
                 </div>}
 
-            {<div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${error || initialLoad ? 'bg-white' : 'bg-gray-100'}`}>
+            <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3`}>
                 <Link to='/field-agent' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded" >Home</Link>
-                {pendingPropertyEvaluations && !error &&
-                    <div className="w-full flex justify-center mt-3">
+            </div>
+
+            {!error && !initialLoad && pendingPropertyEvaluations &&
+                <div className="min-h-screen bg-gray-100 ">
+                    <div className="bg-gray-100 pt-20 pb-5 w-full flex justify-center mt-8 sm:mt-0">
                         <p className="text-xl font-semibold">{pendingPropertyEvaluations.length} property evaluations are pending</p>
-                    </div>}
-            </div>}
-
-            {!error && !initialLoad &&
-                <div className='pt-40 pb-10 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
-
-                    {pendingPropertyEvaluations && pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
-                        index++
-                        return <div key={property._id
-                        } className="h-fit flex flex-col gap-4 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
-                            <div className="w-full flex flex-row gap-3 ">
-                                <p className="text-gray-500 text-lg font-semibold">{index})</p>
-                                <div className="flex flex-col gap-1">
-                                    <p className=" text-lg font-semibold">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.propertyType)} property</p>
-                                    <div className="flex flex-row gap-2">
-                                        <p className="text-lg font-semibold">Location:</p>
-                                        <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.state)}</p>
+                    </div>
+                    <div className='w-full  flex flex-col gap-10 place-items-center pl-2 pr-2 '>
+                        {pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
+                            index++
+                            return <div key={property._id} className="h-fit flex flex-col gap-4 place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
+                                <div className="w-full flex flex-row gap-3 ">
+                                    <p className="text-gray-500 text-lg font-semibold">{index})</p>
+                                    <div className="flex flex-col gap-1">
+                                        <p className=" text-lg font-semibold">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.propertyType)} property</p>
+                                        <div className="flex flex-row gap-2">
+                                            <p className="text-lg font-semibold">Location:</p>
+                                            <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.state)}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex flex-col gap-1">
-                                <div className="flex flex-row gap-2">
-                                    <p className="font-medium text-gray-500">Request date:</p>
-                                    <p>{formatDate(property.sentBackTofieldAgentForReevaluation.date
-                                    )}</p>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex flex-row gap-2">
+                                        <p className="font-medium text-gray-500">Request date:</p>
+                                        <p>{formatDate(property.sentBackTofieldAgentForReevaluation.date
+                                        )}</p>
+                                    </div>
+                                    <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentBackTofieldAgentForReevaluation.date))}`}>
+                                        Received {getDaysDifference(property.sentBackTofieldAgentForReevaluation.date) > 0 ? `${getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)} days ago` : 'today'}
+                                    </p>
                                 </div>
-                                <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentBackTofieldAgentForReevaluation.date))}`}>
-                                    Received {getDaysDifference(property.sentBackTofieldAgentForReevaluation.date) > 0 ? `${getDaysDifference(property.sentBackTofieldAgentForReevaluation.date)} days ago` : 'today'}
-                                </p>
+                                <div className="w-full flex justify-center ">
+                                    <Link to={`/field-agent/reconsider-property-details/${property.propertyType}?propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
+                                </div>
                             </div>
-                            <div className="w-full flex justify-center ">
-                                <Link to={`/field-agent/reconsider-property-details/${property.propertyType}?propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
-                            </div>
-                        </div>
-                    })}
-                    <ReactPaginate
-                        //component for pagination
-                        pageCount={totalPages}
-                        pageRangeDisplayed={5}
-                        marginPagesDisplayed={2}
-                        onPageChange={handlePageClick}
-                        containerClassName={`pagination flex justify-center pb-10 `}
-                        activeClassName=" text-gray-700 px-3 rounded pt-1 hover:bg-gray-200 font-semibold"
-                        pageClassName="mr-2 cursor-pointer px-3 rounded pt-1 border border-gray-400 hover:bg-gray-300"
-                        previousClassName="mr-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                        nextClassName="ml-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                        disabledClassName="cursor-not-allowed"
-                    />
+                        })}
+
+                        {totalPages > 1 &&
+                            <ReactPaginate
+                                //component for pagination
+                                pageCount={totalPages}
+                                pageRangeDisplayed={5}
+                                marginPagesDisplayed={2}
+                                onPageChange={handlePageClick}
+                                containerClassName={`pagination flex justify-center pb-10 `}
+                                activeClassName=" text-gray-700 px-3 rounded pt-1 hover:bg-gray-200 font-semibold"
+                                pageClassName="mr-2 cursor-pointer px-3 rounded pt-1 border border-gray-400 hover:bg-gray-300"
+                                previousClassName="mr-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
+                                nextClassName="ml-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
+                                disabledClassName="cursor-not-allowed"
+                            />}
+                    </div>
                 </div>}
 
         </Fragment >

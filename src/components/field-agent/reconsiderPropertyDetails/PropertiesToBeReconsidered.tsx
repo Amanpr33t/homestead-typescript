@@ -38,17 +38,17 @@ const PropertiesToBeReconsidered: React.FC = () => {
 
                 <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-10 ">
 
-                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfAgriculturalProperties && +numberOfAgriculturalProperties && navigate('/field-agent/reevaluate-property/agricultural-properties')}>
+                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfAgriculturalProperties && +numberOfAgriculturalProperties && navigate('/field-agent/reconsider-property-details/agricultural-properties')}>
                         <p className="text-5xl text-green-800">{numberOfAgriculturalProperties}</p>
                         <p className="w-36 text-center" >Agricultural properties</p>
                     </div>
 
-                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfCommercialProperties && +numberOfCommercialProperties && navigate('/field-agent/reevaluate-property/commercial-properties')}>
+                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfCommercialProperties && +numberOfCommercialProperties && navigate('/field-agent/reconsider-property-details/commercial-properties')}>
                         <p className="text-5xl text-green-800">{numberOfCommercialProperties}</p>
                         <p className="w-36 text-center">Commercial properties</p>
                     </div>
 
-                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfResidentialProperties && +numberOfResidentialProperties && navigate('/field-agent/reevaluate-property/residential-properties')}>
+                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfResidentialProperties && +numberOfResidentialProperties && navigate('/field-agent/reconsider-property-details/residential-properties')}>
                         <p className="text-5xl text-green-800">{numberOfResidentialProperties}</p>
                         <p className="w-36 text-center">Residential properties</p>
                     </div>
