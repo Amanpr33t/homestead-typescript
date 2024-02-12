@@ -78,12 +78,12 @@ const PropertiesToBeReevaluated: React.FC = () => {
             </div>}
 
             {!error && !spinner &&
-                <div className=" w-full flex flex-col gap-10 place-items-center pt-16">
-                    <div className="pt-16 flex justify-center w-full">
+                <div className=" w-full flex flex-col gap-10 place-items-center pt-28 sm:pt-20">
+                    <div className=" flex justify-center w-full">
                         <p className="text-xl font-semibold">Pending property reevaluations</p>
                     </div>
 
-                    <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-10 ">
+                    <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-5 ">
 
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfAgriculturalProperties && navigate('/property-evaluator/agricultural-properties-to-be-reevaluated')}>
                             <p className="text-5xl text-green-800">{numberOfAgriculturalProperties}</p>

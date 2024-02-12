@@ -242,7 +242,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                     isAlertModal: true,
                     alertType: 'success',
                     alertMessage: 'Property evaluation data updated successfully',
-                    routeTo: '/property-evaluator/properties-pending-for-evaluation'
+                    routeTo: '/property-evaluator/properties-pending-for-reevaluation'
                 })
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
@@ -280,23 +280,24 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                         })
                     }} />}
 
-            <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center ${showReevaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideReevaluationForm}>
+            <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center pt-24 pb-10 ${showReevaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideReevaluationForm}>
 
-                <div className="mt-24 mb-10 relative max-h-screen w-10/12 sm:w-9/12 md:w-7/12 bg-gray-200 rounded-md overflow-y-auto flex flex-col place-items-center px-2  md:px-0" onClick={e => e.stopPropagation()}>
+                <div className="relative h-fit max-h-full w-11/12 sm:w-9/12 md:w-7/12 bg-white rounded-md overflow-y-auto flex flex-col place-items-center px-2 md:px-0 pb-10" onClick={e => e.stopPropagation()}>
 
-                    <div className="absolute top-1 right-2 ">
+                    <div className="absolute -top-1 right-1 ">
                         {/*button to hide evaluation form*/}
                         <button className="text-3xl font-bold p-1 text-gray-600" onClick={hideReevaluationForm}>X</button>
                     </div>
 
+
                     <div className="w-full mt-3">
-                        <p className="text-2xl font-semibold text-center ">Property Reevaluation Form</p>
+                        <p className="text-2xl font-semibold text-center ">Reevaluation form</p>
                     </div>
 
-                    <form className="w-8/12 flex flex-col rounded mt-3" onSubmit={formSubmit}>
+                    <form className="min-h-fit w-full flex flex-col rounded mt-2 px-2 md:px-10 sm:px-5" onSubmit={formSubmit}>
 
-                        {!editForm && <div className="pt-1 w-full flex justify-center ">
-                            <FaEdit className="text-3xl text-gray-500 hover:text-gray-700 cursor-pointer font-bold" onClick={e => {
+                        {!editForm && <div className="w-full flex justify-center ">
+                            <FaEdit className="text-3xl text-orange-500 hover:text-orange-700 cursor-pointer font-bold" onClick={e => {
                                 e.stopPropagation()
                                 setEditForm(true)
                             }} />
@@ -305,9 +306,9 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                         {/*two radio button to know whether the information is complete or not*/}
                         <div className="px-2 flex flex-col py-3">
                             {/*Radio buttons to know if the information is complete or not information complete?*/}
-                            <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16">
-                                <p className="text-xl font-semibold text-gray-500 mb-2">Is the information complete ?</p>
-                                <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                            <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 lg:gap-16">
+                                <p className="text-xl font-semibold text-gray-500">Is the information complete ?</p>
+                                <div className="flex flex-row place-content-center gap-4 pt-1 pr-4 sm:pr-0">
                                     <div className="flex flex-row h-fit">
                                         <input
                                             className="mr-1 cursor-pointer"
@@ -369,7 +370,6 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                             <div className="px-2 flex flex-col">
                                 {isInformationInCompleteDetailsError && <p className="text-red-500">Add details regarding incomplete information</p>}
 
-                                {/*textarea and a button where evaluator can put incomplete details*/}
                                 <div className="flex flex-row w-full">
                                     <textarea
                                         className="w-full h-24 resize-none border border-gray-300 p-2 focus:outline-none focus:border-blue-500"
@@ -377,7 +377,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                                         value={incompleteDetailItem}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                                             setIsInformationInCompleteDetailsError(false)
-                                            if (e.target.value.trim().length <= 200) {
+                                            if (e.target.value.trim().length < 200) {
                                                 setIncompleteDetailItem(e.target.value)
                                             }
                                         }}
@@ -386,7 +386,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                                         type="button"
                                         className="bg-green-500 hover:bg-green-600 text-4xl text-white font-semibold text-center px-2"
                                         onClick={() => {
-                                            if (incompleteDetailItem.trim() && incompleteDetailItem.trim().length <= 200 && isInformationInCompleteDetails.length < 10) {
+                                            if (incompleteDetailItem.trim() && incompleteDetailItem.trim().length < 200 && isInformationInCompleteDetails.length < 10) {
                                                 setIsInformationInCompleteDetails(array => [...array, incompleteDetailItem])
                                                 setIncompleteDetailItem('')
                                             }
@@ -398,7 +398,6 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                                     <p className="">You can add a maximum of 10 detail points</p>
                                 </div>
 
-                                {/*a list showing all the details added by evaluator */}
                                 {isInformationInCompleteDetails.length > 0 && isInformationInCompleteDetails.map(detail => {
                                     let indexToRemove: number = index - 1
                                     return <div key={Math.random()} className="w-full flex flex-row place-content-between mt-2 bg-white">
@@ -429,7 +428,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                             {/*type of location*/}
                             <div className="px-2 flex flex-col py-3 ">
                                 {(typeOfLocationError) && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
+                                <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 mb-2">
                                     <p className="text-xl font-semibold text-gray-500 mb-2">Type of location</p>
                                     <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
                                         {typesOfLocationArray.map(type => {
@@ -458,7 +457,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                             {/*property status */}
                             <div className="px-2 flex flex-col py-3">
                                 {locationStatusError && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
+                                <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16 mb-2">
                                     <p className="text-xl font-semibold text-gray-500 mb-2">Location status</p>
                                     <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
                                         {typesOfPropertyStatusArray.map(type => {
@@ -575,7 +574,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                                 {fiveYearProjectionError && <p className="text-red-500">Select an option</p>}
                                 <div className="flex flex-col gap-2 ">
                                     <p className=" text-xl font-semibold text-gray-500 ">Five year projection of property prices</p>
-                                    <div className="ml-20 flex flex-col gap-2">
+                                    <div className="flex flex-col place-items-center gap-2">
                                         <div className="flex flex-row">
                                             <input
                                                 className="mr-1 cursor-pointer"
@@ -622,9 +621,9 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
                             {fiveYearProjectionPriceIncrease !== null &&
                                 <div className="px-2 flex flex-col py-3">
                                     {fiveYearProjectionPercentageNumberError && <p className="text-red-500">Provide a percentage</p>}
-                                    <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
-                                        <div className="flex flex-row gap-1 pt-1 pr-4 sm:pr-0">
+                                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 lg:gap-16">
+                                        <p className="text-xl font-semibold text-gray-500">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
+                                        <div className="flex flex-row place-content-center gap-1 pt-1 pr-4 sm:pr-0">
                                             <input
                                                 id="projection-percentage"
                                                 type="number"

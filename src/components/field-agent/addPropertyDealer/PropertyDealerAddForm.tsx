@@ -264,6 +264,7 @@ const PropertyDealerAddForm: React.FC = () => {
 
     //This function is used to submit the form once the save button is clicked
     const formSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+        console.log('here')
         e.preventDefault()
         if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim() || !contactNumber || !email.trim() || !validator.isEmail(email.trim())) {
             if (!firmName.trim()) {
@@ -367,14 +368,12 @@ const PropertyDealerAddForm: React.FC = () => {
 
                 {!showReviewForm && <>
                     {/*home button */}
-                    <div className='fixed w-full top-16 pt-2 pb-2 pl-2 z-10 bg-white sm:bg-transparent'>
-                        <button
-                            type='button'
-                            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                            onClick={() => navigate('/field-agent', { replace: true })}>
-                            Home
-                        </button>
-                    </div>
+                    <button
+                        type='button'
+                        className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
+                        onClick={() => navigate('/field-agent', { replace: true })}>
+                        Home
+                    </button>
 
                     {/*heading */}
                     <p className="w-full text-center mt-28 sm:mt-20 pl-4 pr-4 pb-4  bg-white  text-xl font-semibold">Add a property dealer by filling the form</p>
@@ -457,6 +456,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                     type="text"
                                     id="number"
                                     name="number"
+                                    disabled={addressArray.length === 10}
                                     className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
                                     value={flatPlotHouseNumber}
@@ -477,6 +477,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="area"
+                                    disabled={addressArray.length === 10}
                                     name="area"
                                     className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
@@ -496,6 +497,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                     type="text"
                                     id="landmark"
                                     name="landmark"
+                                    disabled={addressArray.length === 10}
                                     className='border-2 border-gray-400 p-1 rounded'
                                     autoComplete="new-password"
                                     placeholder="E.g. near apollo hospital"
@@ -515,6 +517,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <input
                                     type="number"
                                     id="pincode"
+                                    disabled={addressArray.length === 10}
                                     name="pincode"
                                     className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
@@ -532,7 +535,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                             setPostalCode('')
                                         }
                                     }} />
-                                {postalCodeError && <p className="text-red-500">Provide must be a 6 digit numbe</p>}
+                                {postalCodeError && <p className="text-red-500">Provide must be a 6 digit number</p>}
                             </div>
 
                             {/*town/city */}
@@ -545,6 +548,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                     type="text"
                                     id="town"
                                     name="town"
+                                    disabled={addressArray.length === 10}
                                     className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
                                     value={city}
@@ -565,6 +569,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <select
                                     className={`border-2 ${stateError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     name="state"
+                                    disabled={addressArray.length === 10}
                                     id="state"
                                     value={state}
                                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -593,6 +598,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <select
                                     className={`border-2 ${districtError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     name="district-chandigarh"
+                                    disabled={addressArray.length === 10}
                                     id="district-chandigarh"
                                     value={district}
                                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -600,7 +606,7 @@ const PropertyDealerAddForm: React.FC = () => {
                                         setDistrictError(false)
                                         setAddressError(false)
                                     }}>
-                                    <option className="font-semibold" value="" disabled>Select a district:</option>
+                                    <option className="font-semibold" value="" disabled>Select a district</option>
                                     {state.toLowerCase() === 'chandigarh' && <option value="chandigarh">Chandigarh</option>}
                                     {state.toLowerCase() === 'punjab' &&
                                         punjabDistricts.map(district => {
@@ -617,7 +623,11 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <button
                                     type="button"
                                     className="bg-green-400 hover:bg-green-500  text-white font-medium rounded pl-2 pr-2 h-8"
-                                    onClick={addAddress}>
+                                    disabled={addressArray.length === 10}
+                                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                                        e.stopPropagation()
+                                        addAddress()
+                                    }}>
                                     Add Address
                                 </button>
                             </div>
@@ -733,7 +743,7 @@ const PropertyDealerAddForm: React.FC = () => {
 
                     {/*about*/}
                     <div className="flex flex-col mb-1.5 ">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 400 characters)</label>
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 500 characters)</label>
                         <textarea
                             className={`border-2 ${aboutMoreThanFourHundredCharacters ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`}
                             rows={3}
@@ -743,26 +753,31 @@ const PropertyDealerAddForm: React.FC = () => {
                             name="story"
                             value={about}
                             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                setAboutMoreThanFourHundredCharacters(false)
-                                setAbout(e.target.value)
-                                if (e.target.value.trim().length > 400) {
-                                    return setAboutMoreThanFourHundredCharacters(true)
+                                if (e.target.value.trim().length < 500) {
+                                    setAboutMoreThanFourHundredCharacters(false)
+                                    setAbout(e.target.value)
+                                } else {
+                                    setAboutMoreThanFourHundredCharacters(true)
                                 }
                             }} />
                         {aboutMoreThanFourHundredCharacters && <p className="text-red-500">About should be less than 400 characters</p>}
                     </div>
 
                     {/*add firm logo*/}
-                    <div className="flex flex-row gap-2 mt-2">
-                        <label className="text-lg font-semibold" htmlFor="image">Add firm logo</label>
-                        <input
-                            type='file'
-                            className='text-transparent'
-                            placeholder="image"
-                            accept="image/png, image/jpeg"
-                            name='image'
-                            onChange={imageChangeHandler} />
-                        {firmLogoImageFile && <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />}
+                    <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                        <div className='flex flex-row gap-3'>
+                            <label className="text-lg font-semibold" htmlFor="image">Add firm logo</label>
+                            <input
+                                type='file'
+                                className='text-transparent'
+                                placeholder="image"
+                                accept="image/png, image/jpeg"
+                                name='image'
+                                onChange={imageChangeHandler} />
+                        </div>
+                        {firmLogoImageFile && <div className='flex justify-center'>
+                            <img className='w-28 h-auto' src={firmLogoImageFile} alt="" />
+                        </div>}
                     </div>
 
                     <div className="w-full h-10 flex justify-center mt-8">

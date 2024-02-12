@@ -25,7 +25,7 @@ interface PropertyDataType {
     }
 }
 
-//This component shows list of proerties pending for evaluation by field agent
+//This component shows list of proerties pending for evaluation by property evaluator
 const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
     const navigate = useNavigate()
     const authToken: null | string = localStorage.getItem("homestead-property-evaluator-authToken") //This variable stores the authToken present in local storage
@@ -93,7 +93,6 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
-            console.log(data)
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
@@ -140,62 +139,63 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
                     <p className="text-red-500 cursor-pointer" onClick={fetchPendingPropertyEvaluations}>Try again</p>
                 </div>}
 
-            <div className={`w-full z-20 fixed top-16 pt-3 pb-3 pl-3 ${error || initialLoad ? 'bg-white' : 'bg-gray-100'}`}>
-                <Link to='/property-evaluator/properties-pending-for-evaluation' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded mr-2" >Back</Link>
-                <Link to='/property-evaluator' className="bg-green-500 hover:bg-green-600 text-white font-semibold p-1 rounded" >Home</Link>
-                {pendingPropertyEvaluations && !error &&
-                    <div className="w-full flex justify-center mt-3">
-                        <p className="text-xl font-bold">{pendingPropertyEvaluations.length} property evaluations are pending</p>
-                    </div>}
+            <div className={`w-full z-20 fixed top-16 left-2 mt-2`}>
+                <Link to='/property-evaluator/properties-pending-for-evaluation' className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded px-2 py-1 mr-2" >Back</Link>
+                <Link to='/property-evaluator' className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded px-2 py-1" >Home</Link>
             </div>
 
             {!error && !initialLoad &&
-                <div className='pt-40 pb-10 w-full min-h-screen flex flex-col gap-10 place-items-center bg-gray-100 pl-2 pr-2 '>
+                <div className="pt-28 min-h-screen sm:pt-20 flex flex-col place-items-center gap-7 bg-gray-100">
 
-                    {pendingPropertyEvaluations && pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
-                        index++
-                        return <div key={property._id
-                        } className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
-                            <div className="w-full flex flex-row gap-3 ">
-                                <p className="text-gray-500 text-lg font-semibold">{index})</p>
-                                <div className="flex flex-col gap-1">
-                                    <p className=" text-lg font-semibold">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.propertyType)} property</p>
-                                    <div className="flex flex-row gap-2">
-                                        <p className="text-lg font-semibold">Location:</p>
-                                        <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.state)}</p>
+                    {pendingPropertyEvaluations &&
+                        <p className="text-xl font-semibold">{pendingPropertyEvaluations.length} property evaluations are pending</p>}
+
+                    <div className='w-full flex flex-col gap-10 place-items-center  pl-2 pr-2 '>
+                        {pendingPropertyEvaluations && pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
+                            index++
+                            return <div key={property._id} className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
+                                <div className="w-full flex flex-row gap-3 ">
+                                    <p className="text-gray-500 text-lg font-semibold">{index})</p>
+                                    <div className="flex flex-col gap-1">
+                                        <p className=" text-lg font-semibold">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.propertyType)} property</p>
+                                        <div className="flex flex-row gap-2">
+                                            <p className="text-lg font-semibold">Location:</p>
+                                            <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.state)}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex flex-col gap-1">
-                                <div className="flex flex-row gap-2">
-                                    <p className="font-medium text-gray-500">Request date:</p>
-                                    <p>{formatDate(property.sentToEvaluatorByFieldAgentForEvaluation.date
-                                    )}</p>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex flex-row gap-2">
+                                        <p className="font-medium text-gray-500">Request date:</p>
+                                        <p>{formatDate(property.sentToEvaluatorByFieldAgentForEvaluation.date
+                                        )}</p>
+                                    </div>
+                                    <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date))}`}>
+                                        Received {getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date) > 0 ? `${getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)} days ago` : 'today'}
+                                    </p>
                                 </div>
-                                <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date))}`}>
-                                    Received {getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)>0?`${getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)} days ago`:'today'}
-                                </p>
-                            </div>
 
-                            <div className="w-full flex justify-center ">
-                                <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pb-1 pr-1 pl-1" >Open details</Link>
+                                <div className="w-full flex justify-center ">
+                                    <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded px-1 py-1" >Open details</Link>
+                                </div>
                             </div>
-                        </div>
-                    })}
-                    <ReactPaginate
-                        //component for pagination
-                        pageCount={totalPages}
-                        pageRangeDisplayed={5}
-                        marginPagesDisplayed={2}
-                        onPageChange={handlePageClick}
-                        containerClassName={`pagination flex justify-center pb-10 `}
-                        activeClassName=" text-gray-700 px-3 rounded pt-1 hover:bg-gray-200 font-semibold"
-                        pageClassName="mr-2 cursor-pointer px-3 rounded pt-1 border border-gray-400 hover:bg-gray-300"
-                        previousClassName="mr-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                        nextClassName="ml-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                        disabledClassName="cursor-not-allowed"
-                    />
+                        })}
+
+                        {totalPages > 1 && <ReactPaginate
+                            //component for pagination
+                            pageCount={totalPages}
+                            pageRangeDisplayed={5}
+                            marginPagesDisplayed={2}
+                            onPageChange={handlePageClick}
+                            containerClassName={`pagination flex justify-center pb-10 `}
+                            activeClassName=" text-gray-700 px-3 rounded pt-1 hover:bg-gray-200 font-semibold"
+                            pageClassName="mr-2 cursor-pointer px-3 rounded pt-1 border border-gray-400 hover:bg-gray-300"
+                            previousClassName="mr-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
+                            nextClassName="ml-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
+                            disabledClassName="cursor-not-allowed"
+                        />}
+                    </div>
                 </div>}
 
         </Fragment >

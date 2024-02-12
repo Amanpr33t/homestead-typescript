@@ -143,8 +143,8 @@ const CommercialPropertyAddForm: React.FC = () => {
     const [tehsil, setTehsil] = useState<string>('')
     const [village, setVillage] = useState<string>('')
 
-    const [commercialPropertyImages, setCommercialPropertyImages] = useState<ImageType[]>([])
-    const [commercialPropertyImageError, setCommercialPropertyImageError] = useState<boolean>(false)
+    const [propertyImages, setPropertyImages] = useState<ImageType[]>([])
+    const [propertyImageError, setPropertyImageError] = useState<boolean>(false)
 
     const [contractImages, setContractImages] = useState<ImageType[]>([])
 
@@ -188,14 +188,14 @@ const CommercialPropertyAddForm: React.FC = () => {
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
-    const commercialPropertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
-        if (commercialPropertyImages.length >= 20) {
+    const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (propertyImages.length >= 20) {
             return
         }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
-            setCommercialPropertyImageError(false);
-            setCommercialPropertyImages((array) => [
+            setPropertyImageError(false);
+            setPropertyImages((array) => [
                 ...array,
                 {
                     file: URL.createObjectURL(selectedFile),
@@ -231,8 +231,8 @@ const CommercialPropertyAddForm: React.FC = () => {
     }
 
     const errorCheckingBeforeSubmit = () => {
-        if (!commercialPropertyImages.length) {
-            setCommercialPropertyImageError(true)
+        if (!propertyImages.length) {
+            setPropertyImageError(true)
         }
 
         if (!district) {
@@ -286,7 +286,7 @@ const CommercialPropertyAddForm: React.FC = () => {
             })
             return
         }
-        if (!commercialPropertyImages.length) {
+        if (!propertyImages.length) {
             return errorFunction()
         }
         if (!district.trim() || !state.trim()) {
@@ -403,7 +403,7 @@ const CommercialPropertyAddForm: React.FC = () => {
             {propertyData &&
                 <ReviewCommercialPropertyAfterSubmission
                     propertyData={propertyData}
-                    commercialPropertyImages={commercialPropertyImages}
+                    propertyImages={propertyImages}
                     contractImages={contractImages}
                     propertyDataReset={() => setPropertyData(null)}
                     firmName={propertyDealerFirmName as string} />}
@@ -1164,7 +1164,7 @@ const CommercialPropertyAddForm: React.FC = () => {
 
                         {/*images */}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                            {commercialPropertyImageError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+                            {propertyImageError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                             <div className="flex flex-row gap-5">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -1178,18 +1178,18 @@ const CommercialPropertyAddForm: React.FC = () => {
                                     placeholder="image"
                                     accept="image/png, image/jpeg"
                                     name='image'
-                                    onChange={commercialPropertyImageHandler} />
+                                    onChange={propertyImageHandler} />
                             </div>
-                            {commercialPropertyImages.length !== 0 &&
+                            {propertyImages.length !== 0 &&
                                 <div className='flex flex-wrap justify-center gap-5 p-5'>
-                                    {commercialPropertyImages.map(image => {
+                                    {propertyImages.map(image => {
                                         return <div key={Math.random()} className='relative w-fit bg-blue-300'>
                                             <img className='relative w-auto h-60' src={image.file} alt="" />
                                             <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
-                                                    const updatedState = commercialPropertyImages.filter(item => item.file !== image.file)
-                                                    setCommercialPropertyImages(updatedState)
+                                                    const updatedState = propertyImages.filter(item => item.file !== image.file)
+                                                    setPropertyImages(updatedState)
                                                 }}>
                                                 X
                                             </div>

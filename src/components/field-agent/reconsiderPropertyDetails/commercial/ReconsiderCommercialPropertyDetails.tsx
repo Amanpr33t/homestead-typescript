@@ -162,8 +162,8 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const [tehsil, setTehsil] = useState<string>('')
     const [village, setVillage] = useState<string>('')
 
-    const [commercialPropertyImages, setCommercialPropertyImages] = useState<ImageType[]>([])
-    const [commercialPropertyImageError, setCommercialPropertyImageError] = useState<boolean>(false)
+    const [propertyImages, setPropertyImages] = useState<ImageType[]>([])
+    const [propertyImageError, setPropertyImageError] = useState<boolean>(false)
     const [fetchedPropertyImagesUrl, setFetchedPropertyImagesUrl] = useState<string[]>([])
 
     const [contractImages, setContractImages] = useState<ImageType[]>([])
@@ -284,11 +284,14 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
         getPropertyDetails()
     }, [getPropertyDetails])
 
-    const commercialPropertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (propertyImages.length >= 20) {
+            return
+          }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
-            setCommercialPropertyImageError(false);
-            setCommercialPropertyImages((array) => [
+            setPropertyImageError(false);
+            setPropertyImages((array) => [
                 ...array,
                 {
                     file: URL.createObjectURL(selectedFile),
@@ -304,6 +307,9 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (contractImages.length >= 20) {
+            return
+          }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -321,8 +327,8 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     }
 
     const errorCheckingBeforeSubmit = () => {
-        if (commercialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
-            setCommercialPropertyImageError(true)
+        if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+            setPropertyImageError(true)
         }
 
         if (!district) {
@@ -376,7 +382,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
             })
             return
         }
-        if (commercialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+        if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
         if (!district.trim() || !state.trim()) {
@@ -503,7 +509,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                     propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
                     contractImages={contractImages}
-                    commercialPropertyImages={commercialPropertyImages}
+                    propertyImages={propertyImages}
                     fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
             propertyDataReset={() => setPropertyData(null)} />}
@@ -1395,7 +1401,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
 
                         {/*images */}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                            {commercialPropertyImageError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+                            {propertyImageError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                             <div className="flex flex-row gap-5">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -1412,7 +1418,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                     disabled={!editForm}
                                     accept="image/png, image/jpeg"
                                     name='image'
-                                    onChange={commercialPropertyImageHandler} />
+                                    onChange={propertyImageHandler} />
                             </div>
                             <div className='flex flex-wrap justify-center gap-5 p-5'>
                                 {fetchedPropertyImagesUrl.length !== 0 &&
@@ -1434,8 +1440,8 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             </div>}
                                         </div>
                                     })}
-                                {commercialPropertyImages.length !== 0 &&
-                                    commercialPropertyImages.map(image => {
+                                {propertyImages.length !== 0 &&
+                                    propertyImages.map(image => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit bg-blue-300'>
@@ -1446,8 +1452,8 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                             {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
-                                                    const updatedState = commercialPropertyImages.filter(item => item.file !== image.file)
-                                                    setCommercialPropertyImages(updatedState)
+                                                    const updatedState = propertyImages.filter(item => item.file !== image.file)
+                                                    setPropertyImages(updatedState)
                                                 }}>
                                                 X
                                             </div>}

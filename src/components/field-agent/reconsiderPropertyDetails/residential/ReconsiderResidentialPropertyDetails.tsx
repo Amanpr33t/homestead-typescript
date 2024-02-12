@@ -340,8 +340,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     const [village, setVillage] = useState<string>('')
 
     //The states below are for the uploading property images
-    const [residentialLandImageFileError, setResidentialLandImageFileError] = useState<boolean>(false)
-    const [residentialPropertyImages, setResidentialPropertyImages] = useState<ImageType[]>([])
+    const [propertyImageFileError, setPropertyImageFileError] = useState<boolean>(false)
+    const [propertyImages, setResidentialPropertyImages] = useState<ImageType[]>([])
     const [fetchedPropertyImagesUrl, setFetchedPropertyImagesUrl] = useState<string[]>([])
 
     const [contractImages, setContractImages] = useState<ImageType[]>([])
@@ -465,10 +465,13 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     }, [getPropertyDetails])
 
     //This function is triggered when the user selects a proeprty image
-    const residentialLandImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (propertyImages.length >= 20) {
+            return
+          }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
-            setResidentialLandImageFileError(false);
+            setPropertyImageFileError(false);
             setResidentialPropertyImages((array) => [
                 ...array,
                 {
@@ -485,6 +488,9 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (contractImages.length >= 20) {
+            return
+          }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -503,8 +509,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
     //The function is used to throw errors if the user has given incomplete data
     const errorCheckingBeforeSubmit = () => {
-        if (residentialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
-            setResidentialLandImageFileError(true)
+        if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+            setPropertyImageFileError(true)
         }
         if (!propertyTitle.trim()) {
             setPropertyTitleErrorMessage('Provide a title')
@@ -580,8 +586,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             setAreaTypeError(true)
         }
 
-        if (!residentialPropertyImages.length) {
-            setResidentialLandImageFileError(true)
+        if (!propertyImages.length) {
+            setPropertyImageFileError(true)
         }
 
         if (residentialPropertyType && residentialPropertyType.toLowerCase() === 'house' && !typeOfSale) {
@@ -708,7 +714,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                 routeTo: null
             })
         }
-        if (residentialPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+        if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
         if (!propertyTitle.trim() || propertyTitle.trim().length >= 150) {
@@ -3174,7 +3180,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
                         {/*images */}
                         <div className="flex flex-col p-2 pb-5 pt-5 ">
-                            {residentialLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+                            {propertyImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                             <div className="flex flex-row gap-5">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -3191,7 +3197,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     placeholder="image"
                                     accept="image/png, image/jpeg"
                                     name='image'
-                                    onChange={residentialLandImageHandler} />
+                                    onChange={propertyImageHandler} />
                             </div>
                             <div className='flex flex-wrap justify-center gap-5 p-5'>
                                 {fetchedPropertyImagesUrl.length !== 0 &&
@@ -3213,8 +3219,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             </div>}
                                         </div>
                                     })}
-                                {residentialPropertyImages.length !== 0 &&
-                                    residentialPropertyImages.map(image => {
+                                {propertyImages.length !== 0 &&
+                                    propertyImages.map(image => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit bg-blue-300'>
@@ -3225,7 +3231,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
-                                                    const updatedState = residentialPropertyImages.filter(item => item.file !== image.file)
+                                                    const updatedState = propertyImages.filter(item => item.file !== image.file)
                                                     setResidentialPropertyImages(updatedState)
                                                 }}>
                                                 X
@@ -3251,7 +3257,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                     propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
                     contractImages={contractImages}
-                    residentialPropertyImages={residentialPropertyImages}
+                    propertyImages={propertyImages}
                     fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
                     propertyDataReset={() => setPropertyData(null)} />}

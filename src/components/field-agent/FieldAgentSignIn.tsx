@@ -339,7 +339,6 @@ const FieldAgentSignIn: React.FC = () => {
         }
     }
 
-
     return (
         <Fragment>
 

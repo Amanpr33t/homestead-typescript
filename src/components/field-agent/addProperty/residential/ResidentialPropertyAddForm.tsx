@@ -319,8 +319,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
   const [village, setVillage] = useState<string>('')
 
   //The states below are for the uploading property images
-  const [residentialLandImageFileError, setResidentialLandImageFileError] = useState<boolean>(false)
-  const [residentialLandImages, setResidentialLandImages] = useState<ImageType[]>([])
+  const [propertyImageFileError, setPropertyImageFileError] = useState<boolean>(false)
+  const [propertyImages, setPropertyImages] = useState<ImageType[]>([])
 
   //The states below are for uploading contract images
   const [contractImages, setContractImages] = useState<ImageType[]>([])
@@ -330,14 +330,14 @@ const ResidentialPropertyAddForm: React.FC = () => {
   const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
   //This function is triggered when the user selects a proeprty image
-  const residentialLandImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    if (residentialLandImages.length >= 20) {
+  const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    if (propertyImages.length >= 20) {
       return
     }
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      setResidentialLandImageFileError(false);
-      setResidentialLandImages((array) => [
+      setPropertyImageFileError(false);
+      setPropertyImages((array) => [
         ...array,
         {
           file: URL.createObjectURL(selectedFile),
@@ -448,8 +448,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
       setAreaTypeError(true)
     }
 
-    if (!residentialLandImages.length) {
-      setResidentialLandImageFileError(true)
+    if (!propertyImages.length) {
+      setPropertyImageFileError(true)
     }
 
     if (residentialPropertyType && residentialPropertyType.toLowerCase() === 'house' && !typeOfSale) {
@@ -559,8 +559,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
       setStateError(true)
     }
 
-    if (!residentialLandImages.length) {
-      setResidentialLandImageFileError(true)
+    if (!propertyImages.length) {
+      setPropertyImageFileError(true)
     }
 
   }
@@ -635,7 +635,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (!district.trim() && !state.trim()) {
       return errorFunction()
-    } else if (!residentialLandImages.length) {
+    } else if (!propertyImages.length) {
       return errorFunction()
     }
 
@@ -789,7 +789,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
         <ReviewResidentialPropertyAfterSubmission
           propertyData={propertyData}
           contractImages={contractImages}
-          residentialLandImages={residentialLandImages}
+          propertyImages={propertyImages}
           propertyDataReset={() => setPropertyData(null)}
           firmName={propertyDealerFirmName as string} />}
 
@@ -2595,7 +2595,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
 
             {/*images */}
             <div className="flex flex-col p-2 pb-5 pt-5 ">
-              {residentialLandImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
+              {propertyImageFileError && <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
               <div className="flex flex-row gap-5">
                 <div className="flex flex-row gap-0.5">
                   <p className="h-4 text-2xl text-red-500">*</p>
@@ -2609,18 +2609,18 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   placeholder="image"
                   accept="image/png, image/jpeg"
                   name='image'
-                  onChange={residentialLandImageHandler} />
+                  onChange={propertyImageHandler} />
               </div>
-              {residentialLandImages.length !== 0 &&
+              {propertyImages.length !== 0 &&
                 <div className='flex flex-wrap justify-center gap-5 p-5'>
-                  {residentialLandImages.map(image => {
+                  {propertyImages.map(image => {
                     return <div key={Math.random()} className='relative w-fit bg-blue-300'>
                       <img className='relative w-auto h-60' src={image.file} alt="" />
                       <div
                         className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                         onClick={() => {
-                          const updatedState = residentialLandImages.filter(item => item.file !== image.file)
-                          setResidentialLandImages(updatedState)
+                          const updatedState = propertyImages.filter(item => item.file !== image.file)
+                          setPropertyImages(updatedState)
                         }}>
                         X
                       </div>

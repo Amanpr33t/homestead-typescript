@@ -33,7 +33,7 @@ const PropertiesToBeReconsidered: React.FC = () => {
 
             <div className=" w-full flex flex-col gap-10 place-items-center pt-16">
                 <div className="pt-16 flex justify-center w-full">
-                    <p className="text-xl font-semibold">Pending property reevaluations</p>
+                    <p className="text-xl font-semibold">Properties pending for reconsideration</p>
                 </div>
 
                 <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-10 ">

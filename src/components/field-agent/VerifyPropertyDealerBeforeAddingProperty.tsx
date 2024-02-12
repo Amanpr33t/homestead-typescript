@@ -15,6 +15,7 @@ interface AlertType {
     alertType: 'success' | 'warning' | null,
     alertMessage: string | null
 }
+
 //This component is used to verify a property dealer before adding a property
 const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propertyDealerSetterFunction }) => {
     const navigate = useNavigate()

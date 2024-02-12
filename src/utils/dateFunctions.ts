@@ -17,7 +17,6 @@ function getDaysDifference(inputDate: string): number {
 
   // Convert the difference back to days
   const differenceDays: number = Math.ceil(differenceMilliseconds / (1000 * 60 * 60 * 24));
-
   return differenceDays - 1;
 }
 

@@ -68,7 +68,7 @@ const PropertiesToBeEvaluated: React.FC = () => {
     return (
         <Fragment>
 
-            <Link to='/property-evaluator' className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 z-30">Home</Link>
+            <Link to='/property-evaluator' className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded px-2 py-1 z-30">Home</Link>
 
             {spinner && !error && <Spinner />}
 
@@ -78,12 +78,12 @@ const PropertiesToBeEvaluated: React.FC = () => {
             </div>}
 
             {!error && !spinner &&
-                <div className=" w-full flex flex-col gap-10 place-items-center pt-16">
-                    <div className="pt-16 flex justify-center w-full">
+                <div className=" w-full flex flex-col gap-8 place-items-center pt-16">
+                    <div className="pt-12 sm:pt-4 flex justify-center w-full">
                         <p className="text-xl font-semibold">Pending property evaluations</p>
                     </div>
 
-                    <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-10 ">
+                    <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-5 sm:gap-10 ">
 
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfAgriculturalProperties && navigate('/property-evaluator/agricultural-properties-to-be-evaluated')}>
                             <p className="text-5xl text-green-800">{numberOfAgriculturalProperties}</p>

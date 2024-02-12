@@ -24,7 +24,7 @@ interface AlertType {
 }
 
 interface EvaluationDataType {
-    incompletePropertyDetails?:string[],
+    incompletePropertyDetails?: string[],
     typeOfLocation?: LocationType | null,
     locationStatus?: LocationStatusType | null,
     fairValueOfProperty?: number | null,
@@ -254,28 +254,29 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                         })
                     }} />}
 
-            <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideEvaluationForm}>
+            <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center pt-24 pb-10 ${showEvaluationForm ? '' : 'left-full'} ${alert.isAlertModal ? 'blur' : ''} `} onClick={hideEvaluationForm}>
 
-                <div className="mt-24 mb-10 relative max-h-screen w-10/12 sm:w-9/12 md:w-7/12 bg-gray-200 rounded-md overflow-y-auto flex flex-col place-items-center px-2  md:px-0" onClick={e => e.stopPropagation()}>
+                <div className="relative h-fit max-h-full w-11/12 sm:w-9/12 md:w-7/12 bg-white rounded-md overflow-y-auto flex flex-col place-items-center px-2 md:px-0 pb-10" onClick={e => e.stopPropagation()}>
 
-                    <div className="absolute top-1 right-2 ">
+                    <div className="absolute -top-1 right-1 ">
                         {/*button to hide evaluation form*/}
                         <button className="text-3xl font-bold p-1 text-gray-600" onClick={hideEvaluationForm}>X</button>
                     </div>
 
                     <div className="w-full mt-3">
-                        <p className="text-2xl font-semibold text-center ">Property Evaluation Form</p>
+                        <p className="text-2xl font-semibold text-center ">Evaluation Form</p>
                     </div>
 
-                    <form className="w-8/12 flex flex-col rounded mt-3" onSubmit={formSubmit}>
+                    <form className="min-h-fit w-full flex flex-col rounded mt-3 px-2 md:px-10 sm:px-5" onSubmit={formSubmit}>
 
                         {/*two radio button to know whether the information is complete or not*/}
                         <div className="px-2 flex flex-col py-3">
                             {isInformationCompleteError && <p className="text-red-500 w-full text-left">Select an option</p>}
+
                             {/*Radio buttons to know if the information is complete or not information complete?*/}
-                            <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16">
-                                <p className="text-xl font-semibold text-gray-500 mb-2">Is the information complete ?</p>
-                                <div className="flex flex-row gap-4 pt-1 pr-4 sm:pr-0">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-10 lg:gap-16">
+                                <p className="text-xl font-semibold text-gray-500">Is the information complete ?</p>
+                                <div className="flex flex-row place-content-center pt-1 gap-4 pr-4 sm:pr-0">
                                     <div className="flex flex-row h-fit">
                                         <input
                                             className="mr-1 cursor-pointer"
@@ -368,14 +369,14 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                 {isInformationInCompleteDetails.length > 0 && isInformationInCompleteDetails.map(detail => {
                                     let indexToRemove: number = index - 1
                                     return <div key={Math.random()} className="w-full flex flex-row place-content-between mt-2 bg-white">
-                                        <div className="flex flex-row gap-2">
-                                            <p className="font-semibold pl-1">{index++}.</p>
-                                            <p>{detail}</p>
+                                        <div className="flex flex-row gap-1">
+                                            <p className="font-semibold">{index++}.</p>
+                                            <p className="px-1">{detail}</p>
                                         </div>
                                         <div className="flex justify-center items-center h-full">
                                             <button
                                                 type="button"
-                                                className="bg-red-500 text-white font-semibold text-xl h-fit px-2"
+                                                className="bg-red-500 text-white font-semibold text-xl h-full px-2"
                                                 onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                                                     e.stopPropagation()
                                                     const filteredArray = isInformationInCompleteDetails.filter(item => item !== isInformationInCompleteDetails[indexToRemove])
@@ -392,57 +393,61 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
 
                         {/*This jsx is shown if the information is complete*/}
                         {isInformationComplete && <>
+
                             {/*type of location*/}
                             <div className="px-2 flex flex-col py-3 ">
                                 {(typeOfLocationError) && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Type of location</p>
-                                    <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
-                                        {typesOfLocationArray.map(type => {
-                                            return <div key={type} className="flex flex-row h-fit">
-                                                <input
-                                                    className="mr-1 cursor-pointer"
-                                                    type="radio"
-                                                    id={'location' + type}
-                                                    name="type-of-location"
-                                                    value={type}
-                                                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                        setTypeOfLocationError(false)
-                                                        if (e.target.checked) {
-                                                            setTypeOfLocation(e.target.value as LocationType)
-                                                        }
-                                                    }} />
-                                                <label htmlFor={'location' + type}>{capitalizeFirstLetterOfAString(type)}</label>
-                                            </div>
-                                        })}
+                                <div className="flex flex-row gap-4 sm:gap-10 lg:gap-16">
+                                    <p className="text-xl font-semibold text-gray-500 ">Type of location</p>
+                                    <div className="flex justify-center">
+                                        <div className="flex flex-col pt-1 gap-1.5 ">
+                                            {typesOfLocationArray.map(type => {
+                                                return <div key={type} className="flex flex-row h-fit">
+                                                    <input
+                                                        className="mr-1 cursor-pointer"
+                                                        type="radio"
+                                                        id={'location' + type}
+                                                        name="type-of-location"
+                                                        value={type}
+                                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                                            setTypeOfLocationError(false)
+                                                            if (e.target.checked) {
+                                                                setTypeOfLocation(e.target.value as LocationType)
+                                                            }
+                                                        }} />
+                                                    <label htmlFor={'location' + type}>{capitalizeFirstLetterOfAString(type)}</label>
+                                                </div>
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/*property status */}
+                            {/*location status */}
                             <div className="px-2 flex flex-col py-3">
                                 {locationStatusError && <p className="text-red-500">Select an option</p>}
-                                <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Location status</p>
-                                    <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
-                                        {typesOfPropertyStatusArray.map(type => {
-                                            return <div key={type} className="flex flex-row h-fit">
-                                                <input
-                                                    className="mr-1 cursor-pointer"
-                                                    type="radio"
-                                                    id={'status' + type}
-                                                    name="property-status"
-                                                    value={type}
-                                                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                        setLocationStatusError(false)
-                                                        if (e.target.checked) {
-                                                            setLocationStatus(e.target.value as LocationStatusType)
-                                                        }
-                                                    }} />
-                                                <label htmlFor={'status' + type}>{capitalizeFirstLetterOfAString(type)}</label>
-                                            </div>
-                                        })}
-
+                                <div className="flex flex-row gap-4 sm:gap-10 lg:gap-16">
+                                    <p className="text-xl font-semibold text-gray-500">Location status</p>
+                                    <div className="flex justify-center">
+                                        <div className="flex flex-col pt-1 gap-1.5">
+                                            {typesOfPropertyStatusArray.map(type => {
+                                                return <div key={type} className="flex flex-row h-fit">
+                                                    <input
+                                                        className="mr-1 cursor-pointer"
+                                                        type="radio"
+                                                        id={'status' + type}
+                                                        name="property-status"
+                                                        value={type}
+                                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                                            setLocationStatusError(false)
+                                                            if (e.target.checked) {
+                                                                setLocationStatus(e.target.value as LocationStatusType)
+                                                            }
+                                                        }} />
+                                                    <label htmlFor={'status' + type}>{capitalizeFirstLetterOfAString(type)}</label>
+                                                </div>
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -454,27 +459,29 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                     (propertyType === 'commercial' && isBuiltUpProperty)) &&
                                 <div className="px-2 flex flex-col py-3">
                                     {conditionOfConstructionError && <p className="text-red-500">Select an option</p>}
-                                    <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">Condtion of construction</p>
-                                        <div className="flex flex-col gap-1 pt-1 pr-4 sm:pr-0">
-                                            {conditionOfConstructionArray.map(type => {
-                                                return <div key={type} className="flex flex-row h-fit">
-                                                    <input
-                                                        className="mr-1 cursor-pointer"
-                                                        type="radio"
-                                                        id={'construction' + type}
-                                                        name="condition-of-construction"
-                                                        value={type}
-                                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                            setConditionOfConstructionError(false)
-                                                            if (e.target.checked) {
-                                                                setConditionOfConstruction(e.target.value as ConstructionType)
-                                                            }
-                                                        }} />
-                                                    <label htmlFor={'construction' + type}>{capitalizeFirstLetterOfAString(type)}</label>
-                                                </div>
-                                            })}
+                                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 lg:gap-16">
+                                        <p className="text-xl font-semibold text-gray-500 ">Condtion of construction</p>
+                                        <div className="flex justify-center">
+                                            <div className="flex flex-col pt-1 gap-1.5">
+                                                {conditionOfConstructionArray.map(type => {
+                                                    return <div key={type} className="flex flex-row h-fit">
+                                                        <input
+                                                            className="mr-1 cursor-pointer"
+                                                            type="radio"
+                                                            id={'construction' + type}
+                                                            name="condition-of-construction"
+                                                            value={type}
+                                                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                                                setConditionOfConstructionError(false)
+                                                                if (e.target.checked) {
+                                                                    setConditionOfConstruction(e.target.value as ConstructionType)
+                                                                }
+                                                            }} />
+                                                        <label htmlFor={'construction' + type}>{capitalizeFirstLetterOfAString(type)}</label>
+                                                    </div>
+                                                })}
 
+                                            </div>
                                         </div>
                                     </div>
                                 </div>}
@@ -485,9 +492,9 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                     (propertyType === 'commercial' && isBuiltUpProperty)) &&
                                 <div className="px-2 flex flex-col py-3">
                                     {qualityOfConstructionRatingError && <p className="text-red-500">Select a rating</p>}
-                                    <div className="flex flex-row gap-16 sm:gap-10 lg:gap-16 mb-2">
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">Quality of construction</p>
-                                        <div className="flex flex-row gap-1">
+                                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 lg:gap-16">
+                                        <p className="text-xl font-semibold text-gray-500 ">Quality of construction</p>
+                                        <div className="flex flex-row place-content-center gap-1">
                                             {[1, 2, 3, 4, 5].map((star) => (
                                                 <span
                                                     key={star}
@@ -531,7 +538,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                             <div className="px-2 flex flex-col py-3">
                                 {fiveYearProjectionError && <p className="text-red-500">Select an option</p>}
                                 <div className="flex flex-col gap-2 ">
-                                    <p className=" text-xl font-semibold text-gray-500 ">Five year projection of property prices</p>
+                                    <p className=" text-xl font-semibold text-gray-500 ">Five year projection of prices</p>
                                     <div className="ml-20 flex flex-col gap-2">
                                         <div className="flex flex-row">
                                             <input
@@ -575,9 +582,9 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                             {fiveYearProjectionPriceIncrease !== null &&
                                 <div className="px-2 flex flex-col py-3">
                                     {fiveYearProjectionPercentageNumberError && <p className="text-red-500">Provide a percentage</p>}
-                                    <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16 mb-2">
-                                        <p className="text-xl font-semibold text-gray-500 mb-2">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
-                                        <div className="flex flex-row gap-1 pt-1 pr-4 sm:pr-0">
+                                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-5">
+                                        <p className="text-xl font-semibold text-gray-500">{fiveYearProjectionPriceIncrease ? "Percentage increase in price" : "Percentage decrease in price"}</p>
+                                        <div className="flex flex-row place-content-center gap-1 pt-1">
                                             <input
                                                 id="projection-percentage"
                                                 type="number"

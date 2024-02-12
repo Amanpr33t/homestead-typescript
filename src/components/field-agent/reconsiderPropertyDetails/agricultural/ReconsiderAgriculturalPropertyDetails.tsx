@@ -146,8 +146,8 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     const [tehsil, setTehsil] = useState<string>('')
     const [village, setVillage] = useState<string>('')
 
-    const [agriculturalPropertyImageError, setAgriculturalPropertyImageErrorr] = useState<boolean>(false) //Error will be true if agriculturalPropertyImageError array is empty
-    const [agriculturalPropertyImages, setAgriculturalPropertyImages] = useState<ImageType[]>([]) //property images added by the user
+    const [propertyImageError, setPropertyImageErrorr] = useState<boolean>(false) //Error will be true if propertyImageError array is empty
+    const [propertyImages, setPropertyImages] = useState<ImageType[]>([]) //property images added by the user
 
     const [contractImages, setContractImages] = useState<ImageType[]>([]) //Contract images added by the user
 
@@ -300,11 +300,14 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     }, [getPropertyDetails])
 
     //This function is triggered when the user selects a proeprty image
-    const agriculturalPropertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (propertyImages.length >= 20) {
+            return
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
-            setAgriculturalPropertyImageErrorr(false);
-            setAgriculturalPropertyImages((array) => [
+            setPropertyImageErrorr(false);
+            setPropertyImages((array) => [
                 ...array,
                 {
                     file: URL.createObjectURL(selectedFile),
@@ -320,6 +323,9 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
     //This function is triggered when the user selects a contract image
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        if (contractImages.length >= 20) {
+            return
+          }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -338,8 +344,8 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
     //This function triggers different errors if the user does not provide suitable data
     const errorCheckingBeforeSubmit = () => {
-        if (agriculturalPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
-            setAgriculturalPropertyImageErrorr(true)
+        if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+            setPropertyImageErrorr(true)
         }
 
         if (!district) {
@@ -426,7 +432,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
         }
 
         //the if statements below are triggered if the user does not provide suitable data
-        if (agriculturalPropertyImages.length + fetchedPropertyImagesUrl.length === 0) {
+        if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
         if (!district.trim() || !state.trim()) {
@@ -1553,7 +1559,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
 
                         {/*land images */}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                            {agriculturalPropertyImageError &&
+                            {propertyImageError &&
                                 <p className="text-red-500 -mt-0.5 sm:-mt-2 pt-3">Select an image</p>}
                             <div className="flex flex-row gap-5">
                                 <div className="flex flex-row gap-0.5">
@@ -1571,7 +1577,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                     placeholder="image"
                                     accept="image/png, image/jpeg"
                                     name='image'
-                                    onChange={agriculturalPropertyImageHandler} />
+                                    onChange={propertyImageHandler} />
                             </div>
                             <div className='flex flex-wrap justify-center gap-5 p-5'>
                                 {fetchedPropertyImagesUrl.length !== 0 &&
@@ -1593,8 +1599,8 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             </div>}
                                         </div>
                                     })}
-                                {agriculturalPropertyImages.length !== 0 &&
-                                    agriculturalPropertyImages.map(image => {
+                                {propertyImages.length !== 0 &&
+                                    propertyImages.map(image => {
                                         return <div
                                             key={Math.random()}
                                             className='relative w-fit bg-blue-300'>
@@ -1605,8 +1611,8 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                             {editForm && <div
                                                 className='absolute top-0 right-0 text-2xl bg-white font-bold border-2 border-gray-500 pl-1 pr-1 cursor-pointer'
                                                 onClick={() => {
-                                                    const updatedState = agriculturalPropertyImages.filter(item => item.file !== image.file)
-                                                    setAgriculturalPropertyImages(updatedState)
+                                                    const updatedState = propertyImages.filter(item => item.file !== image.file)
+                                                    setPropertyImages(updatedState)
                                                 }}>
                                                 X
                                             </div>}
@@ -1648,7 +1654,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                     propertyId={fetchedPropertyData?._id as string}
                     propertyData={propertyData}
                     contractImages={contractImages}
-                    agriculturalPropertyImages={agriculturalPropertyImages}
+                    propertyImages={propertyImages}
                     fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
                     propertyDataReset={() => setPropertyData(null)} />}

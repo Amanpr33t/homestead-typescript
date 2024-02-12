@@ -68,26 +68,34 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
+    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
+    useEffect(() => {
+        if (!cloudinaryCloudName) {
+            navigate('/field-agent')
+        }
+    }, [cloudinaryCloudName, navigate])
+
     //The function is used to upload images to the server
     const imageUpload = async () => {
         try {
-            if (!firmLogoImageUpload || !process.env.REACT_APP_CLOUDINARY_CLOUD_NAME) {
-                throw new Error('No file selected for upload');
+            if (firmLogoImageUpload && process.env.REACT_APP_CLOUDINARY_CLOUD_NAME) {
+                const formData = new FormData()
+                formData.append('file', firmLogoImageUpload)
+                formData.append('upload_preset', 'homestead')
+                formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
+                //The fetch promise code is used to store image in cloudinary database
+                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'post',
+                    body: formData
+                })
+                const cloudinaryData = await cloudinaryResponse.json()
+                if (cloudinaryData && cloudinaryData.error) {
+                    throw new Error('Some error occured')
+                }
+                return cloudinaryData.secure_url
+            } else {
+                navigate('/field-agent')
             }
-            const formData = new FormData()
-            formData.append('file', firmLogoImageUpload)
-            formData.append('upload_preset', 'homestead')
-            formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-            //The fetch promise code is used to store image in cloudinary database
-            const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                method: 'post',
-                body: formData
-            })
-            const cloudinaryData = await cloudinaryResponse.json()
-            if (cloudinaryData && cloudinaryData.error) {
-                throw new Error('Some error occured')
-            }
-            return cloudinaryData.secure_url
         } catch (error) {
             setSpinner(false)
             setAlert({
@@ -104,47 +112,49 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
     const saveDetailsToDatabase = async () => {
         setSpinner(true)
         try {
-            let cloudinaryData = ''
+            let cloudinaryData: string
             if (firmLogoImageUpload) {
                 cloudinaryData = await imageUpload()
-            }
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    firmName,
-                    propertyDealerName,
-                    experience,
-                    addressArray,
-                    gstNumber,
-                    reraNumber,
-                    about: about?.trim() || null,
-                    firmLogoUrl: cloudinaryData,
-                    email,
-                    contactNumber
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'ok') {
-                setSpinner(false)
-                setAlert({
-                    isAlertModal: true,
-                    alertType: 'success',
-                    alertMessage: 'Property dealer added successfully',
-                    routeTo: '/field-agent'
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        firmName,
+                        propertyDealerName,
+                        experience,
+                        addressArray,
+                        gstNumber,
+                        reraNumber,
+                        about: about?.trim() || null,
+                        firmLogoUrl: cloudinaryData,
+                        email,
+                        contactNumber
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
                 })
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                if (!response.ok) {
+                    throw new Error('Some error occured')
+                }
+                const data = await response.json()
+                if (data.status === 'ok') {
+                    setSpinner(false)
+                    setAlert({
+                        isAlertModal: true,
+                        alertType: 'success',
+                        alertMessage: 'Property dealer added successfully',
+                        routeTo: '/field-agent'
+                    })
+                } else if (data.status === 'invalid_authentication') {
+                    setSpinner(false)
+                    localStorage.removeItem("homestead-field-agent-authToken")
+                    navigate('/field-agent/signIn', { replace: true })
+                } else {
+                    throw new Error('Some error occured')
+                }
             } else {
-                throw new Error('Some error occured')
+                navigate('/field-agent')
             }
         } catch (error) {
             setSpinner(false)
@@ -195,7 +205,7 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
                     onClick={(e: React.MouseEvent<HTMLTableElement>) => e.stopPropagation()}>
                     <thead >
                         <tr className="bg-gray-200 border-2 border-gray-200">
-                            <th className="w-40 text-xl pt-2 pb-2">Field</th>
+                            <th className="w-28 text-xl pt-4 pb-4 sm:w-48">Field</th>
                             <th className="text-xl ">Data</th>
                         </tr>
                     </thead>
