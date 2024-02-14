@@ -19,6 +19,7 @@ const CityManagerHomePage: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/city-manager/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -64,6 +65,7 @@ const CityManagerHomePage: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-city-manager-authToken")
                 navigate('/city-manager/signIn', { replace: true })
+                return
             }
         } catch (error) {
             setError(true)
@@ -105,17 +107,32 @@ const CityManagerHomePage: React.FC = () => {
 
                     <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-10 ">
 
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfPropertiesPendingForApproval.agricultural && navigate('/city-manager/agricultural-properties-pending-for-approval')}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                            if (numberOfPropertiesPendingForApproval.agricultural) {
+                                navigate('/city-manager/agricultural-properties-pending-for-approval')
+                                return
+                            }
+                        }}>
                             <p className="text-5xl text-green-800">{numberOfPropertiesPendingForApproval.agricultural}</p>
                             <p className="w-36 text-center" >Agricultural properties</p>
                         </div>
 
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfPropertiesPendingForApproval.commercial && navigate('/city-manager/commercial-properties-pending-for-approval')}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                            if (numberOfPropertiesPendingForApproval.commercial) {
+                                navigate('/city-manager/commercial-properties-pending-for-approval')
+                                return
+                            }
+                        }}>
                             <p className="text-5xl text-green-800">{numberOfPropertiesPendingForApproval.commercial}</p>
                             <p className="w-36 text-center" >Commercial properties</p>
                         </div>
 
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfPropertiesPendingForApproval.residential && navigate('/city-manager/residential-properties-pending-for-approval')}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                            if (numberOfPropertiesPendingForApproval.residential) {
+                                navigate('/city-manager/residential-properties-pending-for-approval')
+                                return
+                            }
+                        }}>
                             <p className="text-5xl text-green-800">{numberOfPropertiesPendingForApproval.residential}</p>
                             <p className="w-36 text-center" >Residential properties</p>
                         </div>
@@ -123,7 +140,7 @@ const CityManagerHomePage: React.FC = () => {
                     </div>
                 </div>}
 
-        </Fragment>
+        </Fragment >
     )
 }
 export default CityManagerHomePage

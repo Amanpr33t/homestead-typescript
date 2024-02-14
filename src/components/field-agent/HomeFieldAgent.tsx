@@ -20,6 +20,7 @@ const HomeFieldAgent: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -79,6 +80,7 @@ const HomeFieldAgent: React.FC = () => {
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             }
         } catch (error) {
             setError(true)
@@ -134,9 +136,12 @@ const HomeFieldAgent: React.FC = () => {
                             <p className="w-40">Pending visits to add a property dealer</p>
                         </div>
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100"
-                            onClick={() => pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential > 0 ?
-                                navigate(`/field-agent/reconsider-property-details?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) :
-                                null}>
+                            onClick={() => {
+                                if (pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential > 0) {
+                                    navigate(`/field-agent/reconsider-property-details?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true })
+                                    return
+                                }
+                            }}>
                             <p className="text-5xl">{pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential}</p>
                             <p className="w-40">Pending requests to reconsider details of a property</p>
                         </div>
@@ -158,9 +163,12 @@ const HomeFieldAgent: React.FC = () => {
                                     <p className="text-5xl">0</p>
                                     <p className="w-40">Pending visits to add a new property dealer</p>
                                 </div>
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential > 0 ?
-                                    navigate(`/field-agent/reconsider-property-details?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true }) :
-                                    null}>
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => {
+                                    if (pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential > 0) {
+                                        navigate(`/field-agent/reconsider-property-details?agricultural=${pendingRequestsForPropertyReevaluation.agricultural}&commercial=${pendingRequestsForPropertyReevaluation.commercial}&residential=${pendingRequestsForPropertyReevaluation.residential}`, { replace: true })
+                                        return
+                                    }
+                                }}>
                                     <p className="text-5xl">{pendingRequestsForPropertyReevaluation.agricultural + pendingRequestsForPropertyReevaluation.commercial + pendingRequestsForPropertyReevaluation.residential}</p>
                                     <p className="w-40">Pending requests to reconsider details of a property</p>
                                 </div>
@@ -169,7 +177,7 @@ const HomeFieldAgent: React.FC = () => {
                     </div>
 
                     <div className={`w-full bg-white rounded pt-6 pb-6 ${requestsDropdown || alert.isAlertModal ? 'blur' : ''}`} >
-                
+
                         <div className="flex flex-row gap-3 w-full place-content-center">
                             <Link
                                 to='/field-agent/add-property'

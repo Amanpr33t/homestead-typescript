@@ -9,6 +9,7 @@ const PropertiesToBeReconsidered: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -26,7 +27,10 @@ const PropertiesToBeReconsidered: React.FC = () => {
                 <button
                     type='button'
                     className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                    onClick={() => navigate('/field-agent', { replace: true })}>
+                    onClick={() => {
+                        navigate('/field-agent', { replace: true })
+                        return
+                    }}>
                     Home
                 </button>
             </div>
@@ -38,17 +42,32 @@ const PropertiesToBeReconsidered: React.FC = () => {
 
                 <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-10 ">
 
-                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfAgriculturalProperties && +numberOfAgriculturalProperties && navigate('/field-agent/reconsider-property-details/agricultural-properties')}>
+                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                        if (numberOfAgriculturalProperties && +numberOfAgriculturalProperties) {
+                            navigate('/field-agent/reconsider-property-details/agricultural-properties')
+                            return
+                        }
+                    }}>
                         <p className="text-5xl text-green-800">{numberOfAgriculturalProperties}</p>
                         <p className="w-36 text-center" >Agricultural properties</p>
                     </div>
 
-                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfCommercialProperties && +numberOfCommercialProperties && navigate('/field-agent/reconsider-property-details/commercial-properties')}>
+                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                        if (numberOfCommercialProperties && +numberOfCommercialProperties) {
+                            navigate('/field-agent/reconsider-property-details/commercial-properties')
+                            return
+                        }
+                    }}>
                         <p className="text-5xl text-green-800">{numberOfCommercialProperties}</p>
                         <p className="w-36 text-center">Commercial properties</p>
                     </div>
 
-                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfResidentialProperties && +numberOfResidentialProperties && navigate('/field-agent/reconsider-property-details/residential-properties')}>
+                    <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                        if (numberOfResidentialProperties && +numberOfResidentialProperties) {
+                            navigate('/field-agent/reconsider-property-details/residential-properties')
+                            return
+                        }
+                    }}>
                         <p className="text-5xl text-green-800">{numberOfResidentialProperties}</p>
                         <p className="w-36 text-center">Residential properties</p>
                     </div>

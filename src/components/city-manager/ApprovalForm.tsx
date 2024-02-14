@@ -93,6 +93,7 @@ const ApprovalForm: React.FC<PropsType> = (props) => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-city-manager-authToken")
                 navigate('/city-manager/signIn', { replace: true })
+                return
             } else {
                 throw new Error('Some error occured')
             }

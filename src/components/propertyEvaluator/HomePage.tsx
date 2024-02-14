@@ -19,6 +19,7 @@ const PropertyEvaluatorHomePage: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/property-evaluator/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -63,12 +64,13 @@ const PropertyEvaluatorHomePage: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             }
         } catch (error) {
             setError(true)
             setSpinner(false)
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate, propertiesApprovedByCityManager])
 
     useEffect(() => {
         if (authToken) {
@@ -104,14 +106,24 @@ const PropertyEvaluatorHomePage: React.FC = () => {
 
                         <div className="flex flex-col md:flex-row md:place-content-center place-items-center gap-3 md:gap-5 ">
                             <div className="flex justify-center px-2">
-                                <div className="flex flex-row bg-slate-200 border border-gray-400 gap-2 px-2 py-1 cursor-pointer rounded h-fit w-fit  hover:bg-slate-100" onClick={() => pendingPropertyEvaluations > 0 ? navigate('/property-evaluator/properties-pending-for-evaluation', { replace: true }) : null}>
+                                <div className="flex flex-row bg-slate-200 border border-gray-400 gap-2 px-2 py-1 cursor-pointer rounded h-fit w-fit  hover:bg-slate-100" onClick={() => {
+                                    if (pendingPropertyEvaluations) {
+                                        navigate('/property-evaluator/properties-pending-for-evaluation', { replace: true })
+                                        return
+                                    }
+                                }}>
                                     <p className="text-5xl text-orange-600">{pendingPropertyEvaluations}</p>
                                     <p className="sm:w-60">property evaluation requests are pending</p>
                                 </div>
                             </div>
 
                             <div className="flex justify-center px-2">
-                                <div className="flex flex-row bg-slate-200 border border-gray-400 gap-2 px-2 py-1 cursor-pointer rounded h-fit w-fit  hover:bg-slate-100" onClick={() => pendingPropertiesReceivedForReevaluation > 0 ? navigate('/property-evaluator/properties-pending-for-reevaluation', { replace: true }) : null}>
+                                <div className="flex flex-row bg-slate-200 border border-gray-400 gap-2 px-2 py-1 cursor-pointer rounded h-fit w-fit  hover:bg-slate-100" onClick={() => {
+                                    if (pendingPropertiesReceivedForReevaluation) {
+                                        navigate('/property-evaluator/properties-pending-for-reevaluation', { replace: true })
+                                        return
+                                    }
+                                }}>
                                     <p className="text-5xl text-orange-600">{pendingPropertiesReceivedForReevaluation}</p>
                                     <p className="sm:w-60">properties have been received for reevaluation</p>
                                 </div>

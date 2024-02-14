@@ -16,6 +16,7 @@ const AddProperty: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -41,7 +42,10 @@ const AddProperty: React.FC = () => {
                     <button
                         type='button'
                         className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 h-8  "
-                        onClick={() => navigate('/field-agent', { replace: true })}>
+                        onClick={() => {
+                            navigate('/field-agent', { replace: true })
+                            return
+                            }}>
                         Home
                     </button>
                 </div>
@@ -184,10 +188,13 @@ const AddProperty: React.FC = () => {
                                     onClick={() => {
                                         if (selectedPropertyType === 'agricultural') {
                                             navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`, { replace: true })
+                                            return
                                         } else if (selectedPropertyType === 'commercial' && commericialPropertyType) {
                                             navigate(`/field-agent/add-property/commercial?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${commericialPropertyType}`, { replace: true })
+                                            return
                                         } else if (selectedPropertyType === 'residential' && residentialPropertyType) {
                                             navigate(`/field-agent/add-property/residential?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${residentialPropertyType}`, { replace: true })
+                                            return
                                         }
                                     }}>Select</button>
                             </div>

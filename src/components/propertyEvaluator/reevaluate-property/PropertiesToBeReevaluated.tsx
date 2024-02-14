@@ -9,12 +9,14 @@ const PropertiesToBeReevaluated: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/property-evaluator/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
     useEffect(() => {
         if (!authToken) {
             navigate('/property-evaluator/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -51,6 +53,7 @@ const PropertiesToBeReevaluated: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             }
         } catch (error) {
             setError(true)
@@ -85,17 +88,32 @@ const PropertiesToBeReevaluated: React.FC = () => {
 
                     <div className="w-full sm:w-10/12 md:w-8/12 lg:w-1/2 justify-center flex flex-wrap gap-5 ">
 
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfAgriculturalProperties && navigate('/property-evaluator/agricultural-properties-to-be-reevaluated')}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                            if (numberOfAgriculturalProperties) {
+                                navigate('/property-evaluator/agricultural-properties-to-be-reevaluated')
+                                return
+                            }
+                        }}>
                             <p className="text-5xl text-green-800">{numberOfAgriculturalProperties}</p>
                             <p className="w-36 text-center" >Agricultural properties</p>
                         </div>
 
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfCommercialProperties && navigate('/property-evaluator/commercial-properties-to-be-reevaluated')}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                            if (numberOfCommercialProperties) {
+                                navigate('/property-evaluator/commercial-properties-to-be-reevaluated')
+                                return
+                            }
+                        }}>
                             <p className="text-5xl text-green-800">{numberOfCommercialProperties}</p>
                             <p className="w-36 text-center">Commercial properties</p>
                         </div>
 
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => numberOfResidentialProperties && navigate('/property-evaluator/residential-properties-to-be-reevaluated')}>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded h-fit hover:bg-sky-100" onClick={() => {
+                            if (numberOfResidentialProperties) {
+                                navigate('/property-evaluator/residential-properties-to-be-reevaluated')
+                                return
+                            }
+                        }}>
                             <p className="text-5xl text-green-800">{numberOfResidentialProperties}</p>
                             <p className="w-36 text-center">Residential properties</p>
                         </div>

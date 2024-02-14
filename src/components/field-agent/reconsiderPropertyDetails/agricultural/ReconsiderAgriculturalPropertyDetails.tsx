@@ -9,80 +9,13 @@ import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityF
 import ReevaluationDetailsModal from "../DetailsModal"
 import { FaEdit } from "react-icons/fa"
 import ReviewReconsideredAgriculturalPropertyDetails from "./ReviewReconsideredAgriculturalPropertyDetails"
-
-type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
-type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
-type ReservoirType = 'public' | 'private'
-type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
-
-type StatesType = 'punjab' | 'chandigarh'
-
-interface PropertyDataType {
-    landSize: {
-        size: number,
-        unit: 'metre-square' | 'acre',
-        details: string | null,
-    },
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    waterSource: {
-        canal: string[] | null,
-        river: string[] | null,
-        tubewells: {
-            numberOfTubewells: number,
-            depth: number[] | null
-        }
-    },
-    reservoir: {
-        isReservoir: boolean,
-        type: ReservoirType[] | null,
-        capacityOfPrivateReservoir: number | null,
-        unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
-    },
-    irrigationSystem: IrrigationSystemType[] | null,
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    crops: CropTypeArray[],
-    road: {
-        type: RoadType,
-        details: string | null,
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    nearbyTown: string | null,
-}
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
+import { RoadType, IrrigationSystemType, ReservoirType, CropTypeArray, PropertyDataType } from "../../../../dataTypes/agriculturalPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
+import { StateType } from "../../../../dataTypes/stateType"
 
 interface ImageType {
     file: string;
     upload: File;
-}
-
-interface FetchedPropertyDataType extends PropertyDataType {
-    _id: string,
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
-    sentBackTofieldAgentForReevaluation: {
-        details: string[]
-    }
 }
 
 //This component is a form used by a field agent to add an agricultural property
@@ -94,10 +27,11 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
-    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)//property data fetched
+    const [fetchedPropertyData, setFetchedPropertyData] = useState<PropertyDataType | null>(null)//property data fetched
 
     const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)//If it is true dealer details will be shown to the user
     const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)//If it is true, reevaluation details will be shown to the user
@@ -126,6 +60,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     useEffect(() => {
         if (!propertyId) {
             navigate('/field-agent')
+            return
         }
     }, [propertyId, navigate])
 
@@ -253,14 +188,16 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
             setIsLegalRestrictions(fetchedPropertyData.legalRestrictions.isLegalRestrictions)
             setLegalRestrictionDetails(fetchedPropertyData.legalRestrictions.details || '')
             setNearbyTown(fetchedPropertyData.nearbyTown || '')
-            setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            if (fetchedPropertyData.propertyImagesUrl) {
+                setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            }
             if (fetchedPropertyData.contractImagesUrl?.length) {
                 setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
             }
         }
     }, [fetchedPropertyData])
 
-    const states: StatesType[] = ['chandigarh', 'punjab']
+    const states: StateType[] = ['chandigarh', 'punjab']
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>() //contains final property data added by user
 
@@ -284,6 +221,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setFetchedPropertyData(data.propertyData)
@@ -325,7 +263,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
         if (contractImages.length >= 20) {
             return
-          }
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -544,7 +482,10 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
             {!propertyData && <button
                 type='button'
                 className={` ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-30`}
-                onClick={() => navigate('/field-agent', { replace: true })}>
+                onClick={() => {
+                    navigate('/field-agent', { replace: true })
+                    return
+                }}>
                 Home
             </button>}
 
@@ -1460,7 +1401,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                                         value={roadDetails}
                                         placeholder="Add details about road here (optional)"
                                         onChange={e => {
-                                            if (e.target.value.trim().length <500) {
+                                            if (e.target.value.trim().length < 500) {
                                                 setRoadDetails(e.target.value)
                                             }
                                         }} />
@@ -1632,7 +1573,7 @@ const ReconsiderAgriculturalPropertyDetails: React.FC = () => {
                     </form>
                 </div >}
 
-            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
                 <ReevaluationDetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}

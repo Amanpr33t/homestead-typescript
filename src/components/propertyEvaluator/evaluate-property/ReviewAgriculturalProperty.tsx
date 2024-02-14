@@ -104,6 +104,7 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setProperty(data.property)
@@ -130,8 +131,14 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                 </div>}
 
             <div className={`${showEvaluationForm ? 'inset-0 bg-gray-500 opacity-50 blur' : ''} w-full fixed top-16 pb-2 z-30`}>
-                <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator/agricultural-properties-to-be-evaluated')}>Back</button>
-                <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
+                <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                    navigate('/property-evaluator/agricultural-properties-to-be-evaluated')
+                    return
+                }}>Back</button>
+                <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                    navigate('/property-evaluator', { replace: true })
+                    return
+                }}>Home</button>
             </div>
 
             {property && !spinner && !error &&

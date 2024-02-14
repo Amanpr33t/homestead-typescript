@@ -247,7 +247,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
+                return navigate('/property-evaluator/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }

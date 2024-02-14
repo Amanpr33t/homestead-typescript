@@ -126,6 +126,7 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setProperty(data.property)
@@ -152,8 +153,14 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                 </div>}
 
             <div className={`${showReevaluationForm && 'inset-0 bg-gray-300 opacity-50 blur'} ${showReevaluationDetails && 'blur'} w-fit h-fit fixed top-16 pb-2 z-30`}>
-                <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator/commercial-properties-to-be-reevaluated')}>Back</button>
-                <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
+                <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                    navigate('/property-evaluator/commercial-properties-to-be-reevaluated')
+                    return
+                }}>Back</button>
+                <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                    navigate('/property-evaluator', { replace: true })
+                    return
+                }}>Home</button>
             </div>
 
             {showReevaluationDetails && property && property.sentToEvaluatorByCityManagerForReevaluation.details &&

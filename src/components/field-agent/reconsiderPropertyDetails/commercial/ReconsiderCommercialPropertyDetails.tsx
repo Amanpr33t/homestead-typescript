@@ -8,6 +8,9 @@ import Spinner from "../../../Spinner"
 import ReviewReconsideredCommercialPropertyDetails from "./ReviewReconsideredCommercialPropertyDetails"
 import DetailsModal from "../DetailsModal"
 import { FaEdit } from "react-icons/fa"
+import { BuiltUpType, PropertyDataType } from "../../../../dataTypes/commercialPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
+import { StateType } from "../../../../dataTypes/stateType"
 
 const arrayOfNumbers = (from: number, to: number) => {
     if (from === 0) {
@@ -19,86 +22,9 @@ const arrayOfNumbers = (from: number, to: number) => {
     }
 }
 
-type StatesType = 'punjab' | 'chandigarh'
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
-
 interface ImageType {
     file: string;
     upload: File;
-}
-
-type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
-
-interface PropertyDataType {
-    commercialPropertyType: string,
-    landSize: {
-        totalArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        details: string | null,
-    },
-    stateOfProperty: {
-        empty: boolean,
-        builtUp: boolean,
-        builtUpPropertyType: BuiltUpType | null
-    },
-    location: {
-        name: {
-            plotNumber: number | null,
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    floors: {
-        floorsWithoutBasement: number,
-        basementFloors: number
-    },
-    widthOfRoadFacing: {
-        feet: number,
-        metre: number
-    },
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    remarks: string | null,
-    lockInPeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    leasePeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'
-}
-
-interface FetchedPropertyDataType extends PropertyDataType {
-    _id: string,
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
-    sentBackTofieldAgentForReevaluation: {
-        details: string[]
-    }
 }
 
 //Component is used to add a commercial proerty
@@ -110,10 +36,11 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
-    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)//fetched data of property
+    const [fetchedPropertyData, setFetchedPropertyData] = useState<PropertyDataType | null>(null)//fetched data of property
 
     const [showDealerDetails, setShowDealerDetails] = useState<boolean>(false)//if true, dealer details will be shown to the user
     const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true)//if true, reevaluation details will be shown to the user
@@ -140,6 +67,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     useEffect(() => {
         if (!propertyId) {
             navigate('/field-agent')
+            return
         }
     }, [propertyId, navigate])
 
@@ -205,7 +133,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const [builtUpSelectedOption, setBuiltupSelectedOption] = useState<BuiltUpType>()
     const builtUpPropertyOptions: BuiltUpType[] = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
 
-    const states: StatesType[] = ['chandigarh', 'punjab']
+    const states: StateType[] = ['chandigarh', 'punjab']
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null) //updated property data after the property data has been updated by the user
 
@@ -242,7 +170,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
             if (fetchedPropertyData.stateOfProperty.builtUpPropertyType) {
                 setBuiltupSelectedOption(fetchedPropertyData.stateOfProperty.builtUpPropertyType)
             }
-            setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl || [])
             if (fetchedPropertyData.contractImagesUrl?.length) {
                 setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
             }
@@ -269,6 +197,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setFetchedPropertyData(data.propertyData)
@@ -287,7 +216,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
         if (propertyImages.length >= 20) {
             return
-          }
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setPropertyImageError(false);
@@ -309,7 +238,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
         if (contractImages.length >= 20) {
             return
-          }
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -512,13 +441,16 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                     propertyImages={propertyImages}
                     fetchedPropertyImagesUrl={fetchedPropertyImagesUrl}
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
-            propertyDataReset={() => setPropertyData(null)} />}
+                    propertyDataReset={() => setPropertyData(null)} />}
 
             {/*Home button */}
             {!propertyData && <button
                 type='button'
                 className={` ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-30`}
-                onClick={() => navigate('/field-agent', { replace: true })}>
+                onClick={() => {
+                    navigate('/field-agent', { replace: true })
+                    return
+                }}>
                 Home
             </button>}
 
@@ -1496,7 +1428,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                     </form>
                 </div >}
 
-            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
                 <DetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}

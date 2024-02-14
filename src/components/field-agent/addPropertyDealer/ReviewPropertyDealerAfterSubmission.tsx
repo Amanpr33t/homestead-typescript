@@ -1,13 +1,8 @@
 import { Fragment, useEffect, useState } from "react"
 import AlertModal from "../../AlertModal";
 import { useNavigate } from "react-router-dom";
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
+import useUploadImages from "../../../custom-hooks/useImageUpload";
+import { AlertType } from "../../../dataTypes/alertType";
 
 interface AddressType {
     addressId: number,
@@ -52,6 +47,7 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
         hideReviewForm
     } = props
     const navigate = useNavigate()
+    const { uploadImages } = useUploadImages()
 
     const [spinner, setSpinner] = useState<boolean>(false) //used to set spinner
     const [alert, setAlert] = useState<AlertType>({
@@ -68,33 +64,17 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
 
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken") //This variable stores the authToken present in local storage
 
-    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-    useEffect(() => {
-        if (!cloudinaryCloudName) {
-            navigate('/field-agent')
-        }
-    }, [cloudinaryCloudName, navigate])
-
-    //The function is used to upload images to the server
-    const imageUpload = async () => {
+    const uploadImagesFunction = async () => {
         try {
-            if (firmLogoImageUpload && process.env.REACT_APP_CLOUDINARY_CLOUD_NAME) {
-                const formData = new FormData()
-                formData.append('file', firmLogoImageUpload)
-                formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', process.env.REACT_APP_CLOUDINARY_CLOUD_NAME)
-                //The fetch promise code is used to store image in cloudinary database
-                const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                    method: 'post',
-                    body: formData
-                })
-                const cloudinaryData = await cloudinaryResponse.json()
-                if (cloudinaryData && cloudinaryData.error) {
-                    throw new Error('Some error occured')
+            setSpinner(true)
+            const uploadedLogoUrl: string[] = await uploadImages([{ upload: firmLogoImageUpload as File, file: '' }])
+
+            if (uploadedLogoUrl) {
+                if (uploadedLogoUrl.length === 1) {
+                    await saveDetailsToDatabase(uploadedLogoUrl[0])
+                } else {
+                    throw new Error('some error occured')
                 }
-                return cloudinaryData.secure_url
-            } else {
-                navigate('/field-agent')
             }
         } catch (error) {
             setSpinner(false)
@@ -109,53 +89,49 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
     }
 
     //This function is used to save details to backend API
-    const saveDetailsToDatabase = async () => {
+    const saveDetailsToDatabase = async (logoUrl: string) => {
         setSpinner(true)
         try {
-            let cloudinaryData: string
-            if (firmLogoImageUpload) {
-                cloudinaryData = await imageUpload()
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        firmName,
-                        propertyDealerName,
-                        experience,
-                        addressArray,
-                        gstNumber,
-                        reraNumber,
-                        about: about?.trim() || null,
-                        firmLogoUrl: cloudinaryData,
-                        email,
-                        contactNumber
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                })
-                if (!response.ok) {
-                    throw new Error('Some error occured')
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addPropertyDealer`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    firmName,
+                    propertyDealerName,
+                    experience,
+                    addressArray,
+                    gstNumber,
+                    reraNumber,
+                    about: about?.trim() || null,
+                    firmLogoUrl: logoUrl,
+                    email,
+                    contactNumber
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
                 }
-                const data = await response.json()
-                if (data.status === 'ok') {
-                    setSpinner(false)
-                    setAlert({
-                        isAlertModal: true,
-                        alertType: 'success',
-                        alertMessage: 'Property dealer added successfully',
-                        routeTo: '/field-agent'
-                    })
-                } else if (data.status === 'invalid_authentication') {
-                    setSpinner(false)
-                    localStorage.removeItem("homestead-field-agent-authToken")
-                    navigate('/field-agent/signIn', { replace: true })
-                } else {
-                    throw new Error('Some error occured')
-                }
-            } else {
-                navigate('/field-agent')
+            })
+            if (!response.ok) {
+                throw new Error('Some error occured')
             }
+            const data = await response.json()
+            if (data.status === 'ok') {
+                setSpinner(false)
+                setAlert({
+                    isAlertModal: true,
+                    alertType: 'success',
+                    alertMessage: 'Property dealer added successfully',
+                    routeTo: '/field-agent'
+                })
+            } else if (data.status === 'invalid_authentication') {
+                setSpinner(false)
+                localStorage.removeItem("homestead-field-agent-authToken")
+                navigate('/field-agent/signIn', { replace: true })
+                return
+            } else {
+                throw new Error('Some error occured')
+            }
+
         } catch (error) {
             setSpinner(false)
             setAlert({
@@ -286,7 +262,7 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
                         type='button'
                         className={`px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pt-0.5 h-8 flex flex-row place-content-center gap-1 ${spinner ? 'w-20' : ''}`}
                         disabled={spinner || alert.isAlertModal}
-                        onClick={saveDetailsToDatabase}>
+                        onClick={uploadImagesFunction}>
                         {spinner ? (
                             <div className="spinner absolute border-t-4 border-white border-solid rounded-full h-6 w-6 animate-spin"></div>
                         ) : (

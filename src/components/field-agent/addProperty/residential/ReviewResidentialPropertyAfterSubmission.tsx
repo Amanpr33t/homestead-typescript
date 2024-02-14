@@ -1,121 +1,14 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal"
-import { useNavigate } from "react-router-dom"
 import ResidentialPropertyTable from "../../../table/ResidentialPropertyTable"
-
-type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
-type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
-type RoofType = 'standard' | 'pop work' | 'down ceiling'
-type WindowType = 'standard' | 'wood' | 'premium material'
-type SafetySystemType = 'cctv' | 'glass break siren' | 'entry sensor' | 'motion sensor' | 'panic button' | 'keypad' | 'keyfob' | 'smoke detector' | 'co detector' | 'water sprinkler' | 'doorbell camera'
-type ConditionOfPropertyType = 'exceptionally new' | 'near to new' | 'some signs of agying' | 'need some renovations' | 'needs complete renovation'
-
-interface SaleType {
-    floorForSale: boolean,
-    houseForSale: boolean
-}
+import useUploadImages from "../../../../custom-hooks/useImageUpload"
+import { PropertyDataType } from "../../../../dataTypes/residentialPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
+import useAddOrEditPropertyData from "../../../../custom-hooks/useAddOrEditPropertyData"
 
 interface ImageType {
     file: string;
     upload: File;
-}
-
-interface PropertyDataType {
-    //data common to flat, house and plot property type
-    addedByPropertyDealer: string,
-    residentialPropertyType: string,
-    title: string,
-    details: string | null,
-    price: {
-        fixed: number | null,
-        range: {
-            from: number | null,
-            to: number | null
-        }
-    },
-    waterSupply: {
-        available: boolean,
-        twentyFourHours: boolean | null
-    },
-    electricityConnection: boolean,
-    sewageSystem: boolean,
-    cableTV: boolean,
-    highSpeedInternet: boolean,
-    distance: {
-        distanceFromGroceryStore: number,
-        distanceFromRestaurantCafe: number,
-        distanceFromExerciseArea: number,
-        distanceFromSchool: number,
-        distanceFromHospital: number
-    },
-    areaType: 'rural' | 'urban' | 'sub-urban',
-    area: {
-        totalArea: {
-            metreSquare: number,
-            gajj: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            gajj: number
-        }
-    },
-    numberOfOwners: number,
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    propertyTaxes: number | null,
-    homeOwnersAssociationFees: number | null,
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    typeOfSale?: SaleType,
-    numberOfFloors?: number,
-    numberOfLivingRooms?: number,
-    numberOfBedrooms?: number,
-    numberOfOfficeRooms?: number,
-    numberOfWashrooms?: number,
-    numberOfKitchen?: number,
-    numberOfCarParkingSpaces?: number,
-    numberOfBalconies?: number,
-    storeRoom?: boolean,
-    servantRoom?: boolean,
-    furnishing?: {
-        type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
-        details: string | null
-    },
-    kitchenFurnishing?: {
-        type: 'modular' | 'semi-furnished' | 'unfurnished',
-        details: string | null
-    },
-    kitchenAppliances?: {
-        available: boolean,
-        details: string | null
-    },
-    washroomFitting?: 'standard' | 'premium' | 'luxurious',
-    electricalFitting?: 'standard' | 'premium' | 'luxurious',
-    flooringTypeArray?: FlooringType[],
-    roofTypeArray?: RoofType[],
-    wallTypeArray?: WallType[],
-    windowTypeArray?: WindowType[],
-    safetySystemArray?: SafetySystemType[] | null,
-    garden?: {
-        available: boolean,
-        details: string | null
-    },
-    ageOfConstruction?: number,
-    conditionOfProperty?: ConditionOfPropertyType
-}
-
-interface FinalPropertyDataType extends PropertyDataType {
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
 }
 
 interface PropsType {
@@ -124,13 +17,6 @@ interface PropsType {
     contractImages: ImageType[],
     propertyDataReset: () => void,
     firmName: string
-}
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
 }
 
 //The component is used to review the residential proeprty before it is saved in the database
@@ -142,7 +28,9 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
         propertyImages,
         contractImages } = props
 
-    const navigate = useNavigate()
+    const { uploadImages } = useUploadImages()
+
+    const { addOrEditPropertyData } = useAddOrEditPropertyData('add', 'residential', propertyData)
 
     const [spinner, setSpinner] = useState<boolean>(false)
     const [alert, setAlert] = useState<AlertType>({
@@ -152,109 +40,22 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
         routeTo: null
     })
 
-    const [propertyImagesUrl, setPropertyImagesUrl] = useState<string[]>([]) //This state is array that stores the url of all the property images uploaded
-    const [contractImagesUrl, setContractImagesUrl] = useState<string[]>([]) //This state is array that stores the url of all the proeprty images uploaded
-
     useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) //it scrools screen to the top
+        //The code below is used to scroll the screen to the top
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [])
 
-    const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
-
-    const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
-    useEffect(() => {
-        if (!cloudinaryCloudName) {
-            navigate('/field-agent')
-        }
-    }, [cloudinaryCloudName, navigate])
-
-    const uploadImages = async () => {
-        try {
-            setPropertyImagesUrl([])
-            setContractImagesUrl([])
-            setSpinner(true)
-            propertyImages.length && propertyImages.forEach(async (image) => {
-                const formData = new FormData()
-                formData.append('file', image.upload)
-                formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName as string)
-                const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
-                    method: 'post',
-                    body: formData
-                })
-                const data = await response.json()
-                if (data && data.error) {
-                    throw new Error('Some error occured')
-                } else {
-                    setPropertyImagesUrl(images => [
-                        ...images,
-                        data.secure_url
-                    ])
-                }
-            })
-
-            contractImages.length && contractImages.forEach(async (image) => {
-                const formData = new FormData()
-                formData.append('file', image.upload)
-                formData.append('upload_preset', 'homestead')
-                formData.append('cloud_name', cloudinaryCloudName as string)
-                const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
-                    method: 'post',
-                    body: formData
-                })
-                const data = await response.json()
-                if (data && data.error) {
-                    throw new Error('Some error occured')
-                } else {
-                    setContractImagesUrl(images => [...images, data.secure_url])
-                }
-            })
-        } catch (error) {
-            setContractImagesUrl([])
-            setPropertyImagesUrl([])
-            setSpinner(false)
-            setAlert({
-                isAlertModal: true,
-                alertType: 'warning',
-                alertMessage: 'Some error occured',
-                routeTo: null
-            })
-            return
-        }
-    }
-
-    //function is used to save proeprty details to the database
     const saveDetailsToDatabase = useCallback(async (propertyImagesUrl: string[], contractImagesUrl: string[]) => {
-        const finalPropertyData: FinalPropertyDataType = {
-            propertyImagesUrl,
-            contractImagesUrl: contractImagesUrl.length ? contractImagesUrl : null,
-            ...propertyData
-        }
+        setSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/field-agent/addResidentialProperty`, {
-                method: 'POST',
-                body: JSON.stringify(finalPropertyData),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'ok') {
-                setSpinner(false)
+            const responseData = await addOrEditPropertyData(propertyImagesUrl, contractImagesUrl)
+            if (responseData.status === 'success' || responseData.status === 'warning') {
                 setAlert({
                     isAlertModal: true,
-                    alertType: 'success',
-                    alertMessage: 'Property has been added successfully',
-                    routeTo: '/field-agent'
+                    alertType: responseData.status,
+                    alertMessage: responseData.message,
+                    routeTo: responseData.routeTo
                 })
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
             } else {
                 throw new Error('Some error occured')
             }
@@ -268,14 +69,42 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
             })
             return
         }
-    }, [authToken, navigate, propertyData])
+    }, [addOrEditPropertyData])
 
-    //The code inside the useEffect hook is executed when the images have been uploaded successfully
-    useEffect(() => {
-        if (propertyImagesUrl.length === propertyImages.length && contractImagesUrl.length === contractImages.length) {
-            saveDetailsToDatabase(propertyImagesUrl, contractImagesUrl)
+    const uploadImagesFunction = async () => {
+        try {
+            setSpinner(true)
+            const uploadedPropertyImagesUrl: string[] = await uploadImages(propertyImages)
+
+            if (uploadedPropertyImagesUrl) {
+                if (uploadedPropertyImagesUrl.length === propertyImages.length) {
+                    if (contractImages.length) {
+                        const uploadedContractImagesUrl: string[] = await uploadImages(contractImages)
+                        if (uploadedContractImagesUrl) {
+                            if (uploadedContractImagesUrl.length === contractImages.length) {
+                                await saveDetailsToDatabase(uploadedPropertyImagesUrl, uploadedContractImagesUrl)
+                            } else {
+                                throw new Error('some error occured')
+                            }
+                        }
+                    } else {
+                        await saveDetailsToDatabase(uploadedPropertyImagesUrl, [])
+                    }
+                } else {
+                    throw new Error('some error occured')
+                }
+            }
+        } catch (error) {
+            setSpinner(false)
+            setAlert({
+                isAlertModal: true,
+                alertType: 'warning',
+                alertMessage: 'Some error occured',
+                routeTo: null
+            })
+            return
         }
-    }, [propertyImagesUrl, contractImagesUrl, propertyImages.length, contractImages.length, saveDetailsToDatabase])
+    }
 
     return (
         <Fragment>
@@ -324,7 +153,7 @@ const ReviewResidentialPropertyAfterSubmission: React.FC<PropsType> = (props) =>
                         type='button'
                         className={`px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded pt-0.5 h-8 flex flex-row place-content-center gap-1 ${spinner ? 'w-20' : ''}`}
                         disabled={spinner || alert.isAlertModal}
-                        onClick={uploadImages}>
+                        onClick={uploadImagesFunction}>
                         {spinner ? (
                             <div className="spinner absolute border-t-4 border-white border-solid rounded-full h-6 w-6 animate-spin"></div>
                         ) : (

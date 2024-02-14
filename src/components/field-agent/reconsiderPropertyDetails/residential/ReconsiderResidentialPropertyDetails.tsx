@@ -9,136 +9,12 @@ import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityF
 import { FaEdit } from "react-icons/fa";
 import DetailsModal from "../DetailsModal"
 import ReviewReconsideredResidentialPropertyDetails from "./ReviewReconsideredResidentialPropertyDetails"
-
-type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
-type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
-type RoofType = 'standard' | 'pop work' | 'down ceiling'
-type WindowType = 'standard' | 'wood' | 'premium material'
-type SafetySystemType = 'cctv' | 'glass break siren' | 'entry sensor' | 'motion sensor' | 'panic button' | 'keypad' | 'keyfob' | 'smoke detector' | 'co detector' | 'water sprinkler' | 'doorbell camera'
-type ConditionOfPropertyType = 'exceptionally new' | 'near to new' | 'some signs of agying' | 'need some renovations' | 'needs complete renovation'
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
+import { FlooringType, WallType, RoofType, WindowType, SafetySystemType, ConditionOfPropertyType, PropertyDataType, SaleType, HouseSpecificDataType, DataCommonToHouseAndFlatType } from "../../../../dataTypes/residentialPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
 
 interface ImageType {
     file: string;
     upload: File;
-}
-
-interface SaleType {
-    floorForSale: boolean,
-    houseForSale: boolean
-}
-
-interface PropertyDataType {
-    //data common to flat, house and plot property type
-    residentialPropertyType: string,
-    title: string,
-    details: string | null,
-    price: {
-        fixed: number | null,
-        range: {
-            from: number | null,
-            to: number | null
-        }
-    },
-    waterSupply: {
-        available: boolean,
-        twentyFourHours: boolean | null
-    },
-    electricityConnection: boolean,
-    sewageSystem: boolean,
-    cableTV: boolean,
-    highSpeedInternet: boolean,
-    distance: {
-        distanceFromGroceryStore: number,
-        distanceFromRestaurantCafe: number,
-        distanceFromExerciseArea: number,
-        distanceFromSchool: number,
-        distanceFromHospital: number
-    },
-    areaType: 'rural' | 'urban' | 'sub-urban',
-    area: {
-        totalArea: {
-            metreSquare: number,
-            gajj: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            gajj: number
-        }
-    },
-    numberOfOwners: number,
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    propertyTaxes: number | null,
-    homeOwnersAssociationFees: number | null,
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    }
-}
-
-interface HouseSpecificDataType {
-    typeOfSale: SaleType
-}
-
-interface DataCommonToHouseAndFlatType {
-    numberOfFloors: number,
-    numberOfLivingRooms: number,
-    numberOfBedrooms: number,
-    numberOfOfficeRooms: number,
-    numberOfWashrooms: number,
-    numberOfKitchen: number,
-    numberOfCarParkingSpaces: number,
-    numberOfBalconies: number,
-    storeRoom: boolean,
-    servantRoom: boolean,
-    furnishing: {
-        type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
-        details: string | null
-    },
-    kitchenFurnishing: {
-        type: 'modular' | 'semi-furnished' | 'unfurnished',
-        details: string | null
-    },
-    kitchenAppliances: {
-        available: boolean,
-        details: string | null
-    },
-    washroomFitting: 'standard' | 'premium' | 'luxurious',
-    electricalFitting: 'standard' | 'premium' | 'luxurious',
-    flooringTypeArray: FlooringType[],
-    roofTypeArray: RoofType[],
-    wallTypeArray: WallType[],
-    windowTypeArray: WindowType[],
-    safetySystemArray: SafetySystemType[] | null,
-    garden: {
-        available: boolean,
-        details: string | null
-    },
-    ageOfConstruction: number,
-    conditionOfProperty: ConditionOfPropertyType
-}
-
-interface FetchedPropertyDataType extends PropertyDataType, HouseSpecificDataType, DataCommonToHouseAndFlatType {
-    _id: string,
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
-    sentBackTofieldAgentForReevaluation: {
-        details: string[]
-    }
 }
 
 //This component is a form used by a field agent to add a residential property
@@ -150,6 +26,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -160,12 +37,13 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     useEffect(() => {
         if (!propertyId) {
             navigate('/field-agent')
+            return
         }
     }, [propertyId, navigate])
 
     const states: string[] = ['chandigarh', 'punjab']
 
-    const [fetchedPropertyData, setFetchedPropertyData] = useState<FetchedPropertyDataType | null>(null)
+    const [fetchedPropertyData, setFetchedPropertyData] = useState<PropertyDataType | null>(null)
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
@@ -352,41 +230,90 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
     useEffect(() => {
         if (fetchedPropertyData) {
-            if (residentialPropertyType === 'house') {
+            if (residentialPropertyType === 'house' && fetchedPropertyData.typeOfSale) {
                 setTypeOfSale(fetchedPropertyData.typeOfSale)
             }
 
             if (residentialPropertyType === 'house' || residentialPropertyType === 'flat') {
                 setNumberOfFloors(fetchedPropertyData.numberOfOwners)
-                setNumberOfLivingRooms(fetchedPropertyData.numberOfLivingRooms)
-                setNumberOfBedrooms(fetchedPropertyData.numberOfBedrooms)
-                setNumberOfOfficeRooms(fetchedPropertyData.numberOfOfficeRooms)
-                setNumberOfWashrooms(fetchedPropertyData.numberOfWashrooms)
-                setNumberOfKitchen(fetchedPropertyData.numberOfKitchen)
-                setNumberOfCarParkingSpaces(fetchedPropertyData.numberOfCarParkingSpaces)
-                setNumberOfBalconies(fetchedPropertyData.numberOfBalconies)
-                setStoreRoom(fetchedPropertyData.storeRoom)
-                setServantRoom(fetchedPropertyData.servantRoom)
-                setFurnishing(fetchedPropertyData.furnishing.type)
-                setFurnishingDetails(fetchedPropertyData.furnishing.details || '')
-                setKitchenFurnishing(fetchedPropertyData.kitchenFurnishing.type)
-                setKitchenFurnishingDetails(fetchedPropertyData.kitchenFurnishing.details || '')
-                setKitchenAppliances(fetchedPropertyData.kitchenAppliances.available)
-                setKitchenAppliancesDetails(fetchedPropertyData.kitchenAppliances.details || '')
-                setWashRoomFitting(fetchedPropertyData.washroomFitting)
-                setElectricalFitting(fetchedPropertyData.electricalFitting)
-                setFlooringTypeArray(fetchedPropertyData.flooringTypeArray)
-                setRoofTypeArray(fetchedPropertyData.roofTypeArray)
-                setWallTypeArray(fetchedPropertyData.wallTypeArray)
-                setWindowTypeArray(fetchedPropertyData.windowTypeArray)
+                if (fetchedPropertyData.numberOfLivingRooms) {
+                    setNumberOfLivingRooms(fetchedPropertyData.numberOfLivingRooms)
+                }
+                if (fetchedPropertyData.numberOfBedrooms) {
+                    setNumberOfBedrooms(fetchedPropertyData.numberOfBedrooms)
+                }
+                if (fetchedPropertyData.numberOfOfficeRooms) {
+                    setNumberOfOfficeRooms(fetchedPropertyData.numberOfOfficeRooms)
+                }
+                if (fetchedPropertyData.numberOfWashrooms) {
+                    setNumberOfWashrooms(fetchedPropertyData.numberOfWashrooms)
+                }
+                if (fetchedPropertyData.numberOfWashrooms) {
+                    setNumberOfWashrooms(fetchedPropertyData.numberOfWashrooms)
+                }
+                if (fetchedPropertyData.numberOfKitchen) {
+                    setNumberOfKitchen(fetchedPropertyData.numberOfKitchen)
+                }
+                if (fetchedPropertyData.numberOfCarParkingSpaces) {
+                    setNumberOfCarParkingSpaces(fetchedPropertyData.numberOfCarParkingSpaces)
+                }
+                if (fetchedPropertyData.numberOfBalconies) {
+                    setNumberOfBalconies(fetchedPropertyData.numberOfBalconies)
+                }
+                if (fetchedPropertyData.storeRoom) {
+                    setStoreRoom(fetchedPropertyData.storeRoom)
+                }
+                if (fetchedPropertyData.servantRoom) {
+                    setServantRoom(fetchedPropertyData.servantRoom)
+                }
+                if (fetchedPropertyData.furnishing && fetchedPropertyData.furnishing.type) {
+                    setFurnishing(fetchedPropertyData.furnishing.type)
+                }
+                if (fetchedPropertyData.furnishing) {
+                    setFurnishingDetails(fetchedPropertyData.furnishing.details || '')
+                }
+                if (fetchedPropertyData.kitchenFurnishing) {
+                    setKitchenFurnishing(fetchedPropertyData.kitchenFurnishing.type)
+                }
+                if (fetchedPropertyData.kitchenFurnishing) {
+                    setKitchenFurnishingDetails(fetchedPropertyData.kitchenFurnishing.details || '')
+                }
+                if (fetchedPropertyData.kitchenAppliances) {
+                    setKitchenAppliances(fetchedPropertyData.kitchenAppliances.available)
+                }
+                if (fetchedPropertyData.kitchenAppliances) {
+                    setKitchenAppliancesDetails(fetchedPropertyData.kitchenAppliances.details || '')
+                }
+                if (fetchedPropertyData.washroomFitting) {
+                    setWashRoomFitting(fetchedPropertyData.washroomFitting)
+                }
+                if (fetchedPropertyData.flooringTypeArray) {
+                    setFlooringTypeArray(fetchedPropertyData.flooringTypeArray)
+                }
+                if (fetchedPropertyData.electricalFitting) {
+                    setElectricalFitting(fetchedPropertyData.electricalFitting)
+                }
+                if (fetchedPropertyData.roofTypeArray) {
+                    setRoofTypeArray(fetchedPropertyData.roofTypeArray)
+                }
+                if (fetchedPropertyData.wallTypeArray) {
+                    setWallTypeArray(fetchedPropertyData.wallTypeArray)
+                }
+                if (fetchedPropertyData.windowTypeArray) {
+                    setWindowTypeArray(fetchedPropertyData.windowTypeArray)
+                }
                 if (fetchedPropertyData.safetySystemArray) {
                     setSafetySystemArray(fetchedPropertyData.safetySystemArray)
                 }
-                if (fetchedPropertyData.garden.available) {
+                if (fetchedPropertyData.garden && fetchedPropertyData.garden.available) {
                     setGarden(fetchedPropertyData.garden.available)
                 }
-                setGardenDetails(fetchedPropertyData.garden.details || '')
-                setAgeOfConstruction(fetchedPropertyData.ageOfConstruction)
+                if (fetchedPropertyData.garden) {
+                    setGardenDetails(fetchedPropertyData.garden.details || '')
+                }
+                if (fetchedPropertyData.ageOfConstruction) {
+                    setAgeOfConstruction(fetchedPropertyData.ageOfConstruction)
+                }
                 setConditionOfProperty(fetchedPropertyData.conditionOfProperty)
             }
 
@@ -423,7 +350,9 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             setCity(fetchedPropertyData.location.name.city || '')
             setTehsil(fetchedPropertyData.location.name.tehsil || '')
             setVillage(fetchedPropertyData.location.name.village || '')
-            setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            if (fetchedPropertyData.propertyImagesUrl) {
+                setFetchedPropertyImagesUrl(fetchedPropertyData.propertyImagesUrl)
+            }
             if (fetchedPropertyData.contractImagesUrl?.length) {
                 setFetchedContractImagesUrl(fetchedPropertyData.contractImagesUrl)
             }
@@ -450,6 +379,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setFetchedPropertyData(data.propertyData)
@@ -468,7 +398,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     const propertyImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
         if (propertyImages.length >= 20) {
             return
-          }
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setPropertyImageFileError(false);
@@ -490,7 +420,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     const contractImageHandler = (event: ChangeEvent<HTMLInputElement>) => {
         if (contractImages.length >= 20) {
             return
-          }
+        }
         const selectedFile = event.target.files?.[0];
         if (selectedFile) {
             setContractImages((array) => [
@@ -1116,7 +1046,10 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             {!propertyData && <button
                 type='button'
                 className={` ${alert.isAlertModal || showDealerDetails || showReevaluationDetails ? 'blur' : ''} fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-30`}
-                onClick={() => navigate('/field-agent', { replace: true })}>
+                onClick={() => {
+                    navigate('/field-agent', { replace: true })
+                    return
+                }}>
                 Home
             </button>}
 
@@ -1154,7 +1087,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                     <form className="w-full min-h-screen md:w-10/12 lg:w-8/12  h-fit flex flex-col rounded border-2 border-gray-200 shadow-2xl" onSubmit={formSubmit}>
 
                         {!editForm && <div className=" w-full flex justify-center">
-                            <FaEdit className="text-3xl text-gray-500 hover:text-gray-700 cursor-pointer font-bold" onClick={e => {
+                            <FaEdit className="text-3xl text-orange-400 hover:text-orange-500 cursor-pointer font-bold " onClick={e => {
                                 e.stopPropagation()
                                 setEditForm(true)
                             }} />
@@ -3262,7 +3195,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                     fetchedContractImagesUrl={fetchedContractImagesUrl}
                     propertyDataReset={() => setPropertyData(null)} />}
 
-            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
+            {!error && !spinner && !propertyData && (showDealerDetails || showReevaluationDetails) && fetchedPropertyData && fetchedPropertyData.sentBackTofieldAgentForReevaluation && fetchedPropertyData.sentBackTofieldAgentForReevaluation.details &&
                 <DetailsModal
                     showDealerDetails={showDealerDetails}
                     showReevaluationDetails={showReevaluationDetails}

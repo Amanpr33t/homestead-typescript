@@ -222,6 +222,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             } else {
                 throw new Error('Some error occured')
             }

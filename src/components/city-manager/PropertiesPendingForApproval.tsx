@@ -60,6 +60,7 @@ const PropertiesPendingForApproval: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/city-manager/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -96,6 +97,7 @@ const PropertiesPendingForApproval: React.FC = () => {
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-city-manager-authToken")
                 navigate('/city-manager/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 if (!data.pendingPropertyApprovals.length) {
                     return navigate('/city-manager', { replace: true })

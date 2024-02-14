@@ -42,6 +42,7 @@ const NavbarPropertyEvaluator: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             } else {
                 throw new Error('Some error occured')
             }
@@ -63,7 +64,7 @@ const NavbarPropertyEvaluator: React.FC = () => {
                 isAlertModal: false,
                 alertType: null,
                 alertMessage: null,
-                routeTo:null
+                routeTo: null
             })} />}
 
             {spinner && <Spinner />}
@@ -71,7 +72,10 @@ const NavbarPropertyEvaluator: React.FC = () => {
             <div className='fixed z-40 top-0 w-full'>
                 <nav className=" flex flex-col w-full bg-white" >
                     <div className="flex flex-row justify-between items-center h-16 w-full border-b shadow ">
-                        <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => navigate('/', { replace: true })}>
+                        <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => {
+                            navigate('/', { replace: true })
+                            return
+                        }}>
                             <FaHome role="svg" className="font-semibold text-4xl md:text-5xl text-gray-600" />
                             <p className='font-semibold text-3xl md:text-4xl italic text-gray-600' >HomeSteadd</p>
                         </div>

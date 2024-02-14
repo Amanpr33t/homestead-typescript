@@ -7,67 +7,9 @@ import ReviewAgriculturalPropertyAfterSubmission from "./ReviewAgriculturalPrope
 import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
 import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
-
-type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
-type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
-type ReservoirType = 'public' | 'private'
-type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
-type StateType = 'chandigarh' | 'punjab'
-
-interface PropertyDataType {
-    addedByPropertyDealer: string,
-    landSize: {
-        size: number,
-        unit: 'metre-square' | 'acre',
-        details: string | null,
-    },
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    waterSource: {
-        canal: string[] | null,
-        river: string[] | null,
-        tubewells: {
-            numberOfTubewells: number,
-            depth: number[] | null
-        }
-    },
-    reservoir: {
-        isReservoir: boolean,
-        type: ReservoirType[] | null,
-        capacityOfPrivateReservoir: number | null,
-        unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
-    },
-    irrigationSystem: IrrigationSystemType[] | null,
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    crops: CropTypeArray[],
-    road: {
-        type: RoadType,
-        details: string | null,
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    nearbyTown: string | null,
-}
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
+import { RoadType, IrrigationSystemType, ReservoirType, CropTypeArray, PropertyDataType } from "../../../../dataTypes/agriculturalPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
+import { StateType } from "../../../../dataTypes/stateType"
 
 interface ImageType {
     file: string;
@@ -83,6 +25,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -95,6 +38,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName is not available, we route to the field agent home page
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName) {
             navigate('/field-agent', { replace: true })
+            return
         } else {
             setSpinner(false)
         }
@@ -431,7 +375,10 @@ const AgriculturalPropertyAddForm: React.FC = () => {
             {!propertyData && <button
                 type='button'
                 className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8 z-20"
-                onClick={() => navigate('/field-agent', { replace: true })}>
+                onClick={() => {
+                    navigate('/field-agent', { replace: true })
+                    return
+                }}>
                 Home
             </button>}
 
@@ -713,7 +660,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                                             if (e.target.value.trim().length < 500) {
                                                 setLandSizeDetails(e.target.value)
-                                            }   
+                                            }
                                         }} />
                                 </div>
                             </div>

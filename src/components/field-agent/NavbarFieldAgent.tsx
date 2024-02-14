@@ -44,6 +44,7 @@ const NavbarFieldAgent: React.FC = () => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             } else {
                 throw new Error('Some error occured')
             }

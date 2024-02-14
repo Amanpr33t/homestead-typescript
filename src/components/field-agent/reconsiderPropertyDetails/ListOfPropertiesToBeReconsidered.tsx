@@ -61,6 +61,7 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 

@@ -60,6 +60,7 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/property-evaluator/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 

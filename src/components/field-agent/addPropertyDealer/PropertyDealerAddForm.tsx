@@ -6,13 +6,7 @@ import ReviewPropertyDealerAfterSubmission from './ReviewPropertyDealerAfterSubm
 import { punjabDistricts } from '../../../utils/tehsilsAndDistricts/districts'
 import { generateNumberArray } from '../../../utils/arrayFunctions'
 import { capitalizeFirstLetterOfAString } from '../../../utils/stringUtilityFunctions'
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
+import { AlertType } from '../../../dataTypes/alertType'
 
 interface AddressType {
     addressId: number,
@@ -33,6 +27,7 @@ const PropertyDealerAddForm: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -371,7 +366,10 @@ const PropertyDealerAddForm: React.FC = () => {
                     <button
                         type='button'
                         className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                        onClick={() => navigate('/field-agent', { replace: true })}>
+                        onClick={() => {
+                            navigate('/field-agent', { replace: true })
+                            return
+                        }}>
                         Home
                     </button>
 

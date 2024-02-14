@@ -1,7 +1,6 @@
 import { Fragment, useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Spinner from "../../Spinner"
-import { capitalizeFirstLetterOfAString } from "../../../utils/stringUtilityFunctions"
 import PropertyReevaluationForm from "./PropertyReevaluationForm"
 import ReevaluationDetailsModal from "./ReevaluationDetailsModal"
 import ResidentialPropertyTable from "../../table/ResidentialPropertyTable"
@@ -176,6 +175,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 setSpinner(false)
                 setProperty(data.property)
@@ -202,8 +202,14 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
                 </div>}
 
             <div className={`${showReevaluationForm && 'inset-0 bg-gray-300 opacity-50 blur'} ${showReevaluationDetails && 'blur'} w-fit h-fit fixed top-16 pb-2 z-30`}>
-                <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator/residential-properties-to-be-reevaluated')}>Back</button>
-                <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => navigate('/property-evaluator', { replace: true })}>Home</button>
+                <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                    navigate('/property-evaluator/residential-properties-to-be-reevaluated')
+                    return
+                }}>Back</button>
+                <button type='button' className="bg-green-500 hover:bg-green-600 ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
+                    navigate('/property-evaluator', { replace: true })
+                    return
+                }}>Home</button>
             </div>
 
             {property && showReevaluationForm &&
@@ -252,7 +258,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
                     </div>
 
                     <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
-                        <ResidentialPropertyTable propertyData={property}/>
+                        <ResidentialPropertyTable propertyData={property} />
                     </div>
                 </div>}
         </Fragment >

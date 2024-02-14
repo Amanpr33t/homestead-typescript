@@ -19,6 +19,7 @@ const ApproveProperty: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/city-manager/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 

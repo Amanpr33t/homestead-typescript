@@ -19,12 +19,14 @@ const ReevaluateProperty: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/property-evaluator/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
     useEffect(() => {
         if (!propertyId || !propertyType) {
             navigate('/property-evaluator', { replace: true })
+            return
         }
     }, [propertyId, propertyType, navigate])
 

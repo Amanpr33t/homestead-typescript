@@ -8,128 +8,12 @@ import ReviewResidentialPropertyAfterSubmission from "./ReviewResidentialPropert
 import Spinner from "../../../Spinner"
 import { generateNumberArray } from "../../../../utils/arrayFunctions"
 import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
-
-type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
-type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
-type RoofType = 'standard' | 'pop work' | 'down ceiling'
-type WindowType = 'standard' | 'wood' | 'premium material'
-type SafetySystemType = 'cctv' | 'glass break siren' | 'entry sensor' | 'motion sensor' | 'panic button' | 'keypad' | 'keyfob' | 'smoke detector' | 'co detector' | 'water sprinkler' | 'doorbell camera'
-type ConditionOfPropertyType = 'exceptionally new' | 'near to new' | 'some signs of agying' | 'need some renovations' | 'needs complete renovation'
-
-interface AlertType {
-  isAlertModal: boolean,
-  alertType: 'success' | 'warning' | null,
-  alertMessage: string | null,
-  routeTo: string | null
-}
+import { FlooringType, WallType, RoofType, WindowType, SafetySystemType, ConditionOfPropertyType, PropertyDataType, SaleType, HouseSpecificDataType, DataCommonToHouseAndFlatType } from "../../../../dataTypes/residentialPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
 
 interface ImageType {
   file: string;
   upload: File;
-}
-
-interface SaleType {
-  floorForSale: boolean,
-  houseForSale: boolean
-}
-
-interface PropertyDataType {
-  //data common to flat, house and plot property type
-  addedByPropertyDealer: string,
-  residentialPropertyType: string,
-  title: string,
-  details: string | null,
-  price: {
-    fixed: number | null,
-    range: {
-      from: number | null,
-      to: number | null
-    }
-  },
-  waterSupply: {
-    available: boolean,
-    twentyFourHours: boolean | null
-  },
-  electricityConnection: boolean,
-  sewageSystem: boolean,
-  cableTV: boolean,
-  highSpeedInternet: boolean,
-  distance: {
-    distanceFromGroceryStore: number,
-    distanceFromRestaurantCafe: number,
-    distanceFromExerciseArea: number,
-    distanceFromSchool: number,
-    distanceFromHospital: number
-  },
-  areaType: 'rural' | 'urban' | 'sub-urban',
-  area: {
-    totalArea: {
-      metreSquare: number,
-      gajj: number
-    },
-    coveredArea: {
-      metreSquare: number,
-      gajj: number
-    }
-  },
-  numberOfOwners: number,
-  legalRestrictions: {
-    isLegalRestrictions: boolean,
-    details: string | null,
-  },
-  propertyTaxes: number | null,
-  homeOwnersAssociationFees: number | null,
-  location: {
-    name: {
-      village: string | null,
-      city: string | null,
-      tehsil: string | null,
-      district: string,
-      state: string
-    }
-  }
-}
-
-interface HouseSpecificDataType {
-  typeOfSale: SaleType
-}
-
-interface DataCommonToHouseAndFlatType {
-  numberOfFloors: number,
-  numberOfLivingRooms: number,
-  numberOfBedrooms: number,
-  numberOfOfficeRooms: number,
-  numberOfWashrooms: number,
-  numberOfKitchen: number,
-  numberOfCarParkingSpaces: number,
-  numberOfBalconies: number,
-  storeRoom: boolean,
-  servantRoom: boolean,
-  furnishing: {
-    type: 'fully-furnished' | 'semi-furnished' | 'unfurnished',
-    details: string | null
-  },
-  kitchenFurnishing: {
-    type: 'modular' | 'semi-furnished' | 'unfurnished',
-    details: string | null
-  },
-  kitchenAppliances: {
-    available: boolean,
-    details: string | null
-  },
-  washroomFitting: 'standard' | 'premium' | 'luxurious',
-  electricalFitting: 'standard' | 'premium' | 'luxurious',
-  flooringTypeArray: FlooringType[],
-  roofTypeArray: RoofType[],
-  wallTypeArray: WallType[],
-  windowTypeArray: WindowType[],
-  safetySystemArray: SafetySystemType[] | null,
-  garden: {
-    available: boolean,
-    details: string | null
-  },
-  ageOfConstruction: number,
-  conditionOfProperty: ConditionOfPropertyType
 }
 
 //This component is a form used by a field agent to add a residential property
@@ -140,6 +24,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
   useEffect(() => {
     if (!authToken) {
       navigate('/field-agent/signIn', { replace: true })
+      return
     }
   }, [authToken, navigate])
 
@@ -155,6 +40,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName or residentialPropertyType is not available, the user is routed to the field-agent home page
     if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && residentialPropertyType.toLowerCase() !== 'flat' && residentialPropertyType.toLowerCase() !== 'house')) {
       navigate('/field-agent', { replace: true })
+      return
     } else {
       setSpinner(false)
     }
@@ -797,7 +683,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
       {!propertyData && <button
         type='button'
         className="fixed top-16 left-2 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-        onClick={() => navigate('/field-agent', { replace: true })}>
+        onClick={() => {
+          navigate('/field-agent', { replace: true })
+          return
+        }}>
         Home
       </button>}
 

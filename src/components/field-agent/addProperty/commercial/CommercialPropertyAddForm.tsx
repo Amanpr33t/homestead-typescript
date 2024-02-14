@@ -5,6 +5,9 @@ import { punjabDistricts } from '../../../../utils/tehsilsAndDistricts/districts
 import PunjabTehsilsDropdown from "../../../tehsilsDropdown/Punjab"
 import ReviewCommercialPropertyAfterSubmission from "./ReviewCommercialPropertyAfterSubmission"
 import { capitalizeFirstLetterOfAString } from "../../../../utils/stringUtilityFunctions"
+import { BuiltUpType, PropertyDataType } from "../../../../dataTypes/commercialPropertyTypes"
+import { AlertType } from "../../../../dataTypes/alertType"
+import { StateType } from "../../../../dataTypes/stateType"
 
 const arrayOfNumbers = (from: number, to: number) => {
     //This function return an array of numbers
@@ -17,77 +20,9 @@ const arrayOfNumbers = (from: number, to: number) => {
     }
 }
 
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null,
-    routeTo: string | null
-}
-
 interface ImageType {
     file: string;
     upload: File;
-}
-
-type StatesType = 'chandigarh' | 'punjab'
-type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
-
-interface PropertyDataType {
-    addedByPropertyDealer: string,
-    commercialPropertyType: string,
-    landSize: {
-        totalArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        details: string | null,
-    },
-    stateOfProperty: {
-        empty: boolean,
-        builtUp: boolean,
-        builtUpPropertyType: BuiltUpType | null
-    },
-    location: {
-        name: {
-            plotNumber: number | null,
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    floors: {
-        floorsWithoutBasement: number,
-        basementFloors: number
-    },
-    widthOfRoadFacing: {
-        feet: number,
-        metre: number
-    },
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    remarks: string | null,
-    lockInPeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    leasePeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'
 }
 
 //Component is used to add a commercial proerty
@@ -100,6 +35,7 @@ const CommercialPropertyAddForm: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/field-agent/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -121,6 +57,7 @@ const CommercialPropertyAddForm: React.FC = () => {
         //if propertyDealerId or propertyDealerLogoUrl or propertyDealerFirmName or commercialPropertyType is not available, the user is routed to the field-agent home page
         if (!propertyDealerId || !propertyDealerLogoUrl || !propertyDealerFirmName || (commercialPropertyType !== 'industrial' && commercialPropertyType !== 'shop')) {
             navigate('/field-agent', { replace: true })
+            return
         } else {
             setSpinner(false)
         }
@@ -184,7 +121,7 @@ const CommercialPropertyAddForm: React.FC = () => {
     const [builtUpSelectedOption, setBuiltupSelectedOption] = useState<BuiltUpType>()
     const builtUpPropertyOptions: BuiltUpType[] = ['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic', 'other']
 
-    const states: StatesType[] = ['chandigarh', 'punjab']
+    const states: StateType[] = ['chandigarh', 'punjab']
 
     const [propertyData, setPropertyData] = useState<PropertyDataType | null>(null)
 
@@ -412,7 +349,10 @@ const CommercialPropertyAddForm: React.FC = () => {
             {!propertyData && <button
                 type='button'
                 className="fixed top-16 mt-2 left-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded pl-2 pr-2 h-8"
-                onClick={() => navigate('/field-agent', { replace: true })}>
+                onClick={() => {
+                    navigate('/field-agent', { replace: true })
+                    return
+                }}>
                 Home
             </button>}
 

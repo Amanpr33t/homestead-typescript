@@ -89,6 +89,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             }
         } catch (error) {
             setSpinner(false)
@@ -150,6 +151,7 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
+                return
             }
         } catch (error) {
             setSpinner(false)

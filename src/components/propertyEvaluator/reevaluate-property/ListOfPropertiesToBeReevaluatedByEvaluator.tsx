@@ -60,6 +60,7 @@ const ListOfPropertiesToBeReevaluatedByEvaluator: React.FC = () => {
     useEffect(() => {
         if (!authToken) {
             navigate('/property-evaluator/signIn', { replace: true })
+            return
         }
     }, [authToken, navigate])
 
@@ -97,6 +98,7 @@ const ListOfPropertiesToBeReevaluatedByEvaluator: React.FC = () => {
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-property-evaluator-authToken")
                 navigate('/property-evaluator/signIn', { replace: true })
+                return
             } else if (data.status === 'ok') {
                 if (!data.pendingPropertyReevaluations.length) {
                     return navigate('/property-evaluator', { replace: true })
