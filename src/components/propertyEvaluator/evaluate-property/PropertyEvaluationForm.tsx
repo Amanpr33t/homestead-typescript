@@ -2,10 +2,8 @@ import { ChangeEvent, Fragment, useState } from "react"
 import AlertModal from "../../AlertModal"
 import { useNavigate } from "react-router-dom"
 import { capitalizeFirstLetterOfAString } from "../../../utils/stringUtilityFunctions"
-
-type LocationType = 'rural' | 'sub-urban' | 'urban' | 'mixed-use' | 'industrial'
-type LocationStatusType = 'posh' | 'premium' | 'popular' | 'ordinary' | 'low income'
-type ConstructionType = 'newly built' | 'ready to move' | 'needs renovation' | 'needs repair'
+import { EvaluationDataType,LocationType,LocationStatusType,ConstructionType } from "../../../dataTypes/evaluationDataType"
+import { AlertType } from "../../../dataTypes/alertType"
 
 interface PropsType {
     showEvaluationForm: boolean,
@@ -14,28 +12,6 @@ interface PropsType {
     propertyId: string,
     residentialPropertyType?: 'plot' | 'house' | 'flat' | null,
     isBuiltUpProperty?: boolean
-}
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null
-    routeTo: string | null
-}
-
-interface EvaluationDataType {
-    incompletePropertyDetails?: string[],
-    typeOfLocation?: LocationType | null,
-    locationStatus?: LocationStatusType | null,
-    fairValueOfProperty?: number | null,
-    fiveYearProjectionOfPrices?: {
-        increase: boolean | null,
-        decrease: boolean | null,
-        percentageIncreaseOrDecrease: number | null,
-    },
-    conditionOfConstruction?: ConstructionType | null,
-    qualityOfConstructionRating?: number | null,
-    evaluatedAt?: Date,
 }
 
 //This component is a form used to evaluate a property
@@ -605,9 +581,7 @@ const PropertyEvaluationForm: React.FC<PropsType> = (props) => {
                                         </div>
                                     </div>
                                 </div>}
-
                         </>}
-
 
                         {isInformationComplete !== null &&
                             <div className="w-full h-12 flex justify-center mt-7 px-2">

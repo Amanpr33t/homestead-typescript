@@ -12,6 +12,7 @@ interface DetailsProps {
         contactNumber: number
     }
 }
+
 //this component is an alert modal
 const DetailsModal: React.FC<DetailsProps> = (props) => {
     const {

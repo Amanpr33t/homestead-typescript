@@ -1,6 +1,11 @@
+import { EvaluationDataType } from "./evaluationDataType"
+
 export interface PropertyDataType {
     _id?: string,
     sentBackTofieldAgentForReevaluation?: {
+        details: string[]
+    },
+    sentToEvaluatorByCityManagerForReevaluation?: {
         details: string[]
     },
     addedByPropertyDealer?: string,
@@ -50,21 +55,7 @@ export interface PropertyDataType {
     nearbyTown: string | null,
     propertyImagesUrl?: string[],
     contractImagesUrl?: string[] | null,
-    evaluationData?: {
-        areDetailsComplete: boolean,
-        incompletePropertyDetails: string | null,
-        typeOfLocation: string | null,
-        locationStatus: string | null,
-        fairValueOfProperty: number | null,
-        fiveYearProjectionOfPrices: {
-            increase: boolean | null,
-            decrease: boolean | null,
-            percentageIncreaseOrDecrease: number | null,
-        },
-        conditionOfConstruction: string | null
-        qualityOfConstructionRating: number | null,
-        evaluatedAt: Date | null,
-    },
+    evaluationData?: EvaluationDataType,
     uniqueId?: string
 }
 

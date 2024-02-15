@@ -27,7 +27,6 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
         try {
             let url: string
             if (propertyType === 'agricultural') {
-                console.log(addOrEdit)
                 if (addOrEdit === 'add') {
                     url = `${process.env.REACT_APP_BACKEND_URL}/field-agent/addAgriculturalProperty`
                 } else if (addOrEdit === 'edit') {
@@ -66,7 +65,6 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
                 throw new Error('Some error occurred')
             }
             const data = await response.json()
-            let alertMessage: string
             if (data.status === 'ok') {
                 return {
                     status: 'success',
@@ -93,7 +91,7 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
         } catch (error) {
             throw new Error('Some error occurred')
         }
-    }, [navigate, propertyData, propertyType]);
+    }, [navigate, propertyData, propertyType, addOrEdit]);
 
     return { addOrEditPropertyData };
 };

@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react"
 import * as EmailValidator from 'email-validator';
 import AlertModal from "../AlertModal";
 import { useNavigate } from "react-router-dom";
+import { AlertType } from "../../dataTypes/alertType";
 
 interface propsType {
     propertyDealerSetterFunction: (dealer: {
@@ -9,11 +10,6 @@ interface propsType {
         firmName: string,
         firmLogoUrl: string
     }) => void
-}
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null
 }
 
 //This component is used to verify a property dealer before adding a property
@@ -32,7 +28,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
     const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
         alertType: null,
-        alertMessage: null
+        alertMessage: null,
+        routeTo:null
     }) //This state is used to show or hide alert modal
 
     const [showOtpModal, setShowOtopModal] = useState<boolean>(false) //If it is true, an OTP modal will be shown where the user can fill the OTP
@@ -47,7 +44,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
             return setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Provide email or contact number or dealer Id'
+                alertMessage: 'Provide email or contact number or dealer Id',
+                routeTo:null
             })
         }
         if (email.trim() && !EmailValidator.validate(email.trim())) {
@@ -81,7 +79,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
-                    alertMessage: 'No dealer with this email or contact number exists'
+                    alertMessage: 'No dealer with this email or contact number exists',
+                    routeTo:null
                 })
             } else if (data.status === 'ok') {
                 setSpinner(false)
@@ -96,7 +95,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Some error occured. Try again'
+                alertMessage: 'Some error occured. Try again',
+                routeTo:null
             })
         }
     }
@@ -135,7 +135,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
-                    alertMessage: 'OTP is incorrect'
+                    alertMessage: 'OTP is incorrect',
+                    routeTo:null
                 })
             } else if (data.status === 'token_expired') {
                 setSpinner(false)
@@ -144,7 +145,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                 setAlert({
                     isAlertModal: true,
                     alertType: 'warning',
-                    alertMessage: 'OTP has expired.'
+                    alertMessage: 'OTP has expired.',
+                    routeTo:null
                 })
             } else if (data.status === 'ok') {
                 propertyDealerSetterFunction(data.dealer)
@@ -158,7 +160,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Some error occured. Try again'
+                alertMessage: 'Some error occured. Try again',
+                routeTo:null
             })
         }
     }
@@ -174,7 +177,8 @@ const VerifyPropertyDealerBeforeAddingProperty: React.FC<propsType> = ({ propert
                     alertModalRemover={() => setAlert({
                         isAlertModal: false,
                         alertType: null,
-                        alertMessage: null
+                        alertMessage: null,
+                        routeTo:null
                     })} />}
 
             <div className={`w-full h-screen pt-32 flex  justify-center ${alert.isAlertModal ? 'blur-sm' : ''}`} >

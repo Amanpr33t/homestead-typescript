@@ -1,11 +1,10 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal";
-import { useNavigate } from "react-router-dom";
-import AgriculturalPropertyTable from "../../../table/AgriculturalPropertyTable";
 import useUploadImages from "../../../../custom-hooks/useImageUpload";
 import { PropertyDataType } from "../../../../dataTypes/agriculturalPropertyTypes"
 import { AlertType } from "../../../../dataTypes/alertType"
 import useAddOrEditPropertyData from "../../../../custom-hooks/useAddOrEditPropertyData";
+import AgriculturalPropertyTable from "../../../table/AgriculturalPropertyTable";
 
 interface ImageType {
     file: string;
@@ -78,7 +77,7 @@ const ReviewReconsideredAgriculturalPropertyDetails: React.FC<PropsType> = (prop
             })
             return
         }
-    }, [addOrEditPropertyData, fetchedContractImagesUrl, fetchedPropertyImagesUrl])
+    }, [addOrEditPropertyData, fetchedContractImagesUrl, fetchedPropertyImagesUrl, propertyId])
 
     const uploadImagesFunction = async () => {
         try {

@@ -3,7 +3,7 @@ import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../../Spinner"
 import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../../utils/stringUtilityFunctions"
 import { formatDate, getDaysDifference } from "../../../utils/dateFunctions"
-import ReactPaginate from "react-paginate"
+import Pagination from "../../Pagination"
 
 interface LocationType {
     name: {
@@ -182,19 +182,7 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
                         })}
 
                         {totalPages > 1 &&
-                            <ReactPaginate
-                                //component for pagination
-                                pageCount={totalPages}
-                                pageRangeDisplayed={5}
-                                marginPagesDisplayed={2}
-                                onPageChange={handlePageClick}
-                                containerClassName={`pagination flex justify-center pb-10 `}
-                                activeClassName=" text-gray-700 px-3 rounded pt-1 hover:bg-gray-200 font-semibold"
-                                pageClassName="mr-2 cursor-pointer px-3 rounded pt-1 border border-gray-400 hover:bg-gray-300"
-                                previousClassName="mr-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                                nextClassName="ml-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                                disabledClassName="cursor-not-allowed"
-                            />}
+                            <Pagination handlePageClick={handlePageClick} totalPages={totalPages} />}
                     </div>
                 </div>}
 

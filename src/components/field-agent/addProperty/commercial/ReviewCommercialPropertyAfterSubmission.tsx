@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal";
-import { useNavigate } from "react-router-dom";
 import CommercialPropertyTable from "../../../table/CommercialPropertyTable";
 import useUploadImages from "../../../../custom-hooks/useImageUpload";
 import { PropertyDataType } from "../../../../dataTypes/commercialPropertyTypes"

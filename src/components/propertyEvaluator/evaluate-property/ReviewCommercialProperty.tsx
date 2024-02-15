@@ -3,89 +3,24 @@ import { useNavigate } from "react-router-dom"
 import PropertyEvaluationForm from "./PropertyEvaluationForm"
 import Spinner from "../../Spinner"
 import CommercialPropertyTable from "../../table/CommercialPropertyTable"
+import { PropertyDataType } from "../../../dataTypes/commercialPropertyTypes"
+import useFetchPropertyData from "../../../custom-hooks/useFetchPropertyData"
 
 interface PropsType {
     propertyId: string
 }
 
-type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
-
-interface PropertyType {
-    _id: string,
-    addedByFieldAgent: string,
-    propertyEvaluator: string,
-    uniqueId: string,
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
-    addedByPropertyDealer: string,
-    commercialPropertyType: string,
-    landSize: {
-        totalArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        details: string | null,
-    },
-    stateOfProperty: {
-        empty: boolean,
-        builtUp: boolean,
-        builtUpPropertyType: BuiltUpType | null
-    },
-    location: {
-        name: {
-            plotNumber: number | null,
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    floors: {
-        floorsWithoutBasement: number,
-        basementFloors: number
-    },
-    widthOfRoadFacing: {
-        feet: number,
-        metre: number
-    },
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    remarks: string | null,
-    lockInPeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    leasePeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other'
-}
-
 //This component is used to show property data. It also passes property data as props to PropertyEvaluationForm component 
 const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
     const navigate = useNavigate()
+    const { fetchPropertyData } = useFetchPropertyData()
 
     const [showEvaluationForm, setShowEvaluationForm] = useState(false) //If set to true, PropertyEvaluationForm component will be shown to the user
 
-    const [property, setProperty] = useState<PropertyType | null>(null)
+    const [property, setProperty] = useState<PropertyDataType | null>(null)
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
-
-    const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
@@ -96,31 +31,18 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
         try {
             setError(false)
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/fetch-selected-property?propertyType=commercial&propertyId=${propertyId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
+            const responseData = await fetchPropertyData('commercial', propertyId)
+            if (responseData.status === 'ok') {
+                setSpinner(false)
+                setProperty(responseData.property as PropertyDataType)
+            } else {
                 throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
-                return
-            } else if (data.status === 'ok') {
-                setSpinner(false)
-                setProperty(data.property)
             }
         } catch (error) {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate, propertyId])
+    }, [propertyId,fetchPropertyData])
 
     useEffect(() => {
         fetchSelectedProperty()
@@ -151,17 +73,18 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
             {property && !spinner && !error &&
                 <div className={`${showEvaluationForm ? 'blur' : ''}`}>
 
-                    <div className="w-full sm:pt-20 pt-28 bg-white z-20 mb-4">
+                    <div className="w-full sm:pt-20 pt-28 bg-white z-20">
                         <p className="text-2xl font-semibold text-center">Commercial property details</p>
+                    </div>
+
+                    <div className="w-full mt-2 mb-3 flex justify-center ">
+                        <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
                     </div>
 
                     <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
                         <CommercialPropertyTable propertyData={property} />
                     </div>
 
-                    <div className="w-full -mt-4 mb-6 flex justify-center ">
-                        <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowEvaluationForm(true)}>Fill evaluation form</button>
-                    </div>
                 </div>}
 
             {property &&
@@ -169,7 +92,7 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                     showEvaluationForm={showEvaluationForm}
                     hideEvaluationForm={() => setShowEvaluationForm(false)}
                     propertyType='commercial'
-                    propertyId={property._id}
+                    propertyId={property._id as string}
                     isBuiltUpProperty={property.stateOfProperty.builtUp}
                 />
             }

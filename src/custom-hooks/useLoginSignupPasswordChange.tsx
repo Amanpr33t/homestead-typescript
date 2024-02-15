@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface loginSignupType {
     signIn: (email: string, password: string) => Promise<{
@@ -21,7 +20,6 @@ interface loginSignupType {
 }
 
 const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer' | 'property-evaluator' | 'city-manager'): loginSignupType => {
-    const navigate = useNavigate();
 
     const signIn = useCallback(async (email: string, password: string) => {
         try {
@@ -43,11 +41,10 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
         } catch (error) {
             throw new Error('error')
         }
-    }, [])
+    }, [userType])
 
     const forgotPassword = useCallback(async (email: string) => {
         try {
-            console.log(email)
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/${userType}/forgotPassword`, {
                 method: 'PATCH',
                 body: JSON.stringify({ email }),
@@ -56,7 +53,6 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
                 }
             })
             if (!response.ok) {
-                console.log('here')
                 throw new Error('Some error occured')
             }
             const data = await response.json()
@@ -64,7 +60,7 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
         } catch (error) {
             throw new Error('error')
         }
-    }, [navigate])
+    }, [ userType])
 
     const confirmOneTimePassword = useCallback(async (email: string, password: string) => {
         try {
@@ -86,7 +82,7 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
         } catch (error) {
             throw new Error('some error occured')
         }
-    }, [])
+    }, [userType])
 
     const updatePassword = useCallback(async (email: string, newPassword: string, passwordVerificationToken: string) => {
         try {
@@ -109,7 +105,7 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
         } catch (error) {
             throw new Error('some error occured')
         }
-    }, [])
+    }, [userType])
 
     const resetPasswordVerificationToken = useCallback(async (email: string) => {
         try {
@@ -128,7 +124,7 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
         } catch (error) {
             throw new Error('some error occured')
         }
-    }, [])
+    }, [userType])
 
     return {
         signIn,

@@ -3,10 +3,9 @@ import AlertModal from '../../AlertModal'
 import { useNavigate } from "react-router-dom"
 import { capitalizeFirstLetterOfAString } from "../../../utils/stringUtilityFunctions"
 import { FaEdit } from "react-icons/fa";
-
-type LocationType = 'rural' | 'sub-urban' | 'urban' | 'mixed-use' | 'industrial'
-type LocationStatusType = 'posh' | 'premium' | 'popular' | 'ordinary' | 'low income'
-type ConstructionType = 'newly built' | 'ready to move' | 'needs renovation' | 'needs repair'
+import { EvaluationDataType } from "../../../dataTypes/evaluationDataType";
+import { AlertType } from "../../../dataTypes/alertType";
+import { LocationType,LocationStatusType,ConstructionType } from "../../../dataTypes/evaluationDataType";
 
 interface PropsType {
     showReevaluationForm: boolean,
@@ -15,41 +14,7 @@ interface PropsType {
     propertyId: string,
     residentialPropertyType?: 'plot' | 'house' | 'flat' | null,
     isBuiltUpProperty?: boolean,
-    oldEvaluationData: {
-        typeOfLocation: string | null,
-        locationStatus: string | null,
-        fairValueOfProperty: number | null,
-        fiveYearProjectionOfPrices: {
-            increase: boolean | null,
-            decrease: boolean | null,
-            percentageIncreaseOrDecrease: number | null,
-        },
-        conditionOfConstruction: string | null,
-        qualityOfConstructionRating: number | null,
-        evaluatedAt?: Date,
-    }
-}
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null
-    routeTo: string | null
-}
-
-interface ReevaluationDataType {
-    incompletePropertyDetails?: string[],
-    typeOfLocation?: LocationType | null,
-    locationStatus?: LocationStatusType | null,
-    fairValueOfProperty?: number | null,
-    fiveYearProjectionOfPrices?: {
-        increase: boolean | null,
-        decrease: boolean | null,
-        percentageIncreaseOrDecrease: number | null,
-    },
-    conditionOfConstruction?: ConstructionType | null,
-    qualityOfConstructionRating?: number | null,
-    evaluatedAt?: Date,
+    oldEvaluationData: EvaluationDataType
 }
 
 //This component is a form used to evaluate a property
@@ -115,8 +80,12 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
             setConditionOfConstruction(oldEvaluationData.conditionOfConstruction as ConstructionType)
             setQualityOfConstructionRating(oldEvaluationData.qualityOfConstructionRating as number)
             setFairValueOfProperty(oldEvaluationData.fairValueOfProperty as number)
-            setFiveYearProjectionPriceIncrease(oldEvaluationData.fiveYearProjectionOfPrices.increase)
-            setFiveYearProjectionPercentageNumber(oldEvaluationData.fiveYearProjectionOfPrices.percentageIncreaseOrDecrease as number)
+            if (oldEvaluationData.fiveYearProjectionOfPrices) {
+                setFiveYearProjectionPriceIncrease(oldEvaluationData.fiveYearProjectionOfPrices.increase)
+            }
+            if (oldEvaluationData.fiveYearProjectionOfPrices && oldEvaluationData.fiveYearProjectionOfPrices.percentageIncreaseOrDecrease) {
+                setFiveYearProjectionPercentageNumber(oldEvaluationData.fiveYearProjectionOfPrices.percentageIncreaseOrDecrease)
+            }
         }
     }, [oldEvaluationData])
 
@@ -199,7 +168,7 @@ const PropertyReevaluationForm: React.FC<PropsType> = (props) => {
             }
         }
 
-        let evaluationData: ReevaluationDataType
+        let evaluationData: EvaluationDataType
         if (isInformationComplete) {
             //if information provided by field agentis complete
             evaluationData = {

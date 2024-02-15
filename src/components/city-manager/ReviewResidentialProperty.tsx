@@ -5,7 +5,7 @@ import Spinner from "../Spinner"
 import { PropertyDataType, } from "../../dataTypes/residentialPropertyTypes"
 import ResidentialPropertyTable from "../table/ResidentialPropertyTable";
 import EvaluationDataTable from "./EvaluationDataTable";
-import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+import useFetchPropertyData from "../../custom-hooks/useFetchPropertyData";
 
 interface PropsType {
     propertyId: string
@@ -14,6 +14,7 @@ interface PropsType {
 //This component is used to show property data. It also passes property data as props to PropertyEvaluationForm component 
 const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
     const navigate = useNavigate()
+    const { fetchPropertyData } = useFetchPropertyData()
 
     const [showPropertyData, setShowPropertyData] = useState<boolean>(true)
 
@@ -24,8 +25,6 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
 
-    const authToken: string | null = localStorage.getItem("homestead-city-manager-authToken")
-
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     }, [])
@@ -35,31 +34,18 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
         try {
             setError(false)
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/city-manager/fetch-selected-property?propertyType=residential&propertyId=${propertyId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
+            const responseData = await fetchPropertyData('residential', propertyId)
+            if (responseData.status === 'ok') {
+                setSpinner(false)
+                setProperty(responseData.property as PropertyDataType)
+            } else {
                 throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-city-manager-authToken")
-                navigate('/city-manager/signIn', { replace: true })
-                return
-            } else if (data.status === 'ok') {
-                setSpinner(false)
-                setProperty(data.property)
             }
         } catch (error) {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate, propertyId])
+    }, [ propertyId, fetchPropertyData])
 
     useEffect(() => {
         fetchSelectedProperty()
@@ -76,7 +62,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
                     <button className="text-red-500" onClick={fetchSelectedProperty}>Try again</button>
                 </div>}
 
-            <div className={`${showApprovalForm ? 'blur' : ''} w-full fixed top-16 bg-white sm:bg-transparent pb-2 z-30`}>
+            <div className={`${showApprovalForm ? 'bg-gray-300 backdrop-filter blur' : ''} w-fit fixed top-16 bg-white sm:bg-transparent pb-2 z-30`}>
                 <button type='button' className="bg-green-500 hover:bg-green-600  ml-2 mt-2 text-white font-semibold rounded pl-2 pr-2 pt-0.5 h-8 " onClick={() => {
                     navigate('/city-manager/residential-properties-pending-for-approval')
                     return
@@ -88,10 +74,10 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
             </div>
 
             {property && !spinner && !error &&
-                <div className={`${showApprovalForm ? 'blur' : ''}`}>
+                <div className={`${showApprovalForm ? 'bg-gray-300 backdrop-filter blur' : ''}`}>
 
                     {/*heading */}
-                    <div className="w-full  bg-white z-20 mb-3">
+                    <div className="w-full z-20 mb-3">
                         <p className="text-2xl font-semibold text-center">Residential property details</p>
                     </div>
 
@@ -109,49 +95,26 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
 
                     {!showPropertyData &&
                         //table shows evaluation data
-                        <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
-                            {property.evaluationData && <table className="w-full sm:w-10/12 md:w-9/12 lg:w-7/12 table-auto">
-                                <thead >
-                                    <tr className="bg-gray-200 border-2 border-gray-200">
-                                        <th className="w-40 text-xl pt-2 pb-2">Field</th>
-                                        <th className="text-xl ">Data</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr className="border-2 border-gray-300">
-                                        <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Type of location</td>
-                                        <td className=" pt-4 pb-4 text-center">{property.evaluationData.typeOfLocation}</td>
-                                    </tr>
-                                    <tr className="border-2 border-gray-200">
-                                        <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Location status</td>
-                                        <td className="pt-2 pb-2 text-center">{property.evaluationData.locationStatus}</td>
-                                    </tr>
-                                    <tr className="border-2 border-gray-200">
-                                        <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Fair value of property</td>
-                                        <td className="pt-2 pb-2 text-center">{property.evaluationData.fairValueOfProperty}</td>
-                                    </tr>
-                                    <tr className="border-2 border-gray-200">
-                                        <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Five year projection of prices</td>
-                                        <td className="pt-7 text-center flex flex-row gap-2 items-center justify-center">
-                                            <p>{property.evaluationData.fiveYearProjectionOfPrices.percentageIncreaseOrDecrease}%</p>
-                                            {property.evaluationData.fiveYearProjectionOfPrices.decrease ? <FaArrowDown className="text-red-500 text-lg" /> : <FaArrowUp className="text-green-500 text-lg" />}
-                                        </td>
-                                    </tr>
-                                    {property.evaluationData.qualityOfConstructionRating &&
-                                        <tr className="border-2 border-gray-200">
-                                            <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Quality of construction rating</td>
-                                            <td className="pt-2 pb-2 text-center">{property.evaluationData.qualityOfConstructionRating}</td>
-                                        </tr>}
-                                </tbody>
-                            </table>}
+                        <div className='pl-1 pr-1 mb-7 w-full flex flex-col place-items-center' >
+                            {property.evaluationData && <EvaluationDataTable
+                                areDetailsComplete={property.evaluationData?.areDetailsComplete}
+                                incompletePropertyDetails={property.evaluationData?.incompletePropertyDetails}
+                                typeOfLocation={property.evaluationData?.typeOfLocation}
+                                locationStatus={property.evaluationData?.locationStatus}
+                                fairValueOfProperty={property.evaluationData?.fairValueOfProperty}
+                                fiveYearProjectionOfPrices={property.evaluationData?.fiveYearProjectionOfPrices}
+                                conditionOfConstruction={property.evaluationData?.conditionOfConstruction}
+                                qualityOfConstructionRating={property.evaluationData?.qualityOfConstructionRating}
+                                evaluatedAt={property.evaluationData?.evaluatedAt}
+                            />}
                         </div>}
 
-                    <div className="w-full -mt-4 mb-6 flex justify-center ">
+                    <div className="w-full pb-6 flex justify-center ">
                         <button type="button" className="w-fit bg-blue-500 text-white font-medium rounded pl-2 pr-2 h-8" onClick={() => setShowApprovalForm(true)}>Fill approval form</button>
                     </div>
                 </div>}
 
-            {property &&
+            {showApprovalForm && property && !error && !spinner &&
                 <ApprovalForm
                     showApprovalForm={showApprovalForm}
                     hideApprovalForm={() => setShowApprovalForm(false)}

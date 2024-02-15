@@ -4,138 +4,45 @@ import Spinner from "../../Spinner"
 import PropertyReevaluationForm from "./PropertyReevaluationForm"
 import ReevaluationDetailsModal from "./ReevaluationDetailsModal"
 import CommercialPropertyTable from "../../table/CommercialPropertyTable"
+import { EvaluationDataType } from "../../../dataTypes/evaluationDataType"
+import useFetchPropertyData from "../../../custom-hooks/useFetchPropertyData"
+import { PropertyDataType } from "../../../dataTypes/commercialPropertyTypes"
 
 interface PropsType {
     propertyId: string
 }
 
-type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
-
-interface PropertyType {
-    _id: string,
-    addedByFieldAgent: string,
-    propertyEvaluator: string,
-    uniqueId: string,
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
-    addedByPropertyDealer: string,
-    commercialPropertyType: string,
-    landSize: {
-        totalArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        details: string | null,
-    },
-    stateOfProperty: {
-        empty: boolean,
-        builtUp: boolean,
-        builtUpPropertyType: BuiltUpType | null
-    },
-    location: {
-        name: {
-            plotNumber: number | null,
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    floors: {
-        floorsWithoutBasement: number,
-        basementFloors: number
-    },
-    widthOfRoadFacing: {
-        feet: number,
-        metre: number
-    },
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    remarks: string | null,
-    lockInPeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    leasePeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other',
-    sentToEvaluatorByCityManagerForReevaluation: {
-        details: string[]
-    },
-    evaluationData: {
-        typeOfLocation: string | null,
-        locationStatus: string | null,
-        fairValueOfProperty: number | null,
-        fiveYearProjectionOfPrices: {
-            increase: boolean | null,
-            decrease: boolean | null,
-            percentageIncreaseOrDecrease: number | null,
-        },
-        conditionOfConstruction: string | null,
-        qualityOfConstructionRating: number | null,
-        evaluatedAt?: Date,
-    }
-}
-
 //This component is used to show property data. It also passes property data as props to PropertyReevaluationForm component 
 const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
     const navigate = useNavigate()
+    const { fetchPropertyData } = useFetchPropertyData()
 
     const [showReevaluationForm, setShowReevaluationForm] = useState<boolean>(false) //If set to true, PropertyReevaluationForm component will be shown to the user
 
     const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true) //If set to true, PropertyReevaluationForm component will be shown to the user
 
-    const [property, setProperty] = useState<PropertyType | null>(null)
+    const [property, setProperty] = useState<PropertyDataType | null>(null)
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
-
-    const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
 
     //The function is used to fetch the selected property
     const fetchSelectedProperty = useCallback(async () => {
         try {
             setError(false)
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/fetch-selected-property?propertyType=commercial&propertyId=${propertyId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
+            const responseData = await fetchPropertyData('commercial', propertyId)
+            if (responseData.status === 'ok') {
+                setSpinner(false)
+                setProperty(responseData.property as PropertyDataType)
+            } else {
                 throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
-                return
-            } else if (data.status === 'ok') {
-                setSpinner(false)
-                setProperty(data.property)
             }
         } catch (error) {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate, propertyId])
+    }, [ propertyId, fetchPropertyData])
 
     useEffect(() => {
         fetchSelectedProperty()
@@ -163,7 +70,7 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                 }}>Home</button>
             </div>
 
-            {showReevaluationDetails && property && property.sentToEvaluatorByCityManagerForReevaluation.details &&
+            {showReevaluationDetails && property && property.sentToEvaluatorByCityManagerForReevaluation && property.sentToEvaluatorByCityManagerForReevaluation.details &&
                 <ReevaluationDetailsModal
                     reevaluationDetails={property?.sentToEvaluatorByCityManagerForReevaluation.details}
                     detailsModalRemover={() => setShowReevaluationDetails(false)}
@@ -174,9 +81,9 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
                     showReevaluationForm={showReevaluationForm}
                     hideReevaluationForm={() => setShowReevaluationForm(false)}
                     propertyType='commercial'
-                    propertyId={property._id}
+                    propertyId={propertyId}
                     isBuiltUpProperty={property?.stateOfProperty.builtUp}
-                    oldEvaluationData={property.evaluationData}
+                    oldEvaluationData={property.evaluationData as EvaluationDataType}
                 />}
 
             {property && !spinner && !error &&

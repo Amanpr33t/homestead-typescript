@@ -532,7 +532,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     //Final property data submitted by the user
     const finalPropertyData: PropertyDataType = {
       addedByPropertyDealer: propertyDealerId,
-      residentialPropertyType,
+      residentialPropertyType:residentialPropertyType as 'plot'|'house'|'flat',
       title: propertyTitle,
       details: propertyDetail.trim() || null,
       price: {

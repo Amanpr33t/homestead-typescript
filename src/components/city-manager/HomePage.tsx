@@ -3,13 +3,7 @@ import React, { Fragment, useEffect, useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null
-    routeTo: string | null
-}
+import { AlertType } from "../../dataTypes/alertType"
 
 //This component is the home page for property evaluation
 const CityManagerHomePage: React.FC = () => {

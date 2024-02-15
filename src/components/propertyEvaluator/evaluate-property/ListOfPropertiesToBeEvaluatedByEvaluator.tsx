@@ -1,9 +1,8 @@
 import { Link, useNavigate } from "react-router-dom"
 import { Fragment, useEffect, useCallback, useState } from "react"
 import Spinner from "../../Spinner"
-import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../../utils/stringUtilityFunctions"
-import { formatDate, getDaysDifference } from "../../../utils/dateFunctions"
-import ReactPaginate from "react-paginate"
+import Pagination from "../../Pagination"
+import CardToShowProperty from "../../CardToShowAProperty"
 
 interface LocationType {
     name: {
@@ -119,16 +118,6 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
         fetchPendingPropertyEvaluations()
     }, [fetchPendingPropertyEvaluations])
 
-    const dayDiffernceColorSetter = (days: number): string => {
-        if (days < 1) {
-            return 'text-green-500'
-        } else if (days < 2) {
-            return 'text-orange-500'
-        } else {
-            return 'text-red-500'
-        }
-    }
-
     return (
         <Fragment>
 
@@ -154,48 +143,18 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
                     <div className='w-full flex flex-col gap-10 place-items-center  pl-2 pr-2 '>
                         {pendingPropertyEvaluations && pendingPropertyEvaluations.length > 0 && pendingPropertyEvaluations.map(property => {
                             index++
-                            return <div key={property._id} className="h-fit flex flex-col gap-4  place-items-center  w-full sm:w-10/12 md:w-9/12 lg:w-7/12 xl:w-5/12 bg-white rounded shadow-2xl p-3 sm:p-6">
-                                <div className="w-full flex flex-row gap-3 ">
-                                    <p className="text-gray-500 text-lg font-semibold">{index})</p>
-                                    <div className="flex flex-col gap-1">
-                                        <p className=" text-lg font-semibold">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.propertyType)} property</p>
-                                        <div className="flex flex-row gap-2">
-                                            <p className="text-lg font-semibold">Location:</p>
-                                            <p className="text-lg">{capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(property.location.name.state)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex flex-row gap-2">
-                                        <p className="font-medium text-gray-500">Request date:</p>
-                                        <p>{formatDate(property.sentToEvaluatorByFieldAgentForEvaluation.date
-                                        )}</p>
-                                    </div>
-                                    <p className={`text-center ${dayDiffernceColorSetter(getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date))}`}>
-                                        Received {getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date) > 0 ? `${getDaysDifference(property.sentToEvaluatorByFieldAgentForEvaluation.date)} days ago` : 'today'}
-                                    </p>
-                                </div>
-
-                                <div className="w-full flex justify-center ">
-                                    <Link to={`/property-evaluator/evaluate-property?propertyType=${property.propertyType}&propertyId=${property._id}`} className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded px-1 py-1" >Open details</Link>
-                                </div>
-                            </div>
+                            return <CardToShowProperty
+                                key={property._id}
+                                _id={property._id}
+                                index={index}
+                                propertyType={property.propertyType}
+                                location={property.location}
+                                sentToEvaluatorByFieldAgentForEvaluation={property.sentToEvaluatorByFieldAgentForEvaluation}
+                            />
                         })}
 
-                        {totalPages > 1 && <ReactPaginate
-                            //component for pagination
-                            pageCount={totalPages}
-                            pageRangeDisplayed={5}
-                            marginPagesDisplayed={2}
-                            onPageChange={handlePageClick}
-                            containerClassName={`pagination flex justify-center pb-10 `}
-                            activeClassName=" text-gray-700 px-3 rounded pt-1 hover:bg-gray-200 font-semibold"
-                            pageClassName="mr-2 cursor-pointer px-3 rounded pt-1 border border-gray-400 hover:bg-gray-300"
-                            previousClassName="mr-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                            nextClassName="ml-2 cursor-pointer btn-blue bg-gray-500 hover:bg-gray-600 text-white font-semibold px-2 py-1 rounded"
-                            disabledClassName="cursor-not-allowed"
-                        />}
+                        {totalPages > 1 &&
+                            <Pagination handlePageClick={handlePageClick} totalPages={totalPages} />}
                     </div>
                 </div>}
 

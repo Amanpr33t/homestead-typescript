@@ -1,3 +1,5 @@
+import { EvaluationDataType } from "./evaluationDataType"
+
 export type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
 export type WallType = 'plaster' | 'paint' | 'premium paint' | 'wall paper' | 'pvc panelling' | 'art work'
 export type RoofType = 'standard' | 'pop work' | 'down ceiling'
@@ -52,14 +54,17 @@ export interface DataCommonToHouseAndFlatType {
     conditionOfProperty?: ConditionOfPropertyType
 }
 
-export interface PropertyDataType extends HouseSpecificDataType,DataCommonToHouseAndFlatType {
+export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHouseAndFlatType {
     //data common to flat, house and plot property type
     _id?: string,
     sentBackTofieldAgentForReevaluation?: {
         details: string[]
     },
+    sentToEvaluatorByCityManagerForReevaluation?: {
+        details: string[]
+    },
     addedByPropertyDealer?: string,
-    residentialPropertyType: string,
+    residentialPropertyType: 'flat' | 'house' | 'plot',
     title: string,
     details: string | null,
     price: {
@@ -113,20 +118,6 @@ export interface PropertyDataType extends HouseSpecificDataType,DataCommonToHous
     },
     propertyImagesUrl?: string[],
     contractImagesUrl?: string[] | null,
-    evaluationData?: {
-        areDetailsComplete: boolean,
-        incompletePropertyDetails: string | null,
-        typeOfLocation: string | null,
-        locationStatus: string | null,
-        fairValueOfProperty: number | null,
-        fiveYearProjectionOfPrices: {
-            increase: boolean | null,
-            decrease: boolean | null,
-            percentageIncreaseOrDecrease: number | null,
-        },
-        conditionOfConstruction: string | null
-        qualityOfConstructionRating: number | null,
-        evaluatedAt: Date | null,
-    },
+    evaluationData?: EvaluationDataType,
     uniqueId?: string
 }

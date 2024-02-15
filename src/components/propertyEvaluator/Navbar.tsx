@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { FaHome } from "react-icons/fa"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
-
-interface AlertType {
-    isAlertModal: boolean,
-    alertType: 'success' | 'warning' | null,
-    alertMessage: string | null
-    routeTo: string | null
-}
+import { AlertType } from "../../dataTypes/alertType"
 
 //This component is the navigation bar
 const NavbarPropertyEvaluator: React.FC = () => {

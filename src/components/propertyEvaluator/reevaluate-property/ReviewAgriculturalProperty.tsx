@@ -4,100 +4,27 @@ import Spinner from "../../Spinner"
 import PropertyReevaluationForm from "./PropertyReevaluationForm"
 import ReevaluationDetailsModal from "./ReevaluationDetailsModal"
 import AgriculturalPropertyTable from "../../table/AgriculturalPropertyTable"
-
-type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
-type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
-type ReservoirType = 'public' | 'private'
-type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
+import { PropertyDataType } from "../../../dataTypes/agriculturalPropertyTypes"
+import useFetchPropertyData from "../../../custom-hooks/useFetchPropertyData"
+import { EvaluationDataType } from "../../../dataTypes/evaluationDataType"
 
 interface PropsType {
     propertyId: string
 }
 
-interface PropertyType {
-    _id: string,
-    addedByFieldAgent: string,
-    propertyEvaluator: string,
-    uniqueId: string,
-    propertyImagesUrl: string[],
-    contractImagesUrl: string[] | null,
-    addedByPropertyDealer: string,
-    landSize: {
-        size: number,
-        unit: 'metre-square' | 'acre',
-        details: string | null,
-    },
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    waterSource: {
-        canal: string[] | null,
-        river: string[] | null,
-        tubewells: {
-            numberOfTubewells: number,
-            depth: number[] | null
-        }
-    },
-    reservoir: {
-        isReservoir: boolean,
-        type: ReservoirType[] | null,
-        capacityOfPrivateReservoir: number | null,
-        unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
-    },
-    irrigationSystem: IrrigationSystemType[] | null,
-    priceDemanded: {
-        number: number,
-        words: string
-    },
-    crops: CropTypeArray[],
-    road: {
-        type: RoadType,
-        details: string | null,
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    nearbyTown: string | null,
-    sentToEvaluatorByCityManagerForReevaluation: {
-        details: string[]
-    },
-    evaluationData: {
-        typeOfLocation: string | null,
-        locationStatus: string | null,
-        fairValueOfProperty: number | null,
-        fiveYearProjectionOfPrices: {
-            increase: boolean | null,
-            decrease: boolean | null,
-            percentageIncreaseOrDecrease: number | null,
-        },
-        conditionOfConstruction: string | null,
-        qualityOfConstructionRating: number | null,
-        evaluatedAt?: Date,
-    }
-}
-
 //This component is used to show property data. It also passes property data as props to PropertyReevaluationForm component 
 const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
     const navigate = useNavigate()
+    const { fetchPropertyData } = useFetchPropertyData()
 
     const [showReevaluationForm, setShowReevaluationForm] = useState<boolean>(false) //If set to true, PropertyReevaluationForm component will be shown to the user
 
     const [showReevaluationDetails, setShowReevaluationDetails] = useState<boolean>(true) //If set to true, PropertyReevaluationForm component will be shown to the user
 
-    const [property, setProperty] = useState<PropertyType | null>(null)
+    const [property, setProperty] = useState<PropertyDataType | null>(null)
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
-
-    const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
@@ -108,31 +35,18 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
         try {
             setError(false)
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/fetch-selected-property?propertyType=agricultural&propertyId=${propertyId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
+            const responseData = await fetchPropertyData('agricultural', propertyId)
+            if (responseData.status === 'ok') {
+                setSpinner(false)
+                setProperty(responseData.property as PropertyDataType)
+            } else {
                 throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
-                return
-            } else if (data.status === 'ok') {
-                setSpinner(false)
-                setProperty(data.property)
             }
         } catch (error) {
             setSpinner(false)
             setError(true)
         }
-    }, [authToken, navigate, propertyId])
+    }, [ propertyId, fetchPropertyData])
 
     useEffect(() => {
         fetchSelectedProperty()
@@ -165,11 +79,11 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                     showReevaluationForm={showReevaluationForm}
                     hideReevaluationForm={() => setShowReevaluationForm(false)}
                     propertyType='agricultural'
-                    propertyId={property._id}
-                    oldEvaluationData={property.evaluationData} />
+                    propertyId={propertyId}
+                    oldEvaluationData={property.evaluationData as EvaluationDataType} />
             }
 
-            {showReevaluationDetails && property && property.sentToEvaluatorByCityManagerForReevaluation.details &&
+            {showReevaluationDetails && property && property.sentToEvaluatorByCityManagerForReevaluation && property.sentToEvaluatorByCityManagerForReevaluation.details &&
                 <ReevaluationDetailsModal
                     reevaluationDetails={property?.sentToEvaluatorByCityManagerForReevaluation.details}
                     detailsModalRemover={() => setShowReevaluationDetails(false)}
@@ -209,7 +123,6 @@ const ReviewAgriculturalProperty: React.FC<PropsType> = ({ propertyId }) => {
                         <AgriculturalPropertyTable propertyData={property} />
                     </div>
                 </div>}
-
 
         </Fragment >
     )

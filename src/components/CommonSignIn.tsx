@@ -11,14 +11,14 @@ interface AlertType {
 }
 
 interface PropsType {
-    userType:'field-agent'|'property-evaluator'|'city-manager'
+    userType: 'field-agent' | 'property-evaluator' | 'city-manager'
 }
 
 /*This component contains code for the following tasks:
   1) For sign in of a user
   2) For password change by a user in case he forgets password
 */
-const CommonSignIn: React.FC<PropsType> = ({userType}) => {
+const CommonSignIn: React.FC<PropsType> = ({ userType }) => {
     const navigate = useNavigate()
 
     const authToken: string | null = localStorage.getItem(`homestead-${userType}-authToken`)
@@ -30,7 +30,7 @@ const CommonSignIn: React.FC<PropsType> = ({userType}) => {
             navigate(`/${userType}`, { replace: true })
             return
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate, userType])
 
     const [emailForPasswordChange, setEmailForPasswordChange] = useState<string>('') //This state stores the email for which the user wants to change password.
     const [isEmailForPasswordChangeValid, seetEmailForPasswordChangeValid] = useState<boolean>(true) //This state it true when the format of email, for the password change, is valid.

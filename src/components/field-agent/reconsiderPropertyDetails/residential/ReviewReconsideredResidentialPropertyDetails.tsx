@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState, useCallback } from "react"
 import AlertModal from "../../../AlertModal"
-import { useNavigate } from "react-router-dom"
 import ResidentialPropertyTable from "../../../table/ResidentialPropertyTable"
 import useUploadImages from "../../../../custom-hooks/useImageUpload"
 import { PropertyDataType } from "../../../../dataTypes/residentialPropertyTypes"
@@ -78,7 +77,7 @@ const ReviewReevaluatedResidentialProperty: React.FC<PropsType> = (props) => {
             })
             return
         }
-    }, [addOrEditPropertyData, fetchedContractImagesUrl, fetchedPropertyImagesUrl])
+    }, [addOrEditPropertyData, fetchedContractImagesUrl, fetchedPropertyImagesUrl, propertyId])
 
     const uploadImagesFunction = async () => {
         try {
