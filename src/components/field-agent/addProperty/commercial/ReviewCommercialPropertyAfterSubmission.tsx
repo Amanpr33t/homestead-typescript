@@ -5,6 +5,7 @@ import useUploadImages from "../../../../custom-hooks/useImageUpload";
 import { PropertyDataType } from "../../../../dataTypes/commercialPropertyTypes"
 import { AlertType } from "../../../../dataTypes/alertType"
 import useAddOrEditPropertyData from "../../../../custom-hooks/useAddOrEditPropertyData";
+import { useLocation } from "react-router-dom";
 
 interface ImageType {
     file: string;
@@ -29,9 +30,15 @@ const ReviewCommercialPropertyAfterSubmission: React.FC<PropsType> = (props) => 
         contractImages
     } = props
 
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+
+    // Fetch specific query parameters
+    const requestId: string | null = queryParams.get('requestId')
+
     const { uploadImages } = useUploadImages()
 
-    const { addOrEditPropertyData } = useAddOrEditPropertyData('add', 'commercial', propertyData)
+    const { addOrEditPropertyData } = useAddOrEditPropertyData('add', 'commercial', propertyData, requestId || null)
 
     const [spinner, setSpinner] = useState<boolean>(false)
     const [alert, setAlert] = useState<AlertType>({

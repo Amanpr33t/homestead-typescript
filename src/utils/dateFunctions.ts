@@ -5,19 +5,18 @@ const formatDate = (dateString: string): string => {
   return formattedDate; // For e.g. 12 Jan, 2024
 };
 
-function getDaysDifference(inputDate: string): number {
-  // Convert both dates to milliseconds
-  const date1: Date = new Date();
-  const date2: Date = new Date(inputDate)
-  const date1Milliseconds: number = date1.getTime();
-  const date2Milliseconds: number = date2.getTime();
+function getDaysDifference(input: string): number {
+  const currentDate = new Date();
+  const inputDateObj = new Date(input);
 
-  // Calculate the difference in milliseconds
-  const differenceMilliseconds: number = Math.abs(date2Milliseconds - date1Milliseconds);
+  // Set hours, minutes, seconds, and milliseconds to 0 for both dates
+  currentDate.setHours(0, 0, 0, 0);
+  inputDateObj.setHours(0, 0, 0, 0);
 
-  // Convert the difference back to days
-  const differenceDays: number = Math.ceil(differenceMilliseconds / (1000 * 60 * 60 * 24));
-  return differenceDays - 1;
+  const timeDifference = currentDate.getTime() - inputDateObj.getTime();
+  const daysDifference = timeDifference / (1000 * 3600 * 24);
+
+  return Math.abs(Math.round(daysDifference));
 }
 
 export {

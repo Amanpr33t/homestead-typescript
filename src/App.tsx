@@ -35,7 +35,7 @@ import PropertyDealerHomePage from './components/property-dealer/HomePage';
 import PropertyDealerSignUp from './components/property-dealer/SignUp';
 import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
 import CustomerNotifications from './components/property-dealer/CustomerNotifications';
-import PropertiesPreviouslyAdded from './components/property-dealer/PropertiesPreviouslyAdded'
+import ReviewProperty from './components/property-dealer/ReviewProperty';
 
 //components imported for city manager
 import NavbarCityManager from './components/city-manager/Navbar';
@@ -43,6 +43,7 @@ import CityManagerSignIn from './components/city-manager/SignIn';
 import CityManagerHomePage from './components/city-manager/HomePage';
 import PropertiesPendingForApproval from './components/city-manager/PropertiesPendingForApproval';
 import ApproveProperty from './components/city-manager/ApproveProperty';
+import ListOfRequestsToAddProperty from './components/field-agent/requestsToAddNewProperty/ListOfRequestsToAddNewProperty';
 
 const App: React.FC = () => {
 
@@ -129,6 +130,11 @@ const App: React.FC = () => {
               <Route path='*' element={<Navigate replace to='/field-agent' />}></Route>
             </Route>
 
+            <Route path='requests-to-add-new-property' element={<>
+              <NavbarFieldAgent />
+              <ListOfRequestsToAddProperty />
+            </>}></Route>
+
             <Route path='*' element={<Navigate replace to='/field-agent' />}>
             </Route>
           </Route>
@@ -165,7 +171,7 @@ const App: React.FC = () => {
               <NavbarPropertyEvaluator />
             </>}></Route>
             <Route path='commercial-properties-to-be-reevaluated' element={<>
-              <ListOfPropertiesToBeReevaluatedByEvaluator/>
+              <ListOfPropertiesToBeReevaluatedByEvaluator />
               <NavbarPropertyEvaluator />
             </>}></Route>
             <Route path='agricultural-properties-to-be-reevaluated' element={<>
@@ -178,7 +184,7 @@ const App: React.FC = () => {
             </>}></Route>
             <Route path='reevaluate-property' element={<>
               <NavbarPropertyEvaluator />
-              < ReevaluateProperty/>
+              < ReevaluateProperty />
             </>}></Route>
 
             <Route path='evaluate-property' element={<>
@@ -237,15 +243,11 @@ const App: React.FC = () => {
               <NavbarPropertyDealer />
               <PropertyDealerDetails />
             </>}></Route>
-            <Route path='customer-notifications' element={<>
+            <Route path='review-property' element={<>
               <NavbarPropertyDealer />
-              <CustomerNotifications />
+              <ReviewProperty />
             </>}></Route>
-            <Route path='properties-added' element={<>
-              <NavbarPropertyDealer />
-              <PropertiesPreviouslyAdded />
-            </>}></Route>
-            <Route path='*' element={<Navigate replace to='/property-evaluator' />}>
+            <Route path='*' element={<Navigate replace to='/property-dealer' />}>
             </Route>
           </Route>
 

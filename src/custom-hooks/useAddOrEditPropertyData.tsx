@@ -14,7 +14,7 @@ interface UploadResult {
 
 const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
 
-const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agricultural' | 'commercial' | 'residential', propertyData: AgriculturalPropertyDataType | ResidentialPropertyType | CommercialPropertyType): UploadResult => {
+const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agricultural' | 'commercial' | 'residential', propertyData: AgriculturalPropertyDataType | ResidentialPropertyType | CommercialPropertyType, requestId?: string | null): UploadResult => {
     const navigate = useNavigate();
 
     const addOrEditPropertyData = useCallback(async (propertyImagesUrl: string[],
@@ -52,6 +52,12 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
                 }
             } else {
                 throw new Error('Property type not provided')
+            }
+
+            if (requestId) {
+                if (addOrEdit === 'add') {
+                    url = url + `?requestId=${requestId}`
+                }
             }
             const response = await fetch(url, {
                 method: addOrEdit === 'add' ? 'POST' : 'PATCH',
@@ -91,7 +97,7 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
         } catch (error) {
             throw new Error('Some error occurred')
         }
-    }, [navigate, propertyData, propertyType, addOrEdit]);
+    }, [navigate, propertyData, propertyType, addOrEdit,requestId]);
 
     return { addOrEditPropertyData };
 };

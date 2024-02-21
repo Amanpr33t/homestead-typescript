@@ -39,6 +39,8 @@ const HomeFieldAgent: React.FC = () => {
 
     const [numberOfPropertyDealersAdded, setNumberOfPropertyDealersAdded] = useState<number>(0) //number of property dealers added by the field agent
 
+    const [requestsToAddNewProperty, setRequestsToAddNewProperty] = useState<number>(0)
+
     const [pendingRequestsForPropertyReevaluation, setPendingRequestForPropertyReevaluation] = useState<{
         agricultural: number,
         residential: number,
@@ -63,6 +65,7 @@ const HomeFieldAgent: React.FC = () => {
                     'Authorization': `Bearer ${authToken}`
                 }
             })
+            console.log(response)
             if (!response.ok) {
                 throw new Error('Some error occured')
             }
@@ -77,12 +80,14 @@ const HomeFieldAgent: React.FC = () => {
                     residential: data.pendingPropertyReevaluations.residential,
                     commercial: data.pendingPropertyReevaluations.commercial
                 })
+                setRequestsToAddNewProperty(data.requestsToAddProperty)
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
                 navigate('/field-agent/signIn', { replace: true })
                 return
             }
         } catch (error) {
+            console.log(error)
             setError(true)
             setSpinner(false)
         }
@@ -127,8 +132,13 @@ const HomeFieldAgent: React.FC = () => {
                     {/*This div  will only be shown for screeen with width larger than 768px */}
                     <div className="hidden md:flex flex-col w-96 h-fit bg-white gap-2 p-3 rounded">
                         <p className="text-2xl font-bold text-center mb-2">Pending Requests</p>
-                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded  hover:bg-sky-100">
-                            <p className="text-5xl">0</p>
+                        <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded  hover:bg-sky-100" onClick={() => {
+                            if (requestsToAddNewProperty > 0) {
+                                navigate(`/field-agent/requests-to-add-new-property`, { replace: true })
+                                return
+                            }
+                        }}>
+                            <p className="text-5xl">{requestsToAddNewProperty}</p>
                             <p className="w-40">Pending visits to add a new property</p>
                         </div>
                         <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer rounded hover:bg-sky-100">
@@ -155,8 +165,13 @@ const HomeFieldAgent: React.FC = () => {
                         }
                         }>Pending Requests {requestsDropdown ? "▲" : "▼"}
                             {requestsDropdown && <div className="absolute top-8 -left-0.5 bg-white" >
-                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" >
-                                    <p className="text-5xl">0</p>
+                                <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" onClick={() => {
+                                    if (requestsToAddNewProperty > 0) {
+                                        navigate(`/field-agent/requests-to-add-new-property`, { replace: true })
+                                        return
+                                    }
+                                }}>
+                                    <p className="text-5xl">{requestsToAddNewProperty}</p>
                                     <p className="w-40">Pending visits to add a new property</p>
                                 </div>
                                 <div className="flex flex-row border border-gray-400 gap-2 p-1 cursor-pointer hover:bg-sky-100" >

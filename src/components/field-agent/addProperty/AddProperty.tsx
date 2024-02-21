@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import VerifyPropertyDealerBeforeAddingProperty from "../VerifyPropertyDealerBeforeAddingProperty"
 
 interface dealerType {
@@ -11,6 +11,12 @@ interface dealerType {
 //This component shows a modal from which the field agent can choose which type of property needs to be added
 const AddProperty: React.FC = () => {
     const navigate = useNavigate()
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+
+    // Fetch specific query parameters
+    const requestId = queryParams.get('requestId')
+
     const authToken: null | string = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
@@ -187,13 +193,13 @@ const AddProperty: React.FC = () => {
                                     className="bg-blue-500 text-white font-medium rounded p-1 w-full"
                                     onClick={() => {
                                         if (selectedPropertyType === 'agricultural') {
-                                            navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}`, { replace: true })
+                                            navigate(`/field-agent/add-property/agricultural?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&requestId=${requestId}`, { replace: true })
                                             return
                                         } else if (selectedPropertyType === 'commercial' && commericialPropertyType) {
-                                            navigate(`/field-agent/add-property/commercial?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${commericialPropertyType}`, { replace: true })
+                                            navigate(`/field-agent/add-property/commercial?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${commericialPropertyType}&requestId=${requestId}`, { replace: true })
                                             return
                                         } else if (selectedPropertyType === 'residential' && residentialPropertyType) {
-                                            navigate(`/field-agent/add-property/residential?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${residentialPropertyType}`, { replace: true })
+                                            navigate(`/field-agent/add-property/residential?id=${propertyDealer.dealerId}&firmName=${propertyDealer.firmName}&logoUrl=${propertyDealer.firmLogoUrl}&propertyType=${residentialPropertyType}&requestId=${requestId}`, { replace: true })
                                             return
                                         }
                                     }}>Select</button>

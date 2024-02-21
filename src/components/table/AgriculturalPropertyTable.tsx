@@ -270,13 +270,13 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                         <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
                         <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                             {propertyImages && propertyImages.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto ' src={image.file} alt="" />;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image.file} alt="" onClick={()=>window.open(image.file, '_blank')}/>;
                             })}
                             {fetchedPropertyImagesUrl && fetchedPropertyImagesUrl.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto ' src={image} alt="" />;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
                             })}
                             {propertyData.propertyImagesUrl && propertyData.propertyImagesUrl.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto ' src={image} alt="" />;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
                             })}
                         </td>
                     </tr>
@@ -289,23 +289,26 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                                 {contractImages && contractImages.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto '
+                                        className='w-40 h-auto cursor-pointer'
                                         src={image.file}
-                                        alt="" />
+                                        alt="" 
+                                        onClick={()=>window.open(image.file, '_blank')}/>
                                 })}
                                 {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto '
+                                        className='w-40 h-auto cursor-pointer'
                                         src={image}
-                                        alt="" />
+                                        alt="" 
+                                        onClick={()=>window.open(image, '_blank')}/>
                                 })}
                                 {propertyData.contractImagesUrl && propertyData.contractImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
-                                        className='w-40 h-auto '
+                                        className='w-40 h-auto cursor-pointer'
                                         src={image}
-                                        alt="" />
+                                        alt="" 
+                                        onClick={()=>window.open(image, '_blank')}/>
                                 })}
                             </td>
                         </tr>}
