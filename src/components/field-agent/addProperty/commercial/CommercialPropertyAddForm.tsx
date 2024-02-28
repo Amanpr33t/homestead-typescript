@@ -63,6 +63,12 @@ const CommercialPropertyAddForm: React.FC = () => {
         }
     }, [propertyDealerId, propertyDealerLogoUrl, propertyDealerFirmName, commercialPropertyType, navigate])
 
+    const [propertyTitle, setPropertyTitle] = useState<string>('') //title of the proeprty
+    const [propertyTitleErrorMessage, setPropertyTitleErrorMessage] = useState<string>('') //Error message to be shown when no title is provided
+
+    const [propertyDetail, setPropertyDetail] = useState<string>('') //details of property
+    const [propertyDetailError, setPropertyDetailError] = useState<boolean>(false) //It is true if property details are not property
+
     const [totalAreaSquareFeet, setTotalAreaSquareFeet] = useState<number | ''>('')
     const [coveredAreaSquareFeet, setCoveredAreaSquareFeet] = useState<number | ''>('')
     const [totalAreaError, setTotalAreaError] = useState<boolean>(false)
@@ -87,10 +93,8 @@ const CommercialPropertyAddForm: React.FC = () => {
 
     const [numberOfOwners, setNumberOfOwners] = useState<number>(1)
 
-    const [priceDemandedNumber, setPriceDemandedNumber] = useState<number | ''>('')
-    const [priceDemandedNumberError, setPriceDemandedNumberError] = useState<boolean>(false)
-    const [priceDemandedWords, setPriceDemandedWords] = useState<string>('')
-    const [priceDemandedWordsError, setPriceDemandedWordsError] = useState<boolean>(false)
+    const [price, setPrice] = useState<number | ''>('')
+    const [priceError, setPriceError] = useState<boolean>(false)
 
     const [isLegalRestrictions, setIsLegalRestrictions] = useState<boolean | null>(null)
     const [legalRestrictionError, setLegalRestrictionError] = useState<boolean>(false)
@@ -109,8 +113,6 @@ const CommercialPropertyAddForm: React.FC = () => {
 
     const [leasePeriodMonths, setLeasePeriodMonths] = useState<number>(0)
     const [leasePeriodYears, setLeasePeriodYears] = useState<number>(0)
-
-    const [remarks, setRemarks] = useState<string>('')
 
     const [widthOfRoadFacingMetre, setWidthOfRoadFacingMetre] = useState<number | ''>('')
     const [widthOfRoadFacingFeet, setWidthOfRoadFacingFeet] = useState<number | ''>('')
@@ -168,6 +170,10 @@ const CommercialPropertyAddForm: React.FC = () => {
     }
 
     const errorCheckingBeforeSubmit = () => {
+        if (!propertyTitle.trim()) {
+            setPropertyTitleErrorMessage('Provide a title')
+        }
+
         if (!propertyImages.length) {
             setPropertyImageError(true)
         }
@@ -197,11 +203,8 @@ const CommercialPropertyAddForm: React.FC = () => {
             setPropertyTypeError(true)
         }
 
-        if (!priceDemandedNumber) {
-            setPriceDemandedNumberError(true)
-        }
-        if (!priceDemandedWords.trim()) {
-            setPriceDemandedWordsError(true)
+        if (!price) {
+            setPriceError(true)
         }
 
         if (isLegalRestrictions === null) {
@@ -223,6 +226,9 @@ const CommercialPropertyAddForm: React.FC = () => {
             })
             return
         }
+        if (!propertyTitle.trim()) {
+            return errorFunction()
+        }
         if (!propertyImages.length) {
             return errorFunction()
         }
@@ -232,7 +238,7 @@ const CommercialPropertyAddForm: React.FC = () => {
         if (!coveredAreaMetreSquare || !coveredAreaSquareFeet || !totalAreaMetreSquare || !totalAreaSquareFeet) {
             return errorFunction()
         }
-        if (!priceDemandedNumber || !priceDemandedWords.trim()) {
+        if (!price) {
             return errorFunction()
         }
         if (isLegalRestrictions === null || (isLegalRestrictions && !legalRestrictionDetails.trim())) {
@@ -250,6 +256,8 @@ const CommercialPropertyAddForm: React.FC = () => {
         }
 
         const finalPropertyData = {
+            title: propertyTitle,
+            details: propertyDetail.trim() || null,
             addedByPropertyDealer: propertyDealerId,
             commercialPropertyType,
             landSize: {
@@ -287,15 +295,11 @@ const CommercialPropertyAddForm: React.FC = () => {
                 feet: +widthOfRoadFacingFeet,
                 metre: +widthOfRoadFacingMetre
             },
-            priceDemanded: {
-                number: priceDemandedNumber,
-                words: priceDemandedWords.trim()
-            },
+            price,
             legalRestrictions: {
                 isLegalRestrictions,
                 details: legalRestrictionDetails.trim() || null,
-            },
-            remarks: remarks.trim() || null
+            }
         }
 
         const shopSpecificData = {
@@ -371,6 +375,56 @@ const CommercialPropertyAddForm: React.FC = () => {
                                     className="w-20 h-auto "
                                     src={propertyDealerLogoUrl}
                                     alt='' />}
+                        </div>
+
+                        {/*property title*/}
+                        <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+                            {propertyTitleErrorMessage.trim() &&
+                                <p className="text-red-500 -mt-1">{propertyTitleErrorMessage.trim()}</p>}
+                            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+                                <div className="flex flex-row gap-0.5">
+                                    <p className="h-4 text-2xl text-red-500">*</p>
+                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-title">
+                                        Property title
+                                    </label>
+                                </div>
+
+                                <textarea
+                                    className={`border-2 ${propertyTitleErrorMessage.trim() ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`}
+                                    id="property-title"
+                                    rows={5}
+                                    name="property-title"
+                                    autoCorrect="on"
+                                    autoComplete="new-password"
+                                    value={propertyTitle}
+                                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                        setPropertyTitleErrorMessage('')
+                                        setPropertyTitle(e.target.value)
+                                    }} />
+                            </div>
+                        </div>
+
+                        {/*property details*/}
+                        <div className="flex flex-col p-2 pb-5 pt-5 ">
+                            {propertyDetailError &&
+                                <p className="text-red-500 -mt-1">Details should be less than 500 characters</p>}
+                            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+                                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-detail">
+                                    Property details
+                                </label>
+
+                                <textarea
+                                    className={`border-2 ${propertyDetailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`} id="property-detail"
+                                    rows={5}
+                                    name="property-detail"
+                                    autoCorrect="on"
+                                    autoComplete="new-password"
+                                    value={propertyDetail}
+                                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                        setPropertyDetailError(false)
+                                        setPropertyDetail(e.target.value)
+                                    }} />
+                            </div>
                         </div>
 
                         {/* Property type*/}
@@ -566,9 +620,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setLandSizeDetails(e.target.value)
-                                            }
+                                            setLandSizeDetails(e.target.value)
                                         }} />
                                 </div>
                             </div>
@@ -937,9 +989,7 @@ const CommercialPropertyAddForm: React.FC = () => {
 
                         {/*price*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 ">
-                            {(priceDemandedNumberError && !priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide price in words</p>}
-                            {(!priceDemandedNumberError && priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide price in numbers</p>}
-                            {(priceDemandedNumberError && priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide price</p>}
+                            {(priceError) && <p className="text-red-500 -mt-1">Provide price</p>}
                             <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -948,38 +998,21 @@ const CommercialPropertyAddForm: React.FC = () => {
                                     </label>
                                 </div>
 
-                                <div className="flex flex-col gap-5">
-                                    <input
-                                        id="price-number"
-                                        type="number"
-                                        name='price-number'
-                                        className={`border-2 ${priceDemandedNumberError ? 'border-red-500' : 'border-gray-500'} pl-1 pr-1 rounded bg-white w-40`}
-                                        placeholder="Number"
-                                        value={priceDemandedNumber}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                            if (e.target.value.trim() && +e.target.value.trim() !== 0) {
-                                                setPriceDemandedNumberError(false)
-                                                setPriceDemandedNumber(+e.target.value.trim())
-                                            } else {
-                                                setPriceDemandedNumber('')
-                                            }
-                                        }} />
-                                    <textarea
-                                        className={`border-2 ${priceDemandedWordsError ? 'border-red-500' : 'border-gray-500'} p-1 rounded w-48 sm:w-80 resize-none`}
-                                        id="price-words"
-                                        rows={3}
-                                        name="price-words"
-                                        autoCorrect="on"
-                                        autoComplete="new-password"
-                                        placeholder="Words"
-                                        value={priceDemandedWords}
-                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setPriceDemandedWordsError(false)
-                                                setPriceDemandedWords(e.target.value)
-                                            }
-                                        }} />
-                                </div>
+                                <input
+                                    id="price-number"
+                                    type="number"
+                                    name='price-number'
+                                    className={`border-2 ${priceError ? 'border-red-500' : 'border-gray-500'} pl-1 pr-1 rounded bg-white w-40`}
+                                    placeholder="Number"
+                                    value={price}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (e.target.value.trim() && +e.target.value.trim() !== 0) {
+                                            setPriceError(false)
+                                            setPrice(+e.target.value.trim())
+                                        } else {
+                                            setPrice('')
+                                        }
+                                    }} />
                             </div>
                         </div>
 
@@ -1044,10 +1077,8 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setLegalRestrictionDetailsError(false)
-                                                setLegalRestrictionDetails(e.target.value)
-                                            }
+                                            setLegalRestrictionDetailsError(false)
+                                            setLegalRestrictionDetails(e.target.value)
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}
@@ -1136,26 +1167,6 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         </div>
                                     })}
                                 </div>}
-                        </div>
-
-                        {/*remarks*/}
-                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 px-2 py-5">
-                            <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="remarks">
-                                Remarks
-                            </label>
-                            <textarea
-                                className="border-2 border-gray-400 rounded h-40 sm:w-80 p-1 resize-none"
-                                id="remarks"
-                                name="remarks"
-                                autoCorrect="on"
-                                autoComplete="new-password"
-                                placeholder="Add remarks regarding property"
-                                value={remarks}
-                                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                    if (e.target.value.trim().length < 500) {
-                                        setRemarks(e.target.value)
-                                    }
-                                }} />
                         </div>
 
                         <div className="flex justify-center mt-4 p-2">

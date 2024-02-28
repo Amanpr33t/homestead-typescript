@@ -34,7 +34,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
         try {
             setError(false)
             setSpinner(true)
-            const responseData = await fetchPropertyData('residential', propertyId)
+            const responseData = await fetchPropertyData( propertyId)
             if (responseData.status === 'ok') {
                 setSpinner(false)
                 setProperty(responseData.property as PropertyDataType)
@@ -74,7 +74,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
             </div>
 
             {property && !spinner && !error &&
-                <div className={`${showApprovalForm ? 'bg-gray-300 backdrop-filter blur' : ''}`}>
+                <div className={`${showApprovalForm ? 'bg-gray-300 backdrop-filter blur' : ''} pt-28 sm:pt-20`}>
 
                     {/*heading */}
                     <div className="w-full z-20 mb-3">

@@ -4,7 +4,7 @@ import { PropertyDataType as CommercialPropertyType } from '../dataTypes/commerc
 import { PropertyDataType as ResidentialPropertyType } from '../dataTypes/residentialPropertyTypes';
 
 interface HookType {
-    fetchPropertyData: (propertyType: 'agricultural' | 'commercial' | 'residential', propertyId: string) => Promise<{
+    fetchPropertyData: (propertyId: string) => Promise<{
         status: 'ok',
         property: CommercialPropertyType | AgriculturalPropertyDataType | ResidentialPropertyType
     }>;
@@ -12,9 +12,9 @@ interface HookType {
 
 const useFetchPropertyData = (): HookType => {
 
-    const fetchPropertyData = useCallback(async (propertyType: 'agricultural' | 'commercial' | 'residential', propertyId: string) => {
+    const fetchPropertyData = useCallback(async (propertyId: string) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property/fetch-selected-property?propertyType=${propertyType}&propertyId=${propertyId}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property/fetch-selected-property?propertyId=${propertyId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

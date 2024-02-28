@@ -23,7 +23,7 @@ interface PropertyDataType {
     residentialPropertyType: string,
     title: string,
     details: string | null,
-    price: {
+    priceData: {
         fixed: number | null,
         range: {
             from: number | null,
@@ -157,7 +157,9 @@ const ResidentialPropertyTable: React.FC<PropsType> = (props) => {
                     {/*title */}
                     <tr className="border-2 border-gray-300">
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Title</td>
-                        <td className=" pt-4 pb-4 pr-2 pl-2 text-center">{propertyData.title}</td>
+                        <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                            <p>{propertyData.title}</p>
+                        </td>
                     </tr>
 
                     {/*details */}
@@ -174,16 +176,16 @@ const ResidentialPropertyTable: React.FC<PropsType> = (props) => {
                         <td className=" pt-4 pb-4 text-center">{propertyData.typeOfSale.floorForSale ? 'Floor for sale' : 'House for sale'}</td>
                     </tr>}
 
-                    {/*price fixed*/}
-                    {!propertyData.price.range.from && !propertyData.price.range.to && propertyData.price.fixed && <tr className="border-2 border-gray-300">
+                    {/*priceData fixed*/}
+                    {!propertyData.priceData.range.from && !propertyData.priceData.range.to && propertyData.priceData.fixed && <tr className="border-2 border-gray-300">
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
-                        <td className=" pt-4 pb-4 text-center">Rs. {propertyData.price.fixed}</td>
+                        <td className=" pt-4 pb-4 text-center">Rs. {propertyData.priceData.fixed}</td>
                     </tr>}
 
-                    {/*price range */}
-                    {propertyData.price.range.from && propertyData.price.range.to && !propertyData.price.fixed && <tr className="border-2 border-gray-300">
+                    {/*priceData range */}
+                    {propertyData.priceData.range.from && propertyData.priceData.range.to && !propertyData.priceData.fixed && <tr className="border-2 border-gray-300">
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Price</td>
-                        <td className=" pt-4 pb-4 text-center">Rs. {propertyData.price.range.from} - Rs. {propertyData.price.range.to}</td>
+                        <td className=" pt-4 pb-4 text-center">Rs. {propertyData.priceData.range.from} - Rs. {propertyData.priceData.range.to}</td>
                     </tr>}
 
                     {/*water supply */}

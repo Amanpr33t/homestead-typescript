@@ -38,11 +38,10 @@ export interface PropertyDataType {
         capacityOfPrivateReservoir: number | null,
         unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
     },
+    title: string,
+    details: string | null,
     irrigationSystem: IrrigationSystemType[] | null,
-    priceDemanded: {
-        number: number,
-        words: string
-    },
+    price: number,
     crops: CropTypeArray[],
     road: {
         type: RoadType,
@@ -56,7 +55,9 @@ export interface PropertyDataType {
     propertyImagesUrl?: string[],
     contractImagesUrl?: string[] | null,
     evaluationData?: EvaluationDataType,
-    uniqueId?: string
+    uniqueId?: string,
+    isLive?:boolean,
+    isSold?:boolean
 }
 
 export type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'

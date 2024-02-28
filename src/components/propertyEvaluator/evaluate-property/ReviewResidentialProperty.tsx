@@ -31,7 +31,7 @@ const ReviewResidentialProperty: React.FC<PropsType> = ({ propertyId }) => {
         try {
             setError(false)
             setSpinner(true)
-            const responseData = await fetchPropertyData('residential', propertyId)
+            const responseData = await fetchPropertyData( propertyId)
             if (responseData.status === 'ok') {
                 setSpinner(false)
                 setProperty(responseData.property as PropertyDataType)

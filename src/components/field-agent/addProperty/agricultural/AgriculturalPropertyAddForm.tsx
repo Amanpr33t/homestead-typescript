@@ -52,6 +52,12 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     })
     const [spinner, setSpinner] = useState<boolean>(true)
 
+    const [propertyTitle, setPropertyTitle] = useState<string>('') //title of the proeprty
+    const [propertyTitleErrorMessage, setPropertyTitleErrorMessage] = useState<string>('') //Error message to be shown when no title is provided
+
+    const [propertyDetail, setPropertyDetail] = useState<string>('') //details of property
+    const [propertyDetailError, setPropertyDetailError] = useState<boolean>(false) //It is true if property details are not property
+
     const [landSize, setLandSize] = useState<string | number>() //Land size in number
     const [landSizeUnit, setLandSizeUnit] = useState<'metre-square' | 'acre' | ''>('') //Unit of land size
     const [landSizeDetails, setLandSizeDetails] = useState<string>('') //details of land size
@@ -100,10 +106,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const irrigationSystemOptions: IrrigationSystemType[] = ['sprinkler', 'drip', 'underground pipeline']
     const [irrigationSystemArray, setIrrigationSystemArray] = useState<IrrigationSystemType[]>([]) //This array contains all the irrigation system options selected by user
 
-    const [priceDemandedNumber, setPriceDemandedNumber] = useState<number | ''>('') //Price in numbers
-    const [priceDemandedNumberError, setPriceDemandedNumberError] = useState<boolean>(false) //This state is true if not price in numbers is provided
-    const [priceDemandedWords, setPriceDemandedWords] = useState<string>('') //price in words
-    const [priceDemandedWordsError, setPriceDemandedWordsError] = useState<boolean>(false) //This state is true if not price in words is provided
+    const [price, setPrice] = useState<number | ''>('') //Price in numbers
+    const [priceError, setPriceError] = useState<boolean>(false) //This state is true if not price in numbers is provided
 
     const cropOptions: CropTypeArray[] = ['rice', 'wheat', 'maize', 'cotton']
     const [cropArray, setCropArray] = useState<CropTypeArray[]>([]) //Array contans the crop selected by user
@@ -170,6 +174,10 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
     //This function triggers different errors if the user does not provide suitable data
     const errorCheckingBeforeSubmit = () => {
+        if (!propertyTitle.trim()) {
+            setPropertyTitleErrorMessage('Provide a title')
+        }
+
         if (!propertyImages.length) {
             setPropertyImageError(true)
         }
@@ -188,11 +196,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
             setLandSizeUnitError(true)
         }
 
-        if (!priceDemandedNumber) {
-            setPriceDemandedNumberError(true)
-        }
-        if (!priceDemandedWords.trim()) {
-            setPriceDemandedWordsError(true)
+        if (!price) {
+            setPriceError(true)
         }
 
         if (!isCanal && !isRiver && !isTubeWell) {
@@ -258,6 +263,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         }
 
         //the if statements below are triggered if the user does not provide suitable data
+        if (!propertyTitle.trim()) {
+            return errorFunction()
+        }
         if (!propertyImages.length) {
             return errorFunction()
         }
@@ -267,7 +275,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         if (!landSize || !landSizeUnit) {
             return errorFunction()
         }
-        if (!priceDemandedNumber || !priceDemandedWords.trim()) {
+        if (!price) {
             return errorFunction()
         }
         if ((!isCanal && !isRiver && !isTubeWell) ||
@@ -294,6 +302,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
         //The final property data to be submitted by user
         const finalPropertyData = {
+            title: propertyTitle,
+            details: propertyDetail.trim() || null,
             addedByPropertyDealer: propertyDealerId as string,
             landSize: {
                 size: +landSize,
@@ -325,10 +335,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                 unitOfCapacityForPrivateReservoir: unitOfCapacityForPrivateReservoir || null
             },
             irrigationSystem: irrigationSystemArray.length ? irrigationSystemArray : null,
-            priceDemanded: {
-                number: +priceDemandedNumber,
-                words: priceDemandedWords.trim()
-            },
+            price,
             crops: cropArray,
             road: {
                 type: roadType,
@@ -436,6 +443,56 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         </div>
                                     })}
                                 </div>}
+                        </div>
+
+                        {/*property title*/}
+                        <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
+                            {propertyTitleErrorMessage.trim() &&
+                                <p className="text-red-500 -mt-1">{propertyTitleErrorMessage.trim()}</p>}
+                            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+                                <div className="flex flex-row gap-0.5">
+                                    <p className="h-4 text-2xl text-red-500">*</p>
+                                    <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-title">
+                                        Property title
+                                    </label>
+                                </div>
+
+                                <textarea
+                                    className={`border-2 ${propertyTitleErrorMessage.trim() ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`}
+                                    id="property-title"
+                                    rows={5}
+                                    name="property-title"
+                                    autoCorrect="on"
+                                    autoComplete="new-password"
+                                    value={propertyTitle}
+                                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                        setPropertyTitleErrorMessage('')
+                                        setPropertyTitle(e.target.value)
+                                    }} />
+                            </div>
+                        </div>
+
+                        {/*property details*/}
+                        <div className="flex flex-col p-2 pb-5 pt-5 ">
+                            {propertyDetailError &&
+                                <p className="text-red-500 -mt-1">Details should be less than 500 characters</p>}
+                            <div className="flex flex-col sm:flex-row gap-5 sm:gap-16">
+                                <label className="text-xl font-semibold text-gray-500 whitespace-nowrap" htmlFor="property-detail">
+                                    Property details
+                                </label>
+
+                                <textarea
+                                    className={`border-2 ${propertyDetailError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-full sm:w-80 resize-none`} id="property-detail"
+                                    rows={5}
+                                    name="property-detail"
+                                    autoCorrect="on"
+                                    autoComplete="new-password"
+                                    value={propertyDetail}
+                                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                                        setPropertyDetailError(false)
+                                        setPropertyDetail(e.target.value)
+                                    }} />
+                            </div>
                         </div>
 
                         {/*location */}
@@ -658,9 +715,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         placeholder="Add details regarding land size (optional)"
                                         value={landSizeDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setLandSizeDetails(e.target.value)
-                                            }
+                                            setLandSizeDetails(e.target.value)
                                         }} />
                                 </div>
                             </div>
@@ -668,7 +723,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
                         {/*price*/}
                         <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
-                            {(priceDemandedNumberError || priceDemandedWordsError) && <p className="text-red-500 -mt-1">Provide a price</p>}
+                            {(priceError) && <p className="text-red-500 -mt-1">Provide a price</p>}
                             <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -677,38 +732,21 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                     </label>
                                 </div>
 
-                                <div className="flex flex-col gap-5">
-                                    <input
-                                        id="price-number"
-                                        type="number"
-                                        name='price-number'
-                                        className={`border-2 ${priceDemandedNumberError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`}
-                                        placeholder="Number"
-                                        value={priceDemandedNumber}
-                                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                            if (+e.target.value > 0) {
-                                                setPriceDemandedNumberError(false)
-                                                setPriceDemandedNumber(+e.target.value)
-                                            } else {
-                                                setPriceDemandedNumber('')
-                                            }
-                                        }} />
-                                    <textarea
-                                        className={`border-2 ${priceDemandedWordsError ? 'border-red-400' : 'border-gray-400'} p-1 rounded w-52 sm:w-80 resize-none`}
-                                        id="price-words"
-                                        rows={3}
-                                        name="price-words"
-                                        autoCorrect="on"
-                                        autoComplete="new-password"
-                                        placeholder="Words"
-                                        value={priceDemandedWords}
-                                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 150) {
-                                                setPriceDemandedWordsError(false)
-                                                setPriceDemandedWords(e.target.value)
-                                            }
-                                        }} />
-                                </div>
+                                <input
+                                    id="price-number"
+                                    type="number"
+                                    name='price-number'
+                                    className={`border-2 ${priceError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`}
+                                    placeholder="Number"
+                                    value={price}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                        if (+e.target.value > 0) {
+                                            setPriceError(false)
+                                            setPrice(+e.target.value)
+                                        } else {
+                                            setPrice('')
+                                        }
+                                    }} />
                             </div>
                         </div>
 
@@ -1220,9 +1258,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         autoComplete="new-password"
                                         placeholder="Add details about road here (optional)"
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length <= 500) {
-                                                setRoadDetails(e.target.value)
-                                            }
+                                            setRoadDetails(e.target.value)
                                         }} />
                                 </div>
                             </div>
@@ -1283,10 +1319,8 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setLegalRestrictionDetailsError(false)
-                                                setLegalRestrictionDetails(e.target.value)
-                                            }
+                                            setLegalRestrictionDetailsError(false)
+                                            setLegalRestrictionDetails(e.target.value)
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}

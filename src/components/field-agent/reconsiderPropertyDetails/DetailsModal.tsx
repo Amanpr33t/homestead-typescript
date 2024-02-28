@@ -22,6 +22,7 @@ const DetailsModal: React.FC<DetailsProps> = (props) => {
         showReevaluationDetails,
         dealerInfo
     } = props
+    console.log(dealerInfo)
 
     let index: number = 0
 

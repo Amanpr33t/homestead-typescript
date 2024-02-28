@@ -65,7 +65,6 @@ const HomeFieldAgent: React.FC = () => {
                     'Authorization': `Bearer ${authToken}`
                 }
             })
-            console.log(response)
             if (!response.ok) {
                 throw new Error('Some error occured')
             }
@@ -87,7 +86,6 @@ const HomeFieldAgent: React.FC = () => {
                 return
             }
         } catch (error) {
-            console.log(error)
             setError(true)
             setSpinner(false)
         }

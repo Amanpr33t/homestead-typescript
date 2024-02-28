@@ -6,6 +6,8 @@ type ReservoirType = 'public' | 'private'
 type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
 
 interface PropertyDataType {
+    title: string,
+    details: string | null,
     landSize: {
         size: number,
         unit: 'metre-square' | 'acre',
@@ -36,10 +38,7 @@ interface PropertyDataType {
         unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
     },
     irrigationSystem: IrrigationSystemType[] | null,
-    priceDemanded: {
-        number: number,
-        words: string
-    },
+    price: number,
     crops: CropTypeArray[],
     road: {
         type: RoadType,
@@ -98,6 +97,22 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                     {firmName && <tr className="border-2 border-gray-300">
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Firm name</td>
                         <td className=" pt-4 pb-4 text-center">{firmName}</td>
+                    </tr>}
+
+                    {/*title */}
+                    <tr className="border-2 border-gray-300">
+                        <td className=" pt-4 pb-4 text-lg font-semibold text-center">Title</td>
+                        <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                            <p>{propertyData.title}</p>
+                        </td>
+                    </tr>
+
+                    {/*details */}
+                    {propertyData.details && <tr className="border-2 border-gray-300">
+                        <td className=" pt-4 pb-4 text-lg font-semibold text-center">Details</td>
+                        <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                            <p>{propertyData.details}</p>
+                        </td>
                     </tr>}
 
                     {/*land size details */}
@@ -219,9 +234,8 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                         <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
                             <div className="flex flex-row place-content-center gap-1">
                                 <p className="font-semibold">Rs.</p>
-                                <p>{propertyData.priceDemanded.number}</p>
+                                <p>{propertyData.price}</p>
                             </div>
-                            <p className="w-fit p-1 rounded mx-2 sm:mx-5 bg-gray-200 text-center">{propertyData.priceDemanded.words}</p>
                         </td>
                     </tr>
 
@@ -270,13 +284,13 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                         <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
                         <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                             {propertyImages && propertyImages.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image.file} alt="" onClick={()=>window.open(image.file, '_blank')}/>;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image.file} alt="" onClick={() => window.open(image.file, '_blank')} />;
                             })}
                             {fetchedPropertyImagesUrl && fetchedPropertyImagesUrl.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
                             })}
                             {propertyData.propertyImagesUrl && propertyData.propertyImagesUrl.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
                             })}
                         </td>
                     </tr>
@@ -291,24 +305,24 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                                         key={Math.random()}
                                         className='w-40 h-auto cursor-pointer'
                                         src={image.file}
-                                        alt="" 
-                                        onClick={()=>window.open(image.file, '_blank')}/>
+                                        alt=""
+                                        onClick={() => window.open(image.file, '_blank')} />
                                 })}
                                 {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
                                         className='w-40 h-auto cursor-pointer'
                                         src={image}
-                                        alt="" 
-                                        onClick={()=>window.open(image, '_blank')}/>
+                                        alt=""
+                                        onClick={() => window.open(image, '_blank')} />
                                 })}
                                 {propertyData.contractImagesUrl && propertyData.contractImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
                                         className='w-40 h-auto cursor-pointer'
                                         src={image}
-                                        alt="" 
-                                        onClick={()=>window.open(image, '_blank')}/>
+                                        alt=""
+                                        onClick={() => window.open(image, '_blank')} />
                                 })}
                             </td>
                         </tr>}

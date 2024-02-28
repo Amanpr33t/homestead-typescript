@@ -262,13 +262,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
   const errorCheckingBeforeSubmit = () => {
     if (!propertyTitle.trim()) {
       setPropertyTitleErrorMessage('Provide a title')
-    } else if (propertyTitle.trim().length >= 150) {
-      setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
-    }
-
-    if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
-      setPropertyDetailError(true)
-    }
+    } 
 
     if (!isDeclareFixedPrice && !isRangeOfPrice) {
       setPriceErrorMessage('Select an option')
@@ -367,25 +361,19 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (!furnishing) {
         setFurnishingError(true)
-      } else if (furnishing && furnishingDetails.trim().length >= 500) {
-        setFurnishingDetailsError(true)
-      }
+      } 
     }
 
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (!kitchenFurnishing) {
         setKitchenFurnishingError(true)
-      } else if (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500) {
-        setKitchenFurnishingDetailsError(true)
-      }
+      } 
     }
 
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (kitchenAppliances === null) {
         setKitchenAppliancesError(true)
-      } else if (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500) {
-        setKitchenAppliancesDetailsError(true)
-      }
+      } 
     }
 
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
@@ -415,7 +403,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
     if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
       if (garden === null) {
         setGardenError(true)
-      } else if (garden && gardenDetails.trim().length >= 500) {
+      } else if (garden) {
         setGardenDetailsError(true)
       }
     }
@@ -465,9 +453,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
         routeTo: null
       })
     }
-    if (!propertyTitle.trim() || propertyTitle.trim().length >= 150) {
-      return errorFunction()
-    } else if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
+    if (!propertyTitle.trim() ) {
       return errorFunction()
     } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
       return errorFunction()
@@ -493,11 +479,11 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && furnishingDetails.trim().length >= 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing )) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing )) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null )) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
       return errorFunction()
@@ -511,7 +497,7 @@ const ResidentialPropertyAddForm: React.FC = () => {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
       return errorFunction()
-    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && gardenDetails.trim().length >= 500))) {
+    } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null )) {
       return errorFunction()
     } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
       return errorFunction()
@@ -532,10 +518,10 @@ const ResidentialPropertyAddForm: React.FC = () => {
     //Final property data submitted by the user
     const finalPropertyData: PropertyDataType = {
       addedByPropertyDealer: propertyDealerId,
-      residentialPropertyType:residentialPropertyType as 'plot'|'house'|'flat',
+      residentialPropertyType: residentialPropertyType as 'plot' | 'house' | 'flat',
       title: propertyTitle,
       details: propertyDetail.trim() || null,
-      price: {
+      priceData: {
         fixed: fixedPrice || null,
         range: {
           from: rangeOfPriceFrom || null,
@@ -749,14 +735,6 @@ const ResidentialPropertyAddForm: React.FC = () => {
                 </div>
               </div>}
 
-            {/* Property type*/}
-            <div className="flex flex-col p-2 pb-5 pt-5 ">
-              <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
-                <p className="text-xl font-semibold text-gray-500" >Property type</p>
-                <p className="text-lg text-gray-500">{residentialPropertyType && capitalizeFirstLetterOfAString(residentialPropertyType)}</p>
-              </div>
-            </div>
-
             {/*property title*/}
             <div className="flex flex-col p-2 pb-5 pt-5 bg-gray-100">
               {propertyTitleErrorMessage.trim() &&
@@ -778,12 +756,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   autoComplete="new-password"
                   value={propertyTitle}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    if (e.target.value.trim().length < 150) {
-                      setPropertyTitleErrorMessage('')
+                    setPropertyTitleErrorMessage('')
                       setPropertyTitle(e.target.value)
-                    } else {
-                      setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
-                    }
                   }} />
               </div>
             </div>
@@ -805,13 +779,17 @@ const ResidentialPropertyAddForm: React.FC = () => {
                   autoComplete="new-password"
                   value={propertyDetail}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    if (e.target.value.trim().length < 500) {
-                      setPropertyDetailError(false)
+                    setPropertyDetailError(false)
                       setPropertyDetail(e.target.value)
-                    } else {
-                      setPropertyDetailError(true)
-                    }
                   }} />
+              </div>
+            </div>
+
+            {/* Property type*/}
+            <div className="flex flex-col p-2 pb-5 pt-5 ">
+              <div className="flex flex-row gap-5 sm:gap-10 lg:gap-16">
+                <p className="text-xl font-semibold text-gray-500" >Property type</p>
+                <p className="text-lg text-gray-500">{residentialPropertyType && capitalizeFirstLetterOfAString(residentialPropertyType)}</p>
               </div>
             </div>
 
@@ -1702,12 +1680,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Add details about furnishing (optional)"
                       value={furnishingDetails}
                       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                        if (e.target.value.trim().length < 500) {
-                          setFurnishingDetails(e.target.value)
+                        setFurnishingDetails(e.target.value)
                           setFurnishingDetailsError(false)
-                        } else {
-                          setFurnishingDetailsError(true)
-                        }
                       }} />
                     {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                   </div>}
@@ -1757,12 +1731,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                       placeholder="Add details about furnishing (optional)"
                       value={kitchenFurnishingDetails}
                       onChange={e => {
-                        if (e.target.value.trim().length < 500) {
-                          setKitchenFurnishingDetails(e.target.value)
-                          setKitchenFurnishingDetailsError(false)
-                        } else {
-                          setKitchenFurnishingDetailsError(true)
-                        }
+                        setKitchenFurnishingDetails(e.target.value)
+                        setKitchenFurnishingDetailsError(false)
                       }} />
                     {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                   </div>}
@@ -1813,12 +1783,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about kitchen appliances (optional)"
                     value={kitchenAppliancesDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (e.target.value.trim().length > 500) {
-                        setKitchenAppliancesDetailsError(true)
-                      } else {
-                        setKitchenAppliancesDetails(e.target.value)
+                      setKitchenAppliancesDetails(e.target.value)
                         setKitchenAppliancesDetailsError(false)
-                      }
                     }} />
                   {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                 </div>}
@@ -2120,12 +2086,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about garden (optional)"
                     value={gardenDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (e.target.value.trim().length > 500) {
-                        setGardenDetailsError(true)
-                      } else {
-                        setGardenDetails(e.target.value)
-                        setGardenDetailsError(false)
-                      }
+                      setGardenDetails(e.target.value)
+                      setGardenDetailsError(false)
                     }} />
                   {gardenDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                 </div>}
@@ -2261,10 +2223,8 @@ const ResidentialPropertyAddForm: React.FC = () => {
                     placeholder="Add details about restrictions"
                     value={legalRestrictionDetails}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                      if (e.target.value.trim().length < 500) {
-                        setLegalRestrictionDetailsError(false)
+                      setLegalRestrictionDetailsError(false)
                         setLegalRestrictionDetails(e.target.value)
-                      }
                     }} />
                   {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                 </div>}

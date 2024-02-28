@@ -30,14 +30,13 @@ const EvaluateProperty: React.FC = () => {
         }
     }, [propertyId, propertyType, navigate])
 
-
     return (
         <Fragment>
 
-            {propertyId &&propertyType === 'residential' &&
+            {propertyId && propertyType === 'residential' &&
                 <ReviewResidentialProperty propertyId={propertyId} />}
 
-            {propertyId &&propertyType === 'commercial' &&
+            {propertyId && propertyType === 'commercial' &&
                 <ReviewCommercialProperty propertyId={propertyId} />}
 
             {propertyId && propertyType === 'agricultural' &&

@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import NavbarSelectorSlice from "./slices/navbarSelector-slice";
+import UnreadCustomerMessagesSlice from "./slices/unreadCustomerMessagesSlice";
 
 
 //The store stores all the data we want manage using react-redux
 const store = configureStore({
   reducer: {
-    navbarSelector: NavbarSelectorSlice.reducer
+    UnreadCustomerMessages: UnreadCustomerMessagesSlice.reducer
   }
 })
 

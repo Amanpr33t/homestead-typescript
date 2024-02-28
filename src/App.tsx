@@ -247,6 +247,10 @@ const App: React.FC = () => {
               <NavbarPropertyDealer />
               <ReviewProperty />
             </>}></Route>
+            <Route path='customer-notifications' element={<>
+              <NavbarPropertyDealer />
+              <CustomerNotifications />
+            </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-dealer' />}>
             </Route>
           </Route>

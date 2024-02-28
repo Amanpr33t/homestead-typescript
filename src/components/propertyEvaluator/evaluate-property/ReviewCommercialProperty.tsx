@@ -25,13 +25,13 @@ const ReviewCommercialProperty: React.FC<PropsType> = ({ propertyId }) => {
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     }, [])
-
+    console.log(propertyId)
     //The function is used to fetch the selected property
     const fetchSelectedProperty = useCallback(async () => {
         try {
             setError(false)
             setSpinner(true)
-            const responseData = await fetchPropertyData('commercial', propertyId)
+            const responseData = await fetchPropertyData( propertyId)
             if (responseData.status === 'ok') {
                 setSpinner(false)
                 setProperty(responseData.property as PropertyDataType)

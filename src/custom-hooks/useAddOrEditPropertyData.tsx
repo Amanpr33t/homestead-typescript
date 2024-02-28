@@ -54,7 +54,7 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
                 throw new Error('Property type not provided')
             }
 
-            if (requestId) {
+            if (requestId && requestId !== 'null') {
                 if (addOrEdit === 'add') {
                     url = url + `?requestId=${requestId}`
                 }
@@ -97,7 +97,7 @@ const useAddOrEditPropertyData = (addOrEdit: 'add' | 'edit', propertyType: 'agri
         } catch (error) {
             throw new Error('Some error occurred')
         }
-    }, [navigate, propertyData, propertyType, addOrEdit,requestId]);
+    }, [navigate, propertyData, propertyType, addOrEdit, requestId]);
 
     return { addOrEditPropertyData };
 };

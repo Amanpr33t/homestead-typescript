@@ -3,6 +3,8 @@ import { Fragment } from "react"
 type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
 
 interface PropertyDataType {
+    title: string,
+    details: string | null,
     commercialPropertyType: string,
     landSize: {
         totalArea: {
@@ -39,15 +41,11 @@ interface PropertyDataType {
         feet: number,
         metre: number
     },
-    priceDemanded: {
-        number: number,
-        words: string
-    },
+    price: number,
     legalRestrictions: {
         isLegalRestrictions: boolean,
         details: string | null,
     },
-    remarks: string | null,
     lockInPeriod?: {
         years: number | null,
         months: number | null
@@ -110,6 +108,22 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Property type</td>
                         <td className=" pt-4 pb-4 text-center">{propertyData.commercialPropertyType === 'industrial' ? 'Industrial/Institutional' : 'Shop/Showroom/Booth'}</td>
                     </tr>
+
+                    {/*title */}
+                    <tr className="border-2 border-gray-300">
+                        <td className=" pt-4 pb-4 text-lg font-semibold text-center">Title</td>
+                        <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                            <p>{propertyData.title}</p>
+                        </td>
+                    </tr>
+
+                    {/*details */}
+                    {propertyData.details && <tr className="border-2 border-gray-300">
+                        <td className=" pt-4 pb-4 text-lg font-semibold text-center">Details</td>
+                        <td className=" pt-4 pb-4 pr-2 pl-2 flex justify-center">
+                            <p>{propertyData.details}</p>
+                        </td>
+                    </tr>}
 
                     {/* shop type*/}
                     {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
@@ -257,9 +271,8 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                         <td className="pt-4 pb-4 text-center flex flex-col place-items-center gap-2">
                             <div className="flex flex-row place-content-center gap-1">
                                 <p className="font-semibold">Rs.</p>
-                                <p>{propertyData.priceDemanded.number}</p>
+                                <p>{propertyData.price}</p>
                             </div>
-                            <p className="mx-2 bg-gray-200 w-fit p-1">{propertyData.priceDemanded.words}</p>
                         </td>
                     </tr>
 
@@ -277,27 +290,18 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                         </td>
                     </tr>
 
-                    {/* Remarks*/}
-                    {propertyData.remarks &&
-                        <tr className="border-2 border-gray-300">
-                            <td className="pt-4 pb-4 text-lg font-semibold text-center ">Remarks</td>
-                            <td className="flex justify-center">
-                                <p className="p-1 mt-2">{propertyData.remarks}</p>
-                            </td>
-                        </tr>}
-
                     {/*Land images */}
                     <tr className="border-2 border-gray-300">
                         <td className="pt-4 pb-4 text-lg font-semibold text-center">Land images</td>
                         <td className="pt-4 pb-4 flex justify-center flex-wrap gap-2">
                             {propertyImages && propertyImages.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image.file} alt="" onClick={()=>window.open(image.file, '_blank')}/>;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image.file} alt="" onClick={() => window.open(image.file, '_blank')} />;
                             })}
                             {fetchedPropertyImagesUrl && fetchedPropertyImagesUrl.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
                             })}
                             {propertyData.propertyImagesUrl && propertyData.propertyImagesUrl.map(image => {
-                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={()=>window.open(image, '_blank')}/>;
+                                return <img key={Math.random()} className='w-40 h-auto cursor-pointer' src={image} alt="" onClick={() => window.open(image, '_blank')} />;
                             })}
                         </td>
                     </tr>
@@ -312,24 +316,24 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                                         key={Math.random()}
                                         className='w-40 h-auto cursor-pointer'
                                         src={image.file}
-                                        alt="" 
-                                        onClick={()=>window.open(image.file, '_blank')}/>
+                                        alt=""
+                                        onClick={() => window.open(image.file, '_blank')} />
                                 })}
-                                 {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
+                                {fetchedContractImagesUrl && fetchedContractImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
                                         className='w-40 h-auto cursor-pointer'
                                         src={image}
-                                        alt="" 
-                                        onClick={()=>window.open(image, '_blank')}/>
+                                        alt=""
+                                        onClick={() => window.open(image, '_blank')} />
                                 })}
                                 {propertyData.contractImagesUrl && propertyData.contractImagesUrl.map(image => {
                                     return <img
                                         key={Math.random()}
                                         className='w-40 h-auto cursor-pointer'
                                         src={image}
-                                        alt="" 
-                                        onClick={()=>window.open(image, '_blank')}/>
+                                        alt=""
+                                        onClick={() => window.open(image, '_blank')} />
                                 })}
                             </td>
                         </tr>}

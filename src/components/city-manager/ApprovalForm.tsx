@@ -214,7 +214,7 @@ const ApprovalForm: React.FC<PropsType> = (props) => {
 
             {/*a form to get details of incomplete information */}
             {showDetailsForm &&
-                <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center pt-24 pb-10`} onClick={(e) => {
+                <div className={` z-40 w-full h-screen fixed top-0  bg-transparent flex justify-center pt-24 pb-10 ${alert.isAlertModal ? 'blur' : ''}`} onClick={(e) => {
                     e.stopPropagation()
                     //setShowDetailsForm(false)
                     hideApprovalForm()

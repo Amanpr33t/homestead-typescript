@@ -3,11 +3,12 @@ import { EvaluationDataType } from "./evaluationDataType"
 export type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
 
 export interface PropertyDataType {
+
     _id?: string,
     sentBackTofieldAgentForReevaluation?: {
         details: string[]
     },
-    sentToEvaluatorByCityManagerForReevaluation?:{
+    sentToEvaluatorByCityManagerForReevaluation?: {
         details: string[]
     },
     addedByPropertyDealer?: string,
@@ -47,15 +48,13 @@ export interface PropertyDataType {
         feet: number,
         metre: number
     },
-    priceDemanded: {
-        number: number,
-        words: string
-    },
+    price: number,
     legalRestrictions: {
         isLegalRestrictions: boolean,
         details: string | null,
     },
-    remarks: string | null,
+    title: string,
+    details: string | null,
     lockInPeriod?: {
         years: number | null,
         months: number | null
@@ -68,5 +67,7 @@ export interface PropertyDataType {
     propertyImagesUrl?: string[],
     contractImagesUrl?: string[] | null,
     evaluationData?: EvaluationDataType,
-    uniqueId?: string
+    uniqueId?: string,
+    isLive?:boolean,
+    isSold?:boolean
 }

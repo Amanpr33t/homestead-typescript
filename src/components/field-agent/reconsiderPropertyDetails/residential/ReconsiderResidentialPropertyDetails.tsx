@@ -319,11 +319,11 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
             setPropertyTitle(fetchedPropertyData?.title)
             setPropertyDetail(fetchedPropertyData.details || '')
-            setIsDeclaredFixedPrice(fetchedPropertyData.price.fixed ? true : false)
-            setIsRangeOfPrice(fetchedPropertyData.price.fixed ? false : true)
-            setFixedPrice(fetchedPropertyData.price.fixed || '')
-            setRangeOfPriceFrom(fetchedPropertyData.price.range.from || '')
-            setRangeOfPriceTo(fetchedPropertyData.price.range.to || '')
+            setIsDeclaredFixedPrice(fetchedPropertyData.priceData.fixed ? true : false)
+            setIsRangeOfPrice(fetchedPropertyData.priceData.fixed ? false : true)
+            setFixedPrice(fetchedPropertyData.priceData.fixed || '')
+            setRangeOfPriceFrom(fetchedPropertyData.priceData.range.from || '')
+            setRangeOfPriceTo(fetchedPropertyData.priceData.range.to || '')
             setIsWaterSupply(fetchedPropertyData.waterSupply.available)
             setIsWaterSupplyTwentyFourHours(fetchedPropertyData.waterSupply.twentyFourHours)
             setElectricityConnection(fetchedPropertyData.electricityConnection)
@@ -444,12 +444,6 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         }
         if (!propertyTitle.trim()) {
             setPropertyTitleErrorMessage('Provide a title')
-        } else if (propertyTitle.trim().length >= 150) {
-            setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
-        }
-
-        if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
-            setPropertyDetailError(true)
         }
 
         if (!isDeclareFixedPrice && !isRangeOfPrice) {
@@ -550,24 +544,18 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (!furnishing) {
                 setFurnishingError(true)
-            } else if (furnishing && furnishingDetails.trim().length >= 500) {
-                setFurnishingDetailsError(true)
             }
         }
 
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (!kitchenFurnishing) {
                 setKitchenFurnishingError(true)
-            } else if (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500) {
-                setKitchenFurnishingDetailsError(true)
             }
         }
 
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (kitchenAppliances === null) {
                 setKitchenAppliancesError(true)
-            } else if (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500) {
-                setKitchenAppliancesDetailsError(true)
             }
         }
 
@@ -598,8 +586,6 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot') {
             if (garden === null) {
                 setGardenError(true)
-            } else if (garden && gardenDetails.trim().length >= 500) {
-                setGardenDetailsError(true)
             }
         }
 
@@ -647,9 +633,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
-        if (!propertyTitle.trim() || propertyTitle.trim().length >= 150) {
-            return errorFunction()
-        } else if (propertyDetail.trim() && propertyDetail.trim().length >= 500) {
+        if (!propertyTitle.trim()) {
             return errorFunction()
         } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
             return errorFunction()
@@ -675,11 +659,11 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && servantRoom === null) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing || (furnishing && furnishingDetails.trim().length >= 500))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!furnishing)) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing || (kitchenFurnishing && kitchenFurnishingDetails.trim().length >= 500))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!kitchenFurnishing)) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null || (kitchenAppliances && kitchenAppliancesDetails.trim().length >= 500))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (kitchenAppliances === null)) {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !washroomFitting) {
             return errorFunction()
@@ -693,7 +677,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (!windowTypeArray || (windowTypeArray && !windowTypeArray.length))) {
             return errorFunction()
-        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null || (garden && gardenDetails.trim().length >= 500))) {
+        } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && (garden === null)) {
             return errorFunction()
         } else if (residentialPropertyType && residentialPropertyType.toLowerCase() !== 'plot' && !ageOfConstruction) {
             return errorFunction()
@@ -714,7 +698,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             residentialPropertyType,
             title: propertyTitle,
             details: propertyDetail.trim() || null,
-            price: {
+            priceData: {
                 fixed: fixedPrice || null,
                 range: {
                     from: rangeOfPriceFrom || null,
@@ -1169,12 +1153,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     autoComplete="new-password"
                                     value={propertyTitle}
                                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                        if (e.target.value.trim().length < 150) {
-                                            setPropertyTitleErrorMessage('')
-                                            setPropertyTitle(e.target.value)
-                                        } else {
-                                            setPropertyTitleErrorMessage('Title should be less than 150 alphabets')
-                                        }
+                                        setPropertyTitleErrorMessage('')
+                                        setPropertyTitle(e.target.value)
                                     }} />}
                             </div>
                         </div>
@@ -1199,12 +1179,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                     autoComplete="new-password"
                                     value={propertyDetail}
                                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                        if (e.target.value.trim().length < 500) {
-                                            setPropertyDetailError(false)
-                                            setPropertyDetail(e.target.value)
-                                        } else {
-                                            setPropertyDetailError(true)
-                                        }
+                                        setPropertyDetailError(false)
+                                        setPropertyDetail(e.target.value)
                                     }} />}
                             </div>
                         </div>
@@ -2201,12 +2177,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             placeholder="Add details about furnishing (optional)"
                                             value={furnishingDetails}
                                             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                                if (e.target.value.trim().length < 500) {
-                                                    setFurnishingDetails(e.target.value)
-                                                    setFurnishingDetailsError(false)
-                                                } else {
-                                                    setFurnishingDetailsError(true)
-                                                }
+                                                setFurnishingDetails(e.target.value)
+                                                setFurnishingDetailsError(false)
                                             }} />
                                         {furnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 characters</p>}
                                     </div>}
@@ -2265,12 +2237,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                             placeholder="Add details about furnishing (optional)"
                                             value={kitchenFurnishingDetails}
                                             onChange={e => {
-                                                if (e.target.value.trim().length < 500) {
-                                                    setKitchenFurnishingDetails(e.target.value)
-                                                    setKitchenFurnishingDetailsError(false)
-                                                } else {
-                                                    setKitchenFurnishingDetailsError(true)
-                                                }
+                                                setKitchenFurnishingDetails(e.target.value)
+                                                setKitchenFurnishingDetailsError(false)
                                             }} />
                                         {kitchenFurnishingDetailsError && <p className="text-red-500">Details cannot be more than 500 alpabets</p>}
                                     </div>}
@@ -2329,12 +2297,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         placeholder="Add details about kitchen appliances (optional)"
                                         value={kitchenAppliancesDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setKitchenAppliancesDetails(e.target.value)
-                                                setKitchenAppliancesDetailsError(false)
-                                            } else {
-                                                setKitchenAppliancesDetailsError(true)
-                                            }
+                                            setKitchenAppliancesDetails(e.target.value)
+                                            setKitchenAppliancesDetailsError(false)
                                         }} />
                                     {kitchenAppliancesDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                                 </div>}
@@ -2671,12 +2635,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         placeholder="Add details about garden (optional)"
                                         value={gardenDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setGardenDetails(e.target.value)
-                                                setGardenDetailsError(false)
-                                            } else {
-                                                setGardenDetailsError(true)
-                                            }
+                                            setGardenDetails(e.target.value)
+                                            setGardenDetailsError(false)
                                         }} />
                                     {gardenDetailsError && <p className="text-red-500">Details cannot be more than 500 alphabets</p>}
                                 </div>}
@@ -2830,10 +2790,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                                         placeholder="Add details about restrictions"
                                         value={legalRestrictionDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                            if (e.target.value.trim().length < 500) {
-                                                setLegalRestrictionDetailsError(false)
-                                                setLegalRestrictionDetails(e.target.value)
-                                            }
+                                            setLegalRestrictionDetailsError(false)
+                                            setLegalRestrictionDetails(e.target.value)
                                         }} />
                                     {legalRestrictionDetailsError && <p className="text-red-500">Provide details</p>}
                                 </div>}

@@ -37,7 +37,7 @@ const ReviewAgriculturalPropertyAfterSubmission: React.FC<PropsType> = (props) =
     const requestId: string | null = queryParams.get('requestId')
 
     const { uploadImages } = useUploadImages()
-    const { addOrEditPropertyData } = useAddOrEditPropertyData('add', 'agricultural', propertyData, requestId || null)
+    const { addOrEditPropertyData } = useAddOrEditPropertyData('add', 'agricultural', propertyData, requestId)
 
     const [spinner, setSpinner] = useState<boolean>(false)
     const [alert, setAlert] = useState<AlertType>({

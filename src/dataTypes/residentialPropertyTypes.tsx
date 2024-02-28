@@ -67,7 +67,7 @@ export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHou
     residentialPropertyType: 'flat' | 'house' | 'plot',
     title: string,
     details: string | null,
-    price: {
+    priceData: {
         fixed: number | null,
         range: {
             from: number | null,
@@ -119,5 +119,7 @@ export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHou
     propertyImagesUrl?: string[],
     contractImagesUrl?: string[] | null,
     evaluationData?: EvaluationDataType,
-    uniqueId?: string
+    uniqueId?: string,
+    isLive?:boolean,
+    isSold?:boolean
 }

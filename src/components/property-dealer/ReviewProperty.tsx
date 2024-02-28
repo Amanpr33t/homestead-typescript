@@ -9,6 +9,7 @@ import AgriculturalPropertyTable from "../table/AgriculturalPropertyTable";
 import ResidentialPropertyTable from "../table/ResidentialPropertyTable";
 import CommercialPropertyTable from "../table/CommercialPropertyTable";
 import { useLocation } from 'react-router-dom';
+import ImageContainer from "../ImagesContainer";
 
 //This component is used to show customer messages to property dealer
 const ReviewProperty: React.FC = () => {
@@ -20,11 +21,11 @@ const ReviewProperty: React.FC = () => {
     const propertyType: string | null = searchParams.get('type');
 
     useEffect(() => {
-        if (!propertyId || (propertyType !== 'agricultural' && propertyType !== 'commercial' && propertyType !== 'residential')) {
+        if (!propertyId) {
             navigate('/property-dealer')
             return
         }
-    }, [propertyId, propertyType, navigate])
+    }, [propertyId, navigate])
 
     const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
 
@@ -46,7 +47,7 @@ const ReviewProperty: React.FC = () => {
         try {
             setError(false)
             setSpinner(true)
-            const responseData = await fetchPropertyData(propertyType as 'residential' | 'commercial' | 'agricultural', propertyId as string)
+            const responseData = await fetchPropertyData(propertyId as string)
             if (responseData.status === 'ok') {
                 setSpinner(false)
                 setPropertyData(responseData.property as AgriculturalPropertyType | ResidentialPropertyType | CommercialPropertyType)
@@ -57,7 +58,7 @@ const ReviewProperty: React.FC = () => {
             setSpinner(false)
             setError(true)
         }
-    }, [propertyId, propertyType, fetchPropertyData])
+    }, [propertyId, fetchPropertyData])
 
     useEffect(() => {
         fetchSelectedProperty()
@@ -67,35 +68,9 @@ const ReviewProperty: React.FC = () => {
         <Fragment>
             {spinner && !error && <Spinner />}
 
-            {error && !spinner &&
-                <div className="fixed top-36 w-full flex flex-col place-items-center md:hidden">
-                    <p>Some error occured</p>
-                    <button className="text-red-500" onClick={fetchSelectedProperty}>Try again</button>
-                </div>}
-
             {propertyData && !spinner && !error &&
                 <div>
-                    <button type='button' className="bg-green-500 hover:bg-green-600 fixed top-16 left-2 mt-2 text-white font-semibold rounded px-2 py-1" onClick={() => {
-                        navigate('/property-dealer')
-                        return
-                    }}>Back</button>
-                    <div className={`pt-20 `}>
-                        {/*heading */}
-                        <div className="w-full z-20 mb-3">
-                            <p className="text-2xl font-semibold text-center">Property details</p>
-                        </div>
-                        <div className='pl-1 pr-1 mb-10 w-full flex flex-col place-items-center' >
-                            {propertyType === 'residential' && <ResidentialPropertyTable
-                                propertyData={propertyData as ResidentialPropertyType}
-                            />}
-                            {propertyType === 'agricultural' && <AgriculturalPropertyTable
-                                propertyData={propertyData as AgriculturalPropertyType}
-                            />}
-                            {propertyType === 'commercial' && <CommercialPropertyTable
-                                propertyData={propertyData as CommercialPropertyType}
-                            />}
-                        </div>
-                    </div>
+                    {propertyData.isSold && propertyData.propertyImagesUrl && <ImageContainer isSold={propertyData.isSold} propertyImagesUrl={propertyData.propertyImagesUrl} />}
                 </div>}
 
         </Fragment>
