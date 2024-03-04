@@ -1,63 +1,6 @@
 import { Fragment } from "react"
 
-type BuiltUpType = 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | 'other'
-
-interface PropertyDataType {
-    title: string,
-    details: string | null,
-    commercialPropertyType: string,
-    landSize: {
-        totalArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        coveredArea: {
-            metreSquare: number,
-            squareFeet: number
-        },
-        details: string | null,
-    },
-    stateOfProperty: {
-        empty: boolean,
-        builtUp: boolean,
-        builtUpPropertyType: BuiltUpType | null
-    },
-    location: {
-        name: {
-            plotNumber: number | null,
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    floors: {
-        floorsWithoutBasement: number,
-        basementFloors: number
-    },
-    widthOfRoadFacing: {
-        feet: number,
-        metre: number
-    },
-    price: number,
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    lockInPeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    leasePeriod?: {
-        years: number | null,
-        months: number | null
-    },
-    shopPropertyType?: 'booth' | 'shop' | 'showroom' | 'retail-space' | 'other',
-    propertyImagesUrl?: string[],
-    contractImagesUrl?: string[] | null
-}
+import { PropertyDataType } from "../../dataTypes/commercialPropertyTypes"
 
 interface ImageType {
     file: string;
@@ -126,7 +69,7 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                     </tr>}
 
                     {/* shop type*/}
-                    {propertyData.commercialPropertyType === 'shop' && <tr className="border-2 border-gray-300">
+                    {propertyData.commercialPropertyType === 'shop' && propertyData.shopPropertyType && <tr className="border-2 border-gray-300">
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Shop type</td>
                         <td className=" pt-4 pb-4 text-center">{propertyData.shopPropertyType}</td>
                     </tr>}
@@ -138,7 +81,7 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                             <td className=" pt-4 pb-4 text-center">
                                 {propertyData.stateOfProperty.empty ?
                                     'Empty' :
-                                    `${propertyData.stateOfProperty.builtUpPropertyType === 'other' ?
+                                    `${propertyData.stateOfProperty.builtUpPropertyType && propertyData.stateOfProperty.builtUpPropertyType === 'other' ?
                                         'Built-up' :
                                         `Built-up (${propertyData.stateOfProperty.builtUpPropertyType})`}
                                         `}
@@ -156,18 +99,18 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
                         <td className="pt-4 pb-4 flex flex-col place-items-center">
                             <div className="flex flex-col place-items-center sm:flex-row sm:place-content-center gap-3 sm:gap-5 mb-4 pr-0.5 pl-0.5 text-center">
-                                <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
+                                {propertyData.area.totalArea && <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                     <p className="w-full text-center font-semibold">Total area</p>
-                                    <p>{propertyData.landSize.totalArea.metreSquare} metre square</p>
-                                    <p>{propertyData.landSize.totalArea.squareFeet} square feet</p>
-                                </div>
-                                <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
+                                    <p>{propertyData.area.totalArea.metreSquare} metre square</p>
+                                    <p>{propertyData.area.totalArea.squareFeet} square feet</p>
+                                </div>}
+                                {propertyData.area.coveredArea && <div className="flex flex-col gap-3 bg-gray-200 w-fit p-2 pt-0">
                                     <p className="w-full text-center font-semibold">Covered area</p>
-                                    <p>{propertyData.landSize.coveredArea.metreSquare} metre square</p>
-                                    <p>{propertyData.landSize.coveredArea.squareFeet} square feet</p>
-                                </div>
+                                    <p>{propertyData.area.coveredArea.metreSquare} metre square</p>
+                                    <p>{propertyData.area.coveredArea.squareFeet} square feet</p>
+                                </div>}
                             </div>
-                            {propertyData.landSize.details && <p className="bg-gray-200 mx-2 p-1 rounded w-fit">{propertyData.landSize.details}</p>}
+                            {propertyData.area.details && <p className="bg-gray-200 mx-2 p-1 rounded w-fit">{propertyData.area.details}</p>}
                         </td>
                     </tr>
 
@@ -281,7 +224,7 @@ const CommercialPropertyTable: React.FC<PropsType> = (props) => {
                         <td className="pt-4 pb-4 text-lg font-semibold text-center">Legal Restrictions</td>
                         <td className="pt-4 pb-4 flex flex-col place-items-center gap-2">
                             {!propertyData.legalRestrictions.isLegalRestrictions && <p>No</p>}
-                            {propertyData.legalRestrictions.isLegalRestrictions &&
+                            {propertyData.legalRestrictions.details &&
                                 <>
                                     <p>Yes</p>
                                     <p className="mx-2 bg-gray-200 p-1 rounded">{propertyData.legalRestrictions.details}</p>

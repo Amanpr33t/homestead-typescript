@@ -75,7 +75,7 @@ const CommercialPropertyAddForm: React.FC = () => {
     const [totalAreaMetreSquare, setTotalAreaMetreSquare] = useState<number | ''>('')
     const [coveredAreaMetreSquare, setCoveredAreaMetreSquare] = useState<number | ''>('')
     const [coveredAreaError, setCoveredAreaError] = useState<boolean>(false)
-    const [landSizeDetails, setLandSizeDetails] = useState<string>('')
+    const [areaDetails, setLandSizeDetails] = useState<string>('')
 
     const [state, setState] = useState<string>('')
     const [stateError, setStateError] = useState<boolean>(false)
@@ -259,8 +259,8 @@ const CommercialPropertyAddForm: React.FC = () => {
             title: propertyTitle,
             details: propertyDetail.trim() || null,
             addedByPropertyDealer: propertyDealerId,
-            commercialPropertyType,
-            landSize: {
+            commercialPropertyType:commercialPropertyType as 'shop'| 'industrial',
+            area: {
                 totalArea: {
                     metreSquare: totalAreaMetreSquare,
                     squareFeet: totalAreaSquareFeet
@@ -269,7 +269,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                     metreSquare: coveredAreaMetreSquare,
                     squareFeet: coveredAreaSquareFeet
                 },
-                details: landSizeDetails.trim() || null,
+                details: areaDetails.trim() || null,
             },
             stateOfProperty: {
                 empty: isEmptyProperty as boolean,
@@ -618,7 +618,7 @@ const CommercialPropertyAddForm: React.FC = () => {
                                         autoCorrect="on"
                                         autoComplete="new-password"
                                         placeholder="Add details regarding land size (optional)"
-                                        value={landSizeDetails}
+                                        value={areaDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                                             setLandSizeDetails(e.target.value)
                                         }} />

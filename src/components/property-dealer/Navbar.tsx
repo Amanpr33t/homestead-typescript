@@ -1,12 +1,20 @@
-import { Fragment, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { FaHome } from "react-icons/fa"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
-import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa"
-import { MdOutlineMessage } from "react-icons/md";
+import { MdHomeWork} from "react-icons/md";
 import { AlertType } from "../../dataTypes/alertType"
 import { useSelector } from "react-redux"
+import { RxDropdownMenu } from "react-icons/rx";
+import { BiSolidMessageRoundedDots } from "react-icons/bi"
+
+interface CustomerQueryType {
+    propertyId: string,
+    customerId: string,
+    customerName: string,
+    date: string,
+    requestSeen: boolean
+}
 
 //This component is the navigation bar
 const NavbarPropertyDealer: React.FC = () => {
@@ -18,15 +26,29 @@ const NavbarPropertyDealer: React.FC = () => {
         routeTo: null
     })
 
-    const unreadCustomerMessages = useSelector((state: { UnreadCustomerMessages: { numberOfUnreadMessages: number } }) => state.UnreadCustomerMessages.numberOfUnreadMessages)
+    const customerRequests = useSelector((state: { CustomerRequests: { customerRequests: CustomerQueryType[] } }) => state.CustomerRequests.customerRequests)
+
+    const [unSeenCustomerRequests, setUnseenCustomerRequests] = useState<number>(0)
+
+    useEffect(() => {
+        if (customerRequests.length > 0) {
+            setUnseenCustomerRequests(0)
+            customerRequests.forEach(request => {
+                if (request.requestSeen === false) {
+                    setUnseenCustomerRequests(number => number + 1)
+                }
+            })
+        }
+    }, [customerRequests])
 
     const [spinner, setSpinner] = useState<boolean>(false)
     const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
 
-    const [userDropdown, setUserDropdown] = useState<boolean>(false) //if true, a dropdown is shown 
+    const [showUserDropdown, setShowUserDropdown] = useState<boolean>(false) //if true, a dropdown is shown 
 
     //to logout user
     const logoutFunction = async () => {
+        setShowUserDropdown(false)
         setSpinner(true)
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/logout`, {
@@ -40,6 +62,7 @@ const NavbarPropertyDealer: React.FC = () => {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
+            console.log(data)
             if (data.status === 'ok' || data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-dealer-authToken")
@@ -52,7 +75,7 @@ const NavbarPropertyDealer: React.FC = () => {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
-                alertMessage: 'Some error occured',
+                alertMessage: 'Some error occured. Try again later',
                 routeTo: null
             })
         }
@@ -70,76 +93,50 @@ const NavbarPropertyDealer: React.FC = () => {
 
             {spinner && <Spinner />}
 
-            <div className={`fixed z-40 top-0 w-full ${userDropdown && 'h-full'}`} onClick={() => setUserDropdown(false)} >
-                <nav className=" flex flex-row justify-between items-center h-16 w-full border-b shadow bg-white z-50" >
-                    <div className="flex flex-row gap-2 pl-2 md:pl-12 cursor-pointer" onClick={() => navigate('/', { replace: true })}>
-                        <FaHome role="svg" className="font-semibold text-3xl sm:text-4xl md:text-5xl text-gray-600" />
-                        <p className='font-semibold text-xl sm:text-3xl md:text-4xl italic text-gray-600' >HomeStead</p>
+            <div className={`fixed z-30 top-0 w-full px-5 md:px-10 lg:px-20 flex justify-between items-center border-b shadow bg-white h-20`} onClick={(e) => {
+                e.stopPropagation()
+                setShowUserDropdown(false)
+            }}>
+
+                <div className="sm:w-10 h-full flex flex-row gap-2">
+                    <div className="relative h-20 w-fit px-2.5 cursor-pointer hover:bg-gray-100 active:bg-gray-100" onMouseEnter={() => setShowUserDropdown(true)} onMouseLeave={() => setShowUserDropdown(false)} onClick={(e) => {
+                        e.stopPropagation()
+                        setShowUserDropdown(true)
+                    }}>
+                        <RxDropdownMenu className="text-3xl sm:text-4xl text-gray-700  cursor-pointer mt-6 " />
+
+                        {showUserDropdown && <div className="absolute top-16 mt-3.5 left-0 w-48 flex flex-col bg-black text-white cursor-pointer" onMouseEnter={() => setShowUserDropdown(true)}>
+                            <p className="pl-3 py-3 font-semibold text-lg border-b border-white hover:bg-gray-800" onClick={() => {
+                                navigate('/property-dealer/dealer-details')
+                                setShowUserDropdown(false)
+                            }}>User details</p>
+                            <p className="pl-3 py-3 font-semibold text-lg hover:bg-gray-800" onClick={logoutFunction}>Logout</p>
+                        </div>}
+
                     </div>
 
-                    {/*The JSX below will be executed only if there is an auth token*/}
-                    {authToken &&
-                        <div className="flex flex-row gap-2 sm:gap-4 pr-2 md:pr-6">
-                            {/*The div below is for messsage font */}
-                            {unreadCustomerMessages > 0 && <div className="relative flex items-center justify-center  cursor-pointer lg:hidden" onClick={() => navigate('/property-dealer/customer-notifications')}>
-                                <MdOutlineMessage className="mt-3 text-3xl sm:text-4xl  text-gray-500 hover:text-blue-500 active:text-blue-500" />
-                                <p className="absolute right-0 top-4 bg-orange-400 w-5 text-center rounded-full text-white font-semibold">{unreadCustomerMessages}</p>
-                            </div>}
+                    <div className="flex sm:hidden flex-row gap-0.5 cursor-pointer mt-6" onClick={() => navigate('/', { replace: true })}>
+                        <MdHomeWork role="svg" className="text-red-600 font-semibold text-3xl " />
+                        <p className='font-bold text-xl text-gray-700'>HomeStead</p>
+                    </div>
+                </div>
 
-                            {/*The div below is for icons on navbar for screens with width greater than 'sm' */}
-                            <div className="relative hover:bg-blue-100 cursor-pointer h-20 hidden sm:flex items-center justify-center pl-5 pr-5" onMouseEnter={() => setUserDropdown(true)} onMouseLeave={() => setUserDropdown(false)}>
-                                {userDropdown ?
-                                    <FaArrowAltCircleUp className="text-3xl sm:text-4xl cursor-pointer text-blue-500" />
-                                    :
-                                    <FaArrowAltCircleDown className="text-3xl sm:text-4xl cursor-pointer text-gray-600" />
-                                }
+                <div className="hidden sm:flex flex-row gap-2 cursor-pointer" onClick={() => navigate('/', { replace: true })}>
+                    <MdHomeWork role="svg" className="text-red-600 font-semibold text-4xl " />
+                    <p className='font-bold text-2xl text-gray-700'>HomeStead</p>
+                </div>
 
-                                {/*The div below is a dropdown box*/}
-                                {userDropdown &&
-                                    <div className="fixed top-20 right-6 w-72 flex flex-col border shadow bg-white cursor-pointer z-50" >
-                                        <div className="p-5 border-b cursor-text">
-                                            <p className="font-semibold  text-lg">ABCD private limited</p>
-                                            <p>abcd@gmail.com</p>
-                                        </div>
-                                        <p className="pl-5 pr-3 pt-5 pb-2 font-semibold text-gray-700 text-lg hover:text-blue-500" onClick={() => navigate('/property-dealer/details')}>User details</p>
-                                        <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-red-400 text-lg hover:text-red-700" onClick={logoutFunction}>Logout</p>
-                                    </div>}
-                            </div>
+                <div className="w-10 hidden lg:flex"></div>
 
-                            {/*The div below is for icons on navbar for screens with width smaller than 'sm' */}
-                            <div className="relative cursor-pointer h-20 flex items-center justify-center pl-5 pr-5 sm:hidden z-50" onClick={(e) => {
-                                e.stopPropagation()
-                                setUserDropdown(true)
-                            }} >
-                                {userDropdown ?
-                                    <FaArrowAltCircleUp className="text-3xl sm:text-4xl cursor-pointer text-blue-500" />
-                                    :
-                                    <FaArrowAltCircleDown className="text-3xl sm:text-4xl cursor-pointer text-gray-600" />
-                                }
+                <div className="w-10 h-full relative lg:hidden flex justify-center items-center cursor-pointer" onClick={() => navigate('/property-dealer/customer-notifications')}>
+                    <BiSolidMessageRoundedDots className=" flex mt-2 text-3xl sm:text-4xl text-gray-700 hover:text-blue-500 active:text-blue-500" />
+                    <p className="lg:hidden block absolute -right-1 top-4 sm:top-3 bg-orange-400 w-5 text-center rounded-full text-white  font-semibold">{unSeenCustomerRequests}</p>
+                </div>
 
-                                {/*The div below is a dropdown box*/}
-                                {userDropdown &&
-                                    <div className="fixed top-20 right-2 w-72 flex flex-col border shadow bg-white cursor-pointer z-50" >
-                                        <div className="p-5 border-b cursor-text">
-                                            <p className="font-semibold  text-lg">ABCD private limited</p>
-                                            <p>abcd@gmail.com</p>
-                                        </div>
-                                        <p className="pl-5 pr-3 pt-5 pb-2 font-semibold text-gray-700 text-lg active:text-blue-500" onClick={(e) => {
-                                            e.stopPropagation()
-                                            setUserDropdown(false)
-                                            navigate('/property-dealer/details')
-                                        }}>User details</p>
-                                        <p className="pl-5 pr-3 pt-2 pb-5 font-semibold text-red-400 text-lg active:text-red-700" onClick={(e) => {
-                                            e.stopPropagation()
-                                            setUserDropdown(false)
-                                            logoutFunction()
-                                        }}>Logout</p>
-                                    </div>}
-                            </div>
-                        </div>}
-                </nav>
-                {userDropdown && <div className='min-h-screen h-full w-full z-30 blur-sm'></div>}
             </div >
+
+            {showUserDropdown && <div className="z-20 fixed top-0 h-screen bg-transparent w-full" onClick={() => setShowUserDropdown(false)}></div>}
+
         </Fragment >
     )
 }

@@ -1,29 +1,15 @@
-import { EvaluationDataType } from "./evaluationDataType"
+import { CommonDataToAllPropertyTypes } from "./dataCommonToAllProperties"
+export type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
+export type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
+export type ReservoirType = 'public' | 'private'
+export type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
 
-export interface PropertyDataType {
-    _id?: string,
-    sentBackTofieldAgentForReevaluation?: {
-        details: string[]
-    },
-    sentToEvaluatorByCityManagerForReevaluation?: {
-        details: string[]
-    },
-    addedByPropertyDealer?: string,
-    landSize: {
+export interface PropertyDataType extends CommonDataToAllPropertyTypes{
+    /*area: {
         size: number,
         unit: 'metre-square' | 'acre',
         details: string | null,
-    },
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
+    },*/
     waterSource: {
         canal: string[] | null,
         river: string[] | null,
@@ -38,8 +24,6 @@ export interface PropertyDataType {
         capacityOfPrivateReservoir: number | null,
         unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
     },
-    title: string,
-    details: string | null,
     irrigationSystem: IrrigationSystemType[] | null,
     price: number,
     crops: CropTypeArray[],
@@ -47,20 +31,7 @@ export interface PropertyDataType {
         type: RoadType,
         details: string | null,
     },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    nearbyTown: string | null,
-    propertyImagesUrl?: string[],
-    contractImagesUrl?: string[] | null,
-    evaluationData?: EvaluationDataType,
-    uniqueId?: string,
-    isLive?:boolean,
-    isSold?:boolean
+    nearbyTown: string | null
 }
 
-export type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
-export type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
-export type ReservoirType = 'public' | 'private'
-export type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
+

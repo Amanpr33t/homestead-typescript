@@ -85,7 +85,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
     const [totalAreaMetreSquare, setTotalAreaMetreSquare] = useState<number | ''>('')
     const [coveredAreaMetreSquare, setCoveredAreaMetreSquare] = useState<number | ''>('')
     const [coveredAreaError, setCoveredAreaError] = useState<boolean>(false)
-    const [landSizeDetails, setLandSizeDetails] = useState<string>('')
+    const [areaDetails, setLandSizeDetails] = useState<string>('')
 
     const [state, setState] = useState<string>('')
     const [stateError, setStateError] = useState<boolean>(false)
@@ -143,11 +143,13 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
         if (fetchedPropertyData) {
             setPropertyTitle(fetchedPropertyData?.title)
             setPropertyDetail(fetchedPropertyData.details || '')
-            setTotalAreaSquareFeet(fetchedPropertyData.landSize.totalArea.squareFeet)
-            setCoveredAreaSquareFeet(fetchedPropertyData.landSize.coveredArea.squareFeet)
-            setTotalAreaMetreSquare(fetchedPropertyData.landSize.totalArea.metreSquare)
-            setCoveredAreaMetreSquare(fetchedPropertyData.landSize.coveredArea.metreSquare)
-            setLandSizeDetails(fetchedPropertyData.landSize.details || '')
+            if (fetchedPropertyData.area && fetchedPropertyData.area.totalArea && fetchedPropertyData.area.coveredArea) {
+                setTotalAreaSquareFeet(fetchedPropertyData.area.totalArea.squareFeet as number)
+                setCoveredAreaSquareFeet(fetchedPropertyData.area.coveredArea.squareFeet as number)
+                setTotalAreaMetreSquare(fetchedPropertyData.area.totalArea.metreSquare as number)
+                setCoveredAreaMetreSquare(fetchedPropertyData.area.coveredArea.metreSquare as number)
+                setLandSizeDetails(fetchedPropertyData.area.details || '')
+            }
             setWidthOfRoadFacingFeet(fetchedPropertyData.widthOfRoadFacing.feet)
             setWidthOfRoadFacingMetre(fetchedPropertyData.widthOfRoadFacing.metre)
             setState(fetchedPropertyData.location.name.state)
@@ -345,8 +347,8 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
         const finalPropertyData = {
             title: propertyTitle,
             details: propertyDetail.trim() || null,
-            commercialPropertyType,
-            landSize: {
+            commercialPropertyType:commercialPropertyType as 'shop'| 'industrial',
+            area: {
                 totalArea: {
                     metreSquare: totalAreaMetreSquare,
                     squareFeet: totalAreaSquareFeet
@@ -355,7 +357,7 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                     metreSquare: coveredAreaMetreSquare,
                     squareFeet: coveredAreaSquareFeet
                 },
-                details: landSizeDetails.trim() || null,
+                details: areaDetails.trim() || null,
             },
             stateOfProperty: {
                 empty: isEmptyProperty as boolean,
@@ -755,11 +757,11 @@ const ReconsiderCommercialPropertyDetails: React.FC = () => {
                                         autoComplete="new-password"
                                         disabled={!editForm}
                                         placeholder="Add details regarding land size (optional)"
-                                        value={landSizeDetails}
+                                        value={areaDetails}
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                                             setLandSizeDetails(e.target.value)
                                         }} />}
-                                    {!editForm && <p className="mx-1 bg-gray-300 p-1 rounded w-fit">{landSizeDetails}</p>}
+                                    {!editForm && <p className="mx-1 bg-gray-300 p-1 rounded w-fit">{areaDetails}</p>}
                                 </div>
                             </div>
                         </div>

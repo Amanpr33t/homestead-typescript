@@ -336,10 +336,12 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             setDistanceFromSchool(fetchedPropertyData.distance.distanceFromSchool)
             setDistanceFromHospital(fetchedPropertyData.distance.distanceFromHospital)
             setAreaType(fetchedPropertyData.areaType)
-            setTotalAreaMetreSquare(fetchedPropertyData.area.totalArea.metreSquare)
-            setTotalAreaGajj(fetchedPropertyData.area.totalArea.gajj)
-            setCoveredAreaMetreSquare(fetchedPropertyData.area.coveredArea.metreSquare)
-            setCoveredAreaGajj(fetchedPropertyData.area.coveredArea.gajj)
+            if (fetchedPropertyData.area && fetchedPropertyData.area.totalArea && fetchedPropertyData.area.coveredArea) {
+                setTotalAreaMetreSquare(fetchedPropertyData.area.totalArea.metreSquare as number)
+                setTotalAreaGajj(fetchedPropertyData.area.totalArea.gajj as number)
+                setCoveredAreaMetreSquare(fetchedPropertyData.area.coveredArea.metreSquare as number)
+                setCoveredAreaGajj(fetchedPropertyData.area.coveredArea.gajj as number)
+            }
             setNumberOfOwners(fetchedPropertyData.numberOfOwners)
             setIsLegalRestrictions(fetchedPropertyData.legalRestrictions.isLegalRestrictions)
             setLegalRestrictionDetails(fetchedPropertyData.legalRestrictions.details || '')

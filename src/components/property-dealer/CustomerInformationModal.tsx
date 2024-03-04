@@ -1,70 +1,126 @@
 
-import React, { Fragment } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { Fragment, useState } from "react"
+import { PropertyDataType as AgriculturalPropertyType } from "../../dataTypes/agriculturalPropertyTypes";
+import { PropertyDataType as ResidentialPropertyType } from "../../dataTypes/residentialPropertyTypes";
+import { PropertyDataType as CommercialPropertyType } from "../../dataTypes/commercialPropertyTypes";
+import AgriculturalPropertyReview from "./reviewProperty/Agricultural";
+import CommercialPropertyReview from "./reviewProperty/Commercial";
+import ResidentialPropertyReview from "./reviewProperty/Residential";
+import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions";
+import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
+import { IoClose } from "react-icons/io5";
+import { IoMdArrowRoundDown } from "react-icons/io";
 
-interface CustomerQueryType {
-    propertyType: 'agricultural' | 'commercial' | 'residential',
-    propertyId: string,
-    customerId: string,
-    customerName: string,
-    customerEmail: string,
-    customerContactNumber: string,
-    requestDate: string,
-    requestSeen: boolean
-}
 interface PropsType {
-    selectedCustomerSetter: () => void,
-    selectedCustomer:CustomerQueryType
+    selectedCustomerInformation: {
+        name: string;
+        email: string;
+        contactNumber: number;
+    },
+    property: AgriculturalPropertyType | CommercialPropertyType | ResidentialPropertyType,
+    propertyReset: () => void,
+    selectedCustomerReset: () => void
 }
 
 //This component is used to show customer messages to property dealer
 const CustomerInformationModal: React.FC<PropsType> = ({
-    selectedCustomerSetter,
-   selectedCustomer
+    selectedCustomerInformation,
+    property,
+    propertyReset,
+    selectedCustomerReset
 }) => {
-    const navigate = useNavigate()
+    const [indexOfImageToBeShown, setIndexOfImageToBeShown] = useState<number>(0)
+
+    const [showPropertyDetails, setShowPropertyDetails] = useState<boolean>(false)
 
     return (
         <Fragment>
-            {/*A modal that shows customer information */}
-            <div className="fixed z-50 top-20 pt-8 bg-transparent h-screen w-full  flex justify-center " onClick={() => {
-                selectedCustomerSetter()
+            <div className="z-50 px-2 sm:px-0 fixed left-0 top-0 h-screen w-screen flex justify-center pt-24 pb-5 bg-black bg-opacity-75 backdrop-blur-sm z-20" onClick={() => {
+                propertyReset()
+                selectedCustomerReset()
             }}>
-                <div className="relative w-11/12 sm:w-96 h-fit rounded shadow bg-white" onClick={e => e.stopPropagation()}>
-                    <button type="button" className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={() => {
-                        selectedCustomerSetter()
-                    }}>
-                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                        <span className="sr-only">Close modal</span>
-                    </button>
-                    <p className="text-center text-xl font-semibold mt-2 pb-2 border-b">Customer Information</p>
-                    <div className="p-3 sm:p-6 sm:pt-2 text-center">
-                        <div className="flex flex-col gap-2 pb-2 mb-2 border-b">
-                            <div className="flex flex-row gap-3 text-lg ">
-                                <p className="font-semibold text-gray-600">Name:</p>
-                                <p>{selectedCustomer.customerName}</p>
-                            </div>
-                            <div className="flex flex-row gap-3 text-lg ">
-                                <p className="font-semibold mr-1 text-gray-600">Email:</p>
-                                <p>{selectedCustomer.customerEmail}</p>
-                            </div>
-                            <div className="flex flex-row gap-3 text-lg">
-                                <p className="font-semibold  text-gray-600">Contact No.:</p>
-                                <p>{selectedCustomer.customerContactNumber}</p>
+                <div className="relative w-full sm:w-11/12 md:w-10/12 lg:w-9/12 h-fit max-h-full overflow-y-auto bg-white " onClick={e => e.stopPropagation()}>
+                    <IoClose className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 cursor-pointer" onClick={() => {
+                        propertyReset()
+                        selectedCustomerReset()
+                    }} />
+
+                    <div className={`py-7 mx-2 sm:mx-10 ${showPropertyDetails && 'border-b shadow-b border-gray-300'} `}>
+                        <p className="text-xl font-semibold text-gray-800 mb-5">Customer information</p>
+                        <table className="w-full ">
+                            <thead>
+                                <tr>
+                                    <th className="bg-red-500 w-24"></th>
+                                    <th ></th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <tr className="border-b shadow-b border-gray-200">
+                                    <td className="py-3 text-gray-800">Name</td>
+                                    <td className="py-3 text-gray-600">{capitaliseFirstAlphabetsOfAllWordsOfASentence(selectedCustomerInformation.name)}</td>
+                                </tr>
+                                <tr className="border-b shadow-b border-gray-200">
+                                    <td className="py-3 text-gray-800">Phone</td>
+                                    <td className="py-3 text-gray-600 ">{selectedCustomerInformation.contactNumber}</td>
+                                </tr>
+                                <tr className="">
+                                    <td className="py-3 text-gray-800">Email</td>
+                                    <td className="py-3 text-gray-600 ">{selectedCustomerInformation.email}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {!showPropertyDetails && <div className="flex justify-center mb-7">
+                        <button className="flex flex-row gap-2 border border-gray-400 hover:border-gray-500 rounded-lg py-2 px-5 bg-black hover:bg-gray-900 text-white " onClick={() => setShowPropertyDetails(true)}>
+                            Property details<IoMdArrowRoundDown className="text-2xl" />
+                        </button>
+                    </div>}
+
+                    {showPropertyDetails && <>
+                        <div className="mx-2 sm:mx-10 py-8 border-b shadow-b border-gray-300 flex flex-col sm:flex-row gap-4 sm:gap-10 ">
+                            <p className="text-xl font-semibold text-gray-800 -mt-2">Property images</p>
+                            <div className="flex justify-center">
+                                <div className={`relative w-fit `}>
+                                    <img
+                                        src={property.propertyImagesUrl ? property.propertyImagesUrl[indexOfImageToBeShown] : ''}
+                                        alt=''
+                                        className={`w-72 md:w-96 h-44 md:h-60 rounded-xl`}
+                                    />
+
+                                    {property.propertyImagesUrl && property.propertyImagesUrl.length > 1 && <button
+                                        className={`text-center absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold `}
+                                        disabled={indexOfImageToBeShown === 0}
+                                        onClick={() => {
+                                            setIndexOfImageToBeShown(index => index - 1)
+                                        }}
+                                    >
+                                        <MdArrowBackIosNew />
+                                    </button>}
+                                    {property.propertyImagesUrl && property.propertyImagesUrl.length > 1 && <button
+                                        className={`text-center absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold`}
+                                        disabled={indexOfImageToBeShown === property.propertyImagesUrl.length - 1}
+                                        onClick={() => {
+                                            setIndexOfImageToBeShown(index => index + 1)
+                                        }}
+                                    >
+                                        <MdArrowForwardIos />
+                                    </button>}
+                                </div>
                             </div>
                         </div>
-                        <p>
-                            <span className="text-red-500 cursor-pointer" onClick={() => {
-                                navigate(`/property-dealer/review-property?type=${selectedCustomer.propertyType}&id=${selectedCustomer.propertyId}`)
-                                return
-                            }}>Click here</span> to see the property in which the customer is interested.
-                        </p>
-                        <button data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded border border-gray-200 text-sm font-medium px-5 py-2.5 mt-3 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" onClick={() => {
-                            selectedCustomerSetter()
-                        }}>Ok</button>
-                    </div>
+                        <div className="mx-2 sm:mx-10 ">
+                            {property.propertyType === 'agricultural' &&
+                                <AgriculturalPropertyReview property={property as AgriculturalPropertyType} />
+                            }
+                            {property.propertyType === 'commercial' &&
+                                <CommercialPropertyReview property={property as CommercialPropertyType} />
+                            }
+                            {property.propertyType === 'residential' &&
+                                <ResidentialPropertyReview property={property as ResidentialPropertyType} />
+                            }
+                        </div>
+                    </>}
                 </div>
             </div>
 

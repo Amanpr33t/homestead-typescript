@@ -61,19 +61,20 @@ const PropertyCard: React.FC<PropsType> = ({ property, liveOrSold }) => {
                 navigate(`/property-dealer/review-property?type=${propertyType}&id=${_id}`)
             }}>
 
-                <div className="relative w-full sm:w-64">
+                <div className="relative w-full sm:w-fit">
                     <img
                         src={propertyImagesUrl[indexOfImageToBeShown]}
                         alt=''
-                        className="w-full sm:w-96 h-auto max-h-72 sm:h-44 rounded-tl-xl rounded-bl-none sm:rounded-bl-xl rounded-tr-xl sm:rounded-tr-none"
+                        className="w-full sm:w-96 h-auto max-h-72 sm:h-44 sm:max-h-none rounded-tl-xl rounded-bl-none sm:rounded-bl-xl rounded-tr-xl sm:rounded-tr-none"
                     />
 
-                    {liveOrSold === 'sold' && <p className="absolute bottom-2 left-2 px-1 py-0.5 bg-white rounded-lg font-semibold text-gray-800 text-sm flex flex-row"><GoDotFill className="mt-1 text-yellow-500" />Closed</p>}
+                    <p className="absolute bottom-2 left-2 px-1 py-0.5 bg-white rounded-lg font-semibold text-gray-800 text-sm flex flex-row"><GoDotFill className={`mt-1 ${liveOrSold === 'sold' ? 'text-yellow-500' : 'text-red-500'}`} />{liveOrSold === 'sold' ? 'Closed' : 'Live'}</p>
 
                     {propertyImagesUrl.length > 1 && <button
                         className="text-center absolute top-1/2 left-1 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold"
                         disabled={indexOfImageToBeShown === 0}
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation()
                             setIndexOfImageToBeShown(index => index - 1)
                         }}
                     >
@@ -82,7 +83,8 @@ const PropertyCard: React.FC<PropsType> = ({ property, liveOrSold }) => {
                     {propertyImagesUrl.length > 1 && <button
                         className="text-center absolute top-1/2 right-1 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold"
                         disabled={indexOfImageToBeShown === propertyImagesUrl.length - 1}
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation()
                             setIndexOfImageToBeShown(index => index + 1)
                         }}
                     >

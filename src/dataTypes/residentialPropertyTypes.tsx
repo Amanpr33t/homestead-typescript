@@ -1,3 +1,4 @@
+import { CommonDataToAllPropertyTypes } from "./dataCommonToAllProperties"
 import { EvaluationDataType } from "./evaluationDataType"
 
 export type FlooringType = 'cemented' | 'marble' | 'luxurious marble' | 'standard tiles' | 'premium tiles' | 'luxurious tiles'
@@ -54,19 +55,9 @@ export interface DataCommonToHouseAndFlatType {
     conditionOfProperty?: ConditionOfPropertyType
 }
 
-export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHouseAndFlatType {
+export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHouseAndFlatType, CommonDataToAllPropertyTypes {
     //data common to flat, house and plot property type
-    _id?: string,
-    sentBackTofieldAgentForReevaluation?: {
-        details: string[]
-    },
-    sentToEvaluatorByCityManagerForReevaluation?: {
-        details: string[]
-    },
-    addedByPropertyDealer?: string,
     residentialPropertyType: 'flat' | 'house' | 'plot',
-    title: string,
-    details: string | null,
     priceData: {
         fixed: number | null,
         range: {
@@ -90,7 +81,7 @@ export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHou
         distanceFromHospital: number
     },
     areaType: 'rural' | 'urban' | 'sub-urban',
-    area: {
+    /*area: {
         totalArea: {
             metreSquare: number,
             gajj: number
@@ -99,27 +90,7 @@ export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHou
             metreSquare: number,
             gajj: number
         }
-    },
-    numberOfOwners: number,
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
+    },*/
     propertyTaxes: number | null,
-    homeOwnersAssociationFees: number | null,
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    propertyImagesUrl?: string[],
-    contractImagesUrl?: string[] | null,
-    evaluationData?: EvaluationDataType,
-    uniqueId?: string,
-    isLive?:boolean,
-    isSold?:boolean
+    homeOwnersAssociationFees: number | null
 }

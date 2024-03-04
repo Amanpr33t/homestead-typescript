@@ -32,10 +32,8 @@ import ReevaluateProperty from './components/propertyEvaluator/reevaluate-proper
 import PropertyDealerSignIn from './components/property-dealer/SignIn';
 import NavbarPropertyDealer from './components/property-dealer/Navbar';
 import PropertyDealerHomePage from './components/property-dealer/HomePage';
-import PropertyDealerSignUp from './components/property-dealer/SignUp';
-import PropertyDealerDetails from './components/property-dealer/PropertyDealerDetails';
 import CustomerNotifications from './components/property-dealer/CustomerNotifications';
-import ReviewProperty from './components/property-dealer/ReviewProperty';
+import ReviewProperty from './components/property-dealer/reviewProperty/ReviewProperty';
 
 //components imported for city manager
 import NavbarCityManager from './components/city-manager/Navbar';
@@ -44,6 +42,7 @@ import CityManagerHomePage from './components/city-manager/HomePage';
 import PropertiesPendingForApproval from './components/city-manager/PropertiesPendingForApproval';
 import ApproveProperty from './components/city-manager/ApproveProperty';
 import ListOfRequestsToAddProperty from './components/field-agent/requestsToAddNewProperty/ListOfRequestsToAddNewProperty';
+import DealerDetails from './components/property-dealer/DealerDetails';
 
 const App: React.FC = () => {
 
@@ -235,14 +234,6 @@ const App: React.FC = () => {
               <NavbarPropertyDealer />
               <PropertyDealerSignIn />
             </>}></Route>
-            <Route path='signUp' element={<>
-              <NavbarPropertyDealer />
-              <PropertyDealerSignUp />
-            </>}></Route>
-            <Route path='details' element={<>
-              <NavbarPropertyDealer />
-              <PropertyDealerDetails />
-            </>}></Route>
             <Route path='review-property' element={<>
               <NavbarPropertyDealer />
               <ReviewProperty />
@@ -250,6 +241,10 @@ const App: React.FC = () => {
             <Route path='customer-notifications' element={<>
               <NavbarPropertyDealer />
               <CustomerNotifications />
+            </>}></Route>
+            <Route path='dealer-details' element={<>
+              <NavbarPropertyDealer />
+              <DealerDetails />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-dealer' />}>
             </Route>

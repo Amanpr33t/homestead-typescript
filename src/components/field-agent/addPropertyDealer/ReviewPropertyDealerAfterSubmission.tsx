@@ -5,7 +5,6 @@ import useUploadImages from "../../../custom-hooks/useImageUpload";
 import { AlertType } from "../../../dataTypes/alertType";
 
 interface AddressType {
-    addressId: number,
     flatPlotHouseNumber: string,
     areaSectorVillage: string,
     landmark: string | null,
@@ -19,7 +18,7 @@ interface PropsType {
     firmName: string,
     propertyDealerName: string,
     experience: number,
-    addressArray: AddressType[],
+    address: AddressType,
     gstNumber: string,
     reraNumber: string,
     about: string | null,
@@ -36,7 +35,7 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
         firmName,
         propertyDealerName,
         experience,
-        addressArray,
+        address,
         gstNumber,
         reraNumber,
         about,
@@ -98,7 +97,7 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
                     firmName,
                     propertyDealerName,
                     experience,
-                    addressArray,
+                    address,
                     gstNumber,
                     reraNumber,
                     about: about?.trim() || null,
@@ -220,12 +219,10 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
                         <tr className="border-2 border-gray-200">
                             <td className="pl-5 pt-2 pb-2 text-lg font-semibold">Address</td>
                             <td className="flex flex-row place-content-center gap-2 flex-wrap pt-2 pb-2 text-center">
-                                {addressArray.map(address => {
-                                    return <div key={address.addressId} className="bg-gray-200 border-gray-200 rounded w-60 p-1">
-                                        <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
-                                        <p>Pincode: {address.postalCode}</p>
-                                    </div>
-                                })}
+                                <div className="bg-gray-200 border-gray-200 rounded w-60 p-1">
+                                    <p className="">{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
+                                    <p>Pincode: {address.postalCode}</p>
+                                </div>
                             </td>
                         </tr>
 

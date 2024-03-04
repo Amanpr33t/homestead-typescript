@@ -8,17 +8,6 @@ import { generateNumberArray } from '../../../utils/arrayFunctions'
 import { capitalizeFirstLetterOfAString } from '../../../utils/stringUtilityFunctions'
 import { AlertType } from '../../../dataTypes/alertType'
 
-interface AddressType {
-    addressId: number,
-    flatPlotHouseNumber: string,
-    areaSectorVillage: string,
-    landmark: string | null,
-    postalCode: number,
-    city: string,
-    state: string,
-    district: string
-}
-
 //This component is a form used by a field agent to add a property dealer
 const PropertyDealerAddForm: React.FC = () => {
     const navigate = useNavigate()
@@ -60,11 +49,7 @@ const PropertyDealerAddForm: React.FC = () => {
     const [stateError, setStateError] = useState<boolean>(false) //Used to set error when no state is provided
     const states: string[] = ['chandigarh', 'punjab']
 
-    const [addressArray, setAddressArray] = useState<AddressType[]>([]) //stores all the addresses added. Addresses are stored in an array
-    const [addressError, setAddressError] = useState<boolean>(false) //Used to show error when no address is provided, i.e. addressArray is empty
-
     const [about, setAbout] = useState<string>('') //Used to set about
-    const [aboutMoreThanFourHundredCharacters, setAboutMoreThanFourHundredCharacters] = useState<boolean>(false) //used to show an error when about is more than 400 characters
 
     const [email, setEmail] = useState<string>('') //Used to set email
     const [emailError, setEmailError] = useState<boolean>(false) //used to show an error when email is not provided ot the format of email is not correct
@@ -88,6 +73,7 @@ const PropertyDealerAddForm: React.FC = () => {
 
     const [firmLogoImageUpload, setFirmLogoImageUpload] = useState<File | null>(null) //used to store the entire image object to be set to the database
     const [firmLogoImageFile, setFirmLogoImageFile] = useState<string | null>(null) //Used to store image file string
+    const [firmLogoError, setFirmLogoError] = useState<boolean>(false)
 
     const [showReviewForm, setShowReviewForm] = useState<boolean>(false) //used to show a review form when the user saves the data
 
@@ -105,6 +91,7 @@ const PropertyDealerAddForm: React.FC = () => {
 
     //This fuction is used to manage the image selected by the user
     const imageChangeHandler = (event: ChangeEvent<HTMLInputElement>): void => {
+        setFirmLogoError(false)
         // Assuming the input accepts only a single file
         const selectedFile = event.target.files?.[0];
 
@@ -113,60 +100,6 @@ const PropertyDealerAddForm: React.FC = () => {
             setFirmLogoImageFile(URL.createObjectURL(selectedFile));
             setFirmLogoImageUpload(selectedFile);
         }
-    }
-
-    //This fuction is used to store the address
-    const addAddress = () => {
-        if (!flatPlotHouseNumber || !areaSectorVillage.trim() || postalCode.toString().length !== 6 || !city.trim() || !state.trim() || !district.trim()) {
-            if (!flatPlotHouseNumber) {
-                setFlatPlotHouseNumberError(true)
-            }
-            if (!areaSectorVillage.trim()) {
-                setAreaSectorVillageError(true)
-            }
-            if (postalCode.toString().length !== 6) {
-                setPostalCodeError(true)
-            }
-            if (!city.trim()) {
-                setCityError(true)
-            }
-            if (!state.trim()) {
-                setStateError(true)
-            }
-            if (!district.trim()) {
-                setDistrictError(true)
-            }
-            setAlert({
-                isAlertModal: true,
-                alertType: 'warning',
-                alertMessage: 'Provide all fields for address',
-                routeTo: null
-            })
-            return
-        }
-
-        const newAddress = {
-            addressId: addressArray.length + 1,
-            flatPlotHouseNumber,
-            areaSectorVillage,
-            landmark: landmark.trim() || null,
-            postalCode: +postalCode,
-            city,
-            state,
-            district
-        }
-
-        setAddressArray(addressArray => [
-            ...addressArray,
-            newAddress
-        ])
-        setFlatPlotHouseNumber('')
-        setAreaSectorVillage('')
-        setLandmark('')
-        setPostalCode('')
-        setCity('')
-        setState('')
-        setDistrict('')
     }
 
     //This function is used to check if the email provided by the user is already present in the database
@@ -261,20 +194,34 @@ const PropertyDealerAddForm: React.FC = () => {
     const formSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         console.log('here')
         e.preventDefault()
-        if (!firmName.trim() || !propertyDealerName.trim() || !addressArray.length || !gstNumber.trim() || !reraNumber.trim() || !contactNumber || !email.trim() || !validator.isEmail(email.trim())) {
+        if (!firmLogoImageFile || !firmLogoImageUpload || !flatPlotHouseNumber || !areaSectorVillage.trim() || postalCode.toString().length !== 6 || !city.trim() || !state.trim() || !district.trim() || !firmName.trim() || !propertyDealerName.trim() || !gstNumber.trim() || !reraNumber.trim() || !contactNumber || !email.trim() || !validator.isEmail(email.trim())) {
+            if (!firmLogoImageFile || !firmLogoImageUpload) {
+                setFirmLogoError(true)
+            }
+            if (!flatPlotHouseNumber) {
+                setFlatPlotHouseNumberError(true)
+            }
+            if (!areaSectorVillage.trim()) {
+                setAreaSectorVillageError(true)
+            }
+            if (postalCode.toString().length !== 6) {
+                setPostalCodeError(true)
+            }
+            if (!city.trim()) {
+                setCityError(true)
+            }
+            if (!state.trim()) {
+                setStateError(true)
+            }
+            if (!district.trim()) {
+                setDistrictError(true)
+            }
+
             if (!firmName.trim()) {
                 setFirmNameError(true)
             }
             if (!propertyDealerName.trim()) {
                 setPropertyDealerNameError(true)
-            }
-            if (!addressArray.length) {
-                setAddressError(true)
-                setFlatPlotHouseNumberError(false)
-                setAreaSectorVillageError(false)
-                setPostalCodeError(false)
-                setCityError(false)
-                setStateError(false)
             }
             if (!gstNumber.trim()) {
                 setGstNumberError(true)
@@ -304,7 +251,8 @@ const PropertyDealerAddForm: React.FC = () => {
             })
             return
         }
-        if (emailError || contactNumberError || gstNumberError || reraNumberError) {
+
+        if (emailError || contactNumberError || gstNumberError || reraNumberError || firmLogoError) {
             setAlert({
                 isAlertModal: true,
                 alertType: 'warning',
@@ -346,7 +294,15 @@ const PropertyDealerAddForm: React.FC = () => {
                     firmName={firmName.trim()}
                     propertyDealerName={propertyDealerName.trim()}
                     experience={experience}
-                    addressArray={addressArray}
+                    address={{
+                        flatPlotHouseNumber,
+                        areaSectorVillage,
+                        landmark,
+                        postalCode: postalCode as number,
+                        city,
+                        state,
+                        district
+                    }}
                     gstNumber={gstNumber.trim()}
                     reraNumber={reraNumber.trim()}
                     about={about.trim()}
@@ -440,8 +396,6 @@ const PropertyDealerAddForm: React.FC = () => {
                     {/*address */}
                     <div className="flex flex-col mt-3 mb-1.5">
                         <p className="text-lg font-semibold">Office Address:</p>
-                        {addressError && !addressArray.length &&
-                            <p className="text-red-500 -mt-1">Provide atleast one address</p>}
 
                         <div className="flex flex-col pl-6 pr-6 gap-2">
                             {/*Flat number */}
@@ -454,14 +408,12 @@ const PropertyDealerAddForm: React.FC = () => {
                                     type="text"
                                     id="number"
                                     name="number"
-                                    disabled={addressArray.length === 10}
                                     className={`border-2 ${flatPlotHouseNumberError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
                                     value={flatPlotHouseNumber}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                         setFlatPlotHouseNumber(e.target.value)
                                         setFlatPlotHouseNumberError(false)
-                                        setAddressError(false)
                                     }} />
                                 {flatPlotHouseNumberError && <p className="text-red-500">Provide a house or plot number</p>}
                             </div>
@@ -475,7 +427,6 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="area"
-                                    disabled={addressArray.length === 10}
                                     name="area"
                                     className={`border-2 ${areaSectorVillageError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
@@ -483,7 +434,6 @@ const PropertyDealerAddForm: React.FC = () => {
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                         setAreaSectorVillage(e.target.value)
                                         setAreaSectorVillageError(false)
-                                        setAddressError(false)
                                     }} />
                                 {areaSectorVillageError && <p className="text-red-500">Provide an area</p>}
                             </div>
@@ -495,14 +445,12 @@ const PropertyDealerAddForm: React.FC = () => {
                                     type="text"
                                     id="landmark"
                                     name="landmark"
-                                    disabled={addressArray.length === 10}
                                     className='border-2 border-gray-400 p-1 rounded'
                                     autoComplete="new-password"
                                     placeholder="E.g. near apollo hospital"
                                     value={landmark}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                         setLandmark(e.target.value)
-                                        setAddressError(false)
                                     }} />
                             </div>
 
@@ -515,7 +463,6 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <input
                                     type="number"
                                     id="pincode"
-                                    disabled={addressArray.length === 10}
                                     name="pincode"
                                     className={`border-2 ${postalCodeError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
@@ -528,7 +475,6 @@ const PropertyDealerAddForm: React.FC = () => {
                                         if (!isNaN(parsedValue)) {
                                             setPostalCode(parsedValue)
                                             setPostalCodeError(false)
-                                            setAddressError(false)
                                         } else {
                                             setPostalCode('')
                                         }
@@ -546,14 +492,12 @@ const PropertyDealerAddForm: React.FC = () => {
                                     type="text"
                                     id="town"
                                     name="town"
-                                    disabled={addressArray.length === 10}
                                     className={`border-2 ${cityError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     autoComplete="new-password"
                                     value={city}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                         setCity(e.target.value)
                                         setCityError(false)
-                                        setAddressError(false)
                                     }} />
                                 {cityError && <p className="text-red-500">Provide a town</p>}
                             </div>
@@ -567,13 +511,11 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <select
                                     className={`border-2 ${stateError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     name="state"
-                                    disabled={addressArray.length === 10}
                                     id="state"
                                     value={state}
                                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                         setState(e.target.value)
                                         setStateError(false)
-                                        setAddressError(false)
                                         setDistrict('')
                                         setDistrictError(false)
                                     }}>
@@ -596,13 +538,11 @@ const PropertyDealerAddForm: React.FC = () => {
                                 <select
                                     className={`border-2 ${districtError ? 'border-red-400' : 'border-gray-400'} p-1 rounded`}
                                     name="district-chandigarh"
-                                    disabled={addressArray.length === 10}
                                     id="district-chandigarh"
                                     value={district}
                                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                         setDistrict(e.target.value)
                                         setDistrictError(false)
-                                        setAddressError(false)
                                     }}>
                                     <option className="font-semibold" value="" disabled>Select a district</option>
                                     {state.toLowerCase() === 'chandigarh' && <option value="chandigarh">Chandigarh</option>}
@@ -614,38 +554,6 @@ const PropertyDealerAddForm: React.FC = () => {
                                         })}
                                 </select>
                                 {districtError && <p className="text-red-500">Select a district</p>}
-                            </div>
-
-                            <div className="w-full flex justify-center">
-                                {/*button to add addressess */}
-                                <button
-                                    type="button"
-                                    className="bg-green-400 hover:bg-green-500  text-white font-medium rounded pl-2 pr-2 h-8"
-                                    disabled={addressArray.length === 10}
-                                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                                        e.stopPropagation()
-                                        addAddress()
-                                    }}>
-                                    Add Address
-                                </button>
-                            </div>
-
-                            <div className="w-full text-center flex flex-row flex-wrap place-content-center gap-2 mt-2">
-                                {/*shows all added addresses */}
-                                {addressArray.length > 0 && addressArray.map(address => {
-                                    return <div key={address.addressId} className="bg-gray-200 border-gray-400 rounded w-60 p-1">
-                                        <p >{address.flatPlotHouseNumber}, {address.areaSectorVillage}, near {address.landmark}, {address.city}, {address.state}</p>
-                                        <p>Pincode: {address.postalCode}</p>
-                                        <button
-                                            className="bg-red-400 hover:bg-red-500 text-white font-medium rounded pl-2 pr-2 mb-2 mt-2"
-                                            onClick={() => {
-                                                const updatedAddressArray = addressArray.filter(item => item.addressId !== address.addressId)
-                                                setAddressArray(updatedAddressArray)
-                                            }}>
-                                            Remove
-                                        </button>
-                                    </div>
-                                })}
                             </div>
                         </div>
                     </div>
@@ -741,9 +649,9 @@ const PropertyDealerAddForm: React.FC = () => {
 
                     {/*about*/}
                     <div className="flex flex-col mb-1.5 ">
-                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About (not more than 500 characters)</label>
+                        <label className="text-lg font-semibold mb-0.5" htmlFor="about">About</label>
                         <textarea
-                            className={`border-2 ${aboutMoreThanFourHundredCharacters ? 'border-red-400' : 'border-gray-400'} p-1 rounded  w-full  resize-none`}
+                            className={`border-2 border-gray-400 p-1 rounded  w-full  resize-none`}
                             rows={3}
                             autoCorrect="on"
                             autoComplete="new-password"
@@ -751,20 +659,19 @@ const PropertyDealerAddForm: React.FC = () => {
                             name="story"
                             value={about}
                             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                                if (e.target.value.trim().length < 500) {
-                                    setAboutMoreThanFourHundredCharacters(false)
-                                    setAbout(e.target.value)
-                                } else {
-                                    setAboutMoreThanFourHundredCharacters(true)
-                                }
+                                setAbout(e.target.value)
                             }} />
-                        {aboutMoreThanFourHundredCharacters && <p className="text-red-500">About should be less than 400 characters</p>}
                     </div>
 
                     {/*add firm logo*/}
-                    <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                    <div className="flex flex-col gap-2 mt-3">
+                        {firmLogoError && <p className='text-red-500'>Add an image</p>}
                         <div className='flex flex-row gap-3'>
-                            <label className="text-lg font-semibold" htmlFor="image">Add firm logo</label>
+                            <div className="flex flex-row gap-0.5">
+                                <p className="h-4 text-2xl text-red-500">*</p>
+                                <label className="text-lg font-semibold" htmlFor="image">Firm logo/ Dealer photo</label>
+                            </div>
+
                             <input
                                 type='file'
                                 className='text-transparent'

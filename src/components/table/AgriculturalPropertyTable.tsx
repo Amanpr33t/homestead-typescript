@@ -1,57 +1,6 @@
 import React, { Fragment } from "react"
 
-type RoadType = 'unpaved road' | 'village road' | 'district road' | 'state highway' | 'national highway'
-type IrrigationSystemType = 'sprinkler' | 'drip' | 'underground pipeline'
-type ReservoirType = 'public' | 'private'
-type CropTypeArray = 'rice' | 'wheat' | 'maize' | 'cotton'
-
-interface PropertyDataType {
-    title: string,
-    details: string | null,
-    landSize: {
-        size: number,
-        unit: 'metre-square' | 'acre',
-        details: string | null,
-    },
-    location: {
-        name: {
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    numberOfOwners: number,
-    waterSource: {
-        canal: string[] | null,
-        river: string[] | null,
-        tubewells: {
-            numberOfTubewells: number,
-            depth: number[] | null
-        }
-    },
-    reservoir: {
-        isReservoir: boolean,
-        type: ReservoirType[] | null,
-        capacityOfPrivateReservoir: number | null,
-        unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
-    },
-    irrigationSystem: IrrigationSystemType[] | null,
-    price: number,
-    crops: CropTypeArray[],
-    road: {
-        type: RoadType,
-        details: string | null,
-    },
-    legalRestrictions: {
-        isLegalRestrictions: boolean,
-        details: string | null,
-    },
-    nearbyTown: string | null,
-    propertyImagesUrl?: string[],
-    contractImagesUrl?: string[] | null
-}
+import { PropertyDataType } from "../../dataTypes/agriculturalPropertyTypes"
 
 interface ImageType {
     file: string;
@@ -119,8 +68,8 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                     <tr className="border-2 border-gray-300">
                         <td className=" pt-4 pb-4 text-lg font-semibold text-center">Land Size</td>
                         <td className="pt-4 pb-4 flex flex-col place-items-center">
-                            <p className="text-center">{propertyData.landSize.size} {propertyData.landSize.unit}</p>
-                            {propertyData.landSize.details && <p className="bg-gray-200 p-1 rounded mt-1 mx-1 w-fit"> {propertyData.landSize.details}</p>}
+                            <p className="text-center">{propertyData.area.size} {propertyData.area.unit}</p>
+                            {propertyData.area.details && <p className="bg-gray-200 p-1 rounded mt-1 mx-1 w-fit"> {propertyData.area.details}</p>}
                         </td>
                     </tr>
 
@@ -205,7 +154,7 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                                             <p>{propertyData.reservoir.type[0]}</p>
                                         }
                                     </div>}
-                                    {propertyData.reservoir.type && propertyData.reservoir.type.includes('private') &&
+                                    {propertyData.reservoir.type && propertyData.reservoir.capacityOfPrivateReservoir && propertyData.reservoir.unitOfCapacityForPrivateReservoir && propertyData.reservoir.type.includes('private') &&
                                         <div className="flex flex-row place-content-center gap-2">
                                             <p className="font-semibold">Capacity:</p>
                                             <p>{propertyData.reservoir.capacityOfPrivateReservoir} {propertyData.reservoir.unitOfCapacityForPrivateReservoir}</p>
@@ -265,7 +214,7 @@ const AgriculturalPropertyTable: React.FC<PropsType> = (props) => {
                             {!propertyData.legalRestrictions.isLegalRestrictions && <p className="text-center">No</p>}
                             {propertyData.legalRestrictions.isLegalRestrictions && <>
                                 <p className="text-center">Yes</p>
-                                <p className="p-1 rounded mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 w-fit">{propertyData.legalRestrictions.details}</p>
+                                {propertyData.legalRestrictions.details && <p className="p-1 rounded mr-2 sm:mr-5 mr-2 sm:ml-5 bg-gray-200 w-fit">{propertyData.legalRestrictions.details}</p>}
                             </>}
                         </td>
                     </tr>

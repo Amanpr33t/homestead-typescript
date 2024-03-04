@@ -7,17 +7,14 @@ import CustomerNotifications from "./CustomerNotifications";
 import Spinner from "../Spinner";
 import { MdContentPasteOff } from "react-icons/md";
 import PropertyCard from "./PropertyCard";
-import { formatDate} from "../../utils/dateFunctions";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions";
-
-interface CustomerQueryType {
-    propertyId: string,
-    customerId: string,
-    customerName: string,
-    date: string,
-    requestSeen: boolean
-}
+import { PropertyDataType as AgriculturalPropertyType } from "../../dataTypes/agriculturalPropertyTypes";
+import { PropertyDataType as ResidentialPropertyType } from "../../dataTypes/residentialPropertyTypes";
+import { PropertyDataType as CommercialPropertyType } from "../../dataTypes/commercialPropertyTypes";
+import { CustomerRequestsActions } from "../../store/slices/customerRequests";
+import { useDispatch } from "react-redux";
+import AddPropertyModal from "./AddPropertyModal";
+import ReviewsContainer from "./ReviewsContainer";
+import PropertyTypeDropdown from "./PropertyTypeDropdown";
 
 interface CustomerReviewType {
     review: string,
@@ -29,13 +26,13 @@ interface CustomerReviewType {
 }
 
 interface DealerType {
-    logoUrl: string,
+    logoUrl?: string,
     firmName: string,
     reraNumber: string,
     gstNumber: string,
     id: string,
     experience: number,
-    about: string | null
+    about?: string
 }
 
 interface PropertyDetails {
@@ -69,8 +66,15 @@ interface PropertyDetails {
 //This component is the home page for property dealer
 const PropertyDealerHomePage: React.FC = () => {
     const navigate = useNavigate()
-    const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
+    const dispatch = useDispatch()
     const reviewRef = useRef<HTMLDivElement>(null);
+
+    const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
+    useEffect(() => {
+        if (!authToken) {
+            navigate('/property-dealer/signIn', { replace: true })
+        }
+    }, [authToken, navigate])
 
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
@@ -80,18 +84,20 @@ const PropertyDealerHomePage: React.FC = () => {
         alertMessage: null,
         routeTo: null
     })
-    const [selectedCustomer, setSelectedCustomer] = useState<CustomerQueryType | null>(null) //stores data about customer who has been selected
-    const [dealerInfo, setDealerInfo] = useState<DealerType | undefined>()
-    const [requestsFromCustomer, setRequestsFromCustomer] = useState<CustomerQueryType[]>([])//stores data about all customers who sent queries
+
+    const [addPropertyModal, setAddPropertyModal] = useState<boolean>(false)
+
+    const [dealerInfo, setDealerInfo] = useState<DealerType>()
 
     const [showPropertiesForSale, setShowPropertiesForSale] = useState<boolean>(true)
-    const [indexUntilWhichReviewsToBeShown, setIndexUntilWhicReviewsToBeShown] = useState<number>(3)
 
     const [properties, setProperties] = useState<PropertyDetails[]>([])
-    const [numberOfProperties, setNumberOfProperties] = useState<number>(0)
 
-    const [showAllReviews, setShowAllReviews] = useState<boolean>(false)
+    const [numberOfLiveProperties, setNumberOfLiveProperties] = useState<number>(0)
+    const [numberOfClosedProperties, setNumberOfClosedProperties] = useState<number>(0)
+
     const [customerReviews, setCustomerReviews] = useState<CustomerReviewType[]>([])
+
     const [averageOfRatingsFromCustomer, setAverageOfRatingsFromCustomer] = useState<number>(0)
 
     const [showLogoInFullScreen, setShowLogoInFullScreen] = useState<boolean>(false)
@@ -99,6 +105,14 @@ const PropertyDealerHomePage: React.FC = () => {
     const [showPropertyTypeDropdown, setShowPropertyTypeDropdown] = useState<boolean>(false)
 
     const [selectedPropertyTypeOptionDropdown, setSelectedPropertyTypeOptionDropdown] = useState<'agricultural' | 'residential' | 'commercial' | 'all' | null>(null)
+
+    const [propertyOfSelectedCustomer, setPropertyOfSelectedCustomer] = useState<AgriculturalPropertyType | CommercialPropertyType | ResidentialPropertyType | null>(null)
+
+    const [selectedCustomerInformation, setSelectedCustomerInformation] = useState<{
+        name: string,
+        email: string,
+        contactNumber: number
+    } | null>(null)
 
     const fetchDataForHomePage = useCallback(async () => {
         setError(false)
@@ -117,11 +131,10 @@ const PropertyDealerHomePage: React.FC = () => {
             const data = await response.json()
             if (data.status === 'ok') {
                 setSpinner(false)
-                console.log(data.requestsFromCustomer)
-                setRequestsFromCustomer(data.requestsFromCustomer)
+                dispatch(CustomerRequestsActions.setCustomerRequests(data.requestsFromCustomer))
                 setDealerInfo(data.dealerInfo)
                 setProperties(data.liveProperties)
-                setNumberOfProperties(data.numberOfLiveProperties)
+                setNumberOfLiveProperties(data.numberOfLiveProperties)
                 setCustomerReviews(data.reviewsFromCustomer)
                 setAverageOfRatingsFromCustomer(data.averageCustomerRatings)
             } else if (data.status === 'invalid_authentication') {
@@ -137,7 +150,7 @@ const PropertyDealerHomePage: React.FC = () => {
             setError(true)
             return
         }
-    }, [authToken, navigate])
+    }, [authToken, navigate, dispatch])
 
     const fetchProperties = async (liveOrSold: 'live' | 'sold', skipProperties: boolean, propertyType?: 'agricultural' | 'residential' | 'commercial' | 'all') => {
         let url: string
@@ -154,7 +167,6 @@ const PropertyDealerHomePage: React.FC = () => {
                 url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/fetchProperties?liveOrSold=${liveOrSold}`
             }
         }
-        setError(false)
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -174,11 +186,11 @@ const PropertyDealerHomePage: React.FC = () => {
                     setSelectedPropertyTypeOptionDropdown(null)
                 }
 
-                setNumberOfProperties(data.numberOfProperties)
-
                 if (liveOrSold === 'live') {
+                    setNumberOfLiveProperties(data.numberOfProperties)
                     setShowPropertiesForSale(true)
                 } else if (liveOrSold === 'sold') {
+                    setNumberOfClosedProperties(data.numberOfProperties)
                     setShowPropertiesForSale(false)
                 }
 
@@ -196,35 +208,15 @@ const PropertyDealerHomePage: React.FC = () => {
                 throw new Error('Some error occured')
             }
         } catch (error) {
-            setError(true)
             return
         }
     }
 
+    console.log(numberOfLiveProperties, numberOfClosedProperties)
+
     useEffect(() => {
         fetchDataForHomePage()
     }, [fetchDataForHomePage])
-
-    useEffect(() => {
-        if (!authToken) {
-            navigate('/property-dealer/signIn', { replace: true })
-        }
-    }, [authToken, navigate])
-
-    const renderStarRating = (rating: number) => {
-        const filledStars = Math.round(rating);
-        const stars = [];
-
-        for (let i = 0; i < 5; i++) {
-            if (i < filledStars) {
-                stars.push(<span className="text-2xl text-yellow-500" key={i}>&#9733;</span>); // Filled star
-            } else {
-                stars.push(<span className="text-2xl text-yellow-500" key={i}>&#9734;</span>); // Empty star
-            }
-        }
-
-        return stars;
-    };
 
     return (
         <Fragment>
@@ -258,13 +250,13 @@ const PropertyDealerHomePage: React.FC = () => {
             </div>}
 
             {!spinner && !error &&
-                <div className={`${showLogoInFullScreen ? 'h-screen' : 'min-h-screen'} flex flex-col gap-5 pt-16 bg-gray-100 `} onClick={() => setShowPropertyTypeDropdown(false)}>
+                <div className={`${showLogoInFullScreen ? 'h-screen' : 'min-h-screen'} flex flex-col gap-5 pt-20 bg-gray-100 `} onClick={() => setShowPropertyTypeDropdown(false)}>
 
                     {/*The div shows dealer information and has an add property button */}
                     <div className="px-5 lg:px-16 xl:px-20 flex md:flex-row flex-col justify-between md:rounded-2xl bg-white">
                         {/*dealer information */}
                         <div className="py-5 flex flex-col sm:flex-row sm:items-center sm:justify-start gap-3">
-                            <img className="rounded-full w-28 h-28 border-2 border-gray-300" src={dealerInfo?.logoUrl} alt='' onClick={() => setShowLogoInFullScreen(true)} />
+                            <img className="rounded-full w-20 h-20 border-2 border-gray-300 cursor-pointer" src={dealerInfo?.logoUrl} alt='' onClick={() => setShowLogoInFullScreen(true)} />
                             <div className="flex flex-col gap-1 sm:gap-2">
                                 <p className="text-xl font-bold text-gray-700">{dealerInfo?.firmName}</p>
                                 <div className="flex flex-row gap-2">
@@ -287,7 +279,7 @@ const PropertyDealerHomePage: React.FC = () => {
                         </div>
                         {/*add property */}
                         <div className="flex justify-center items-center pb-5 md:pb-0">
-                            <button className="bg-red-500 hover:bg-red-700 rounded-xl w-full md:w-fit p-2 md:p-6 text-white text-lg font-semibold">Add property</button>
+                            <button className="bg-red-500 hover:bg-red-700 rounded-xl w-full md:w-fit p-2 md:p-6 text-white text-lg font-semibold" onClick={() => setAddPropertyModal(true)}>Add property</button>
                         </div>
                     </div>
 
@@ -301,12 +293,12 @@ const PropertyDealerHomePage: React.FC = () => {
 
                                 {/*buttons to show sold properties and properties for sale */}
                                 <div className="flex flex-row font-medium">
-                                    <button className={`lg:rounded-tl-2xl py-3 w-1/2 hover:bg-gray-700 text-gray-600 hover:text-white hover:underline border-b-2 ${showPropertiesForSale && 'border-b-2 border-red-500 px-5'}`} onClick={() => {
+                                    <button className={`lg:rounded-tl-2xl py-3 w-1/2  text-gray-600  hover:underline border-b-2 ${showPropertiesForSale && 'border-b-2 border-red-500 px-5'} hover:border-b-2 hover:border-red-500`} onClick={() => {
                                         if (!showPropertiesForSale) {
                                             fetchProperties('live', false)
                                         }
                                     }}>Properties for sale</button>
-                                    <button className={` lg:rounded-tr-2xl py-3 w-1/2 hover:bg-gray-700 text-gray-600 hover:text-white hover:underline border-b-2 ${!showPropertiesForSale && 'border-b-2 border-red-500'}`} onClick={() => {
+                                    <button className={` lg:rounded-tr-2xl py-3 w-1/2  text-gray-600 hover:underline border-b-2 ${!showPropertiesForSale && 'border-b-2 border-red-500'} hover:border-b-2 hover:border-red-500`} onClick={() => {
                                         if (showPropertiesForSale) {
                                             fetchProperties('sold', false)
                                         }
@@ -314,74 +306,41 @@ const PropertyDealerHomePage: React.FC = () => {
                                 </div>
 
                                 {/*dropdown to select property type */}
-                                {<div className={`z-30 absolute right-5 top-16  bg-white w-fit cursor-pointer text-gray-500  rounded-xl border border-gray-500 `} onClick={e => e.stopPropagation()}>
-                                    <div className=" w-44 flex flex-row gap-3 bg-gray-50 rounded-xl p-3" onClick={() => setShowPropertyTypeDropdown(boolean => boolean === true ? false : true)}>
-                                        <p className="font-semibold">{selectedPropertyTypeOptionDropdown ? capitalizeFirstLetterOfAString(selectedPropertyTypeOptionDropdown) : 'Type of property'}</p>
-                                        {showPropertyTypeDropdown && <IoIosArrowUp className="absolute right-3 mt-1 text-gray-600 text-lg" />}
-                                        {!showPropertyTypeDropdown && <IoIosArrowDown className="absolute right-3 mt-1 text-gray-600 text-lg" />}
-                                    </div>
-                                    {showPropertyTypeDropdown &&
-                                        <div className={`w-44 z-50 bg-white rounded-b-xl border-t border-gray-500 `}>
-                                            <p className="p-2 hover:bg-gray-50" onClick={() => {
-                                                setShowPropertyTypeDropdown(false)
-                                                fetchProperties(showPropertiesForSale ? 'live' : 'sold', false, 'agricultural')
-                                            }}>Agricultural</p>
-                                            <p className="p-2 hover:bg-gray-50" onClick={() => {
-                                                setShowPropertyTypeDropdown(false)
-                                                fetchProperties(showPropertiesForSale ? 'live' : 'sold', false, 'residential')
-                                            }}>Residential</p>
-                                            <p className="p-2 hover:bg-gray-50" onClick={() => {
-                                                setShowPropertyTypeDropdown(false)
-                                                fetchProperties(showPropertiesForSale ? 'live' : 'sold', false, 'commercial')
-                                            }}>Commercial</p>
-                                            <p className="p-2 hover:bg-gray-50 rounded-b-xl" onClick={() => {
-                                                setShowPropertyTypeDropdown(false)
-                                                fetchProperties(showPropertiesForSale ? 'live' : 'sold', false, 'all')
-                                            }}>All</p>
-                                        </div>}
-                                    <div></div>
-                                </div>}
+                                {((showPropertiesForSale && numberOfLiveProperties > 0) || (!showPropertiesForSale && numberOfClosedProperties > 0)) &&
+                                    < PropertyTypeDropdown
+                                        propertyDropdownSetter={(input: boolean) => setShowPropertyTypeDropdown(input)}
+                                        selectedPropertyTypeOptionDropdown={selectedPropertyTypeOptionDropdown}
+                                        fetchProperties={fetchProperties}
+                                        showPropertyTypeDropdown={showPropertyTypeDropdown}
+                                        showPropertiesForSale={showPropertiesForSale}
+                                        hideDropdown={propertyOfSelectedCustomer && selectedCustomerInformation ? true : false}
+                                    />}
 
                                 {/*Message shown to user when no property is up for sale or no property has been sold */}
                                 {properties.length === 0 &&
-                                    <div className="flex justify-center items-center flex-col pt-2 px-2 overflow-y-auto h-72">
-                                        <div className="flex flex-row">
+                                    <div className="flex  items-center flex-col px-2 overflow-y-auto h-72">
+                                        <div className="flex flex-row mt-20 mb-2">
                                             <MdContentPasteOff className="text-5xl text-gray-500" />
-                                            <p className="-ml-2 -mt-3 text-3xl h-fit w-5 text-center rounded-full text-red-500 font-bold">0</p>
+                                            <p className="-ml-2 -mt-3  text-3xl h-fit w-5 text-center rounded-full text-red-500 font-bold">0</p>
                                         </div>
                                         <p className="font-semibold text-gray-500 text-lg text-center mx-2">{showPropertiesForSale ? `No ${selectedPropertyTypeOptionDropdown && selectedPropertyTypeOptionDropdown !== 'all' ? selectedPropertyTypeOptionDropdown : ''} properties are currently up for sale` : `No ${selectedPropertyTypeOptionDropdown && selectedPropertyTypeOptionDropdown !== 'all' ? selectedPropertyTypeOptionDropdown : ''} property deals have been closed yet`}</p>
                                     </div>}
 
                                 {properties.length > 0 &&
+                                    //Container that shows property up for sale or sold
                                     <div className="p-5 pt-20 flex flex-col gap-3 relative">
-
-                                        {/*Container that shows property up for sale*/}
-                                        {showPropertiesForSale && <>
-                                            <p className="text-gray-500 font-semibold">Showing {properties.length} of {numberOfProperties} properties for sale</p>
-                                            <div className="flex flex-col gap-5 ">
-                                                {properties.map(property => {
-                                                    return <div key={property._id}>
-                                                        <PropertyCard property={property} liveOrSold={'live'} />
-                                                    </div>
-                                                })}
-                                            </div>
-                                        </>}
-
-                                        {/*container that shows property sold */}
-                                        {!showPropertiesForSale && <>
-                                            <p className="text-gray-500 font-semibold">Showing {properties.length} of {numberOfProperties} deals closed</p>
-                                            <div className="flex flex-col gap-5 ">
-                                                {properties.map(property => {
-                                                    return <div key={property._id}>
-                                                        <PropertyCard property={property} liveOrSold={'sold'} />
-                                                    </div>
-                                                })}
-                                            </div>
-                                        </>}
+                                        <p className="text-gray-500 font-semibold">Showing {properties.length} of {showPropertiesForSale ? numberOfLiveProperties : numberOfClosedProperties} {showPropertiesForSale ? 'properties for sale' : 'deals closed'}</p>
+                                        <div className="flex flex-col gap-5 ">
+                                            {properties.map(property => {
+                                                return <div key={property._id}>
+                                                    <PropertyCard property={property} liveOrSold={showPropertiesForSale ? 'live' : 'sold'} />
+                                                </div>
+                                            })}
+                                        </div>
                                     </div>}
 
                                 {/*a button to show more properties */}
-                                {properties?.length < numberOfProperties &&
+                                {((showPropertiesForSale && properties?.length < numberOfLiveProperties) || (!showPropertiesForSale && properties?.length < numberOfClosedProperties)) &&
                                     <div className="flex justify-center pb-5">
                                         <button className="border p-3 rounded-lg border-gray-500 font-semibold hover:border-gray-800 hover:bg-gray-100 text-gray-700" onClick={() => {
                                             if (selectedPropertyTypeOptionDropdown) {
@@ -396,58 +355,40 @@ const PropertyDealerHomePage: React.FC = () => {
 
                             {/*The div container is used to show reviews */}
                             {customerReviews && customerReviews.length > 0 &&
-                                <div className="bg-white flex flex-col gap-3 rounded-2xl shadow p-5" ref={reviewRef}>
-                                    <p className="font-bold text-xl text-gray-800">Reviews</p>
-                                    <div className="flex items-center justify-start gap-3">
-                                        <img className="rounded-full w-16 h-16 border-2 border-gray-300" src={dealerInfo?.logoUrl} alt='' />
-                                        <div className="flex flex-row gap-1">
-                                            {averageOfRatingsFromCustomer > 0 && <span className="text-2xl text-yellow-500 -mt-1">&#9733;</span>}
-                                            {averageOfRatingsFromCustomer > 0 && <div className="flex flex-row gap-1">
-                                                <p className="font-semibold text-gray-700 text-lg">{averageOfRatingsFromCustomer}</p>
-                                                <p className="font-semibold text-gray-500  text-lg ">({customerReviews.length} reviews)</p>
-                                            </div>}
-                                        </div>
-                                    </div>
-                                    {customerReviews.slice(0, indexUntilWhichReviewsToBeShown).map(item => {
-                                        return <div key={item._id} className="bg-gray-100 p-3 rounded-xl">
-                                            <div className="flex flex-row">
-                                                {renderStarRating(item.rating)}
-                                                <p className="ml-2 mt-1.5 text-gray-700 font-semibold">{item.rating}.0</p>
-                                            </div>
-                                            <p className="mb-2 text-gray-700 font-semibold">{formatDate(item.date)}</p>
-                                            <p>{item.review}</p>
-                                        </div>
-                                    })}
-                                    {customerReviews.length > 3 &&
-                                        <div className="flex justify-center mt-2">
-                                            <button
-                                                className="border p-3 rounded-lg border-gray-500 font-semibold hover:border-gray-800 hover:bg-gray-100 text-gray-700"
-                                                onClick={() => {
-                                                    if (indexUntilWhichReviewsToBeShown === 3) {
-                                                        setIndexUntilWhicReviewsToBeShown(customerReviews.length)
-                                                    } else {
-                                                        setIndexUntilWhicReviewsToBeShown(3)
-                                                    }
-                                                }}>
-                                                {indexUntilWhichReviewsToBeShown === 3 ? `Show all ${customerReviews.length} reviews` : 'Show less reviews'}
-                                            </button>
-                                        </div>}
+                                <div ref={reviewRef}>
+                                    <ReviewsContainer
+                                        customerReviews={customerReviews}
+                                        dealerLogoUrl={dealerInfo?.logoUrl}
+                                        averageOfRatingsFromCustomer={averageOfRatingsFromCustomer}
+                                    />
                                 </div>}
 
                             {/*About dealer */}
-                            <div className="bg-white flex flex-col gap-3 rounded-2xl shadow p-5">
+                            {dealerInfo && dealerInfo.about && <div className="bg-white flex flex-col gap-3 rounded-2xl shadow p-5">
                                 <p className="font-bold text-xl text-gray-800">About</p>
                                 <p>{dealerInfo?.about}</p>
-                            </div>
+                            </div>}
                         </div>
 
-                        <div className="h-fit sticky top-20 w-80 hidden lg:flex ">
+                        <div className="h-fit sticky top-24 w-80 hidden lg:flex ">
                             <CustomerNotifications
-                                requestsFromCustomer={requestsFromCustomer}
+                                propertySetter={(property) => setPropertyOfSelectedCustomer(property)}
+                                propertyReset={() => setPropertyOfSelectedCustomer(null)}
+                                selectedCustomerSetter={(customer) => setSelectedCustomerInformation(customer)}
+                                selectedCustomerReset={() => setSelectedCustomerInformation(null)}
+                                selectedCustomerInformation={selectedCustomerInformation}
+                                propertyOfSelectedCustomer={propertyOfSelectedCustomer}
                             />
                         </div>
                     </div>
                 </div>}
+
+            {dealerInfo && addPropertyModal &&
+                <AddPropertyModal
+                    dealerId={dealerInfo?.id}
+                    modalReset={() => setAddPropertyModal(false)}
+                    alertSetter={(input: AlertType) => setAlert(input)}
+                />}
 
         </Fragment >
     )

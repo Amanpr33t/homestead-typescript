@@ -58,11 +58,11 @@ const AgriculturalPropertyAddForm: React.FC = () => {
     const [propertyDetail, setPropertyDetail] = useState<string>('') //details of property
     const [propertyDetailError, setPropertyDetailError] = useState<boolean>(false) //It is true if property details are not property
 
-    const [landSize, setLandSize] = useState<string | number>() //Land size in number
-    const [landSizeUnit, setLandSizeUnit] = useState<'metre-square' | 'acre' | ''>('') //Unit of land size
-    const [landSizeDetails, setLandSizeDetails] = useState<string>('') //details of land size
-    const [landSizeError, setLandSizeError] = useState<boolean>(false) //error if land size is not provided
-    const [landSizeUnitError, setLandSizeUnitError] = useState<boolean>(false) //error if land size unit is not provided
+    const [area, setLandSize] = useState<string | number>() //Land size in number
+    const [areaUnit, setLandSizeUnit] = useState<'metre-square' | 'acre' | ''>('') //Unit of land size
+    const [areaDetails, setLandSizeDetails] = useState<string>('') //details of land size
+    const [areaError, setLandSizeError] = useState<boolean>(false) //error if land size is not provided
+    const [areaUnitError, setLandSizeUnitError] = useState<boolean>(false) //error if land size unit is not provided
 
     const [state, setState] = useState<string>('')
     const [stateError, setStateError] = useState<boolean>(false)
@@ -189,10 +189,10 @@ const AgriculturalPropertyAddForm: React.FC = () => {
             setStateError(false)
         }
 
-        if (!landSize) {
+        if (!area) {
             setLandSizeError(true)
         }
-        if (!landSizeUnit) {
+        if (!areaUnit) {
             setLandSizeUnitError(true)
         }
 
@@ -272,7 +272,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
         if (!district.trim() || !state.trim()) {
             return errorFunction()
         }
-        if (!landSize || !landSizeUnit) {
+        if (!area || !areaUnit) {
             return errorFunction()
         }
         if (!price) {
@@ -305,10 +305,10 @@ const AgriculturalPropertyAddForm: React.FC = () => {
             title: propertyTitle,
             details: propertyDetail.trim() || null,
             addedByPropertyDealer: propertyDealerId as string,
-            landSize: {
-                size: +landSize,
-                unit: landSizeUnit,
-                details: landSizeDetails.trim() || null,
+            area: {
+                size: +area,
+                unit: areaUnit,
+                details: areaDetails.trim() || null,
             },
             location: {
                 name: {
@@ -662,9 +662,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
 
                         {/*land size*/}
                         <div className="flex flex-col p-2 pb-5 pt-5">
-                            {landSizeError && !landSizeUnitError && <p className="text-red-500 -mt-1">Provide land size</p>}
-                            {landSizeError && landSizeUnitError && <p className="text-red-500 -mt-1">Provide land size and unit</p>}
-                            {!landSizeError && landSizeUnitError && <p className="text-red-500 -mt-1">Provide a unit</p>}
+                            {areaError && !areaUnitError && <p className="text-red-500 -mt-1">Provide land size</p>}
+                            {areaError && areaUnitError && <p className="text-red-500 -mt-1">Provide land size and unit</p>}
+                            {!areaError && areaUnitError && <p className="text-red-500 -mt-1">Provide a unit</p>}
                             <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
@@ -679,9 +679,9 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             id="land-size"
                                             type="number"
                                             name='land-size'
-                                            className={`border-2 ${landSizeError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
+                                            className={`border-2 ${areaError ? 'border-red-500' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-24`}
                                             placeholder="Size"
-                                            value={landSize || ''}
+                                            value={area || ''}
                                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                                 const size = +e.target.value;
                                                 if (!isNaN(size) && size > 0) {
@@ -693,10 +693,10 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                             }}
                                         />
                                         <select
-                                            className={`border-2 ${landSizeUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit w-28`}
+                                            className={`border-2 ${areaUnitError ? 'border-red-500' : 'border-gray-400'} p-1 rounded cursor-pointer bg-white text-center h-fit w-28`}
                                             name="unit-dropdown"
                                             id="unit-dropdown"
-                                            value={landSizeUnit}
+                                            value={areaUnit}
                                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                                 setLandSizeUnitError(false)
                                                 setLandSizeUnit(e.target.value as 'metre-square' | 'acre')
@@ -713,7 +713,7 @@ const AgriculturalPropertyAddForm: React.FC = () => {
                                         autoCorrect="on"
                                         autoComplete="new-password"
                                         placeholder="Add details regarding land size (optional)"
-                                        value={landSizeDetails}
+                                        value={areaDetails}
                                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                                             setLandSizeDetails(e.target.value)
                                         }} />
