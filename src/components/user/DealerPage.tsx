@@ -3,18 +3,13 @@ import { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import AlertModal from "../AlertModal"
 import { useLocation, useNavigate } from "react-router-dom";
 import { AlertType } from "../../dataTypes/alertType";
-import CustomerNotifications from "./CustomerNotifications/CustomerNotifications";
 import Spinner from "../Spinner";
 import { MdContentPasteOff } from "react-icons/md";
-import PropertyCard from "./PropertyCard";
-import { PropertyDataType as AgriculturalPropertyType } from "../../dataTypes/agriculturalPropertyTypes";
-import { PropertyDataType as ResidentialPropertyType } from "../../dataTypes/residentialPropertyTypes";
-import { PropertyDataType as CommercialPropertyType } from "../../dataTypes/commercialPropertyTypes";
-import { CustomerRequestsActions } from "../../store/slices/customerRequests";
-import { useDispatch } from "react-redux";
-import AddPropertyModal from "./AddPropertyModal";
-import ReviewsContainer from "./ReviewsContainer";
-import PropertyTypeDropdown from "./PropertyTypeDropdown";
+import PropertyCard from "../property-dealer/PropertyCard";
+import PropertyTypeDropdown from "../property-dealer/PropertyTypeDropdown";
+import ReviewsContainer from "../property-dealer/ReviewsContainer";
+import SignInReminderModal from "./SignInReminderModal";
+import ContactDealerModal from "./ContactDealerModal";
 
 interface CustomerReviewType {
     review: string,
@@ -26,13 +21,24 @@ interface CustomerReviewType {
 }
 
 interface DealerType {
-    logoUrl?: string,
+    logoUrl: string,
     firmName: string,
     reraNumber: string,
     gstNumber: string,
     id: string,
     experience: number,
-    about?: string
+    about?: string,
+    propertyDealerName: string,
+    email: string,
+    contactNumber: number,
+    address: {
+        flatPlotHouseNumber: string,
+        areaSectorVillage: string,
+        landmark?: string,
+        city: string,
+        state: string,
+        district: string
+    }
 }
 
 interface PropertyDetails {
@@ -57,20 +63,23 @@ interface PropertyDetails {
 }
 
 //This component is the home page for property dealer
-const PropertyDealerHomePage: React.FC = () => {
+const DealerPage: React.FC = () => {
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+
     const reviewRef = useRef<HTMLDivElement>(null);
 
-    const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
+    const location = useLocation();
+
+    const searchParams = new URLSearchParams(location.search);
+    const searchParamsDealerId: string | null = searchParams.get('id')
+
     useEffect(() => {
-        if (!authToken ) {
-            navigate('/property-dealer/signIn', { replace: true })
+        if (!searchParamsDealerId) {
+            navigate('/', { replace: true })
         }
-    }, [authToken, navigate])
+    }, [navigate, searchParamsDealerId])
 
     const [spinner, setSpinner] = useState<boolean>(true)
-    const [error, setError] = useState<boolean>(false)
     const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
         alertType: null,
@@ -78,7 +87,7 @@ const PropertyDealerHomePage: React.FC = () => {
         routeTo: null
     })
 
-    const [addPropertyModal, setAddPropertyModal] = useState<boolean>(false)
+    const authToken: string | null = localStorage.getItem("homestead-user-authToken")
 
     const [dealerInfo, setDealerInfo] = useState<DealerType>()
 
@@ -99,76 +108,56 @@ const PropertyDealerHomePage: React.FC = () => {
 
     const [selectedPropertyTypeOptionDropdown, setSelectedPropertyTypeOptionDropdown] = useState<'agricultural' | 'residential' | 'commercial' | 'all' | null>(null)
 
-    const [propertyOfSelectedCustomer, setPropertyOfSelectedCustomer] = useState<AgriculturalPropertyType | CommercialPropertyType | ResidentialPropertyType | null>(null)
+    const [showDealerInfoModal, setShowContactDealerInfoModal] = useState<boolean>(false)
 
-    const [selectedCustomerInformation, setSelectedCustomerInformation] = useState<{
-        name: string,
-        email: string,
-        contactNumber: number
-    } | null>(null)
+    const [showSignInReminderModal, setShowSignInReminderModal] = useState<boolean>(false)
 
     const fetchDataForHomePage = useCallback(async () => {
-        setError(false)
         setSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/homePageData`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/dataForPropertyDealerPage?dealerId=${searchParamsDealerId}`, {
+                method: 'GET'
             })
             if (!response.ok) {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
-            console.log(data)
             if (data.status === 'ok') {
                 setSpinner(false)
-                dispatch(CustomerRequestsActions.setCustomerRequests(data.requestsFromCustomer))
                 setDealerInfo(data.dealerInfo)
                 setProperties(data.liveProperties)
                 setNumberOfProperties(data.numberOfProperties)
                 setTotalNumberOfProperties(data.numberOfProperties)
                 setCustomerReviews(data.reviewsFromCustomer)
                 setAverageOfRatingsFromCustomer(data.averageCustomerRatings)
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
-                return
             } else {
-                throw new Error('Some error occured')
+                throw new Error('some error occured')
             }
         } catch (error) {
             setSpinner(false)
-            setError(true)
+            navigate('/')
             return
         }
-    }, [authToken, navigate, dispatch])
+    }, [navigate, searchParamsDealerId])
 
     const fetchProperties = async (liveOrSold: 'live' | 'sold', skipProperties: boolean, propertyType?: 'agricultural' | 'residential' | 'commercial' | 'all') => {
         let url: string
         if (propertyType && propertyType !== 'all') {
             if (skipProperties) {
-                url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/fetchProperties?liveOrSold=${liveOrSold}&propertyType=${propertyType}&skip=${properties.length}`
+                url = `${process.env.REACT_APP_BACKEND_URL}/user/fetchPropertiesForDealerPage?liveOrSold=${liveOrSold}&propertyType=${propertyType}&skip=${properties.length}&dealerId=${searchParamsDealerId}`
             } else {
-                url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/fetchProperties?liveOrSold=${liveOrSold}&propertyType=${propertyType}`
+                url = `${process.env.REACT_APP_BACKEND_URL}/user/fetchPropertiesForDealerPage?liveOrSold=${liveOrSold}&propertyType=${propertyType}&dealerId=${searchParamsDealerId}`
             }
         } else {
             if (skipProperties) {
-                url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/fetchProperties?liveOrSold=${liveOrSold}&skip=${properties.length}`
+                url = `${process.env.REACT_APP_BACKEND_URL}/user/fetchPropertiesForDealerPage?liveOrSold=${liveOrSold}&skip=${properties.length}&dealerId=${searchParamsDealerId}`
             } else {
-                url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/fetchProperties?liveOrSold=${liveOrSold}`
+                url = `${process.env.REACT_APP_BACKEND_URL}/user/fetchPropertiesForDealerPage?liveOrSold=${liveOrSold}&dealerId=${searchParamsDealerId}`
             }
         }
         try {
             const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
+                method: 'GET'
             })
             if (!response.ok) {
                 throw new Error('Some error occured')
@@ -195,11 +184,6 @@ const PropertyDealerHomePage: React.FC = () => {
                 } else {
                     setProperties(data.properties)
                 }
-            } else if (data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
-                return
             } else {
                 throw new Error('Some error occured')
             }
@@ -229,25 +213,20 @@ const PropertyDealerHomePage: React.FC = () => {
                         })
                     }} />}
 
-            {spinner && !error && <Spinner />}
+            {spinner && <Spinner />}
 
-            {error && !spinner &&
-                < div className="fixed top-36 w-full flex flex-col place-items-center ">
-                    <p>Some error occured</p>
-                    <button type='button' className="text-red-500" onClick={fetchDataForHomePage}>Try again</button>
+            {!spinner && showLogoInFullScreen &&
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen bg-black bg-opacity-70 backdrop-blur-lg z-50" onClick={() => {
+                    setShowLogoInFullScreen(false)
+                }}>
+                    <img className="rounded-full w-72 h-72 border-2 border-gray-300" src={dealerInfo?.logoUrl} alt='' onClick={(e) => e.stopPropagation()} />
                 </div>}
 
-            {!spinner && !error && showLogoInFullScreen && <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full h-screen bg-black bg-opacity-70 backdrop-blur-lg z-50" onClick={() => {
-                setShowLogoInFullScreen(false)
-            }}>
-                <img className="rounded-full w-72 h-72 border-2 border-gray-300" src={dealerInfo?.logoUrl} alt='' onClick={(e) => e.stopPropagation()} />
-            </div>}
-
-            {!spinner && !error &&
+            {!spinner &&
                 <div className={`${showLogoInFullScreen ? 'h-screen' : 'min-h-screen'} flex flex-col gap-5 pt-20 bg-gray-100 `} onClick={() => setShowPropertyTypeDropdown(false)}>
 
                     {/*The div shows dealer information and has an add property button */}
-                    <div className="py-2 px-5 lg:px-16 xl:px-20 flex md:flex-row flex-col gap-10 justify-between md:rounded-2xl bg-white">
+                    <div className="py-2 px-5 lg:px-16 xl:px-20 flex md:flex-row flex-col gap-10 justify-between border-t shadow-t bg-white">
                         {/*dealer information */}
                         <div className=" flex flex-col sm:flex-row sm:items-center sm:justify-start gap-3">
                             <img className="rounded-full w-20 h-20 border-2 border-gray-300 cursor-pointer" src={dealerInfo?.logoUrl} alt='' onClick={() => setShowLogoInFullScreen(true)} />
@@ -271,9 +250,15 @@ const PropertyDealerHomePage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        {/*add property */}
+
                         <div className="flex justify-center items-center pb-5 md:pb-0">
-                            <button className="bg-red-500 hover:bg-red-700 rounded-xl w-full md:w-fit p-2 md:p-4 text-white text-lg font-semibold" onClick={() => setAddPropertyModal(true)}>Add property</button>
+                            <button className="bg-red-500 hover:bg-red-700 rounded-xl w-full md:w-fit p-2 md:p-4 text-white text-lg font-semibold" onClick={() => {
+                                if (authToken) {
+                                    setShowContactDealerInfoModal(true)
+                                } else {
+                                    setShowSignInReminderModal(true)
+                                }
+                            }}>Contact dealer</button>
                         </div>
                     </div>
 
@@ -307,7 +292,6 @@ const PropertyDealerHomePage: React.FC = () => {
                                         fetchProperties={fetchProperties}
                                         showPropertyTypeDropdown={showPropertyTypeDropdown}
                                         showPropertiesForSale={showPropertiesForSale}
-                                        hideDropdown={propertyOfSelectedCustomer && selectedCustomerInformation ? true : false}
                                     />}
 
                                 {/*Message shown to user when no property is up for sale or no property has been sold */}
@@ -366,28 +350,27 @@ const PropertyDealerHomePage: React.FC = () => {
                                 <p>{dealerInfo?.about}</p>
                             </div>}
                         </div>
-
-                        <div className="h-fit sticky top-24 w-80 hidden lg:flex ">
-                            <CustomerNotifications
-                                propertySetter={(property) => setPropertyOfSelectedCustomer(property)}
-                                propertyReset={() => setPropertyOfSelectedCustomer(null)}
-                                selectedCustomerSetter={(customer) => setSelectedCustomerInformation(customer)}
-                                selectedCustomerReset={() => setSelectedCustomerInformation(null)}
-                                selectedCustomerInformation={selectedCustomerInformation}
-                                propertyOfSelectedCustomer={propertyOfSelectedCustomer}
-                            />
-                        </div>
                     </div>
                 </div>}
 
-            {dealerInfo && addPropertyModal &&
-                <AddPropertyModal
-                    dealerId={dealerInfo?.id}
-                    modalReset={() => setAddPropertyModal(false)}
-                    alertSetter={(input: AlertType) => setAlert(input)}
-                />}
+            {!spinner && showSignInReminderModal &&
+                <SignInReminderModal hideModal={() => setShowSignInReminderModal(false)} />}
+
+            {!spinner && dealerInfo && showDealerInfoModal &&
+                <ContactDealerModal
+                    dealerInfo={{
+                        firmName: dealerInfo?.firmName,
+                        firmLogoUrl: dealerInfo?.logoUrl,
+                        propertyDealerName: dealerInfo?.propertyDealerName,
+                        address: dealerInfo?.address,
+                        email: dealerInfo?.email,
+                        contactNumber: dealerInfo?.contactNumber,
+                        _id: dealerInfo?.id
+                    }}
+                    modalReset={() => setShowContactDealerInfoModal(false)} />
+            }
 
         </Fragment >
     )
 }
-export default PropertyDealerHomePage
+export default DealerPage

@@ -25,7 +25,6 @@ export interface PropertyDataType extends CommonDataToAllPropertyTypes{
         unitOfCapacityForPrivateReservoir: 'cusec' | 'litre' | null
     },
     irrigationSystem: IrrigationSystemType[] | null,
-    price: number,
     crops: CropTypeArray[],
     road: {
         type: RoadType,

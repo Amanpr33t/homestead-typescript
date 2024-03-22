@@ -3,6 +3,9 @@ import { capitalizeFirstLetterOfAString } from '../../utils/stringUtilityFunctio
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../Spinner';
 import { IoMdArrowRoundBack } from 'react-icons/io';
+import EditDealerDetailsModal from './EditDealerDetailsModal';
+import AlertModal from '../AlertModal';
+import { AlertType } from '../../dataTypes/alertType';
 
 interface DealerDetailsType {
     firmName: string,
@@ -29,9 +32,19 @@ interface DealerDetailsType {
 const DealerDetails: React.FC = () => {
     const navigate = useNavigate()
     const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
+
     const [spinner, setSpinner] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
+    const [alert, setAlert] = useState<AlertType>({
+        isAlertModal: false,
+        alertType: null,
+        alertMessage: null,
+        routeTo: null
+    })
+
     const [dealerInfo, setDealerInfo] = useState<DealerDetailsType>()
+
+    const [editDetails, setEditDetails] = useState<boolean>(false)
 
     const fetchDealerDetails = useCallback(async () => {
         setSpinner(true)
@@ -72,6 +85,20 @@ const DealerDetails: React.FC = () => {
 
     return (
         <Fragment>
+            {alert.isAlertModal &&
+                <AlertModal
+                    message={alert.alertMessage}
+                    type={alert.alertType}
+                    routeTo={alert.routeTo}
+                    alertModalRemover={() => {
+                        setAlert({
+                            isAlertModal: false,
+                            alertType: null,
+                            alertMessage: null,
+                            routeTo: null
+                        })
+                    }} />}
+
             {spinner && !error && <Spinner />}
 
             {error && !spinner &&
@@ -80,8 +107,8 @@ const DealerDetails: React.FC = () => {
                     <button type='button' className="text-red-500" onClick={fetchDealerDetails}>Try again</button>
                 </div>}
 
-            {!spinner && <div className='cursor-pointer pl-1.5 sm:px-5 md:px-10 lg:px-20 pt-20 mt-2 flex flex-row text-gray-600 hover:text-gray-800 w-fit' onClick={()=>navigate('/property-dealer')}>
-                <IoMdArrowRoundBack className='mt-1 mr-1'/>
+            {!spinner && <div className='cursor-pointer pl-1.5 sm:px-5 md:px-10 lg:px-20 pt-20 mt-2 flex flex-row text-gray-600 hover:text-gray-800 w-fit' onClick={() => navigate('/property-dealer')}>
+                <IoMdArrowRoundBack className='mt-1 mr-1' />
                 Home
             </div>}
 
@@ -104,26 +131,26 @@ const DealerDetails: React.FC = () => {
                         </tr>
                         {dealerInfo.firmLogoUrl && <tr className="border-b shadow-b border-gray-200">
                             <td className="py-3 text-gray-800">Firm logo/ Dealer photo</td>
-                            <td className="py-3 text-gray-600 flex justify-center">
+                            <td className="relative py-3 text-gray-600 flex justify-center">
                                 <img className='w-32 h-32 rounded-full' src={dealerInfo.firmLogoUrl} alt='' />
                             </td>
                         </tr>}
                         <tr className="border-b shadow-b border-gray-200">
                             <td className="py-3 text-gray-800">Firm name</td>
                             <td className="py-3 text-gray-600 text-center">
-                                {dealerInfo?.firmName}
+                                {capitalizeFirstLetterOfAString(dealerInfo?.firmName)}
                             </td>
                         </tr>
                         <tr className="border-b shadow-b border-gray-200">
                             <td className="py-3 text-gray-800">Dealer name</td>
                             <td className="py-3 text-gray-600 text-center">
-                                {dealerInfo?.propertyDealerName}
+                                {capitalizeFirstLetterOfAString(dealerInfo?.propertyDealerName)}
                             </td>
                         </tr>
                         {dealerInfo.about && <tr className="border-b shadow-b border-gray-200">
                             <td className="py-3 text-gray-800">About</td>
                             <td className="py-3 text-gray-600 text-center">
-                                {dealerInfo?.about}
+                                {capitalizeFirstLetterOfAString(dealerInfo?.about)}
                             </td>
                         </tr>}
                         <tr className="border-b shadow-b border-gray-200">
@@ -136,7 +163,7 @@ const DealerDetails: React.FC = () => {
                             <td className="py-3 text-gray-800">Address</td>
                             <td className="py-3 text-gray-600 text-center">
                                 {capitalizeFirstLetterOfAString(dealerInfo.address.areaSectorVillage)}, {capitalizeFirstLetterOfAString(dealerInfo.address.flatPlotHouseNumber)},
-                                {dealerInfo.address.landmark && `${capitalizeFirstLetterOfAString(dealerInfo.address.landmark)}, `}{capitalizeFirstLetterOfAString(dealerInfo.address.city)}, {capitalizeFirstLetterOfAString(dealerInfo.address.district)}, {capitalizeFirstLetterOfAString(dealerInfo.address.state)}
+                                {dealerInfo.address.landmark && ` near ${capitalizeFirstLetterOfAString(dealerInfo.address.landmark)},`} {capitalizeFirstLetterOfAString(dealerInfo.address.city)}, {capitalizeFirstLetterOfAString(dealerInfo.address.district)}, {capitalizeFirstLetterOfAString(dealerInfo.address.state)}
                             </td>
                         </tr>
                         <tr className="border-b shadow-b border-gray-200">
@@ -165,7 +192,19 @@ const DealerDetails: React.FC = () => {
                         </tr>
                     </tbody>
                 </table>
+                <div className='flex justify-center mt-5'>
+                    <button className='border border-black py-3 px-5 rounded-lg bg-black text-white hover:bg-gray-100 hover:text-black' onClick={() => setEditDetails(true)}>Edit details</button>
+                </div>
             </div>}
+
+            {editDetails && dealerInfo?.firmLogoUrl && dealerInfo?.about &&
+                <EditDealerDetailsModal
+                    hideEditDetailsModal={() => setEditDetails(false)}
+                    firmLogoUrl={dealerInfo?.firmLogoUrl}
+                    about={dealerInfo?.about}
+                    address={dealerInfo?.address}
+                    alertSetter={(input) => setAlert(input)}
+                />}
         </Fragment>
     );
 };

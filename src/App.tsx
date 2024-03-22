@@ -32,7 +32,7 @@ import ReevaluateProperty from './components/propertyEvaluator/reevaluate-proper
 import PropertyDealerSignIn from './components/property-dealer/SignIn';
 import NavbarPropertyDealer from './components/property-dealer/Navbar';
 import PropertyDealerHomePage from './components/property-dealer/HomePage';
-import CustomerNotifications from './components/property-dealer/CustomerNotifications';
+import CustomerNotifications from './components/property-dealer/CustomerNotifications/CustomerNotifications';
 import ReviewProperty from './components/property-dealer/reviewProperty/ReviewProperty';
 
 //components imported for city manager
@@ -43,6 +43,11 @@ import PropertiesPendingForApproval from './components/city-manager/PropertiesPe
 import ApproveProperty from './components/city-manager/ApproveProperty';
 import ListOfRequestsToAddProperty from './components/field-agent/requestsToAddNewProperty/ListOfRequestsToAddNewProperty';
 import DealerDetails from './components/property-dealer/DealerDetails';
+import NavbarUser from './components/user/Navbar';
+import UserHomePage from './components/user/HomePage';
+import UserSignIn from './components/user/SignIn';
+import DealerPage from './components/user/DealerPage';
+import PropertyDetails from './components/user/reviewProperty/PropertyDetails';
 
 const App: React.FC = () => {
 
@@ -52,7 +57,18 @@ const App: React.FC = () => {
 
         <Routes>
 
-          <Route path='/' element={<HomePage />}></Route>
+          <Route path='/' element={<>
+            <NavbarUser />
+            <UserHomePage />
+          </>}></Route>
+          <Route path='/dealer-details' element={<>
+            <NavbarUser />
+            <DealerPage />
+          </>}></Route>
+          <Route path='/property' element={<>
+            <NavbarUser />
+            <PropertyDetails />
+          </>}></Route>
 
           {/*Routes for field agent */}
           <Route path='/field-agent/*'>
@@ -247,6 +263,20 @@ const App: React.FC = () => {
               <DealerDetails />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-dealer' />}>
+            </Route>
+          </Route>
+
+          {/*Routes for customer */}
+          <Route path='/user/*'>
+            <Route path='' element={<>
+              <NavbarUser />
+              <UserHomePage />
+            </>}></Route>
+            <Route path='signIn' element={<>
+              <NavbarPropertyDealer />
+              <UserSignIn />
+            </>}></Route>
+            <Route path='*' element={<Navigate replace to='/user' />}>
             </Route>
           </Route>
 

@@ -13,54 +13,6 @@ import ResidentialPropertyReview from "./Residential";
 import CommercialPropertyReview from "./Commercial";
 import { BiArea } from "react-icons/bi";
 import { FaRupeeSign } from "react-icons/fa";
-import DealerInfoCard from "./DealerInfoCard";
-import PropertyCard from "./PropertyCard";
-
-interface DealerAddressType {
-    flatPlotHouseNumber: string,
-    areaSectorVillage: string
-    landmark?: string
-    postalCode: number,
-    city: string,
-    state: string,
-    district: string,
-}
-interface DealerPropertyType {
-    isApprovedByCityManager: {
-        date: string
-    },
-    propertyType: 'agricultural' | 'commercial' | 'residential',
-    location: {
-        name: {
-            plotNumber?: number | null,
-            village: string | null,
-            city: string | null,
-            tehsil: string | null,
-            district: string,
-            state: string
-        }
-    },
-    price: number,
-    priceData: {
-        fixed: number | null,
-        range: {
-            from: number | null,
-            to: number | null
-        }
-    },
-    propertyImagesUrl: string[],
-    _id: string
-}
-interface DealerInfoType {
-    logoUrl: string,
-    firmName: string,
-    id: string,
-    contactNumber: number,
-    address: DealerAddressType,
-    averageCustomerRatings: number,
-    numberOfReviews: number,
-    threePropertiesAddedByPropertyDealer: DealerPropertyType[]
-}
 
 //This component is used to show customer messages to property dealer
 const ReviewProperty: React.FC = () => {
@@ -72,8 +24,6 @@ const ReviewProperty: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     const propertyId: string | null = searchParams.get('id');
     const propertyType: string | null = searchParams.get('type');
-
-    const [dealerInfo, setDealerInfo] = useState<DealerInfoType | null>(null)
 
     useEffect(() => {
         if (!propertyId || (propertyType !== 'agricultural' && propertyType !== 'residential' && propertyType !== 'commercial')) {
@@ -100,7 +50,7 @@ const ReviewProperty: React.FC = () => {
         try {
             setError(false)
             setSpinner(true)
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/reviewProperty?propertyId=${propertyId}&user=property-dealer`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property/fetch-selected-property?propertyId=${propertyId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +64,6 @@ const ReviewProperty: React.FC = () => {
             if (data.status === 'ok') {
                 setSpinner(false)
                 setPropertyData(data.property as AgriculturalPropertyType | ResidentialPropertyType | CommercialPropertyType)
-                setDealerInfo(data.dealerInfo)
             } else {
                 throw new Error('Some error occured')
             }
@@ -143,7 +92,7 @@ const ReviewProperty: React.FC = () => {
 
                     {propertyData.propertyImagesUrl &&
                         <ImageContainer
-                            isSold={propertyData.isSold as boolean}
+                            isClosed={propertyData.isClosed as boolean}
                             isLive={propertyData.isLive as boolean}
                             imagesUrl={propertyData.propertyImagesUrl} />}
 
@@ -176,23 +125,11 @@ const ReviewProperty: React.FC = () => {
                                         <FaRupeeSign className="mt-1" />{(propertyData as CommercialPropertyType | AgriculturalPropertyType).price.toLocaleString('en-IN')}
                                     </p>}
 
-                                {propertyType === 'residential' && (propertyData as ResidentialPropertyType).priceData && (propertyData as ResidentialPropertyType).priceData.fixed &&
+                                
                                     <p className="flex flex-row font-bold text-lg text-gray-700">
-                                        <FaRupeeSign className="mt-1" />{(propertyData as ResidentialPropertyType).priceData.fixed?.toLocaleString('en-IN')}
-                                    </p>}
-
-                                {propertyType === 'residential' && (propertyData as ResidentialPropertyType).priceData && !(propertyData as ResidentialPropertyType).priceData.fixed &&
-                                    <div className="flex flex-row font-bold text-lg text-gray-700">
-                                        <div className="flex flex-row">
-                                            <FaRupeeSign className="mt-1" />
-                                            {(propertyData as ResidentialPropertyType).priceData?.range.from?.toLocaleString('en-IN')}
-                                        </div>
-                                        <p className="px-2 text-gray-600">to</p>
-                                        <div className="flex flex-row">
-                                            <FaRupeeSign className="mt-1" />
-                                            {(propertyData as ResidentialPropertyType).priceData?.range.to?.toLocaleString('en-IN')}
-                                        </div>
-                                    </div>}
+                                        <FaRupeeSign className="mt-1" />
+                                        {propertyData.price.toLocaleString('en-IN')}
+                                    </p>
 
                             </div>
                             <div className="flex flex-col gap-4 py-8 border-b shadow-b border-gray-300">
@@ -212,25 +149,7 @@ const ReviewProperty: React.FC = () => {
                                     property={propertyData as CommercialPropertyType}
                                 />}
                         </div>
-                        {dealerInfo && !currentUrl.includes('property-dealer') &&
-                            <DealerInfoCard dealerInfo={dealerInfo} />
-                        }
                     </div>
-
-                    {!currentUrl.includes('property-dealer') && dealerInfo && dealerInfo.threePropertiesAddedByPropertyDealer.length > 0 && <div className="w-full bg-gray-100 flex flex-col gap-7 place-items-center py-12">
-                        <p className="px-5 text-2xl font-semibold text-gray-700">More properties from {capitaliseFirstAlphabetsOfAllWordsOfASentence(dealerInfo?.firmName)}</p>
-                        <button className="rounded-lg py-3 mb-2 px-4 border border-gray-400 hover:border-gray-600 font-semibold text-gray-700 hover:bg-gray-50" onClick={() => navigate('/property-dealer')}>View dealers' profile</button>
-
-                        <div className="px-5 flex flex-nowrap overflow-x-auto  place-content-center gap-5 w-fit">
-                            {dealerInfo.threePropertiesAddedByPropertyDealer.map(property => {
-                                return <PropertyCard
-                                    key={property._id}
-                                    property={property}
-                                    resetProperty={() => setPropertyData(null)}
-                                />
-                            })}
-                        </div>
-                    </div>}
                 </div>}
 
         </Fragment>

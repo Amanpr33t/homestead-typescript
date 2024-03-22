@@ -73,15 +73,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
     const [propertyDetail, setPropertyDetail] = useState<string>('') //details of property
     const [propertyDetailError, setPropertyDetailError] = useState<boolean>(false) //It is true if property details are not property
 
-    const [priceErrorMessage, setPriceErrorMessage] = useState<string>('') //Meesage to be shown when no price is provided
-    const [isDeclareFixedPrice, setIsDeclaredFixedPrice] = useState<boolean>(false) //Is true if user wants to give a fixed price
-    const [isRangeOfPrice, setIsRangeOfPrice] = useState<boolean>(false) //Is true if user wants to give a range of price
-    const [fixedPrice, setFixedPrice] = useState<number | ''>('') //fixed price provided by the user
-    const [fixedPriceError, setFixedPriceError] = useState<boolean>(false) //It is true if fixed price is not provided by the user
-    const [rangeOfPriceFrom, setRangeOfPriceFrom] = useState<number | ''>('') //It is a number which stores the lower value of the range
-    const [rangeOfPriceFromError, setRangeOfPriceFromError] = useState<boolean>(false) //It is true if rangeOfPriceFrom is not provided by the user
-    const [rangeOfPriceTo, setRangeOfPriceTo] = useState<number | ''>('') //It is a number which stores the upper value of the range
-    const [rangeOfPriceToError, setRangeOfPriceToError] = useState<boolean>(false) //It is true if rangeOfPriceTo is not provided by the user
+    const [price, setPrice] = useState<number | ''>('')
+    const [priceError, setPriceError] = useState<boolean>(false)
 
     const [isWaterSupply, setIsWaterSupply] = useState<boolean | null>(null) //It is true if yes option is selected. It is false if the option no is selected. It is null if the user selects neither of the option
     const [isWaterSupplyTwentyFourHours, setIsWaterSupplyTwentyFourHours] = useState<boolean | null>(null) ////It is true if yes option is selected. It is false if the option no is selected. It is null if the user selets neither of the option
@@ -319,11 +312,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
             setPropertyTitle(fetchedPropertyData?.title)
             setPropertyDetail(fetchedPropertyData.details || '')
-            setIsDeclaredFixedPrice(fetchedPropertyData.priceData.fixed ? true : false)
-            setIsRangeOfPrice(fetchedPropertyData.priceData.fixed ? false : true)
-            setFixedPrice(fetchedPropertyData.priceData.fixed || '')
-            setRangeOfPriceFrom(fetchedPropertyData.priceData.range.from || '')
-            setRangeOfPriceTo(fetchedPropertyData.priceData.range.to || '')
+            setPrice(fetchedPropertyData.price)
             setIsWaterSupply(fetchedPropertyData.waterSupply.available)
             setIsWaterSupplyTwentyFourHours(fetchedPropertyData.waterSupply.twentyFourHours)
             setElectricityConnection(fetchedPropertyData.electricityConnection)
@@ -448,24 +437,8 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             setPropertyTitleErrorMessage('Provide a title')
         }
 
-        if (!isDeclareFixedPrice && !isRangeOfPrice) {
-            setPriceErrorMessage('Select an option')
-        } else if ((isDeclareFixedPrice && !fixedPrice) ||
-            (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo))) {
-            setPriceErrorMessage('Provide price details')
-            if (isDeclareFixedPrice && !fixedPrice) {
-                setFixedPriceError(true)
-            }
-            if (isRangeOfPrice && !rangeOfPriceFrom) {
-                setRangeOfPriceFromError(true)
-            }
-            if (isRangeOfPrice && !rangeOfPriceTo) {
-                setRangeOfPriceToError(true)
-            }
-        } else if (isRangeOfPrice &&
-            (rangeOfPriceTo <= rangeOfPriceFrom)) {
-            setPriceErrorMessage('Provide a greater price')
-            setRangeOfPriceToError(true)
+        if (!price) {
+            setPriceError(true)
         }
 
         if (isWaterSupply === null) {
@@ -635,9 +608,10 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
         if (propertyImages.length + fetchedPropertyImagesUrl.length === 0) {
             return errorFunction()
         }
-        if (!propertyTitle.trim()) {
+        if (!price) {
             return errorFunction()
-        } else if ((!isDeclareFixedPrice && !isRangeOfPrice) || (isDeclareFixedPrice && !fixedPrice) || (isRangeOfPrice && (!rangeOfPriceFrom || !rangeOfPriceTo)) || (isRangeOfPrice && (rangeOfPriceTo <= rangeOfPriceFrom))) {
+        }
+        if (!propertyTitle.trim()) {
             return errorFunction()
         } else if (isWaterSupply === null || (isWaterSupply && isWaterSupplyTwentyFourHours === null)) {
             return errorFunction()
@@ -700,13 +674,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             residentialPropertyType,
             title: propertyTitle,
             details: propertyDetail.trim() || null,
-            priceData: {
-                fixed: fixedPrice || null,
-                range: {
-                    from: rangeOfPriceFrom || null,
-                    to: rangeOfPriceTo || null
-                }
-            },
+            price,
             waterSupply: {
                 available: isWaterSupply,
                 twentyFourHours: isWaterSupplyTwentyFourHours
@@ -1187,129 +1155,35 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
                             </div>
                         </div>
 
-                        {/*price */}
-                        <div className="p-2  flex flex-col pb-5 pt-5 bg-gray-100">
-                            {priceErrorMessage && <p className="text-red-500 -mt-1">{priceErrorMessage}</p>}
-                            <div className="flex flex-row gap-8 sm:gap-10 lg:gap-16">
+                        {/*price*/}
+                        <div className="flex flex-col p-2 pb-5 pt-5 ">
+                            {(priceError) && <p className="text-red-500 -mt-1">Provide price</p>}
+                            <div className="flex flex-row gap-5 sm:gap-16">
                                 <div className="flex flex-row gap-0.5">
                                     <p className="h-4 text-2xl text-red-500">*</p>
-                                    <p className="text-xl font-semibold text-gray-500 mb-2">Price</p>
+                                    <label
+                                        className="text-xl font-semibold text-gray-500 whitespace-nowrap"
+                                        htmlFor="size">
+                                        Price (Rs)
+                                    </label>
                                 </div>
 
-                                <div className="flex flex-col gap-2 pt-1 pr-4 sm:pr-0">
-                                    <div className="flex flex-row h-fit">
-                                        <input
-                                            className=" mr-1 cursor-pointer"
-                                            type="radio"
-                                            id="fixed-price"
-                                            name="price"
-                                            disabled={!editForm}
-                                            checked={isDeclareFixedPrice}
-                                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                if (e.target.checked) {
-                                                    setPriceErrorMessage('')
-                                                    setIsDeclaredFixedPrice(true)
-                                                    setIsRangeOfPrice(false)
-                                                    setFixedPrice('')
-                                                    setFixedPriceError(false)
-                                                    setRangeOfPriceFrom('')
-                                                    setRangeOfPriceFromError(false)
-                                                    setRangeOfPriceTo('')
-                                                    setRangeOfPriceToError(false)
-                                                }
-                                            }} />
-                                        <label htmlFor="fixed-price">Declare a fixed price</label>
-                                    </div>
-
-                                    {isDeclareFixedPrice &&
-                                        <div className="ml-10">
-                                            <input
-                                                id="fixed-price-number"
-                                                type="number"
-                                                name='fixed-price-number'
-                                                disabled={!editForm}
-                                                className={`border-2 ${fixedPriceError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`}
-                                                placeholder="Number"
-                                                value={fixedPrice}
-                                                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                    if (+e.target.value.trim() > 0) {
-                                                        setFixedPriceError(false)
-                                                        setPriceErrorMessage('')
-                                                        setFixedPrice(+e.target.value.trim())
-                                                    } else {
-                                                        setFixedPrice('')
-                                                    }
-                                                }} />
-                                        </div>}
-
-                                    <div className="flex flex-row h-fit">
-                                        <input
-                                            className=" mr-1 cursor-pointer"
-                                            type="radio"
-                                            id="range-of-price"
-                                            disabled={!editForm}
-                                            name="price"
-                                            checked={isRangeOfPrice}
-                                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                if (e.target.checked) {
-                                                    setPriceErrorMessage('')
-                                                    setIsDeclaredFixedPrice(false)
-                                                    setIsRangeOfPrice(true)
-                                                    setFixedPrice('')
-                                                    setFixedPriceError(false)
-                                                    setRangeOfPriceFrom('')
-                                                    setRangeOfPriceFromError(false)
-                                                    setRangeOfPriceTo('')
-                                                    setRangeOfPriceToError(false)
-                                                }
-                                            }} />
-                                        <label htmlFor="range-of-price">Range of price</label>
-                                    </div>
-
-                                    {isRangeOfPrice &&
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex flex-row ml-10 gap-2">
-                                                <label htmlFor="range-of-price-number-1">From</label>
-                                                <input
-                                                    id="range-of-price-number-1"
-                                                    type="number"
-                                                    disabled={!editForm}
-                                                    name='range-of-price-number-1'
-                                                    className={`border-2 ${rangeOfPriceFromError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`}
-                                                    placeholder="Number"
-                                                    value={rangeOfPriceFrom}
-                                                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                        if (+e.target.value.trim() > 0) {
-                                                            setPriceErrorMessage('')
-                                                            setRangeOfPriceFromError(false)
-                                                            setRangeOfPriceFrom(+e.target.value.trim())
-                                                        } else {
-                                                            setRangeOfPriceFrom('')
-                                                        }
-                                                    }} />
-                                            </div>
-                                            <div className="flex flex-row ml-10 gap-7">
-                                                <label htmlFor="range-of-price-number-2">To</label>
-                                                <input
-                                                    id="range-of-price-number-2"
-                                                    type="number"
-                                                    name='range-of-price-number-2'
-                                                    disabled={!editForm}
-                                                    className={`border-2 ${rangeOfPriceToError ? 'border-red-400' : 'border-gray-300'} pl-1 pr-1 rounded bg-white w-40`}
-                                                    placeholder="Number"
-                                                    value={rangeOfPriceTo}
-                                                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                                        if (+e.target.value.trim() > 0) {
-                                                            setPriceErrorMessage('')
-                                                            setRangeOfPriceToError(false)
-                                                            setRangeOfPriceTo(+e.target.value.trim())
-                                                        } else {
-                                                            setRangeOfPriceTo('')
-                                                        }
-                                                    }} />
-                                            </div>
-                                        </div>}
-                                </div>
+                                <input
+                                    id="price-number"
+                                    type="number"
+                                    disabled={!editForm}
+                                    name='price-number'
+                                    className={`border-2 ${priceError ? 'border-red-400' : 'border-gray-400'} pl-1 pr-1 rounded bg-white w-40`}
+                                    placeholder="Number"
+                                    value={price}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (e.target.value.trim() && +e.target.value.trim() !== 0) {
+                                            setPriceError(false)
+                                            setPrice(+e.target.value.trim())
+                                        } else {
+                                            setPrice('')
+                                        }
+                                    }} />
                             </div>
                         </div>
 

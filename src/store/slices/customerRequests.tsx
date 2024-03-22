@@ -9,16 +9,25 @@ interface CustomerQueryType {
 }
 
 export const initialState: {
-    customerRequests: CustomerQueryType[]
+    customerRequests: CustomerQueryType[],
+    unseenCustomerRequests: CustomerQueryType[]
 } = {
-    customerRequests: []
+    customerRequests: [],
+    unseenCustomerRequests: []
 }
 
 export const CustomerRequestsSlice = createSlice({
     name: 'CustomerRequests',
     initialState: initialState,
     reducers: {
-        setCustomerRequests(state: { customerRequests: CustomerQueryType[] }, action: { payload: CustomerQueryType[] }) {
+        setCustomerRequests(state: { customerRequests: CustomerQueryType[], unseenCustomerRequests: CustomerQueryType[] }, action: { payload: CustomerQueryType[] }) {
+            let unSeenCustomerRequests: CustomerQueryType[] = []
+            action.payload.forEach(request => {
+                if (!request.requestSeen) {
+                    unSeenCustomerRequests.push(request)
+                }
+            })
+            state.unseenCustomerRequests = unSeenCustomerRequests
             state.customerRequests = action.payload
         }
     }

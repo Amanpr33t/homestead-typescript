@@ -23,7 +23,6 @@ const AddPropertyModal: React.FC<PropsType> = ({ dealerId, modalReset, alertSett
     const states: string[] = ['chandigarh', 'punjab']
 
     const [propertyType, setPropertyType] = useState<'agricultural' | 'residential' | 'commercial' | ''>('')
-    const [propertyTypeError, setPropertyTypeError] = useState<boolean>(false)
     const [plotNumber, setPlotNumber] = useState<string>('')
     const [village, setVillage] = useState<string>('')
     const [city, setCity] = useState<string>('')
@@ -36,9 +35,6 @@ const AddPropertyModal: React.FC<PropsType> = ({ dealerId, modalReset, alertSett
     const assignFieldAgentToAddProperty = async (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!propertyType || !district || !state) {
-            if (!propertyType) {
-                setPropertyTypeError(true)
-            }
             if (!district) {
                 setDistrictError(true)
             }
@@ -113,9 +109,10 @@ const AddPropertyModal: React.FC<PropsType> = ({ dealerId, modalReset, alertSett
     return (
         <Fragment>
 
-            <div className="w-full h-screen fixed top-0 z-50 flex justify-center bg-black bg-opacity-70 backdrop-blur-lg py-5 sm:py-16" onClick={modalReset}>
+            <div className="w-full h-screen fixed top-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-lg py-5 " onClick={modalReset}>
 
                 <form className="relative max-h-full overflow-y-auto w-11/12 sm:w-9/12 md:w-8/12 lg:w-7/12  h-fit px-4 pt-8 pb-4 flex flex-col rounded-lg border border-gray-200 shadow-2xl bg-white" onClick={(e) => e.stopPropagation()} onSubmit={assignFieldAgentToAddProperty}>
+
                     <button type="button" className="absolute top-3 right-2.5 text-gray-700 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={modalReset}>
                         <IoClose className="text-3xl" />
                     </button>
@@ -123,19 +120,47 @@ const AddPropertyModal: React.FC<PropsType> = ({ dealerId, modalReset, alertSett
                     {/*property type*/}
                     <div className="flex flex-row gap-4 mt-3 mb-1.5">
                         <label className="text-lg font-semibold" htmlFor="state">Property type</label>
-                        <select
-                            className={`border  p-2 rounded cursor-pointer bg-gray-100 ${propertyTypeError ? 'border-red-500' : 'border-gray-400'}`}
-                            name="experience"
-                            id="experience"
-                            value={propertyType}
-                            onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                                setPropertyType(e.target.value as 'residential' | 'commercial' | 'residential')
-                            }}>
-                            <option value="" disabled>Type of property</option>
-                            <option value='residential'>Residential</option>
-                            <option value='commercial'>Commercial</option>
-                            <option value='agricultural'>Agricultural</option>
-                        </select>
+                        <div className="flex flex-col gap-1.5 mt-1">
+                            <div className="flex flex-row gap-1">
+                                <input
+                                    id="agri-radio"
+                                    name='radio'
+                                    type="radio"
+                                    onChange={e => {
+                                        if (e.target.checked) {
+                                            setPropertyType('agricultural')
+                                        }
+                                    }}
+                                />
+                                <label htmlFor="agri-radio">Agricultural</label>
+                            </div>
+                            <div className="flex flex-row gap-1">
+                                <input
+                                    id='comm-radio'
+                                    name='radio'
+                                    type="radio"
+                                    onChange={e => {
+                                        if (e.target.checked) {
+                                            setPropertyType('commercial')
+                                        }
+                                    }}
+                                />
+                                <label htmlFor="comm-radio">Commercial</label>
+                            </div>
+                            <div className="flex flex-row gap-1">
+                                <input
+                                    id='resi-radio'
+                                    name='radio'
+                                    type="radio"
+                                    onChange={e => {
+                                        if (e.target.checked) {
+                                            setPropertyType('residential')
+                                        }
+                                    }}
+                                />
+                                <label htmlFor="resi-radio">Residential</label>
+                            </div>
+                        </div>
                     </div>
 
                     {/*address */}

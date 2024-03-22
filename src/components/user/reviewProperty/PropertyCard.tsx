@@ -22,13 +22,6 @@ interface PropertyType {
         }
     },
     price: number,
-    priceData: {
-        fixed: number | null,
-        range: {
-            from: number | null,
-            to: number | null
-        }
-    },
     propertyImagesUrl: string[],
     _id: string
 }
@@ -39,7 +32,7 @@ interface PropsType {
 }
 
 //This component is the home page for property dealer
-const PropertyCard: React.FC<PropsType> = ({ property,resetProperty }) => {
+const PropertyCard: React.FC<PropsType> = ({ property, resetProperty }) => {
     const navigate = useNavigate()
     const {
         _id,
@@ -47,7 +40,6 @@ const PropertyCard: React.FC<PropsType> = ({ property,resetProperty }) => {
         location,
         propertyImagesUrl,
         price,
-        priceData,
         isApprovedByCityManager
     } = property
 
@@ -55,20 +47,20 @@ const PropertyCard: React.FC<PropsType> = ({ property,resetProperty }) => {
 
     return (
         <Fragment>
-            <div key={_id} className={`w-fit h-fit flex flex-col rounded-xl border cursor-pointer bg-white`} onClick={() => {
+            <div key={_id} className={`w-fit h-fit flex flex-col rounded-xl border cursor-pointer flex-shrink-0 bg-white`} onClick={() => {
                 resetProperty()
-                navigate(`/property-dealer/review-property?type=${propertyType}&id=${_id}`,{replace:true})
+                navigate(`/property?propertyId=${_id}&type=${propertyType}`)
             }}>
 
                 <div className="relative w-fit h-fit">
                     <img
                         src={propertyImagesUrl[indexOfImageToBeShown]}
                         alt=''
-                        className="w-80 h-72 rounded-t-xl"
+                        className="w-72 h-48 rounded-t-xl"
                     />
 
-                    {propertyImagesUrl.length > 1 && <button
-                        className="text-center absolute top-1/2 left-1 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold"
+                    {propertyImagesUrl.length > 1 && indexOfImageToBeShown > 0 && <button
+                        className="text-center absolute top-1/2 left-1 transform -translate-y-1/2 bg-black hover:bg-gray-800 text-white p-2 rounded-full font-extrabold"
                         disabled={indexOfImageToBeShown === 0}
                         onClick={(e) => {
                             e.stopPropagation()
@@ -77,8 +69,8 @@ const PropertyCard: React.FC<PropsType> = ({ property,resetProperty }) => {
                     >
                         <MdArrowBackIosNew />
                     </button>}
-                    {propertyImagesUrl.length > 1 && <button
-                        className="text-center absolute top-1/2 right-1 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold"
+                    {propertyImagesUrl.length > 1 && indexOfImageToBeShown + 1 < propertyImagesUrl.length && <button
+                        className="text-center absolute top-1/2 right-1 transform -translate-y-1/2 bg-black hover:bg-gray-800 text-white p-2 rounded-full font-extrabold"
                         disabled={indexOfImageToBeShown === propertyImagesUrl.length - 1}
                         onClick={(e) => {
                             e.stopPropagation()
@@ -91,29 +83,9 @@ const PropertyCard: React.FC<PropsType> = ({ property,resetProperty }) => {
 
                 <div className="w-fit flex flex-col justify-center p-4 ">
 
-                    {(propertyType === 'commercial' || propertyType === 'agricultural') && price &&
-                        <p className="flex flex-row font-semibold text-gray-700">
-                            <FaRupeeSign className="mt-1" />{price.toLocaleString('en-IN')}
-                        </p>}
-
-                    {propertyType === 'residential' && priceData && priceData.fixed &&
-                        <p className="flex flex-row font-semibold text-gray-700">
-                            <FaRupeeSign className="mt-1" />{priceData.fixed.toLocaleString('en-IN')}
-                        </p>}
-
-                    {propertyType === 'residential' && priceData && !priceData.fixed &&
-                        <div className="flex flex-row font-semibold text-gray-700">
-                            {priceData?.range.from && <div className="flex flex-row">
-                                <FaRupeeSign className="mt-1" />
-                                {priceData?.range.from.toLocaleString('en-IN')}
-                            </div>}
-                            <p className="px-2">to</p>
-                            {priceData?.range.to && <div className="flex flex-row">
-                                <FaRupeeSign className="mt-1" />
-                                {priceData?.range.to.toLocaleString('en-IN')}
-                            </div>}
-                        </div>}
-
+                    <p className="flex flex-row font-semibold text-gray-700">
+                        <FaRupeeSign className="mt-1" />{price.toLocaleString('en-IN')}
+                    </p>
 
                     <p className="text-gray-500 text-wrap">{capitaliseFirstAlphabetsOfAllWordsOfASentence(location.name.district)}, {capitaliseFirstAlphabetsOfAllWordsOfASentence(location.name.state)}</p>
 

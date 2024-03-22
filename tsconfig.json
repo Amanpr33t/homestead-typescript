@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "types": ["@types/react", "@types/react-dom", "@types/react-icons","react", "react-dom", "react-datepicker","node"],
+    "types": [
+      "@types/react",
+      "@types/react-dom",
+      "@types/react-icons",
+      "react",
+      "react-dom",
+      "react-datepicker",
+      "node"
+    ],
     "lib": [
       "dom",
       "dom.iterable",

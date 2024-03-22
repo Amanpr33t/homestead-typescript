@@ -11,7 +11,7 @@ interface AlertType {
 }
 
 interface PropsType {
-    userType: 'field-agent' | 'property-evaluator' | 'city-manager'|'property-dealer'
+    userType: 'field-agent' | 'property-evaluator' | 'city-manager' | 'property-dealer' | 'user'
 }
 
 /*This component contains code for the following tasks:

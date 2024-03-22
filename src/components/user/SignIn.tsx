@@ -1,13 +1,13 @@
 import { Fragment } from "react"
 import CommonSignIn from "../CommonSignIn"
 
-const PropertyDealerSignIn: React.FC = () => {
+const UserSignIn: React.FC = () => {
 
     return (
         <Fragment>
-            <CommonSignIn userType="property-dealer" />
+            <CommonSignIn userType="user" />
         </Fragment >
     )
 }
-export default PropertyDealerSignIn
+export default UserSignIn
 

@@ -1,12 +1,12 @@
 
 import React, { Fragment, useState } from "react"
-import { PropertyDataType as AgriculturalPropertyType } from "../../dataTypes/agriculturalPropertyTypes";
-import { PropertyDataType as ResidentialPropertyType } from "../../dataTypes/residentialPropertyTypes";
-import { PropertyDataType as CommercialPropertyType } from "../../dataTypes/commercialPropertyTypes";
-import AgriculturalPropertyReview from "./reviewProperty/Agricultural";
-import CommercialPropertyReview from "./reviewProperty/Commercial";
-import ResidentialPropertyReview from "./reviewProperty/Residential";
-import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../utils/stringUtilityFunctions";
+import { PropertyDataType as AgriculturalPropertyType } from "../../../dataTypes/agriculturalPropertyTypes";
+import { PropertyDataType as ResidentialPropertyType } from "../../../dataTypes/residentialPropertyTypes";
+import { PropertyDataType as CommercialPropertyType } from "../../../dataTypes/commercialPropertyTypes";
+import AgriculturalPropertyReview from "../reviewProperty/Agricultural";
+import CommercialPropertyReview from "../reviewProperty/Commercial";
+import ResidentialPropertyReview from "../reviewProperty/Residential";
+import { capitaliseFirstAlphabetsOfAllWordsOfASentence } from "../../../utils/stringUtilityFunctions";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { IoMdArrowRoundDown } from "react-icons/io";
@@ -35,7 +35,7 @@ const CustomerInformationModal: React.FC<PropsType> = ({
 
     return (
         <Fragment>
-            <div className="z-50 px-2 sm:px-0 fixed left-0 top-0 h-screen w-screen flex justify-center pt-24 pb-5 bg-black bg-opacity-75 backdrop-blur-sm z-20" onClick={() => {
+            <div className="z-50 fixed left-0 top-0 px-2 pb-5 pt-5 lg:pt-24  sm:px-0  h-screen w-screen flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm" onClick={() => {
                 propertyReset()
                 selectedCustomerReset()
             }}>
@@ -88,8 +88,8 @@ const CustomerInformationModal: React.FC<PropsType> = ({
                                         className={`w-72 md:w-96 h-44 md:h-60 rounded-xl`}
                                     />
 
-                                    {property.propertyImagesUrl && property.propertyImagesUrl.length > 1 && <button
-                                        className={`text-center absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold `}
+                                    {property.propertyImagesUrl && property.propertyImagesUrl.length > 1 && indexOfImageToBeShown > 0 && <button
+                                        className={`text-center absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 bg-black text-white  p-2 rounded-full font-extrabold `}
                                         disabled={indexOfImageToBeShown === 0}
                                         onClick={() => {
                                             setIndexOfImageToBeShown(index => index - 1)
@@ -97,8 +97,8 @@ const CustomerInformationModal: React.FC<PropsType> = ({
                                     >
                                         <MdArrowBackIosNew />
                                     </button>}
-                                    {property.propertyImagesUrl && property.propertyImagesUrl.length > 1 && <button
-                                        className={`text-center absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full font-extrabold`}
+                                    {property.propertyImagesUrl && property.propertyImagesUrl.length > 1 && indexOfImageToBeShown + 1 < property.propertyImagesUrl.length && <button
+                                        className={`text-center absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 bg-black text-white  p-2 rounded-full font-extrabold`}
                                         disabled={indexOfImageToBeShown === property.propertyImagesUrl.length - 1}
                                         onClick={() => {
                                             setIndexOfImageToBeShown(index => index + 1)

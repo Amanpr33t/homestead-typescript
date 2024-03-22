@@ -32,7 +32,7 @@ export interface CommonDataToAllPropertyTypes {
     evaluationData?: EvaluationDataType,
     uniqueId?: string,
     isLive?: boolean,
-    isSold?: boolean,
+    isClosed?: boolean,
     isApprovedByCityManager?: {
         isApproved: boolean,
         date: string | null
@@ -57,5 +57,6 @@ export interface CommonDataToAllPropertyTypes {
 
         details?: string | null,//resdiential and commercial
     },
+    price: number,
 }
 

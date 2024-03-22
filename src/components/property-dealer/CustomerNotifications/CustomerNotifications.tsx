@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { CustomerRequestsActions } from "../../store/slices/customerRequests";
-import { PropertyDataType as AgriculturalPropertyType } from "../../dataTypes/agriculturalPropertyTypes";
-import { PropertyDataType as ResidentialPropertyType } from "../../dataTypes/residentialPropertyTypes";
-import { PropertyDataType as CommercialPropertyType } from "../../dataTypes/commercialPropertyTypes";
+import { CustomerRequestsActions } from "../../../store/slices/customerRequests";
+import { PropertyDataType as AgriculturalPropertyType } from "../../../dataTypes/agriculturalPropertyTypes";
+import { PropertyDataType as ResidentialPropertyType } from "../../../dataTypes/residentialPropertyTypes";
+import { PropertyDataType as CommercialPropertyType } from "../../../dataTypes/commercialPropertyTypes";
 import CustomerInformationModal from "./CustomerInformationModal";
 import CustomerNotificationsContainer from "./CustomerNotificationsContainer";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -60,17 +60,21 @@ const CustomerNotifications: React.FC<PropsType> = ({
     //When an unread query has been seen, its status will be updated to seen using this function
     const updateSeenStatusOfSelectedCustomer = async (customerId: string, propertyId: string, requestSeen: boolean) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/updateSeenStatusOfCustomerRequest?customerId=${customerId}&propertyId=${propertyId}&requestSeen=${requestSeen}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/updateSeenStatusOfCustomerRequest?customerId=${customerId}&propertyId=${propertyId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`
-                }
+                },
+                body: JSON.stringify({
+                    requestSeen
+                })
             })
             if (!response.ok) {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
+            console.log(data)
             if (data.status === 'ok') {
                 if (data.customerRequests) {
                     dispatch(CustomerRequestsActions.setCustomerRequests(data.customerRequests))

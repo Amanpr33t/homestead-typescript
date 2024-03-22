@@ -58,13 +58,6 @@ export interface DataCommonToHouseAndFlatType {
 export interface PropertyDataType extends HouseSpecificDataType, DataCommonToHouseAndFlatType, CommonDataToAllPropertyTypes {
     //data common to flat, house and plot property type
     residentialPropertyType: 'flat' | 'house' | 'plot',
-    priceData: {
-        fixed: number | null,
-        range: {
-            from: number | null,
-            to: number | null
-        }
-    },
     waterSupply: {
         available: boolean,
         twentyFourHours: boolean | null

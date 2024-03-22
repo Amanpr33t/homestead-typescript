@@ -19,7 +19,7 @@ interface loginSignupType {
     }>
 }
 
-const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer' | 'property-evaluator' | 'city-manager'): loginSignupType => {
+const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer' | 'property-evaluator' | 'city-manager' | 'user'): loginSignupType => {
 
     const signIn = useCallback(async (email: string, password: string) => {
         try {
@@ -60,7 +60,7 @@ const useLoginSignupPasswordChange = (userType: 'field-agent' | 'property-dealer
         } catch (error) {
             throw new Error('error')
         }
-    }, [ userType])
+    }, [userType])
 
     const confirmOneTimePassword = useCallback(async (email: string, password: string) => {
         try {

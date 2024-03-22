@@ -9,7 +9,7 @@ interface PropsType {
     selectedPropertyTypeOptionDropdown: 'agricultural' | 'residential' | 'commercial' | 'all' | null,
     fetchProperties: (liveOrSold: 'live' | 'sold', skipProperties: boolean, propertyType?: 'agricultural' | 'residential' | 'commercial' | 'all') => Promise<any>,
     showPropertiesForSale: boolean,
-    hideDropdown: boolean
+    hideDropdown?: boolean
 }
 
 //This component is the home page for property dealer
