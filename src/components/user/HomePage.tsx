@@ -79,8 +79,6 @@ const UserHomePage: React.FC = () => {
 
     const [filtersModal, setFiltersModal] = useState<boolean>(false)
 
-    const [isFilters, setIsFilters] = useState<boolean>(false)
-
     //states for filters
     const [propertyType, setPropertyType] = useState<('agricultural' | 'commercial' | 'residential')[]>([])
     const [commercialPropertyType, setCommercialPropertyType] = useState<('shop' | 'industrial')[]>([])
@@ -92,11 +90,11 @@ const UserHomePage: React.FC = () => {
     const [minPrice, setMinPrice] = useState<'' | number>('')
     const [maxPrice, setMaxPrice] = useState<'' | number>('')
 
+    const [appliedFilters, setAppliedFilters] = useState<FiltersType | null>(null)
+
     useEffect(() => {
-        if (propertyType.length || commercialPropertyType.length || builtUpPropertyType.length || builtupOrEmpty.length || residentialPropertyType.length || state || district || typeof minPrice === 'number' || typeof maxPrice === 'number') {
-            setIsFilters(true)
-        } else {
-            setIsFilters(false)
+        if (!propertyType.length && !commercialPropertyType.length && !builtUpPropertyType.length && !builtupOrEmpty.length && !residentialPropertyType.length && !state && !district && typeof minPrice !== 'number' && typeof maxPrice !== 'number') {
+            setAppliedFilters(null)
         }
     }, [propertyType, commercialPropertyType, builtUpPropertyType, builtupOrEmpty, residentialPropertyType, state, district, maxPrice, minPrice])
 
@@ -136,7 +134,7 @@ const UserHomePage: React.FC = () => {
         }
     }, [authToken])
 
-    const applyFilters = async (filtersInput: FiltersType) => {
+    const applyFilters = async (filtersInput: FiltersType, skip: number) => {
         const { propertyType, price, state, district } = filtersInput
         if (!propertyType.length && !price.min && !price.max && !state && !district) {
             return
@@ -150,7 +148,7 @@ const UserHomePage: React.FC = () => {
                 },
                 body: JSON.stringify({
                     filters: filtersInput,
-                    skip: properties.length
+                    skip
                 })
             })
             if (!response.ok) {
@@ -159,9 +157,14 @@ const UserHomePage: React.FC = () => {
             const data = await response.json()
             if (data.status === 'ok') {
                 setSpinner(false)
-                setProperties(data.properties)
+                if (skip === 0) {
+                    setProperties(data.properties)
+                } else {
+                    setProperties([...properties, ...data.properties])
+                }
                 setTotalNumberOfProperties(data.totalNumberOfProperties)
                 setFiltersModal(false)
+                setAppliedFilters(filtersInput)
             } else {
                 throw new Error('Some error occured')
             }
@@ -229,7 +232,7 @@ const UserHomePage: React.FC = () => {
                     minPriceSetter={(input) => setMinPrice(input)}
                     maxPriceSetter={(input) => setMaxPrice(input)}
                     modalReset={() => setFiltersModal(false)}
-                    applyFilters={(filtersInput: FiltersType) => applyFilters(filtersInput)}
+                    applyFilters={(filtersInput: FiltersType, skip: number) => applyFilters(filtersInput, skip)}
                     propertyType={propertyType}
                     commercialPropertyType={commercialPropertyType}
                     builtupOrEmpty={builtupOrEmpty}
@@ -271,18 +274,19 @@ const UserHomePage: React.FC = () => {
                                 //Container that shows property up for sale or sold
                                 <div className="py-7 flex flex-col gap-6 relative">
                                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                                        {!isFilters && <p className="text-2xl font-bold text-gray-700">Best deals for you</p>}
-                                        {isFilters && <p className="text-2xl font-bold text-gray-700">Showing {properties.length} out of {totalNumberOfProperties} properties</p>}
+                                        {!appliedFilters && <p className="text-2xl font-bold text-gray-700">Best deals for you</p>}
+                                        {appliedFilters && <p className="text-2xl font-bold text-gray-700">Showing {properties.length} out of {totalNumberOfProperties} properties</p>}
                                         <div className="hidden sm:flex flex-row items-center gap-1 border border-gray-400 hover:border-gray-600 cursor-pointer rounded-xl py-3 px-5 text-gray-700 font-semibold mr-2 hover:bg-gray-100" onClick={() => setFiltersModal(true)}>
                                             <LiaFilterSolid className="text-2xl" />
                                             <p>Filters</p>
                                         </div>
                                     </div>
 
-                                    {isFilters &&
+                                    {appliedFilters &&
                                         <div className="flex flex-col gap-3">
                                             <div className="flex flex-row gap-2 sm:gap-5 flex-wrap">
-                                                {propertyType.length > 0 && propertyType.map(type => {
+                                                {appliedFilters.propertyType.length > 0 && appliedFilters.propertyType.map(type => {
+                                                    console.log(appliedFilters.propertyType)
                                                     return <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 ">
                                                         <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(type)}</p>
                                                         <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
@@ -300,11 +304,11 @@ const UserHomePage: React.FC = () => {
                                                                     min: minPrice || null,
                                                                     max: maxPrice || null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>
                                                 })}
-                                                {residentialPropertyType.length > 0 && residentialPropertyType.map(type => {
+                                                {appliedFilters.residentialPropertyType.length > 0 && appliedFilters.residentialPropertyType.map(type => {
                                                     return <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 ">
                                                         <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(type)}</p>
                                                         <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
@@ -322,11 +326,33 @@ const UserHomePage: React.FC = () => {
                                                                     min: minPrice || null,
                                                                     max: maxPrice || null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>
                                                 })}
-                                                {builtUpPropertyType.length > 0 && builtUpPropertyType.map(type => {
+                                                {appliedFilters.builtupOrEmpty.length > 0 && appliedFilters.builtupOrEmpty.map(type => {
+                                                    return <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1">
+                                                        <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(type)}</p>
+                                                        <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
+                                                            const updatedArray = removeItemFromArray(builtupOrEmpty, type) as ('built-up' | 'empty')[]
+                                                            setBuiltupOrEmpty(updatedArray)
+                                                            applyFilters({
+                                                                propertyType,
+                                                                commercialPropertyType,
+                                                                builtUpPropertyType,
+                                                                builtupOrEmpty: updatedArray,
+                                                                residentialPropertyType,
+                                                                state: state || null,
+                                                                district: district || null,
+                                                                price: {
+                                                                    min: minPrice || null,
+                                                                    max: maxPrice || null
+                                                                }
+                                                            }, 0)
+                                                        }} />
+                                                    </div>
+                                                })}
+                                                {appliedFilters.builtUpPropertyType.length > 0 && appliedFilters.builtUpPropertyType.map(type => {
                                                     return <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1">
                                                         <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(type)}</p>
                                                         <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
@@ -344,11 +370,11 @@ const UserHomePage: React.FC = () => {
                                                                     min: minPrice || null,
                                                                     max: maxPrice || null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>
                                                 })}
-                                                {commercialPropertyType.length > 0 && commercialPropertyType.map(type => {
+                                                {appliedFilters.commercialPropertyType.length > 0 && appliedFilters.commercialPropertyType.map(type => {
                                                     return <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1">
                                                         <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(type)}</p>
                                                         <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
@@ -366,14 +392,15 @@ const UserHomePage: React.FC = () => {
                                                                     min: minPrice || null,
                                                                     max: maxPrice || null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>
                                                 })}
-                                                {state && <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 ">
-                                                    <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(state)}</p>
+                                                {appliedFilters.state && <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 ">
+                                                    <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(appliedFilters.state)}</p>
                                                     <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
                                                         setState('')
+                                                        setDistrict('')
                                                         applyFilters({
                                                             propertyType,
                                                             commercialPropertyType,
@@ -381,16 +408,16 @@ const UserHomePage: React.FC = () => {
                                                             builtupOrEmpty,
                                                             residentialPropertyType,
                                                             state: null,
-                                                            district: district || null,
+                                                            district: null,
                                                             price: {
                                                                 min: minPrice || null,
                                                                 max: maxPrice || null
                                                             }
-                                                        })
+                                                        }, 0)
                                                     }} />
                                                 </div>}
-                                                {district && <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 ">
-                                                    <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(district)}</p>
+                                                {appliedFilters.district && <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 ">
+                                                    <p className="text-gray-800 cursor-auto">{capitalizeFirstLetterOfAString(appliedFilters.district)}</p>
                                                     <IoClose className="text-2xl hover:text-red-500 cursor-pointer" onClick={() => {
                                                         setDistrict('')
                                                         applyFilters({
@@ -405,10 +432,10 @@ const UserHomePage: React.FC = () => {
                                                                 min: minPrice || null,
                                                                 max: maxPrice || null
                                                             }
-                                                        })
+                                                        }, 0)
                                                     }} />
                                                 </div>}
-                                                {typeof maxPrice === 'number' && typeof minPrice === 'number' &&
+                                                {typeof appliedFilters.price.max === 'number' && typeof appliedFilters.price.min === 'number' &&
                                                     <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 text-gray-800 ">
                                                         <div className="flex flex-row gap-0 items-center">
                                                             <MdCurrencyRupee />
@@ -434,10 +461,10 @@ const UserHomePage: React.FC = () => {
                                                                     min: null,
                                                                     max: null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>}
-                                                {typeof maxPrice !== 'number' && typeof minPrice === 'number' &&
+                                                {typeof appliedFilters.price.max !== 'number' && typeof appliedFilters.price.min === 'number' &&
                                                     <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 text-gray-800 cursor-default">
                                                         <div className="flex flex-row gap-0 items-center">
                                                             <MdCurrencyRupee />
@@ -458,10 +485,10 @@ const UserHomePage: React.FC = () => {
                                                                     min: null,
                                                                     max: null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>}
-                                                {typeof maxPrice === 'number' && typeof minPrice !== 'number' &&
+                                                {typeof appliedFilters.price.max === 'number' && typeof appliedFilters.price.min !== 'number' &&
                                                     <div className="flex flex-row items-center rounded-3xl border-2 border-gray-300 px-3 py-2 w-fit gap-1 text-gray-800 cursor-default">
                                                         <div className="flex flex-row gap-0 items-center">
                                                             <p className="mr-1 cursor-auto">Up to</p>
@@ -483,11 +510,12 @@ const UserHomePage: React.FC = () => {
                                                                     min: null,
                                                                     max: null
                                                                 }
-                                                            })
+                                                            }, 0)
                                                         }} />
                                                     </div>}
                                             </div>
                                             <button className="bg-red-600 hover:bg-red-800 px-3 py-2 rounded-xl w-fit text-white font-semibold" onClick={() => {
+                                                setAppliedFilters(null)
                                                 setPropertyType([])
                                                 setCommercialPropertyType([])
                                                 setResidentialPropertyType([])
@@ -510,6 +538,26 @@ const UserHomePage: React.FC = () => {
                                             </div>
                                         })}
                                     </div>
+
+                                    {/*a button to show more properties */}
+                                    {totalNumberOfProperties > properties.length &&
+                                        <div className="flex justify-center pb-5">
+                                            <button className="border p-3 rounded-lg border-gray-500 font-semibold hover:border-gray-800 hover:bg-gray-100 text-gray-700" onClick={() => {
+                                                applyFilters({
+                                                    propertyType,
+                                                    commercialPropertyType,
+                                                    builtUpPropertyType,
+                                                    builtupOrEmpty,
+                                                    residentialPropertyType,
+                                                    state: state || null,
+                                                    district: district || null,
+                                                    price: {
+                                                        min: minPrice || null,
+                                                        max: maxPrice || null
+                                                    }
+                                                }, properties.length)
+                                            }}>Show more listings</button>
+                                        </div>}
                                 </div>}
 
                         </div>

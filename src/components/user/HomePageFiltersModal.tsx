@@ -22,7 +22,7 @@ interface FiltersType {
 
 interface PropsType {
     modalReset: () => void,
-    applyFilters: (filters: FiltersType) => void,
+    applyFilters: (filters: FiltersType, skip: number) => void,
     propertyTypeSetter: (input: ('agricultural' | 'commercial' | 'residential')[]) => void,
     commercialPropertyTypeSetter: (input: ('shop' | 'industrial')[]) => void,
     builtupOrEmptySetter: (input: ('built-up' | 'empty')[]) => void,
@@ -341,19 +341,22 @@ const HomePageFilterModal: React.FC<PropsType> = ({
 
                     <div className="h-16 border-t flex justify-between px-5 py-2">
                         <button className="text-white bg-black hover:bg-gray-800 p-3 rounded-lg font-semibold" onClick={clearFilters}>Clear filters</button>
-                        <button className="text-white bg-red-600 hover:bg-red-800 p-3 rounded-lg font-semibold" onClick={() => applyFilters({
-                            propertyType,
-                            commercialPropertyType,
-                            builtUpPropertyType,
-                            builtupOrEmpty,
-                            residentialPropertyType,
-                            state: state || null,
-                            district: district || null,
-                            price: {
-                                min: minPrice || null,
-                                max: maxPrice || null
-                            }
-                        })}>Search</button>
+                        <button className="text-white bg-red-600 hover:bg-red-800 p-3 rounded-lg font-semibold" onClick={() => {
+                            applyFilters({
+                                propertyType,
+                                commercialPropertyType,
+                                builtUpPropertyType,
+                                builtupOrEmpty,
+                                residentialPropertyType,
+                                state: state || null,
+                                district: district || null,
+                                price: {
+                                    min: minPrice || null,
+                                    max: maxPrice || null
+                                }
+                            }, 0)
+                        }
+                        }>Search</button>
                     </div>
                 </div>
             </div>
