@@ -28,7 +28,6 @@ export interface PropertyDataType extends CommonDataToAllPropertyTypes {
         feet: number,
         metre: number
     },
-    price: number,
     lockInPeriod?: {
         years: number | null,
         months: number | null

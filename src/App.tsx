@@ -41,8 +41,11 @@ import CityManagerSignIn from './components/city-manager/SignIn';
 import CityManagerHomePage from './components/city-manager/HomePage';
 import PropertiesPendingForApproval from './components/city-manager/PropertiesPendingForApproval';
 import ApproveProperty from './components/city-manager/ApproveProperty';
+
 import ListOfRequestsToAddProperty from './components/field-agent/requestsToAddNewProperty/ListOfRequestsToAddNewProperty';
 import DealerDetails from './components/property-dealer/DealerDetails';
+
+
 import NavbarUser from './components/user/Navbar';
 import UserHomePage from './components/user/HomePage';
 import UserSignIn from './components/user/SignIn';

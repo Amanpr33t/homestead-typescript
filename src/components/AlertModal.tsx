@@ -22,7 +22,7 @@ const AlertModal: React.FC<AlertPropsType> = (props) => {
     }
     return (
         <Fragment>
-            <div className="fixed z-50 top-0 pt-28 h-screen w-full flex justify-center bg-black bg-opacity-50 backdrop-blur-sm" onClick={routeTo ? routeToPage : alertModalRemover}>
+            <div className="fixed z-50 top-0 left-0 pt-28 h-screen w-full flex justify-center bg-black bg-opacity-50 backdrop-blur-sm" onClick={routeTo ? routeToPage : alertModalRemover}>
                 <div className="relative w-11/12 sm:w-96 h-fit rounded shadow bg-white" onClick={e => e.stopPropagation()}>
                     <button type="button" className="absolute top-3 right-2.5 text-gray-700 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded p-2 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={routeTo ? routeToPage : alertModalRemover}>
                         <IoClose className="text-3xl" />

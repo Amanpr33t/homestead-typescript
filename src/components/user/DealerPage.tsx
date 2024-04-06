@@ -7,9 +7,10 @@ import Spinner from "../Spinner";
 import { MdContentPasteOff } from "react-icons/md";
 import PropertyCard from "../property-dealer/PropertyCard";
 import PropertyTypeDropdown from "../property-dealer/PropertyTypeDropdown";
-import ReviewsContainer from "../property-dealer/ReviewsContainer";
+import ReviewsContainer from "../user/ReviewsContainer";
 import SignInReminderModal from "./SignInReminderModal";
 import ContactDealerModal from "./ContactDealerModal";
+import Footer from "./Footer";
 
 interface CustomerReviewType {
     review: string,
@@ -98,6 +99,7 @@ const DealerPage: React.FC = () => {
     const [numberOfProperties, setNumberOfProperties] = useState<number>(0)//Number of properties live or closed properties in database. If the user selects a property type, it repersents total number of live or closed properties of that properpty type
     const [totalNumberOfProperties, setTotalNumberOfProperties] = useState<number>(0)//total number of properties in database. It stores total number of live properties or closed properties
 
+    const [customersOwnReview, setCustomersOwnReview] = useState<CustomerReviewType | null>(null)
     const [customerReviews, setCustomerReviews] = useState<CustomerReviewType[]>([])
 
     const [averageOfRatingsFromCustomer, setAverageOfRatingsFromCustomer] = useState<number>(0)
@@ -116,7 +118,11 @@ const DealerPage: React.FC = () => {
         setSpinner(true)
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/dataForPropertyDealerPage?dealerId=${searchParamsDealerId}`, {
-                method: 'GET'
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
             })
             if (!response.ok) {
                 throw new Error('Some error occured')
@@ -128,7 +134,8 @@ const DealerPage: React.FC = () => {
                 setProperties(data.liveProperties)
                 setNumberOfProperties(data.numberOfProperties)
                 setTotalNumberOfProperties(data.numberOfProperties)
-                setCustomerReviews(data.reviewsFromCustomer)
+                setCustomerReviews(data.reviewsFromOtherCustomers)
+                setCustomersOwnReview(data.customersOwnReview)
                 setAverageOfRatingsFromCustomer(data.averageCustomerRatings)
             } else {
                 throw new Error('some error occured')
@@ -335,22 +342,30 @@ const DealerPage: React.FC = () => {
                             </div>
 
                             {/*The div container is used to show reviews */}
-                            {customerReviews && customerReviews.length > 0 &&
+                            {searchParamsDealerId &&
                                 <div ref={reviewRef}>
                                     <ReviewsContainer
                                         customerReviews={customerReviews}
+                                        customersOwnReview={customersOwnReview}
+                                        customerReviewsSetter={(reviews) => setCustomerReviews(reviews)}
+                                        customersOwnReviewSetter={(review) => setCustomersOwnReview(review)}
                                         dealerLogoUrl={dealerInfo?.logoUrl}
                                         averageOfRatingsFromCustomer={averageOfRatingsFromCustomer}
+                                        averageOfRatingsFromCustomerSetter={(rating) => setAverageOfRatingsFromCustomer(rating)}
+                                        dealerId={searchParamsDealerId}
                                     />
                                 </div>}
 
                             {/*About dealer */}
-                            {dealerInfo && dealerInfo.about && <div className="bg-white flex flex-col gap-3 rounded-2xl shadow p-5">
-                                <p className="font-bold text-xl text-gray-800">About</p>
-                                <p>{dealerInfo?.about}</p>
-                            </div>}
+                            {dealerInfo && dealerInfo.about &&
+                                <div className="bg-white flex flex-col gap-3 rounded-2xl shadow p-5">
+                                    <p className="font-bold text-xl text-gray-800">About</p>
+                                    <p>{dealerInfo?.about}</p>
+                                </div>}
                         </div>
                     </div>
+                    
+                    <Footer />
                 </div>}
 
             {!spinner && showSignInReminderModal &&

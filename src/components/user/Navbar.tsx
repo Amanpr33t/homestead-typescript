@@ -17,6 +17,7 @@ const NavbarUser: React.FC = () => {
     })
 
     const [spinner, setSpinner] = useState<boolean>(false)
+
     const authToken: string | null = localStorage.getItem("homestead-user-authToken")
 
     const [showUserDropdown, setShowUserDropdown] = useState<boolean>(false) //if true, a dropdown is shown 

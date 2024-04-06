@@ -64,7 +64,7 @@ const PropertyDealerHomePage: React.FC = () => {
 
     const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
     useEffect(() => {
-        if (!authToken ) {
+        if (!authToken) {
             navigate('/property-dealer/signIn', { replace: true })
         }
     }, [authToken, navigate])
@@ -122,7 +122,6 @@ const PropertyDealerHomePage: React.FC = () => {
                 throw new Error('Some error occured')
             }
             const data = await response.json()
-            console.log(data)
             if (data.status === 'ok') {
                 setSpinner(false)
                 dispatch(CustomerRequestsActions.setCustomerRequests(data.requestsFromCustomer))

@@ -26,7 +26,6 @@ interface PropsType {
 
 //this component is an alert modal
 const CardToShowProperty: React.FC<PropsType> = ({ _id, index, propertyType, location, sentToEvaluatorByFieldAgentForEvaluation, sentToEvaluatorByCityManagerForReevaluation, sentToCityManagerForApproval }) => {
-    console.log(sentToCityManagerForApproval)
 
     const dayDiffernceColorSetter = (days: number): string => {
         if (days < 1) {

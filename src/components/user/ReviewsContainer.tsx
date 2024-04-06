@@ -1,8 +1,10 @@
-
 import { Fragment, useState } from "react"
 import { formatDate } from "../../utils/dateFunctions";
 import { useLocation } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
+import AddReviewModal from "../user/AddReviewModal";
+import { FaEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 interface CustomerReviewType {
     review: string,
@@ -16,13 +18,25 @@ interface CustomerReviewType {
 interface PropsType {
     dealerLogoUrl?: string,
     customerReviews: CustomerReviewType[],
-    averageOfRatingsFromCustomer: number
+    customersOwnReview: CustomerReviewType | null,
+    customerReviewsSetter: (review: CustomerReviewType[]) => void,
+    customersOwnReviewSetter: (reviews: CustomerReviewType | null) => void,
+    averageOfRatingsFromCustomer: number,
+    averageOfRatingsFromCustomerSetter: (rating: number) => void,
+    dealerId: string
 }
 
 //This component is the home page for property dealer
-const ReviewsContainer: React.FC<PropsType> = ({ dealerLogoUrl, customerReviews, averageOfRatingsFromCustomer}) => {
-
-    const location = useLocation();
+const ReviewsContainer: React.FC<PropsType> = ({
+    dealerLogoUrl,
+    customerReviews,
+    averageOfRatingsFromCustomer,
+    averageOfRatingsFromCustomerSetter,
+    dealerId,
+    customersOwnReview,
+    customerReviewsSetter,
+    customersOwnReviewSetter
+}) => {
     const authToken: string | null = localStorage.getItem("homestead-user-authToken")
 
     const [indexUntilWhichReviewsToBeShown, setIndexUntilWhicReviewsToBeShown] = useState<number>(3)
@@ -41,12 +55,19 @@ const ReviewsContainer: React.FC<PropsType> = ({ dealerLogoUrl, customerReviews,
             }
         }
         return stars;
-    };
-
-    console.log(customerReviews)
+    }
 
     return (
         <Fragment>
+            {showAddReviewModal &&
+                <AddReviewModal
+                    modalReset={() => setShowAddReviewModal(false)}
+                    dealerId={dealerId}
+                    customersOwnReview={customersOwnReview}
+                    customerReviewsSetter={customerReviewsSetter}
+                    customersOwnReviewSetter={customersOwnReviewSetter}
+                    averageOfRatingsFromCustomerSetter={averageOfRatingsFromCustomerSetter}
+                />}
 
             <div className="w-full bg-white flex flex-col gap-3 rounded-2xl shadow p-5" >
                 <div className="flex flex-col gap-3 sm:flex-row justify-between">
@@ -56,18 +77,40 @@ const ReviewsContainer: React.FC<PropsType> = ({ dealerLogoUrl, customerReviews,
                         <div className="flex items-center justify-start gap-3">
                             <img className="rounded-full w-16 h-16 border-2 border-gray-300" src={dealerLogoUrl} alt='' />
                             <div className="flex flex-row gap-1">
-                                {averageOfRatingsFromCustomer > 0 && <span className="text-2xl text-yellow-500 -mt-1">&#9733;</span>}
-                                {averageOfRatingsFromCustomer > 0 && <div className="flex flex-row gap-1">
+                                {!customersOwnReview && customerReviews.length === 0 &&
+                                    <p className="font-semibold text-gray-700 text-lg">0 reviews</p>}
+                                {(customersOwnReview || customerReviews.length > 0) && <span className="text-2xl text-yellow-500 -mt-1">&#9733;</span>}
+                                {(customersOwnReview || customerReviews.length > 0) && <div className="flex flex-row gap-1">
                                     <p className="font-semibold text-gray-700 text-lg">{averageOfRatingsFromCustomer}</p>
-                                    <p className="font-semibold text-gray-500  text-lg ">({customerReviews.length} reviews)</p>
+                                    <p className="font-semibold text-gray-500  text-lg ">({customersOwnReview ? customerReviews.length + 1 : customerReviews.length} reviews)</p>
                                 </div>}
                             </div>
                         </div>
                     </div>
 
+                    {!customersOwnReview && authToken &&
+                        <div className="flex sm:justify-center">
+                            <button className="h-fit flex flex-row justify-between items-center px-5 py-2 gap-20 border border-gray-500 hover:border-gray-900 hover:bg-gray-50 rounded-lg shadow" onClick={() => setShowAddReviewModal(true)}>
+                                <p>Write a review</p>
+                                <IoIosArrowForward />
+                            </button>
+                        </div>}
+
                 </div>
 
-                {customerReviews.slice(0, indexUntilWhichReviewsToBeShown).map(item => {
+                {customersOwnReview &&
+                    <div key={customersOwnReview._id} className="relative bg-gray-800 text-white p-3 rounded-xl">
+                        <FaEdit className="absolute right-2 top-1 text-xl hover:text-2xl cursor-pointer" onClick={() => setShowAddReviewModal(true)} />
+
+                        <div className="flex flex-row">
+                            {renderStarRating(customersOwnReview.rating)}
+                            <p className="ml-2 mt-1.5  font-semibold">{customersOwnReview.rating}.0</p>
+                        </div>
+                        <p className="mb-2  font-semibold">{formatDate(customersOwnReview.date)}</p>
+                        <p>{customersOwnReview.review}</p>
+                    </div>}
+
+                {customerReviews.length > 0 && customerReviews.slice(0, indexUntilWhichReviewsToBeShown).map(item => {
                     return <div key={item._id} className="bg-gray-100 p-3 rounded-xl">
                         <div className="flex flex-row">
                             {renderStarRating(item.rating)}

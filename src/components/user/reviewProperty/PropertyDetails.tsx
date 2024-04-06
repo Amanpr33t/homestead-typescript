@@ -17,6 +17,7 @@ import DealerInfoCard from "./DealerInfoCard";
 import PropertyCard from "./PropertyCard";
 import { AlertType } from "../../../dataTypes/alertType";
 import AlertModal from "../../AlertModal";
+import Footer from "../Footer";
 
 interface DealerAddressType {
     flatPlotHouseNumber: string,
@@ -227,6 +228,7 @@ const PropertyDetails: React.FC = () => {
                                 })}
                             </div>
                         </div>}
+                    <Footer />
                 </div>}
 
         </Fragment>
