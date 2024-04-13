@@ -255,7 +255,7 @@ const UserHomePage: React.FC = () => {
                     <div className="lg:px-20 pt-20 w-full min-h-screen " >
 
                         <div className="relative w-full h-56 md:h-72 ">
-                            <img className="bg-gray-100 w-full md:h-72 h-56 lg:rounded-lg" src='' alt='' />
+                            <img className=" w-full md:h-72 h-56 lg:rounded-lg z-10" src='' alt='' />
                             <div className="absolute top-10 z-10 w-full sm:hidden flex flex justify-center">
                                 <div className="w-fit flex flex-row items-center gap-1 border border-gray-400 hover:border-gray-600 cursor-pointer rounded-xl py-3 px-5 text-gray-700 font-semibold mr-2 bg-white" onClick={() => setFiltersModal(true)}>
                                     <LiaFilterSolid className="text-2xl" />

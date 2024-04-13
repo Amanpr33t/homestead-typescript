@@ -1,8 +1,6 @@
 
 import { Fragment, useState } from "react"
 import { formatDate } from "../../utils/dateFunctions";
-import { useLocation } from "react-router-dom";
-import { IoIosArrowForward } from "react-icons/io";
 
 interface CustomerReviewType {
     review: string,
@@ -22,12 +20,7 @@ interface PropsType {
 //This component is the home page for property dealer
 const ReviewsContainer: React.FC<PropsType> = ({ dealerLogoUrl, customerReviews, averageOfRatingsFromCustomer}) => {
 
-    const location = useLocation();
-    const authToken: string | null = localStorage.getItem("homestead-user-authToken")
-
     const [indexUntilWhichReviewsToBeShown, setIndexUntilWhicReviewsToBeShown] = useState<number>(3)
-
-    const [showAddReviewModal, setShowAddReviewModal] = useState<boolean>(false)
 
     const renderStarRating = (rating: number) => {
         const filledStars = Math.round(rating);
@@ -42,8 +35,6 @@ const ReviewsContainer: React.FC<PropsType> = ({ dealerLogoUrl, customerReviews,
         }
         return stars;
     };
-
-    console.log(customerReviews)
 
     return (
         <Fragment>

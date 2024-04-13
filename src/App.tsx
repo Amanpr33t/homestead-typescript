@@ -21,7 +21,6 @@ import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
 import PropertyEvaluatorHomePage from "./components/propertyEvaluator/HomePage";
 import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
 import EvaluateProperty from './components/propertyEvaluator/evaluate-property/EvaluateProperty';
-import HomePage from './components/HomePage';
 import PropertiesToBeEvaluated from './components/propertyEvaluator/evaluate-property/PropertiesToBeEvaluated';
 import PropertiesToBeReevaluated from './components/propertyEvaluator/reevaluate-property/PropertiesToBeReevaluated';
 import ListOfPropertiesToBeEvaluatedByEvaluator from './components/propertyEvaluator/evaluate-property/ListOfPropertiesToBeEvaluatedByEvaluator';
@@ -48,7 +47,6 @@ import DealerDetails from './components/property-dealer/DealerDetails';
 
 import NavbarUser from './components/user/Navbar';
 import UserHomePage from './components/user/HomePage';
-import UserSignIn from './components/user/SignIn';
 import DealerPage from './components/user/DealerPage';
 import PropertyDetails from './components/user/reviewProperty/PropertyDetails';
 
@@ -274,10 +272,6 @@ const App: React.FC = () => {
             <Route path='' element={<>
               <NavbarUser />
               <UserHomePage />
-            </>}></Route>
-            <Route path='signIn' element={<>
-              <NavbarPropertyDealer />
-              <UserSignIn />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/user' />}>
             </Route>

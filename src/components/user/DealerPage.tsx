@@ -65,6 +65,7 @@ interface PropertyDetails {
 
 //This component is the home page for property dealer
 const DealerPage: React.FC = () => {
+    console.log('dealer page')
     const navigate = useNavigate()
 
     const reviewRef = useRef<HTMLDivElement>(null);
@@ -117,12 +118,20 @@ const DealerPage: React.FC = () => {
     const fetchDataForHomePage = useCallback(async () => {
         setSpinner(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/dataForPropertyDealerPage?dealerId=${searchParamsDealerId}`, {
-                method: 'GET',
-                headers: {
+            let headers: any
+            if (authToken) {
+                headers = {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`
-                },
+                }
+            } else {
+                headers = {
+                    'Content-Type': 'application/json'
+                }
+            }
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/dataForPropertyDealerPage?dealerId=${searchParamsDealerId}`, {
+                method: 'GET',
+                headers
             })
             if (!response.ok) {
                 throw new Error('Some error occured')
@@ -145,7 +154,7 @@ const DealerPage: React.FC = () => {
             navigate('/')
             return
         }
-    }, [navigate, searchParamsDealerId])
+    }, [navigate, searchParamsDealerId, authToken])
 
     const fetchProperties = async (liveOrSold: 'live' | 'sold', skipProperties: boolean, propertyType?: 'agricultural' | 'residential' | 'commercial' | 'all') => {
         let url: string
@@ -364,7 +373,7 @@ const DealerPage: React.FC = () => {
                                 </div>}
                         </div>
                     </div>
-                    
+
                     <Footer />
                 </div>}
 

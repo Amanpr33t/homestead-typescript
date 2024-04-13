@@ -1,10 +1,6 @@
 import React, { ChangeEvent, Fragment, useEffect, useState } from 'react';
-import { capitalizeFirstLetterOfAString } from '../../utils/stringUtilityFunctions';
-import { useNavigate } from 'react-router-dom';
 import { AlertType } from '../../dataTypes/alertType';
 import { IoClose } from 'react-icons/io5';
-import useUploadImages from '../../custom-hooks/useImageUpload';
-import { punjabDistricts } from '../../utils/tehsilsAndDistricts/districts';
 import Spinner from '../Spinner';
 import AlertModal from '../AlertModal';
 
@@ -35,7 +31,6 @@ const AddReviewModal: React.FC<PropsType> = ({
     averageOfRatingsFromCustomerSetter
 }) => {
     const authToken: string | null = localStorage.getItem("homestead-user-authToken")
-    const navigate = useNavigate()
 
     const [spinner, setSpinner] = useState<boolean>(false)
     const [alert, setAlert] = useState<AlertType>({
@@ -123,7 +118,7 @@ const AddReviewModal: React.FC<PropsType> = ({
 
             {spinner && <Spinner />}
 
-            <div className="w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur  " onClick={modalReset}>
+            <div className="w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur  py-5" onClick={modalReset}>
 
                 <form className="relative max-h-full overflow-y-auto w-11/12 sm:w-96 h-fit p-4 flex flex-col gap-3 rounded-lg border border-gray-200 shadow-2xl bg-white" onClick={e => e.stopPropagation()} onSubmit={(e) => {
                     e.stopPropagation()

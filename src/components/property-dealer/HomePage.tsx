@@ -1,7 +1,7 @@
 
 import { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import AlertModal from "../AlertModal"
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { AlertType } from "../../dataTypes/alertType";
 import CustomerNotifications from "./CustomerNotifications/CustomerNotifications";
 import Spinner from "../Spinner";

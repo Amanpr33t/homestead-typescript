@@ -116,6 +116,22 @@ const CommonSignIn: React.FC<PropsType> = ({ userType }) => {
                 localStorage.setItem(`homestead-${userType}-authToken`, responseData.authToken)
                 navigate(`/${userType}`, { replace: true })
                 setSpinner(false)
+                if(userType==='city-manager'){
+                    localStorage.removeItem('homestead-property-dealer-authToken')
+                    localStorage.removeItem('homestead-field-agent-authToken')
+                    localStorage.removeItem('homestead-property-evaluator-authToken')
+                    localStorage.removeItem('homestead-user-authToken')
+                }else if(userType==='field-agent'){
+                    localStorage.removeItem('homestead-property-dealer-authToken')
+                    localStorage.removeItem('homestead-property-evaluator-authToken')
+                    localStorage.removeItem('homestead-user-authToken')
+                    localStorage.removeItem('homestead-city-manager-authToken')
+                }else if(userType==='property-evaluator'){
+                    localStorage.removeItem('homestead-property-dealer-authToken')
+                    localStorage.removeItem('homestead-field-agent-authToken')
+                    localStorage.removeItem('homestead-user-authToken')
+                    localStorage.removeItem('homestead-city-manager-authToken')
+                }
                 return
             } else if (responseData.status === 'not_found') {
                 setSpinner(false)

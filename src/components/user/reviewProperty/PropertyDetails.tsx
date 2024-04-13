@@ -63,6 +63,7 @@ interface DealerInfoType {
 
 //This component is used to show customer messages to property dealer
 const PropertyDetails: React.FC = () => {
+    console.log('nav')
     const navigate = useNavigate()
     const location = useLocation()
 

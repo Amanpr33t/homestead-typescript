@@ -1,10 +1,8 @@
 import { Fragment, useState } from "react"
 import { formatDate } from "../../utils/dateFunctions";
-import { useLocation } from "react-router-dom";
 import { IoIosArrowForward } from "react-icons/io";
 import AddReviewModal from "../user/AddReviewModal";
 import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
 
 interface CustomerReviewType {
     review: string,

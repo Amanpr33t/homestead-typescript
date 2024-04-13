@@ -1,6 +1,8 @@
 import { Fragment } from "react"
 import { IoClose } from "react-icons/io5"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
+import { OpenSignInSignUpModalActions } from "../../store/slices/openSignInSignUpModal"
+import { useDispatch } from "react-redux"
 
 interface PropsType {
     hideModal: () => void
@@ -8,6 +10,7 @@ interface PropsType {
 
 //this component is an alert modal
 const SignInReminderModal: React.FC<PropsType> = ({ hideModal }) => {
+    const dispatch = useDispatch()
 
     return (
         <Fragment>
@@ -21,12 +24,15 @@ const SignInReminderModal: React.FC<PropsType> = ({ hideModal }) => {
                         </div>
 
                         <div className="mt-4 flex justify-center">
-                            <Link
-                                to="/login"
+                            <button
+                                onClick={() => {
+                                    dispatch(OpenSignInSignUpModalActions.setOpenSignInSignUpModal('sign-in'))
+                                    hideModal()
+                                }}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
                             >
                                 Log In
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
