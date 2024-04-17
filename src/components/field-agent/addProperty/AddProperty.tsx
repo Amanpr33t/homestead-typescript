@@ -21,7 +21,7 @@ const AddProperty: React.FC = () => {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])

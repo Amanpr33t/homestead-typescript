@@ -36,7 +36,7 @@ const ReviewProperty: React.FC = () => {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-dealer/signIn', { replace: true })
+            navigate('/', { replace: true })
             return
         }
     }, [authToken, navigate])

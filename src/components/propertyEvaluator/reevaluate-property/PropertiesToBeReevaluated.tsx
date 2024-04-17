@@ -8,14 +8,14 @@ const PropertiesToBeReevaluated: React.FC = () => {
     const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -52,7 +52,7 @@ const PropertiesToBeReevaluated: React.FC = () => {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             }
         } catch (error) {

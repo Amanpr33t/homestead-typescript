@@ -87,7 +87,7 @@ const ApprovalForm: React.FC<PropsType> = (props) => {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-city-manager-authToken")
-                navigate('/city-manager/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             } else {
                 throw new Error('Some error occured')

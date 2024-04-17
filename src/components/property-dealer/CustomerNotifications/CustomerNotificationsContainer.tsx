@@ -1,7 +1,7 @@
 import React, { Fragment } from "react"
 import { TbMessage2Off } from "react-icons/tb";
 import { useSelector } from "react-redux/es/hooks/useSelector";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SingleCustomerNotification from "./SingleCustomerNotification";
 
 interface CustomerQueryType {
@@ -35,11 +35,12 @@ const CustomerNotificationsContainer: React.FC<PropsType> = ({
 
             <div className={`${location.pathname.includes('customer-notifications') ? ' w-11/12 sm:w-10/12 md:w-8/12 pb-10' : 'w-full border shadow h-fit'}  flex flex-col place-items-center rounded-2xl  bg-white`} >
                 {/*toggle buttons */}
-                <div className={` py-3 flex justify-center  ${location.pathname.includes('customer-notifications') ? '' : 'w-full border-b shadow-b'}`}>
+                <div className={` py-3 flex flex-col items-center gap-2 justify-center   ${location.pathname.includes('customer-notifications') ? '' : 'w-full border-b shadow-b'}`}>
                     <div className="w-fit border-2 gap-2 flex flex-row place-content-center rounded-l-3xl rounded-r-3xl">
                         <button className={`-mr-2 px-5  ${showAllMessages ? 'bg-green-400 text-white' : 'text-gray-600'}  text-lg font-medium rounded-3xl `} onClick={() => showMessagesSetter(true)}>All messages</button>
                         <button className={`-ml-2 md:-ml-1 lg:-ml-2 px-5 md:px-2 lg:px-5 py-1  ${!showAllMessages ? 'bg-green-400 text-white' : 'text-gray-600'} text-lg font-medium rounded-3xl`} onClick={() => showMessagesSetter(false)}>Unseen ({unseenCustomerRequests.length})</button>
                     </div>
+                    {!location.pathname.includes('customer-notifications') && <Link to='customer-notifications' className="text-blue-700 hover:text-blue-500 font-semibold text-sm">Show messages in full screen</Link>}
                 </div>
 
                 <div className={`w-full rounded-md ${location.pathname.includes('customer-notifications') ? '' : 'h-96'}`}>

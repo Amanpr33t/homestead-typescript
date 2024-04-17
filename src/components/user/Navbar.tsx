@@ -1,7 +1,6 @@
 import { Fragment, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
-import Spinner from "../Spinner"
 import { MdHomeWork } from "react-icons/md";
 import { AlertType } from "../../dataTypes/alertType"
 import { RxDropdownMenu } from "react-icons/rx";
@@ -15,7 +14,7 @@ import { OpenSignInSignUpModalActions } from "../../store/slices/openSignInSignU
 //This component is the navigation bar
 const NavbarUser: React.FC = () => {
     const navigate = useNavigate()
-    const dispatch=useDispatch()
+    const dispatch = useDispatch()
     const [alert, setAlert] = useState<AlertType>({
         isAlertModal: false,
         alertType: null,
@@ -24,8 +23,6 @@ const NavbarUser: React.FC = () => {
     })
 
     const openSignInSignUpModal = useSelector((state: { SignInSignUpModal: { openSignInSignUpModal: 'sign-in' | 'sign-up' | null } }) => state.SignInSignUpModal.openSignInSignUpModal)
-
-    const [spinner, setSpinner] = useState<boolean>(false)
 
     const authToken: string | null = localStorage.getItem("homestead-user-authToken")
 
@@ -41,7 +38,7 @@ const NavbarUser: React.FC = () => {
     //to logout user
     const logoutFunction = async () => {
         localStorage.removeItem('homestead-user-authToken')
-        window.location.reload()
+        navigate('/')
     }
 
     return (
@@ -54,8 +51,6 @@ const NavbarUser: React.FC = () => {
                 alertMessage: null,
                 routeTo: null
             })} />}
-
-            {spinner && <Spinner />}
 
             {selectUserTypeModal &&
                 <UserTypeModal
@@ -71,7 +66,10 @@ const NavbarUser: React.FC = () => {
                         setSelectUserTypeModal(true)
                         dispatch(OpenSignInSignUpModalActions.setOpenSignInSignUpModal(null))
                     }}
-                    modalReset={() =>dispatch(OpenSignInSignUpModalActions.setOpenSignInSignUpModal(null))} />}
+                    modalReset={() => dispatch(OpenSignInSignUpModalActions.setOpenSignInSignUpModal(null))}
+                    alertSetter={(input) => setAlert(input)}
+                    alert={alert}
+                />}
 
             {openSignInSignUpModal === 'sign-up' &&
                 <SignUpModal
@@ -109,7 +107,7 @@ const NavbarUser: React.FC = () => {
 
                     </div>}
 
-                    <div className="ml-2 flex flex-row gap-0.5 cursor-pointer mt-6" onClick={() => navigate('/user', { replace: true })}>
+                    <div className="ml-2 flex flex-row gap-0.5 cursor-pointer mt-6" onClick={() => navigate('/', { replace: true })}>
                         <MdHomeWork role="svg" className="text-red-600 font-semibold text-4xl " />
                         <p className='font-bold text-2xl text-gray-700'>HomeStead</p>
                     </div>

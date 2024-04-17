@@ -79,7 +79,7 @@ const PropertyAddRequestModal: React.FC<PropsType> = ({ hideModal, dealerId, ale
                 alertSetter('warning', 'No filed agent currently available in your area. Please try again later')
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
+                navigate('/', { replace: true })
                 return
             } else {
                 throw new Error('Some error occured')

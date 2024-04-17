@@ -18,8 +18,12 @@ const HomeFieldAgent: React.FC = () => {
     const authToken: null | string = localStorage.getItem("homestead-field-agent-authToken")
 
     useEffect(() => {
+        localStorage.removeItem('homestead-property-dealer-authToken')
+        localStorage.removeItem('homestead-property-evaluator-authToken')
+        localStorage.removeItem('homestead-city-manager-authToken')
+        localStorage.removeItem(`homestead-user-authToken`)
         if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -82,7 +86,7 @@ const HomeFieldAgent: React.FC = () => {
                 setRequestsToAddNewProperty(data.requestsToAddProperty)
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             }
         } catch (error) {

@@ -25,7 +25,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -369,7 +369,7 @@ const ReconsiderResidentialPropertyDetails: React.FC = () => {
             if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             } else if (data.status === 'ok') {
                 setSpinner(false)

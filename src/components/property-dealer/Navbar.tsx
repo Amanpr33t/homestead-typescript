@@ -1,8 +1,8 @@
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AlertModal from "../AlertModal"
 import Spinner from "../Spinner"
-import { MdHomeWork} from "react-icons/md";
+import { MdHomeWork } from "react-icons/md";
 import { AlertType } from "../../dataTypes/alertType"
 import { useSelector } from "react-redux"
 import { RxDropdownMenu } from "react-icons/rx";
@@ -29,42 +29,14 @@ const NavbarPropertyDealer: React.FC = () => {
     const unseenCustomerRequests = useSelector((state: { CustomerRequests: { unseenCustomerRequests: CustomerQueryType[] } }) => state.CustomerRequests.unseenCustomerRequests)
 
     const [spinner, setSpinner] = useState<boolean>(false)
-    const authToken: string | null = localStorage.getItem("homestead-property-dealer-authToken")
 
     const [showUserDropdown, setShowUserDropdown] = useState<boolean>(false) //if true, a dropdown is shown 
 
     //to logout user
     const logoutFunction = async () => {
-        setShowUserDropdown(false)
         setSpinner(true)
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-dealer/logout`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'ok' || data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
-            } else {
-                throw new Error('Some error occured')
-            }
-        } catch (error) {
-            setSpinner(false)
-            setAlert({
-                isAlertModal: true,
-                alertType: 'warning',
-                alertMessage: 'Some error occured. Try again later',
-                routeTo: null
-            })
-        }
+        localStorage.removeItem('homestead-property-dealer-authToken')
+        navigate('/')
     }
 
     return (

@@ -125,7 +125,7 @@ const ReviewPropertyDealerAfterSubmission: React.FC<PropsType> = (props) => {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             } else {
                 throw new Error('Some error occured')

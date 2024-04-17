@@ -80,7 +80,7 @@ const ReviewsContainer: React.FC<PropsType> = ({
                                 {(customersOwnReview || customerReviews.length > 0) && <span className="text-2xl text-yellow-500 -mt-1">&#9733;</span>}
                                 {(customersOwnReview || customerReviews.length > 0) && <div className="flex flex-row gap-1">
                                     <p className="font-semibold text-gray-700 text-lg">{averageOfRatingsFromCustomer}</p>
-                                    <p className="font-semibold text-gray-500  text-lg ">({customersOwnReview ? customerReviews.length + 1 : customerReviews.length} reviews)</p>
+                                    <p className="font-semibold text-gray-500  text-lg ">({customerReviews.length} reviews)</p>
                                 </div>}
                             </div>
                         </div>

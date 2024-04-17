@@ -156,7 +156,7 @@ const EditDealerDetailsModal: React.FC<PropsType> = ({ hideEditDetailsModal, fir
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
+                navigate('/', { replace: true })
                 return
             } else {
                 throw new Error('Some error occured')

@@ -8,7 +8,7 @@ const PropertiesToBeReconsidered: React.FC = () => {
     const authToken: string | null = localStorage.getItem("homestead-field-agent-authToken")
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])

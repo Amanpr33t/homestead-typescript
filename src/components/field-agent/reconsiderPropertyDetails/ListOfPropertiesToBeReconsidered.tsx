@@ -60,7 +60,7 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -97,7 +97,7 @@ const ListOfPropertiesToBeReconsidered: React.FC = () => {
             const data = await response.json()
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                navigate('/user', { replace: true })
             } else if (data.status === 'ok') {
                 if (!data.pendingPropertyEvaluations.length) {
                     return navigate('/field-agent', { replace: true })

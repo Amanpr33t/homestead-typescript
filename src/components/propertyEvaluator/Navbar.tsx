@@ -2,7 +2,6 @@ import { Fragment, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { FaHome } from "react-icons/fa"
 import AlertModal from "../AlertModal"
-import Spinner from "../Spinner"
 import { AlertType } from "../../dataTypes/alertType"
 
 //This component is the navigation bar
@@ -15,40 +14,11 @@ const NavbarPropertyEvaluator: React.FC = () => {
         routeTo: null
     })
 
-    const [spinner, setSpinner] = useState<boolean>(false)
     const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
 
     const logoutFunction = async () => {
-        setSpinner(true)
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/property-evaluator/logout`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            if (!response.ok) {
-                throw new Error('Some error occured')
-            }
-            const data = await response.json()
-            if (data.status === 'ok' || data.status === 'invalid_authentication') {
-                setSpinner(false)
-                localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
-                return
-            } else {
-                throw new Error('Some error occured')
-            }
-        } catch (error) {
-            setSpinner(false)
-            setAlert({
-                isAlertModal: true,
-                alertType: 'warning',
-                alertMessage: 'Some error occured',
-                routeTo: null
-            })
-        }
+        localStorage.removeItem('homestead-property-evaluator-authToken')
+        navigate('/user')
     }
 
     return (
@@ -60,8 +30,6 @@ const NavbarPropertyEvaluator: React.FC = () => {
                 alertMessage: null,
                 routeTo: null
             })} />}
-
-            {spinner && <Spinner />}
 
             <div className='fixed z-40 top-0 w-full'>
                 <nav className=" flex flex-col w-full bg-white" >

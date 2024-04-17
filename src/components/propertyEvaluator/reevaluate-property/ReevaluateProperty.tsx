@@ -18,7 +18,7 @@ const ReevaluateProperty: React.FC = () => {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])

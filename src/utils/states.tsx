@@ -1,4 +1,4 @@
-const states = [
+/*const states = [
     "andaman and nicobar islands",
     "andhra pradesh",
     "arunachal pradesh",
@@ -35,6 +35,12 @@ const states = [
     "uttar pradesh",
     "uttarakhand",
     "west bengal"
+]*/
+
+const states = [
+    "chandigarh",
+    "haryana",
+    "punjab"
 ]
 
 export { states }

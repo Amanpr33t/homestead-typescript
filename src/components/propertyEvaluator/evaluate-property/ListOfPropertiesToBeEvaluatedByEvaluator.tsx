@@ -58,7 +58,7 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
 
     useEffect(() => {
         if (!authToken) {
-            navigate('/property-evaluator/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -95,7 +95,7 @@ const ListOfPropertiesToBeEvaluatedByEvaluator: React.FC = () => {
             const data = await response.json()
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
+                navigate('/user', { replace: true })
             } else if (data.status === 'ok') {
                 if (!data.pendingPropertyEvaluations.length) {
                     return navigate('/property-evaluator', { replace: true })

@@ -5,7 +5,6 @@ import { Fragment } from "react";
 import HomeFieldAgent from "./components/field-agent/HomeFieldAgent";
 import NavbarFieldAgent from "./components/field-agent/NavbarFieldAgent"
 import PropertyDealerAddForm from "./components/field-agent/addPropertyDealer/PropertyDealerAddForm";
-import FieldAgentSignIn from "./components/field-agent/FieldAgentSignIn";
 import AgriculturalPropertyAddForm from "./components/field-agent/addProperty/agricultural/AgriculturalPropertyAddForm";
 import CommercialPropertyAddForm from "./components/field-agent/addProperty/commercial/CommercialPropertyAddForm";
 import ResidentialPropertyAddForm from "./components/field-agent/addProperty/residential/ResidentialPropertyAddForm";
@@ -17,7 +16,6 @@ import ReconsiderAgriculturalPropertyDetails from './components/field-agent/reco
 import AddProperty from './components/field-agent/addProperty/AddProperty';
 
 //Components imported for property evaluator
-import PropertyEvaluatorSignIn from "./components/propertyEvaluator/SignIn";
 import PropertyEvaluatorHomePage from "./components/propertyEvaluator/HomePage";
 import NavbarPropertyEvaluator from "./components/propertyEvaluator/Navbar";
 import EvaluateProperty from './components/propertyEvaluator/evaluate-property/EvaluateProperty';
@@ -28,7 +26,6 @@ import ListOfPropertiesToBeReevaluatedByEvaluator from './components/propertyEva
 import ReevaluateProperty from './components/propertyEvaluator/reevaluate-property/ReevaluateProperty';
 
 //Components imported for property dealer
-import PropertyDealerSignIn from './components/property-dealer/SignIn';
 import NavbarPropertyDealer from './components/property-dealer/Navbar';
 import PropertyDealerHomePage from './components/property-dealer/HomePage';
 import CustomerNotifications from './components/property-dealer/CustomerNotifications/CustomerNotifications';
@@ -36,7 +33,6 @@ import ReviewProperty from './components/property-dealer/reviewProperty/ReviewPr
 
 //components imported for city manager
 import NavbarCityManager from './components/city-manager/Navbar';
-import CityManagerSignIn from './components/city-manager/SignIn';
 import CityManagerHomePage from './components/city-manager/HomePage';
 import PropertiesPendingForApproval from './components/city-manager/PropertiesPendingForApproval';
 import ApproveProperty from './components/city-manager/ApproveProperty';
@@ -49,6 +45,7 @@ import NavbarUser from './components/user/Navbar';
 import UserHomePage from './components/user/HomePage';
 import DealerPage from './components/user/DealerPage';
 import PropertyDetails from './components/user/reviewProperty/PropertyDetails';
+import CommonSignInModal from './components/commonSignIn/SignIn';
 
 const App: React.FC = () => {
 
@@ -71,16 +68,16 @@ const App: React.FC = () => {
             <PropertyDetails />
           </>}></Route>
 
+          <Route path='/user' element={<>
+            <CommonSignInModal />
+          </>}></Route>
+
           {/*Routes for field agent */}
           <Route path='/field-agent/*'>
 
             <Route path='' element={<>
               <NavbarFieldAgent />
               <HomeFieldAgent />
-            </>}></Route>
-            <Route path='signIn' element={<>
-              <NavbarFieldAgent />
-              <FieldAgentSignIn />
             </>}></Route>
             <Route path='add-property-dealer' element={<>
               <NavbarFieldAgent />
@@ -161,10 +158,6 @@ const App: React.FC = () => {
               <NavbarPropertyEvaluator />
               <PropertyEvaluatorHomePage />
             </>}></Route>
-            <Route path='signIn' element={<>
-              <NavbarPropertyEvaluator />
-              <PropertyEvaluatorSignIn />
-            </>}></Route>
             <Route path='properties-pending-for-evaluation' element={<>
               <PropertiesToBeEvaluated />
               <NavbarPropertyEvaluator />
@@ -217,10 +210,6 @@ const App: React.FC = () => {
               <NavbarCityManager />
               <CityManagerHomePage />
             </>}></Route>
-            <Route path='signIn' element={<>
-              <NavbarCityManager />
-              <CityManagerSignIn />
-            </>}></Route>
             <Route path='agricultural-properties-pending-for-approval' element={<>
               <NavbarCityManager />
               <PropertiesPendingForApproval />
@@ -247,10 +236,6 @@ const App: React.FC = () => {
               <NavbarPropertyDealer />
               <PropertyDealerHomePage />
             </>}></Route>
-            <Route path='signIn' element={<>
-              <NavbarPropertyDealer />
-              <PropertyDealerSignIn />
-            </>}></Route>
             <Route path='review-property' element={<>
               <NavbarPropertyDealer />
               <ReviewProperty />
@@ -264,16 +249,6 @@ const App: React.FC = () => {
               <DealerDetails />
             </>}></Route>
             <Route path='*' element={<Navigate replace to='/property-dealer' />}>
-            </Route>
-          </Route>
-
-          {/*Routes for customer */}
-          <Route path='/user/*'>
-            <Route path='' element={<>
-              <NavbarUser />
-              <UserHomePage />
-            </>}></Route>
-            <Route path='*' element={<Navigate replace to='/user' />}>
             </Route>
           </Route>
 

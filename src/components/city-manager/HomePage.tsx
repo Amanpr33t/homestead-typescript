@@ -11,8 +11,12 @@ const CityManagerHomePage: React.FC = () => {
     const authToken: string | null = localStorage.getItem("homestead-city-manager-authToken")
 
     useEffect(() => {
+        localStorage.removeItem('homestead-property-dealer-authToken')
+        localStorage.removeItem('homestead-property-evaluator-authToken')
+        localStorage.removeItem('homestead-field-agent-authToken')
+        localStorage.removeItem(`homestead-user-authToken`)
         if (!authToken) {
-            navigate('/city-manager/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -58,7 +62,7 @@ const CityManagerHomePage: React.FC = () => {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-city-manager-authToken")
-                navigate('/city-manager/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             }
         } catch (error) {

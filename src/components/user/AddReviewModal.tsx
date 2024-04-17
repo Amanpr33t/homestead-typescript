@@ -74,11 +74,12 @@ const AddReviewModal: React.FC<PropsType> = ({
             const data = await response.json()
             if (data.status === 'ok') {
                 customersOwnReviewSetter(data.customersOwnReview)
-                customerReviewsSetter(data.reviewsFromOtherCustomers)
+                customerReviewsSetter(data.reviewsFromCustomers)
                 averageOfRatingsFromCustomerSetter(data.averageCustomerRatings)
                 setSpinner(false)
                 modalReset()
-                return     
+                //window.location.reload()
+                return
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-user-authToken")
@@ -118,7 +119,7 @@ const AddReviewModal: React.FC<PropsType> = ({
 
             {spinner && <Spinner />}
 
-            <div className="w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur  py-5" onClick={modalReset}>
+            <div className={`w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur  py-5 ${alert.isAlertModal && 'transform translate-x-full'}`} onClick={modalReset}>
 
                 <form className="relative max-h-full overflow-y-auto w-11/12 sm:w-96 h-fit p-4 flex flex-col gap-3 rounded-lg border border-gray-200 shadow-2xl bg-white" onClick={e => e.stopPropagation()} onSubmit={(e) => {
                     e.stopPropagation()

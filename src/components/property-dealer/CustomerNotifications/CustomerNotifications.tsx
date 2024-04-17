@@ -88,7 +88,7 @@ const CustomerNotifications: React.FC<PropsType> = ({
                 }
             } else if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-property-dealer-authToken")
-                navigate('/property-dealer/signIn', { replace: true })
+                navigate('/', { replace: true })
                 return
             } else {
                 throw new Error('Some error occured')

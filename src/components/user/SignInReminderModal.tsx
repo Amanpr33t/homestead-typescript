@@ -1,6 +1,5 @@
 import { Fragment } from "react"
 import { IoClose } from "react-icons/io5"
-import { Link, useSearchParams } from "react-router-dom"
 import { OpenSignInSignUpModalActions } from "../../store/slices/openSignInSignUpModal"
 import { useDispatch } from "react-redux"
 

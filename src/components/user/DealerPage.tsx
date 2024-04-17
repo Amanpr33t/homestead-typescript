@@ -143,7 +143,7 @@ const DealerPage: React.FC = () => {
                 setProperties(data.liveProperties)
                 setNumberOfProperties(data.numberOfProperties)
                 setTotalNumberOfProperties(data.numberOfProperties)
-                setCustomerReviews(data.reviewsFromOtherCustomers)
+                setCustomerReviews(data.reviewsFromCustomers)
                 setCustomersOwnReview(data.customersOwnReview)
                 setAverageOfRatingsFromCustomer(data.averageCustomerRatings)
             } else {

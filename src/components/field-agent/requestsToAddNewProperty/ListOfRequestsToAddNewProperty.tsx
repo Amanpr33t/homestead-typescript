@@ -40,7 +40,7 @@ const ListOfRequestsToAddProperty: React.FC = () => {
     const [requestsToAddProperty, setRequestsToAddProperty] = useState<[RequestType] | null>(null) //Information regarding pending property evaluations
     useEffect(() => {
         if (!authToken) {
-            navigate('/field-agent/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -63,7 +63,7 @@ const ListOfRequestsToAddProperty: React.FC = () => {
             const data = await response.json()
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                navigate('/user', { replace: true })
             } else if (data.status === 'ok') {
                 if (!data.requests.length) {
                     return navigate('/field-agent', { replace: true })
@@ -98,7 +98,7 @@ const ListOfRequestsToAddProperty: React.FC = () => {
             const data = await response.json()
             if (data.status === 'invalid_authentication') {
                 localStorage.removeItem("homestead-field-agent-authToken")
-                navigate('/field-agent/signIn', { replace: true })
+                navigate('/user', { replace: true })
             } else if (data.status === 'ok') {
                 setDealerInfoLoading(false)
                 setDealerInfo(data.dealerInfo)

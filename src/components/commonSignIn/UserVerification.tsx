@@ -2,23 +2,22 @@ import React, { Fragment, useState } from 'react';
 import { FaPhoneAlt } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { MdLockOpen, MdOutlineEmail } from 'react-icons/md';
-import Spinner from '../../Spinner';
-import { AlertType } from '../../../dataTypes/alertType';
+import Spinner from '../Spinner';
+import { AlertType } from '../../dataTypes/alertType';
 import { useNavigate } from 'react-router-dom';
 
 interface PropsType {
     email: string,
     contactNumber: '' | number,
-    modalReset: () => void,
     showVerificationCodeModal: boolean,
     showVerficationCodeModalSetter: (input: boolean) => void,
-    userType: 'dealer' | 'customer',
+    userType: 'field-agent' | 'property-evaluator' | 'city-manager' | null
     alertSetter: (input: AlertType) => void,
     alert: AlertType,
     sendVerificationCode: () => void
 }
 
-const UserVerificationForSignIn: React.FC<PropsType> = ({ modalReset, email, contactNumber, showVerificationCodeModal, showVerficationCodeModalSetter, userType, alert, alertSetter, sendVerificationCode }) => {
+const UserVerification: React.FC<PropsType> = ({ email, contactNumber, showVerificationCodeModal, showVerficationCodeModalSetter, userType, alert, alertSetter, sendVerificationCode }) => {
     const navigate = useNavigate()
     const [spinner, setSpinner] = useState<boolean>(false)
 
@@ -63,14 +62,7 @@ const UserVerificationForSignIn: React.FC<PropsType> = ({ modalReset, email, con
                 }
             }
             setSpinner(true)
-            let url: string = ''
-            if (userType === 'dealer') {
-                url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/signIn`
-            } else {
-                url = `${process.env.REACT_APP_BACKEND_URL}/user/signIn`
-            }
-
-            const response = await fetch(url, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/${userType}/signIn`, {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
                 headers: {
@@ -83,19 +75,17 @@ const UserVerificationForSignIn: React.FC<PropsType> = ({ modalReset, email, con
             const data = await response.json()
             console.log(data)
             if (data.status === 'ok') {
-                localStorage.removeItem('homestead-field-agent-authToken')
-                localStorage.removeItem('homestead-property-evaluator-authToken')
-                localStorage.removeItem('homestead-city-manager-authToken')
-                if (userType === 'dealer') {
-                    localStorage.setItem(`homestead-property-dealer-authToken`, data.authToken)
-                    localStorage.removeItem('homestead-user-authToken')
-                    navigate('/property-dealer')
-                } else {
-                    localStorage.setItem(`homestead-user-authToken`, data.authToken)
-                    localStorage.removeItem('homestead-property-dealer-authToken')
-                    navigate('/')
+                if (userType === 'field-agent') {
+                    localStorage.setItem(`homestead-field-agent-authToken`, data.authToken)
+                    navigate('/field-agent')
+                } else if (userType === 'property-evaluator') {
+                    localStorage.setItem(`homestead-property-evaluator-authToken`, data.authToken)
+                    navigate('/property-evaluator')
+                } else if (userType === 'city-manager') {
+                    localStorage.setItem(`homestead-city-manager-authToken`, data.authToken)
+                    navigate('/city-manager')
                 }
-                modalReset()
+                showVerficationCodeModalSetter(false)
             } else if (data.status === 'incorrect_token' || data.status === 'incorrect_password') {
                 setSpinner(false)
                 alertSetter({
@@ -126,9 +116,9 @@ const UserVerificationForSignIn: React.FC<PropsType> = ({ modalReset, email, con
 
             {spinner && <Spinner />}
 
-            <div className={`w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur  py-5 ${(alert.isAlertModal) && 'transform translate-x-full'}`} onClick={modalReset}>
+            <div className={`w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center   py-5 ${(alert.isAlertModal) && 'transform translate-x-full'}`} onClick={() => showVerficationCodeModalSetter(false)}>
                 <form className="relative max-h-full overflow-y-auto w-11/12 sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-6/12 h-fit py-4 px-4 sm:px-10 flex flex-col gap-3 rounded-lg border border-gray-200 shadow-2xl bg-white" onClick={e => e.stopPropagation()} >
-                    <button type="button" className="absolute top-3 right-2.5 text-gray-700 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={modalReset}>
+                    <button type="button" className="absolute top-3 right-2.5 text-gray-700 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={() => showVerficationCodeModalSetter(false)}>
                         <IoClose className="text-3xl" />
                     </button>
 
@@ -217,4 +207,4 @@ const UserVerificationForSignIn: React.FC<PropsType> = ({ modalReset, email, con
     );
 };
 
-export default UserVerificationForSignIn;
+export default UserVerification

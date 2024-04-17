@@ -2,19 +2,18 @@ import React, { Fragment, useState } from 'react';
 import { FaPhoneAlt } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { MdOutlineEmail } from 'react-icons/md';
-import UserVerificationForSignIn from './UserVerificationForSignIn';
-import { AlertType } from '../../../dataTypes/alertType';
-import Spinner from '../../Spinner';
+import UserVerification from './UserVerification';
+import { AlertType } from '../../dataTypes/alertType';
+import Spinner from '../Spinner';
+import AlertModal from '../AlertModal';
 
-interface PropsType {
-    modalReset: () => void,
-    selectUserTypeModalSetter: () => void,
-    alertSetter: (input: AlertType) => void,
-    alert: AlertType
-}
-
-const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSetter, alertSetter, alert }) => {
-
+const CommonSignInModal: React.FC = () => {
+    const [alert, setAlert] = useState<AlertType>({
+        isAlertModal: false,
+        alertType: null,
+        alertMessage: null,
+        routeTo: null
+    })
     const [spinner, setSpinner] = useState<boolean>(false)
 
     const [email, setEmail] = useState<string>('');
@@ -27,23 +26,24 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
 
     const [contactNumberError, setContactNumberError] = useState<boolean>(false);
 
-    const [userType, setUserType] = useState<'dealer' | 'customer'>('customer')
+    const [userType, setUSerType] = useState<'field-agent' | 'property-evaluator' | 'city-manager' | null>(null)
+    const [userTypeError, setUserTypeError] = useState<boolean>(false)
+
 
     const sendVerificationCode = async () => {
         try {
-            if (!email.trim() && !contactNumber) {
-                setEmailError(true)
-                setContactNumberError(true)
+            if ((!email.trim() && !contactNumber) || !userType) {
+                if (!userType) {
+                    setUserTypeError(true)
+                }
+                if (!email.trim() && !contactNumber) {
+                    setEmailError(true)
+                    setContactNumberError(true)
+                }
                 return
             }
             setSpinner(true)
-            let url: string = ''
-            if (userType === 'dealer') {
-                url = `${process.env.REACT_APP_BACKEND_URL}/property-dealer/sendOtpForVerification`
-            } else {
-                url = `${process.env.REACT_APP_BACKEND_URL}/user/sendOtpForVerification`
-            }
-            const response = await fetch(url, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/${userType}/sendOtpForVerification`, {
                 method: 'POST',
                 body: JSON.stringify({
                     email,
@@ -57,12 +57,13 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
                 throw new Error('Some error occured')
             }
             const data = await response.json()
+            console.log(data)
             if (data.status === 'ok') {
                 setSpinner(false)
                 setShowVerficationCodeModal(true)
             } else if (data.status === 'invalid-details') {
                 setSpinner(false)
-                alertSetter({
+                setAlert({
                     isAlertModal: true,
                     alertMessage: `No user with the ${email ? 'email' : 'contact number'} exists. Provide correct details.`,
                     alertType: 'warning',
@@ -73,7 +74,7 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
             }
         } catch (error) {
             setSpinner(false)
-            alertSetter({
+            setAlert({
                 isAlertModal: true,
                 alertMessage: 'Some error occured. Try again.',
                 alertType: 'warning',
@@ -88,12 +89,23 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
 
             {spinner && <Spinner />}
 
-            <div className={`w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur py-5 ${(showVerficationCodeModal || alert.isAlertModal) && 'transform translate-x-full'}`} onClick={modalReset}>
+            {alert.isAlertModal &&
+                <AlertModal
+                    message={alert.alertMessage}
+                    type={alert.alertType}
+                    routeTo={alert.routeTo}
+                    alertModalRemover={() => {
+                        setAlert({
+                            isAlertModal: false,
+                            alertType: null,
+                            alertMessage: null,
+                            routeTo: null
+                        })
+                    }} />}
+
+            <div className={`w-full h-screen fixed top-0 left-0 z-40 flex justify-center items-center  py-5 ${(showVerficationCodeModal || alert.isAlertModal) && 'transform translate-x-full'}`} >
 
                 <form className={`relative max-h-full overflow-y-auto w-11/12 sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-6/12 h-fit py-4 px-4 sm:px-10 flex flex-col gap-3 rounded-lg border border-gray-200 shadow-2xl bg-white `} onClick={e => e.stopPropagation()} >
-                    <button type="button" className="absolute top-3 right-2.5 text-gray-700 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 " onClick={modalReset}>
-                        <IoClose className="text-3xl" />
-                    </button>
 
                     <p className='text-center text-xl font-bold text-gray-700'>Sign in</p>
 
@@ -144,21 +156,32 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
                         />
                     </div>
 
-                    <div className='flex flex-row items-center gap-2 my-3'>
-                        <input
-                            id='dealerSignIn'
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-blue-600 cursor-pointer"
-                            onChange={e => {
-                                if (e.target.checked) {
-                                    setUserType('dealer')
-                                } else {
-                                    setUserType('customer')
-                                }
-                            }}
-                        />
-                        <label className="flex items-center" htmlFor='dealerSignIn'>Sign in as a property dealer</label>
+                    <div className='flex flex-col my-3'>
+                        {userTypeError && <p className='text-red-500'>Select a user type</p>}
+                        <div className='flex flex-row gap-5'>
+                            <p className='font-semibold text-gray-700'>User type</p>
+                            <div>
+                                <input type="radio" id="field-agent" name="user-type" value="field-agent" className='mr-2' onChange={() => {
+                                    setUSerType('field-agent')
+                                    setUserTypeError(false)
+                                }} />
+                                <label htmlFor="field-agent">Field agent</label>
+                                <br />
+                                <input type="radio" id="city-manager" name="user-type" value="city-manager" className='mr-2' onChange={() => {
+                                    setUSerType('city-manager')
+                                    setUserTypeError(false)
+                                }} />
+                                <label htmlFor="city-manager">City manager</label>
+                                <br />
+                                <input type="radio" id="property-evaluator" name="user-type" value="property-evaluator" className='mr-2' onChange={() => {
+                                    setUSerType('property-evaluator')
+                                    setUserTypeError(false)
+                                }} />
+                                <label htmlFor="property-evaluator">Property evalutor</label>
+                            </div>
+                        </div>
                     </div>
+
 
                     <div className="w-full flex gap-4 flex-row place-content-center">
                         <button
@@ -169,25 +192,20 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
                             Continue
                         </button>
                     </div>
-                    <div className='flex justify-center items-center gap-2'>
-                        <p>Don't have an account?</p>
-                        <button type='button' className='text-blue-600 hover:text-blue-500 font-semibold' onClick={selectUserTypeModalSetter}>Create account</button>
-                    </div>
                 </form>
 
             </div >
 
             {(showVerficationCodeModal) &&
                 //the form is used to sign in a user
-                <UserVerificationForSignIn
+                <UserVerification
                     showVerficationCodeModalSetter={(input) => setShowVerficationCodeModal(input)}
                     email={email}
                     contactNumber={contactNumber}
-                    modalReset={modalReset}
                     showVerificationCodeModal={showVerficationCodeModal}
                     userType={userType}
                     alert={alert}
-                    alertSetter={alertSetter}
+                    alertSetter={(input) => setAlert(input)}
                     sendVerificationCode={sendVerificationCode}
                 />
             }
@@ -195,4 +213,4 @@ const SignInModal: React.FC<PropsType> = ({ modalReset, selectUserTypeModalSette
     );
 };
 
-export default SignInModal
+export default CommonSignInModal

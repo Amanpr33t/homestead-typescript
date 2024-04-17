@@ -292,7 +292,8 @@ const DealerSignUpModal: React.FC<PropsType> = ({
                     about: about?.trim() || null,
                     firmLogoUrl: logoUrl,
                     email,
-                    contactNumber
+                    contactNumber,
+                    password
                 }),
                 headers: {
                     'Content-Type': 'application/json'
@@ -303,7 +304,7 @@ const DealerSignUpModal: React.FC<PropsType> = ({
             }
             const data = await response.json()
             if (data.status === 'ok') {
-                //setSpinner(false)
+                setSpinner(false)
                 setAlert({
                     isAlertModal: true,
                     alertType: 'success',

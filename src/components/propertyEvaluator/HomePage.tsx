@@ -11,8 +11,12 @@ const PropertyEvaluatorHomePage: React.FC = () => {
     const authToken: string | null = localStorage.getItem("homestead-property-evaluator-authToken")
 
     useEffect(() => {
+        localStorage.removeItem('homestead-property-dealer-authToken')
+        localStorage.removeItem('homestead-field-agent-authToken')
+        localStorage.removeItem('homestead-city-manager-authToken')
+        localStorage.removeItem(`homestead-user-authToken`)
         if (!authToken) {
-            navigate('/property-evaluator/signIn', { replace: true })
+            navigate('/user', { replace: true })
             return
         }
     }, [authToken, navigate])
@@ -57,7 +61,7 @@ const PropertyEvaluatorHomePage: React.FC = () => {
             } else if (data.status === 'invalid_authentication') {
                 setSpinner(false)
                 localStorage.removeItem("homestead-property-evaluator-authToken")
-                navigate('/property-evaluator/signIn', { replace: true })
+                navigate('/user', { replace: true })
                 return
             }
         } catch (error) {

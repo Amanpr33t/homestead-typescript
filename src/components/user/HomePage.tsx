@@ -6,7 +6,7 @@ import { LiaFilterSolid } from "react-icons/lia";
 import HomePageFilterModal from "./HomePageFiltersModal";
 import { MdContentPasteOff, MdCurrencyRupee } from "react-icons/md";
 import PropertyCard from "./PropertyCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { capitalizeFirstLetterOfAString } from "../../utils/stringUtilityFunctions";
 import { IoClose } from "react-icons/io5";
 import Footer from "./Footer";
@@ -59,6 +59,19 @@ interface PropertyDetails {
 
 //This component is the home page for property dealer
 const UserHomePage: React.FC = () => {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        localStorage.removeItem('homestead-field-agent-authToken')
+        localStorage.removeItem('homestead-property-evaluator-authToken')
+        localStorage.removeItem('homestead-city-manager-authToken')
+        if (localStorage.getItem(`homestead-user-authToken`)) {
+            localStorage.removeItem(`homestead-property-dealer-authToken`)
+        } else if (localStorage.getItem(`homestead-property-dealer-authToken`)) {
+            localStorage.removeItem(`homestead-user-authToken`)
+            navigate('/property-dealer')
+        }
+    }, [navigate])
 
     const authToken: string | null = localStorage.getItem("homestead-user-authToken")
 
@@ -135,6 +148,7 @@ const UserHomePage: React.FC = () => {
                 throw new Error('Some error occured')
             }
         } catch (error) {
+            localStorage.removeItem("homestead-user-authToken")
             setSpinner(false)
             setError(true)
             return
@@ -190,16 +204,6 @@ const UserHomePage: React.FC = () => {
     useEffect(() => {
         fetchDataForHomePage()
     }, [fetchDataForHomePage])
-
-    const removeItemFromArray = (array: string[], input: string): string[] => {
-        const index = array.findIndex(item => item === input);
-        if (index !== -1) {
-            const newArray = [...array]; // Create a copy of the array
-            newArray.splice(index, 1); // Remove the element
-            return newArray; // Return the updated array
-        }
-        return array
-    }
 
     return (
         <Fragment>
