@@ -40,7 +40,9 @@ interface PropsType {
     state: string,
     district: string,
     minPrice: number | '',
-    maxPrice: number | ''
+    maxPrice: number | '',
+    sortBySetter: (input: 'newToOld' | 'oldToNew' | 'highToLow' | 'lowToHigh' | '') => void,
+    fetchDataForHomePage: () => void
 }
 
 //This component is the home page for property dealer
@@ -64,19 +66,31 @@ const HomePageFilterModal: React.FC<PropsType> = ({
     state,
     district,
     minPrice,
-    maxPrice
+    maxPrice,
+    sortBySetter,
+    fetchDataForHomePage
 }) => {
+    const [propertyTypeNew, setPropertyTypeNew] = useState<'agricultural' | 'commercial' | 'residential' | null>(propertyType)
+    const [commercialPropertyTypeNew, setCommercialPropertyTypeNew] = useState<'shop' | 'industrial' | null>(commercialPropertyType)
+    const [builtupOrEmptyNew, setBuiltupOrEmptyNew] = useState<'built-up' | 'empty' | null>(builtupOrEmpty)
+    const [builtUpPropertyTypeNew, setBuiltUpPropertyTypeNew] = useState<'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic' | null>(builtUpPropertyType)
+    const [residentialPropertyTypeNew, setResidentialPropertyTypeNew] = useState<'flat' | 'house' | 'plot' | null>(residentialPropertyType)
+    const [stateNew, setStateNew] = useState(state)
+    const [districtNew, setDistrictNew] = useState(district)
+    const [minPriceNew, setMinPriceNew] = useState<'' | number>(minPrice)
+    const [maxPriceNew, setMaxPriceNew] = useState<'' | number>(maxPrice)
 
     const clearFilters = () => {
-        propertyTypeSetter(null)
-        commercialPropertyTypeSetter(null)
-        builtupOrEmptySetter(null)
-        builtUpPropertyTypeSetter(null)
-        residentialPropertyTypeSetter(null)
-        minPriceSetter('')
-        maxPriceSetter('')
-        stateSetter('')
-        districtSetter('')
+        setPropertyTypeNew(null)
+        setCommercialPropertyTypeNew(null)
+        setBuiltupOrEmptyNew(null)
+        setBuiltUpPropertyTypeNew(null)
+        setResidentialPropertyTypeNew(null)
+        setMinPriceNew('')
+        setMaxPriceNew('')
+        setStateNew('')
+        setDistrictNew('')
+        sortBySetter('')
     }
 
     return (
@@ -97,10 +111,12 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                             <div className="flex flex-col gap-4">
                                 <div className="flex flex-row items-center gap-6 pl-5">
                                     <p className=" text-gray-700">State</p>
-                                    <select className="w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer" value={state} onChange={(e) => {
-                                        stateSetter(e.target.value)
-                                        districtSetter('')
-                                    }}>
+                                    <select className="w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer"
+                                        value={stateNew}
+                                        onChange={(e) => {
+                                            setStateNew(e.target.value)
+                                            setDistrictNew('')
+                                        }}>
                                         <option disabled value="">Select an option</option>
                                         {states.map(option => (
                                             <option className="" key={option} value={option}>
@@ -111,11 +127,14 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                                 </div>
                                 <div className="flex flex-row  items-center gap-3 pl-5">
                                     <p className=" text-gray-700">District</p>
-                                    <select className={`w-44 sm:w-fit border p-1.5 rounded-lg ${!chooseDistrictsForState(state || "") ? 'cursor-not-allowed' : 'cursor-pointer'}`} disabled={!state || chooseDistrictsForState(state || '') === null} onChange={(e) => {
-                                        districtSetter(e.target.value)
-                                    }} value={district || ""}>
+                                    <select
+                                        className={`w-44 sm:w-fit border p-1.5 rounded-lg ${!chooseDistrictsForState(stateNew || "") ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                        disabled={!stateNew || chooseDistrictsForState(stateNew || '') === null} onChange={(e) => {
+                                            setDistrictNew(e.target.value)
+                                        }}
+                                        value={districtNew || ""}>
                                         <option disabled value="">Select an option</option>
-                                        {state && chooseDistrictsForState(state)?.map(option => (
+                                        {stateNew && chooseDistrictsForState(stateNew)?.map(option => (
                                             <option key={option} value={option}>
                                                 {capitalizeFirstLetterOfAString(option)}
                                             </option>
@@ -130,13 +149,13 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                             <select
                                 className={`w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer`}
                                 onChange={(e) => {
-                                    propertyTypeSetter(e.target.value as 'agricultural' | 'commercial' | 'residential')
-                                    commercialPropertyTypeSetter(null)
-                                    builtupOrEmptySetter(null)
-                                    builtUpPropertyTypeSetter(null)
-                                    residentialPropertyTypeSetter(null)
+                                    setPropertyTypeNew(e.target.value as 'agricultural' | 'commercial' | 'residential')
+                                    setCommercialPropertyTypeNew(null)
+                                    setBuiltupOrEmptyNew(null)
+                                    setBuiltUpPropertyTypeNew(null)
+                                    setResidentialPropertyTypeNew(null)
                                 }}
-                                value={propertyType || ''}>
+                                value={propertyTypeNew || ''}>
                                 <option disabled value="">Select an option</option>
                                 {['agricultural', 'commercial', 'residential'].map(option => (
                                     <option key={option} value={option}>
@@ -146,16 +165,16 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                             </select>
                         </div>
 
-                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyType !== 'commercial' && 'hidden'}`}>
+                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyTypeNew !== 'commercial' && 'hidden'}`}>
                             <p className="font-semibold text-lg text-gray-800 ">Commercial property type</p>
                             <select
                                 className={`w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer`}
                                 onChange={(e) => {
-                                    commercialPropertyTypeSetter(e.target.value as 'shop' | 'industrial')
-                                    builtUpPropertyTypeSetter(null)
-                                    builtupOrEmptySetter(null)
+                                    setCommercialPropertyTypeNew(e.target.value as 'shop' | 'industrial')
+                                    setBuiltUpPropertyTypeNew(null)
+                                    setBuiltupOrEmptyNew(null)
                                 }}
-                                value={commercialPropertyType || ''}>
+                                value={commercialPropertyTypeNew || ''}>
                                 <option disabled value="">Select an option</option>
                                 {['shop', 'industrial'].map(option => (
                                     <option key={option} value={option}>
@@ -165,15 +184,15 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                             </select>
                         </div>
 
-                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyType === 'commercial' ? '' : 'hidden'}`}>
+                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyTypeNew === 'commercial' ? '' : 'hidden'}`}>
                             <p className="font-semibold text-lg text-gray-800 ">State of property</p>
                             <select
                                 className={`w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer`}
                                 onChange={(e) => {
-                                    builtupOrEmptySetter(e.target.value as 'built-up' | 'empty')
-                                    builtUpPropertyTypeSetter(null)
+                                    setBuiltupOrEmptyNew(e.target.value as 'built-up' | 'empty')
+                                    setBuiltUpPropertyTypeNew(null)
                                 }}
-                                value={builtupOrEmpty || ''}>
+                                value={builtupOrEmptyNew || ''}>
                                 <option disabled value="">Select an option</option>
                                 {['built-up', 'empty'].map(option => (
                                     <option key={option} value={option}>
@@ -183,14 +202,14 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                             </select>
                         </div>
 
-                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyType === 'commercial' && commercialPropertyType === 'industrial' && builtupOrEmpty === 'built-up' ? '' : 'hidden'}`}>
+                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyTypeNew === 'commercial' && commercialPropertyTypeNew === 'industrial' && builtupOrEmptyNew === 'built-up' ? '' : 'hidden'}`}>
                             <p className="font-semibold text-lg text-gray-800 ">Built-up property type</p>
                             <select
                                 className={`w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer`}
                                 onChange={(e) => {
-                                    builtUpPropertyTypeSetter(e.target.value as 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic')
+                                    setBuiltUpPropertyTypeNew(e.target.value as 'hotel/resort' | 'factory' | 'banquet hall' | 'cold store' | 'warehouse' | 'school' | 'hospital/clinic')
                                 }}
-                                value={builtUpPropertyType || ''}>
+                                value={builtUpPropertyTypeNew || ''}>
                                 <option disabled value="">Select an option</option>
                                 {['hotel/resort', 'factory', 'banquet hall', 'cold store', 'warehouse', 'school', 'hospital/clinic'].map(option => (
                                     <option key={option} value={option}>
@@ -200,14 +219,14 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                             </select>
                         </div>
 
-                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyType === 'residential' ? '' : 'hidden'}`}>
+                        <div className={`flex flex-row gap-3  border-b py-5 ${propertyTypeNew === 'residential' ? '' : 'hidden'}`}>
                             <p className="font-semibold text-lg text-gray-800 ">Residential property type</p>
                             <select
                                 className={`w-44 sm:w-fit border p-1.5 rounded-lg cursor-pointer`}
                                 onChange={(e) => {
-                                    residentialPropertyTypeSetter(e.target.value as 'plot' | 'house' | 'flat')
+                                    setResidentialPropertyTypeNew(e.target.value as 'plot' | 'house' | 'flat')
                                 }}
-                                value={residentialPropertyType || ''}>
+                                value={residentialPropertyTypeNew || ''}>
                                 <option disabled value="">Select an option</option>
                                 {['plot', 'house', 'flat'].map(option => (
                                     <option key={option} value={option}>
@@ -224,26 +243,32 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                                     <p className="text-gray-700">Min</p>
                                     <div className="relative">
                                         <MdCurrencyRupee className="absolute left-2 top-3" />
-                                        <input type='number' className="border border-gray-400 p-2 pl-7 rounded-lg text-gray-700" value={minPrice} onChange={e => {
-                                            if (+e.target.value >= 0 && e.target.value !== '') {
-                                                minPriceSetter(+e.target.value)
-                                            } else {
-                                                minPriceSetter('')
-                                            }
-                                        }} />
+                                        <input type='number' className="border border-gray-400 p-2 pl-7 rounded-lg text-gray-700"
+                                            value={minPriceNew}
+                                            onChange={e => {
+                                                if (+e.target.value >= 0 && e.target.value !== '') {
+                                                    setMinPriceNew(+e.target.value)
+                                                } else {
+                                                    setMinPriceNew('')
+                                                }
+                                            }} />
                                     </div>
                                 </div>
                                 <div className="flex flex-col" >
                                     <p>Max</p>
                                     <div className="relative">
                                         <MdCurrencyRupee className="absolute left-2 top-3" />
-                                        <input type='number' className="border border-gray-400 p-2 pl-7 rounded-lg text-gray-700" value={maxPrice} onChange={e => {
-                                            if (+e.target.value >= 0 && e.target.value !== '') {
-                                                maxPriceSetter(+e.target.value)
-                                            } else {
-                                                maxPriceSetter('')
-                                            }
-                                        }} />
+                                        <input
+                                            type='number'
+                                            className="border border-gray-400 p-2 pl-7 rounded-lg text-gray-700"
+                                            value={maxPriceNew}
+                                            onChange={e => {
+                                                if (+e.target.value >= 0 && e.target.value !== '') {
+                                                    setMaxPriceNew(+e.target.value)
+                                                } else {
+                                                    setMaxPriceNew('')
+                                                }
+                                            }} />
                                     </div>
                                 </div>
                             </div>
@@ -254,17 +279,32 @@ const HomePageFilterModal: React.FC<PropsType> = ({
                     <div className="h-16 border-t flex justify-between px-5 py-2">
                         <button className="text-white bg-black hover:bg-gray-800 p-3 rounded-lg font-semibold" onClick={clearFilters}>Clear filters</button>
                         <button className="text-white bg-red-600 hover:bg-red-800 p-3 rounded-lg font-semibold" onClick={() => {
+                            if (!propertyTypeNew && !commercialPropertyTypeNew && !builtUpPropertyTypeNew && !builtupOrEmptyNew && !residentialPropertyTypeNew && !stateNew && !districtNew && !minPriceNew && !maxPriceNew) {
+                                fetchDataForHomePage()
+                                modalReset()
+                                return
+                            }
+                            propertyTypeSetter(propertyTypeNew)
+                            commercialPropertyTypeSetter(commercialPropertyTypeNew)
+                            builtUpPropertyTypeSetter(builtUpPropertyTypeNew)
+                            builtupOrEmptySetter(builtupOrEmptyNew)
+                            residentialPropertyTypeSetter(residentialPropertyTypeNew)
+                            stateSetter(stateNew)
+                            districtSetter(districtNew)
+                            minPriceSetter(minPriceNew)
+                            maxPriceSetter(maxPriceNew)
+
                             applyFilters({
-                                propertyType,
-                                commercialPropertyType,
-                                builtUpPropertyType,
-                                builtupOrEmpty,
-                                residentialPropertyType,
-                                state: state || null,
-                                district: district || null,
+                                propertyType: propertyTypeNew,
+                                commercialPropertyType: commercialPropertyTypeNew,
+                                builtUpPropertyType: builtUpPropertyTypeNew,
+                                builtupOrEmpty: builtupOrEmptyNew,
+                                residentialPropertyType: residentialPropertyTypeNew,
+                                state: stateNew || null,
+                                district: districtNew || null,
                                 price: {
-                                    min: minPrice || null,
-                                    max: maxPrice || null
+                                    min: minPriceNew || null,
+                                    max: maxPriceNew || null
                                 }
                             }, 0)
                         }
